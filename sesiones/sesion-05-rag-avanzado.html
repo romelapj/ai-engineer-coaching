@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 05 — RAG II — Retrieval Híbrido, Reranking y Evaluación | AI
+      Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 2 — Patrones · Semana 6
+        </div>
+        <h1>
+          Sesión 05<br />RAG II — Retrieval Híbrido, Reranking y Evaluación
+        </h1>
+        <p class="lead">
+          Deja de adivinar por qué tu RAG responde mal: mide el retrieval,
+          mejóralo con híbrido + reranking y demuestra la ganancia con números.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — demo del reto 3 (RAG básico): ¿dónde falla
+            tu retrieval hoy? (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — híbrido BM25 + vectores, reranking,
+            query rewriting, contextual retrieval y métricas (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — pair programming: golden set,
+            recall@5 baseline y fusión híbrida con RRF (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — AI Gym 04: tuning de retrieval
+            con mejora medida (10 min)
+          </li>
+          <li><strong>Cierre</strong> — checklist de salida y dudas (5 min)</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🔬</span>
+            <h3>Diagnosticar con métricas</h3>
+            <p class="muted">
+              Construir un golden set y medir recall@k y MRR para saber
+              <em>por qué</em> falla el retrieval, no solo <em>que</em> falla.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🛠️</span>
+            <h3>Implementar híbrido + reranking</h3>
+            <p class="muted">
+              Combinar BM25 con vectores vía RRF y agregar un cross-encoder
+              donde la latencia lo justifique.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📈</span>
+            <h3>Demostrar con números</h3>
+            <p class="muted">
+              Reportar antes/después: "recall@5 pasó de 0.61 a 0.84" en vez de
+              "se siente mejor".
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: límites del vector search puro -->
+      <section class="slide">
+        <h2>Dónde se rompe el vector search puro</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Los embeddings brillan en…</h3>
+            <ul class="clean">
+              <li>
+                Paráfrasis: "¿cómo devuelvo un pago?" ≈ "reembolsar una
+                transacción"
+              </li>
+              <li>Sinónimos y queries vagas o conversacionales</li>
+              <li>Similitud semántica entre idiomas cercanos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>…y fallan en lo exacto</h3>
+            <ul class="clean">
+              <li>
+                Códigos y IDs: "error E-4012" recupera docs de errores… pero no
+                <em>ese</em> error
+              </li>
+              <li>Siglas y jerga interna: "RRF", "TAM", "SKU-9981"</li>
+              <li>
+                Nombres propios y de producto: "endpoint v3 de Checkout Lite"
+              </li>
+              <li>
+                Keywords raras: el embedding las "suaviza" hacia el tema general
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Síntoma típico: el usuario pega un término literal del documento y el
+          chunk correcto ni aparece en el top-10. Eso no se arregla con un mejor
+          prompt: se arregla en el retrieval.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: BM25 + RRF -->
+      <section class="slide">
+        <h2>Búsqueda híbrida: BM25 + vectores con RRF</h2>
+        <p style="margin-bottom: 1rem">
+          BM25 puntúa por coincidencia léxica (TF-IDF con saturación): es exacto
+          donde el embedding es difuso.
+          <strong>Reciprocal Rank Fusion</strong> mezcla ambos rankings sin
+          calibrar scores: solo usa posiciones.
+        </p>
+        <pre><code><span class="c"># RRF: score(doc) = Σ 1 / (k + rank)  — k=60 es el estándar</span>
+<span class="k">def</span> <span class="f">rrf</span>(rankings, k=60):
+    scores = {}
+    <span class="k">for</span> ranking <span class="k">in</span> rankings:
+        <span class="k">for</span> rank, doc_id <span class="k">in</span> <span class="f">enumerate</span>(ranking):
+            scores[doc_id] = scores.get(doc_id, 0) + 1 / (k + rank + 1)
+    <span class="k">return</span> <span class="f">sorted</span>(scores, key=scores.get, reverse=<span class="k">True</span>)
+
+fused = <span class="f">rrf</span>([bm25_top50, vector_top50])[:20]  <span class="c"># top-20 → al reranker</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          10 líneas, cero modelos nuevos, y suele subir recall@5 entre 5 y 15
+          puntos en corpus con jerga técnica. Es la mejora con mejor ROI de toda
+          la sesión.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: rerankers -->
+      <section class="slide">
+        <h2>Rerankers: precisión cara, úsala al final</h2>
+        <p style="margin-bottom: 1rem">
+          Un <strong>cross-encoder</strong> lee query y documento juntos y
+          produce un score de relevancia real — mucho más preciso que comparar
+          dos vectores precalculados, pero imposible de usar sobre todo el
+          corpus.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Bi-encoder (vectores)</th>
+              <th>Cross-encoder (reranker)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cómo compara</strong></td>
+              <td>Embeddings precalculados, similitud coseno</td>
+              <td>Atención conjunta query + doc en inferencia</td>
+            </tr>
+            <tr>
+              <td><strong>Escala</strong></td>
+              <td>Millones de docs en ~10 ms (ANN)</td>
+              <td>Solo 20–100 candidatos, ~100–300 ms extra</td>
+            </tr>
+            <tr>
+              <td><strong>Rol en el pipeline</strong></td>
+              <td>Recuperar top-50 barato</td>
+              <td>Reordenar y quedarse con el top-5</td>
+            </tr>
+            <tr>
+              <td><strong>Opciones</strong></td>
+              <td>voyage-3, text-embedding-3, bge-m3</td>
+              <td>Cohere Rerank, bge-reranker-v2, ms-marco MiniLM</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla de decisión: si tu recall@50 es alto pero tu recall@5 es bajo,
+          el reranker paga su latencia. Si recall@50 ya es malo, el problema
+          está antes — arregla el retrieval, no el orden.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: query rewriting -->
+      <section class="slide">
+        <h2>Query rewriting y expansión</h2>
+        <p style="margin-bottom: 1rem">
+          La query del usuario no es la query óptima para tu índice. Un paso
+          barato con un LLM expande siglas, agrega sinónimos y resuelve
+          referencias del historial ("¿y el segundo paso?").
+        </p>
+        <pre><code><span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+<span class="k">def</span> <span class="f">rewrite</span>(query: str) -> str:
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=200,
+        system=<span class="s">"Reescribe la query para un motor de búsqueda. "</span>
+               <span class="s">"Expande siglas y agrega sinónimos clave. "</span>
+               <span class="s">"Devuelve SOLO la query reescrita."</span>,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: query}],
+    )
+    <span class="k">return</span> resp.content[0].text
+
+<span class="c"># "qué pasa si falla el 3DS" →</span>
+<span class="c"># "fallo de autenticación 3DS (3-D Secure) en pagos: causas y manejo de errores"</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Costo: una llamada corta (~300–500 ms). Mídelo: si no sube recall en
+          tu golden set, quítalo. No todo paso "avanzado" gana en tu corpus.
+        </p>
+      </section>
+
+      <!-- SLIDE 8: metadata filtering -->
+      <section class="slide">
+        <h2>Metadata filtering: reduce el espacio antes de buscar</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                <strong>Filtra antes de la similitud</strong>: año, producto,
+                idioma, tipo de doc, tenant. "Política de vacaciones 2026" →
+                <code>year=2026 AND type=policy</code> y <em>luego</em> vector
+                search.
+              </li>
+              <li>
+                <strong>Pre-filter &gt; post-filter</strong>: filtrar después
+                del top-k puede dejarte con 0 resultados válidos aunque existan
+                en el corpus.
+              </li>
+              <li>
+                <strong>Access control es metadata</strong>: el RAG nunca debe
+                recuperar chunks que el usuario no puede leer. Esto es
+                seguridad, no relevancia.
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Self-query con LLM</h3>
+            <p class="muted">
+              Usa el modelo para extraer filtros estructurados de la query en
+              lenguaje natural: "facturas de Acme de marzo" →
+              <code>{"cliente": "Acme", "mes": 3}</code> + query semántica
+              "facturas". Es el mismo patrón de tool use que ya conoces de la
+              Fase 1.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: golden set + métricas -->
+      <section class="slide">
+        <h2>Golden set: recall@k y MRR</h2>
+        <blockquote>
+          Una mejora de retrieval sin métrica es una anécdota. Con golden set,
+          es un dato que puedes defender en un PR.
+        </blockquote>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                <strong>Golden set</strong>: 20–50 queries reales mapeadas al
+                chunk que <em>debería</em> salir. Hazlo a mano: 1 hora bien
+                invertida.
+              </li>
+              <li>
+                <strong>recall@k</strong>: ¿en qué fracción de queries el chunk
+                correcto está en el top-k? Tu métrica principal.
+              </li>
+              <li>
+                <strong>MRR</strong>: promedio de 1/posición del primer acierto.
+                Premia que lo correcto salga arriba, no solo que salga.
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="k">def</span> <span class="f">recall_at_k</span>(golden, results, k=5):
+    hits = <span class="f">sum</span>(1 <span class="k">for</span> q <span class="k">in</span> golden
+               <span class="k">if</span> golden[q] <span class="k">in</span> results[q][:k])
+    <span class="k">return</span> hits / <span class="f">len</span>(golden)
+
+<span class="k">def</span> <span class="f">mrr</span>(golden, results):
+    total = 0.0
+    <span class="k">for</span> q <span class="k">in</span> golden:
+        <span class="k">if</span> golden[q] <span class="k">in</span> results[q]:
+            total += 1 / (results[q].index(golden[q]) + 1)
+    <span class="k">return</span> total / <span class="f">len</span>(golden)</code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: contextual retrieval -->
+      <section class="slide">
+        <h2>Contextual retrieval (Anthropic)</h2>
+        <p style="margin-bottom: 1rem">
+          Un chunk suelto pierde contexto: "la tasa subió 3%" — ¿de qué, cuándo,
+          de quién? La idea: antes de indexar, pedirle al modelo 2–3 frases que
+          sitúen el chunk dentro de su documento, y embeber chunk + contexto.
+        </p>
+        <pre><code><span class="c"># 1 llamada por chunk; usa prompt caching para no repagar el doc completo</span>
+prompt = <span class="s">f"""&lt;document&gt;{doc}&lt;/document&gt;
+Sitúa este chunk dentro del documento:
+&lt;chunk&gt;{chunk}&lt;/chunk&gt;
+Responde SOLO con 2-3 frases de contexto."""</span>
+
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=150,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
+)
+chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Cifras del paper de Anthropic (tasa de fallo del top-20): embeddings
+          contextuales <strong>−35%</strong>; + BM25 contextual
+          <strong>−49%</strong>; + reranking <strong>−67%</strong>. Es
+          preprocesamiento: pagas una vez al indexar, no en cada query.
+        </p>
+      </section>
+
+      <!-- SLIDE 11: parent-document retrieval -->
+      <section class="slide">
+        <h2>Parent-document retrieval: busca chico, entrega grande</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>El conflicto</h3>
+            <ul class="clean">
+              <li>
+                Chunks <strong>pequeños</strong> (200–400 tokens) → embeddings
+                precisos, matching fino
+              </li>
+              <li>
+                Chunks <strong>grandes</strong> → el LLM tiene contexto para
+                responder bien
+              </li>
+              <li>Un solo tamaño de chunk siempre sacrifica uno de los dos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>El patrón</h3>
+            <ul class="clean">
+              <li>Indexa y busca con chunks hijos pequeños</li>
+              <li>
+                Al recuperar, entrega al modelo la sección o documento
+                <strong>padre</strong>
+              </li>
+              <li>
+                Trade-off: más tokens al generador → más costo y latencia por
+                respuesta
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Combina bien con contextual retrieval: uno mejora <em>encontrar</em>,
+          el otro mejora <em>responder</em>. Y como todo en esta sesión:
+          actívalo, corre el golden set, y deja el número decidir.
+        </p>
+      </section>
+
+      <!-- SLIDE 12: ejercicio en vivo -->
+      <section class="slide">
+        <h2>Manos al código — 30 min en pareja</h2>
+        <p style="margin-bottom: 1rem">
+          Sobre el índice de tu reto 3 (RAG básico), vamos a montar el loop de
+          medición completo y la primera mejora:
+        </p>
+        <ul class="clean">
+          <li>
+            <strong>Min 0–10</strong> — Golden set: 15 queries reales de tu
+            corpus con su chunk esperado, en un <code>golden.json</code>
+          </li>
+          <li>
+            <strong>Min 10–15</strong> — Baseline: medir recall@5 y MRR del
+            vector search actual. Anota el número.
+          </li>
+          <li>
+            <strong>Min 15–25</strong> — Híbrido: agregar BM25 con
+            <code>rank_bm25</code> y fusionar con el RRF de la slide 5
+          </li>
+          <li>
+            <strong>Min 25–30</strong> — Re-medir y comparar: ¿cuántos puntos
+            subió recall@5? ¿Qué queries siguen fallando y por qué?
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Meta del bloque: salir con un script <code>eval_retrieval.py</code>
+          que corre en segundos. Ese script es tu herramienta para todo el reto
+          04.
+        </p>
+      </section>
+
+      <!-- SLIDE 13: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 04</span
+          ><span class="tag green">Entregable: métricas antes/después</span>
+          <h3 style="margin-top: 0.8rem">Tuning de retrieval</h3>
+          <p>
+            Toma el RAG de tu reto 3 y mejóralo de forma medible: (1) construye
+            un golden set de mínimo 20 queries y mide el recall@5 baseline, (2)
+            implementa búsqueda híbrida BM25 + vectores con RRF y suma
+            reranking, (3) entrega una tabla antes/después con recall@5 y MRR
+            por variante, y una nota corta de qué movió la aguja y qué no.
+          </p>
+          <p class="muted" style="margin-top: 0.8rem">
+            Criterio de aceptación: la mejora se demuestra con números
+            reproducibles, no con sensaciones. Un experimento que NO mejoró,
+            bien documentado, también cuenta.
+          </p>
+          <p style="margin-top: 0.8rem">
+            Enunciado completo:
+            <a
+              href="../gym/reto-04-retrieval-tuning/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-04-retrieval-tuning</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=r0Dciuq0knU"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/r0Dciuq0knU/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Top 3 RAG Retrieval Strategies: Sparse, Dense, &amp; Hybrid
+                Explained
+              </div>
+              <div class="vc-meta">IBM Technology · Inglés</div>
+              <div class="vc-why">
+                Intro corta y canónica al núcleo de la sesión: BM25 vs dense vs
+                híbrido y cuándo conviene cada uno.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=9QJXvNiJIG8"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/9QJXvNiJIG8/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Mastering Retrieval for LLMs — BM25, Fine-tuned Embeddings, and
+                Re-Rankers
+              </div>
+              <div class="vc-meta">Trelis Research · Inglés</div>
+              <div class="vc-why">
+                Comparativa medida de BM25 vs embeddings vs rerankers; ideal
+                para el debate de latencia/costo del reranking.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=ZFbaA9eM0uo"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/ZFbaA9eM0uo/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Advanced RAG 04 — Reranking with Cross Encoders, and Cohere API
+              </div>
+              <div class="vc-meta">Sam Witteveen · Inglés</div>
+              <div class="vc-why">
+                Implementación hands-on de rerankers: cross-encoders con
+                Sentence Transformers y Cohere Rerank en código.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=tmiBae2goJM"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/tmiBae2goJM/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                The Best RAG Technique Yet? Anthropic's Contextual Retrieval
+                Explained!
+              </div>
+              <div class="vc-meta">Prompt Engineering · Inglés</div>
+              <div class="vc-why">
+                Contextual embeddings + BM25 contextual + reranking, con las
+                cifras de reducción de fallos (49%/67%).
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/shorts/t2ET0XQiDHg"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/t2ET0XQiDHg/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                How Do You Evaluate RAG Retrieval Quality? #Shorts
+              </div>
+              <div class="vc-meta">GeeksforGeeks · Inglés · Short</div>
+              <div class="vc-why">
+                Repaso en 1 minuto del pilar de evaluación: precision@k,
+                recall@k, hit rate, MRR y nDCG.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: checklist + próxima sesión -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Puedes explicar con un ejemplo concreto cuándo el vector search puro
+            falla (códigos, siglas, nombres)
+          </li>
+          <li>
+            Tienes un <code>eval_retrieval.py</code> que calcula recall@5 y MRR
+            sobre un golden set
+          </li>
+          <li>
+            Implementaste fusión híbrida con RRF y entiendes por qué no necesita
+            calibrar scores
+          </li>
+          <li>
+            Sabes decidir con datos si un reranker justifica sus ~200 ms de
+            latencia extra
+          </li>
+          <li>
+            Sabes qué problema resuelven contextual retrieval y parent-document
+            retrieval, y qué cuestan
+          </li>
+          <li>
+            Reto 04 agendado: mejora de retrieval demostrada con tabla
+            antes/después
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong
+            >Sesión 06 — Agentes I — El Loop Agéntico y Herramientas</strong
+          >
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

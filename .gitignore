@@ -1,0 +1,8 @@
+.DS_Store
+.idea/
+
+# El kit del coach vive en un repo privado aparte (respuestas del diagnóstico y rúbricas).
+coach/
+
+# Plantilla interna de diseño, no es material del alumno.
+_template.html

@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 08 — Evals — Medir Sistemas con LLMs | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 2 — Patrones · Semana 9
+        </div>
+        <h1>Sesión 08<br />Evals — Medir Sistemas con LLMs</h1>
+        <p class="lead">
+          Deja de evaluar con vibes: hoy construyes una suite de evals que te
+          dice, con un número, si tu sistema mejoró o empeoró.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — tu RAG/agente de la semana pasada: ¿cómo
+            sabes que funciona? (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — tipos de eval, golden datasets,
+            LLM-as-judge y sus sesgos, evals en CI (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — pair programming: mini-suite de
+            evals sobre tu RAG, con score base (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — AI Gym reto 07: suite de 30+
+            casos integrada a CI (10 min)
+          </li>
+          <li><strong>Cierre</strong> — checklist de salida y dudas (5 min)</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🎯</span>
+            <h3>Entender el porqué</h3>
+            <p class="muted">
+              Por qué evals es la habilidad #1 que diferencia a un AI Engineer
+              de alguien que pega prompts: sin medición no hay ingeniería.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🛠️</span>
+            <h3>Construir la base</h3>
+            <p class="muted">
+              Armar un golden dataset que valga la pena y escribir asserts
+              programáticos que corren en milisegundos.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">⚖️</span>
+            <h3>Judge confiable</h3>
+            <p class="muted">
+              Implementar LLM-as-judge con rúbricas, conocer sus sesgos
+              (posición, verbosidad) y cómo mitigarlos.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: por qué evals -->
+      <section class="slide">
+        <h2>Por qué evals es la habilidad #1</h2>
+        <blockquote>
+          Sin evals, cada cambio de prompt es una apuesta a ciegas. Con evals,
+          es un experimento con resultado medible.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            Un cambio de prompt típico
+            <strong>arregla 3 casos y rompe 12</strong>. Sin suite, solo ves los
+            3 que probaste a mano.
+          </li>
+          <li>
+            "Se ve bien en mis 5 ejemplos" no es evidencia. 100 casos con score
+            automático sí lo es.
+          </li>
+          <li>
+            En entrevistas de AI Engineering, la pregunta que filtra candidatos
+            no es "¿qué modelo usas?" sino
+            <strong>"¿cómo mides que tu sistema funciona?"</strong>
+          </li>
+          <li>
+            El ciclo real:
+            <code>error analysis → dataset → eval → mejora → repetir</code>. El
+            modelo es la parte que menos controlas.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 5: tipos de eval -->
+      <section class="slide">
+        <h2>Los 3 tipos de eval</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Qué mide</th>
+              <th>Costo / velocidad</th>
+              <th>Cuándo usarlo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Asserts programáticos</strong></td>
+              <td>
+                JSON válido, exact match, regex, longitud, campos presentes
+              </td>
+              <td>Gratis · milisegundos</td>
+              <td>Siempre primero. Cubre el 60-80% de lo que importa</td>
+            </tr>
+            <tr>
+              <td><strong>Similitud</strong></td>
+              <td>
+                Distancia semántica vs respuesta esperada (embeddings, ROUGE)
+              </td>
+              <td>Barato · rápido</td>
+              <td>Parafraseo aceptable. Ojo: similar ≠ correcto</td>
+            </tr>
+            <tr>
+              <td><strong>LLM-as-judge</strong></td>
+              <td>
+                Criterios subjetivos: fidelidad al contexto, tono, utilidad
+              </td>
+              <td>~$0.01-0.05/caso · segundos</td>
+              <td>Solo para lo que no puedes verificar con código</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla del coach: maximiza lo programático. El judge es el último
+          recurso, no el primero — es el más caro, el más lento y el único que
+          puede mentirte.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: asserts programáticos -->
+      <section class="slide">
+        <h2>Asserts programáticos: pytest es tu primer eval</h2>
+        <pre><code><span class="c"># evals/test_extractor.py — corre con `pytest evals/`</span>
+<span class="k">import</span> json, anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+<span class="k">def</span> <span class="f">test_extrae_factura</span>():
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=300,
+        system=PROMPT_EXTRACTOR,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: FACTURA_EJEMPLO}],
+    )
+    texto = resp.content[0].text
+    data = json.<span class="f">loads</span>(texto)                  <span class="c"># 1. ¿es JSON válido?</span>
+    <span class="k">assert</span> data[<span class="s">"total"</span>] == 1250.50          <span class="c"># 2. exact match</span>
+    <span class="k">assert</span> data[<span class="s">"moneda"</span>] <span class="k">in</span> {<span class="s">"COP"</span>, <span class="s">"USD"</span>}  <span class="c"># 3. pertenencia</span>
+    <span class="k">assert</span> <span class="s">"lo siento"</span> <span class="k">not in</span> texto.lower()  <span class="c"># 4. anti-disculpa</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Cuatro asserts, cero infraestructura nueva. Si ya sabes pytest, ya
+          sabes escribir evals.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: golden dataset -->
+      <section class="slide">
+        <h2>Golden dataset: 30 casos buenos &gt; 1000 sintéticos</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>✅ Vale la pena</h3>
+            <ul class="clean">
+              <li>
+                Casos sacados de <strong>logs de producción</strong> y de error
+                analysis: lo que de verdad falló
+              </li>
+              <li>
+                Edge cases: input vacío, idioma mezclado, montos con coma,
+                preguntas fuera de dominio
+              </li>
+              <li>
+                Formato JSONL:
+                <code>{input, expected, criterios, categoria}</code>
+                — versionado en git junto al código
+              </li>
+              <li>
+                Vivo:
+                <strong
+                  >cada bug de producción se convierte en un caso nuevo</strong
+                >
+                antes de arreglarlo
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>❌ No vale la pena</h3>
+            <ul class="clean">
+              <li>
+                1000 casos generados por un LLM sin revisar: miden la
+                distribución del generador, no la de tus usuarios
+              </li>
+              <li>
+                Solo happy paths: si todos pasan al 100%, el dataset no te está
+                enseñando nada
+              </li>
+              <li>
+                Casos sin criterio de éxito explícito ("que responda bien" no es
+                un criterio)
+              </li>
+              <li>Datasets que nadie actualiza después del primer mes</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Punto de partida realista: 30-50 casos, 70% típicos / 30% difíciles,
+          una tarde de trabajo. Eso ya te cambia el juego.
+        </p>
+      </section>
+
+      <!-- SLIDE 8: LLM-as-judge -->
+      <section class="slide">
+        <h2>LLM-as-judge: rúbrica explícita, salida estructurada</h2>
+        <pre><code>RUBRICA = <span class="s">"""Evalúa la respuesta de un RAG con esta rúbrica:
+5: responde la pregunta usando SOLO el contexto y cita la fuente
+3: responde correcto pero sin citar la fuente
+1: inventa datos que no están en el contexto, o no responde
+Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""</span>
+
+<span class="k">def</span> <span class="f">judge</span>(pregunta: str, contexto: str, respuesta: str) -&gt; dict:
+    msg = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=200,
+        system=RUBRICA,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>:
+            <span class="s">f"Pregunta: {pregunta}\nContexto: {contexto}\nRespuesta: {respuesta}"</span>}],
+    )
+    <span class="k">return</span> json.<span class="f">loads</span>(msg.content[0].text)  <span class="c"># {"score": 4, "razon": "..."}</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Claves: rúbrica con niveles concretos (no "califica del 1 al 5" a
+          secas), pedir la razón junto al score, y salida JSON para poder
+          agregar resultados.
+        </p>
+      </section>
+
+      <!-- SLIDE 9: sesgos del judge -->
+      <section class="slide">
+        <h2>El judge miente: sesgos y mitigaciones</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>⚠️ Sesgos documentados</h3>
+            <ul class="clean">
+              <li>
+                <strong>Posición</strong> — en comparaciones A/B, el judge
+                prefiere la primera opción aunque sean equivalentes
+              </li>
+              <li>
+                <strong>Verbosidad</strong> — respuestas más largas reciben
+                mejor score, aunque digan lo mismo (o menos)
+              </li>
+              <li>
+                <strong>Auto-preferencia</strong> — los modelos puntúan mejor el
+                estilo de su propia familia
+              </li>
+              <li>
+                Un judge mal calibrado es
+                <strong>peor que no tener evals</strong>: te da confianza falsa
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🛡️ Mitigaciones</h3>
+            <ul class="clean">
+              <li>
+                <strong>Rúbricas binarias</strong> — "¿cita la fuente? sí/no" en
+                lugar de escalas vagas
+              </li>
+              <li>
+                <strong>Pairwise con swap</strong> — evalúa (A,B) y (B,A); solo
+                cuenta el voto si es consistente en ambos órdenes
+              </li>
+              <li>
+                Razón <strong>antes</strong> del score: obliga al judge a
+                justificar, reduce scores arbitrarios
+              </li>
+              <li>
+                <strong>Calibra contra humanos</strong> — etiqueta 30 casos a
+                mano; si el agreement con el judge es &lt; 80%, arregla la
+                rúbrica antes de confiar en él
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: métricas y regresión -->
+      <section class="slide">
+        <h2>Métricas agregadas y regression suites</h2>
+        <ul class="clean">
+          <li>
+            <strong>Pass rate</strong> — % de casos que pasan todos sus asserts.
+            Tu métrica de cabecera: un solo número por commit.
+          </li>
+          <li>
+            <strong>Score por categoría</strong> — agrupa por tipo de caso
+            (extracción, fuera de dominio, multi-idioma). Un 85% global puede
+            esconder un 40% en la categoría que más le importa a tu usuario.
+          </li>
+          <li>
+            <strong>Baseline + delta</strong> — antes de tocar el prompt, corre
+            la suite y guarda el score. Después del cambio, reporta el delta:
+            "pass rate 78% → 86%, fidelidad 4.1 → 4.4".
+          </li>
+          <li>
+            <strong>Ruido</strong> — los LLMs no son deterministas: corre la
+            suite 3 veces o define un umbral (un delta de ±2% en 30 casos es
+            ruido, no mejora).
+          </li>
+          <li>
+            <strong>Regresión</strong> — los casos que ya pasaban deben seguir
+            pasando. Un caso que se rompe es más grave que uno nuevo que falla.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 11: evals en CI -->
+      <section class="slide">
+        <h2>Evals en CI: bloquear merges que degradan calidad</h2>
+        <pre><code><span class="c"># .github/workflows/evals.yml</span>
+<span class="k">on</span>: pull_request
+<span class="k">jobs</span>:
+  <span class="k">evals</span>:
+    <span class="k">runs-on</span>: ubuntu-latest
+    <span class="k">steps</span>:
+      - <span class="k">uses</span>: actions/checkout@v4
+      - <span class="k">run</span>: pip install anthropic pytest
+      - <span class="k">run</span>: pytest evals/ --tb=short
+        <span class="c"># asserts duros: si uno falla, el PR queda en rojo</span>
+      - <span class="k">run</span>: python evals/run_suite.py --min-pass-rate 0.85
+        <span class="c"># suite completa con judge: gate por umbral, no por caso</span>
+        <span class="k">env</span>:
+          <span class="k">ANTHROPIC_API_KEY</span>: ${{ secrets.ANTHROPIC_API_KEY }}</code></pre>
+        <ul class="clean" style="margin-top: 1rem">
+          <li>
+            Dos niveles: asserts deterministas
+            <strong>bloquean siempre</strong>; el score con judge bloquea por
+            umbral (ej. pass rate ≥ 85%).
+          </li>
+          <li>
+            Costo bajo control: 30 casos × judge ≈ $0.50-1.50 por PR. Más barato
+            que un bug en producción.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 12: herramientas -->
+      <section class="slide">
+        <h2>Herramientas: y cuándo basta pytest</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Qué aporta</th>
+              <th>Úsala cuando</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>pytest</strong></td>
+              <td>Asserts, fixtures, CI gratis. Cero infra nueva</td>
+              <td>
+                &lt; 50 casos, mayoría programáticos, un solo pipeline.
+                <strong>Empieza aquí</strong>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>promptfoo</strong></td>
+              <td>
+                Config YAML, matriz prompts × modelos, UI local de diffs. OSS
+              </td>
+              <td>
+                Quieres comparar variantes de prompt o modelos lado a lado
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Braintrust</strong></td>
+              <td>
+                Plataforma: datasets versionados, scorers, monitoreo en prod
+              </td>
+              <td>
+                Equipo de varios, necesitas historial y evals sobre tráfico real
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Inspect</strong></td>
+              <td>
+                Framework del UK AI Safety Institute, fuerte en evals de agentes
+              </td>
+              <td>
+                Evalúas trayectorias de agentes o tareas multi-paso complejas
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          La herramienta no es la habilidad. Si tu dataset es malo, promptfoo
+          solo te dará números bonitos sobre basura.
+        </p>
+      </section>
+
+      <!-- SLIDE 13: ejercicio en vivo -->
+      <section class="slide">
+        <h2>🧑‍💻 Manos al código — 30 min en pareja</h2>
+        <p>
+          Vamos a construir una mini-suite de evals sobre el RAG que hiciste en
+          el reto anterior:
+        </p>
+        <ul class="clean" style="margin-top: 1rem">
+          <li>
+            <strong>Min 0-10</strong> — escribir <code>golden.jsonl</code> con
+            10 casos reales: 7 preguntas típicas, 3 difíciles (fuera de dominio,
+            ambigua, multi-documento). Cada caso con criterio de éxito
+            explícito.
+          </li>
+          <li>
+            <strong>Min 10-20</strong> — escribir <code>run_suite.py</code>:
+            corre el RAG sobre cada caso, aplica 3 asserts programáticos (JSON
+            válido, contiene la cita, no se disculpa) + 1 judge de fidelidad con
+            la rúbrica de la slide 8.
+          </li>
+          <li>
+            <strong>Min 20-30</strong> — correr la suite, anotar el
+            <strong>score base</strong>, cambiar una línea del prompt del RAG y
+            volver a correr. Leer el delta juntos: ¿mejoró, empeoró o es ruido?
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1rem">
+          Salimos de la sesión con la suite corriendo y un número escrito en el
+          README. Ese número es tu baseline para el reto.
+        </p>
+      </section>
+
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 07</span
+          ><span class="tag green">Entregable: repo + CI verde</span>
+          <h3 style="margin-top: 0.8rem">Suite de evals</h3>
+          <p>
+            Construye una suite de <strong>30+ casos</strong> para tu RAG o
+            agente: golden dataset en JSONL, asserts programáticos +
+            LLM-as-judge con rúbrica, <strong>integrada a CI</strong> con umbral
+            que bloquea merges. Documenta el score base y demuestra
+            <strong>una mejora medida</strong> (prompt, retrieval o modelo) con
+            el delta antes/después en el README.
+          </p>
+          <p style="margin-top: 0.8rem">
+            Enunciado completo y criterios de evaluación:
+            <a
+              href="../gym/reto-07-suite-de-evals/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-07-suite-de-evals</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=a3SMraZWNNs"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/a3SMraZWNNs/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                How to Systematically Setup LLM Evals (Metrics, Unit Tests,
+                LLM-as-a-Judge)
+              </div>
+              <div class="vc-meta">Dave Ebbelaar · Inglés</div>
+              <div class="vc-why">
+                Mapea 1:1 con esta sesión: unit tests, similitud y judge, con
+                código aplicable de inmediato.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=X4dEHRzBLmc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/X4dEHRzBLmc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Judge the Judge: Building LLM Evaluators That Actually Work with
+                GEPA
+              </div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                El corazón de los sesgos del judge: por qué uno mal calibrado es
+                peor que no tener evals.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=-m1lgHybqN4"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/-m1lgHybqN4/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Rapidly Improve AI Products with Evals — Hamel Husain (TDE
+                Podcast #23)
+              </div>
+              <div class="vc-meta">The Data Entrepreneurs · Inglés</div>
+              <div class="vc-why">
+                El referente #1 en evals explica error analysis y construcción
+                de datasets: el marco de toda la sesión.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=bk0TmxoZlUY"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/bk0TmxoZlUY/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Evals 101 — Doug Guthrie, Braintrust</div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                Workshop hands-on del ciclo completo con Braintrust: datasets,
+                scorers, regresión y monitoreo en producción.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=nGaHoH9HHu0"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/nGaHoH9HHu0/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Curso evaluación LLM con Promptfoo — episodio 1
+              </div>
+              <div class="vc-meta">La Hora Maker · Español</div>
+              <div class="vc-why">
+                Promptfoo paso a paso, en español: ideal para arrancar la
+                herramienta del reto.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Puedo explicar los 3 tipos de eval y en qué orden aplicarlos
+            (programático → similitud → judge)
+          </li>
+          <li>
+            Tengo un golden dataset de 10+ casos con criterios de éxito
+            explícitos, versionado en git
+          </li>
+          <li>
+            Sé escribir un judge con rúbrica de niveles y salida JSON, y nombrar
+            2 sesgos con su mitigación
+          </li>
+          <li>
+            Mi suite corre con un comando y reporta pass rate + score por
+            categoría
+          </li>
+          <li>
+            Anoté mi score base de hoy: es el baseline contra el que mediré el
+            reto 07
+          </li>
+          <li>
+            Entiendo cómo un workflow de CI bloquea un merge que degrada el pass
+            rate
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong
+            >Sesión 09 — Producción I — Observabilidad, Costos y
+            Latencia</strong
+          >
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

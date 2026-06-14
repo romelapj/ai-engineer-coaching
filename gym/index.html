@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏋️ AI Gym — Retos | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 30%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 3.5rem 1.5rem 5rem;
+      }
+      a.back {
+        display: inline-block;
+        color: var(--accent2);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 2.2rem;
+      }
+      a.back:hover {
+        text-decoration: underline;
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.8rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .lead {
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin-top: 1rem;
+        max-width: 60ch;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin: 3rem 0 1.5rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.05rem;
+        color: var(--text);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      /* ---------- reglas ---------- */
+      .rules {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+        margin-top: 0.5rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .card p {
+        font-size: 0.98rem;
+        color: var(--muted);
+      }
+      /* ---------- tags ---------- */
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .tag.amber {
+        color: var(--amber);
+        background: rgba(251, 191, 36, 0.1);
+      }
+      /* ---------- cards de reto ---------- */
+      .reto-list {
+        display: grid;
+        gap: 1.2rem;
+      }
+      .reto {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1.3rem;
+        align-items: start;
+      }
+      .reto .num {
+        font-size: 1.9rem;
+        font-weight: 800;
+        line-height: 1;
+        min-width: 2.2ch;
+        text-align: center;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        padding-top: 0.2rem;
+      }
+      .reto .meta {
+        margin-bottom: 0.7rem;
+      }
+      .reto p.desc {
+        font-size: 0.98rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      .reto a.readme {
+        display: inline-block;
+        margin-top: 0.9rem;
+        color: var(--accent2);
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+      }
+      .reto a.readme:hover {
+        text-decoration: underline;
+      }
+      footer {
+        margin-top: 4rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      @media (max-width: 720px) {
+        .rules {
+          grid-template-columns: 1fr;
+        }
+        .reto {
+          grid-template-columns: 1fr;
+          gap: 0.6rem;
+        }
+        .reto .num {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="../index.html">← Volver al portal</a>
+
+      <header>
+        <div class="kicker">AI Engineer Coaching · Retos prácticos</div>
+        <h1>🏋️ AI Gym</h1>
+        <p class="lead">
+          Ocho retos progresivos para convertir la teoría en músculo. Cada uno
+          se asigna en una sesión, se trabaja durante la semana y se revisa en
+          la siguiente.
+        </p>
+      </header>
+
+      <h2>Reglas del gimnasio</h2>
+      <div class="rules">
+        <div class="card">
+          <span class="icon">🎯</span>
+          <h3>Criterios medibles</h3>
+          <p>
+            Cada reto tiene criterios de aceptación medibles. Nada de &laquo;más
+            o menos funciona&raquo;: hay un golden set, una métrica o un
+            comportamiento verificable que define el éxito.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">✅</span>
+          <h3>Definición de &laquo;done&raquo;</h3>
+          <p>
+            Un reto está terminado cuando los criterios de aceptación se cumplen
+            <strong>y</strong> el resultado se revisó en sesión. Sin revisión,
+            no cuenta.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">💡</span>
+          <h3>Política de pistas</h3>
+          <p>
+            Cada reto trae pistas escalonadas. Antes de abrir cada una, intenta
+            resolver el bloqueo por tu cuenta al menos
+            <strong>30 minutos</strong>. La fricción es parte del entrenamiento.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">📦</span>
+          <h3>Todo vive en tu repo</h3>
+          <p>
+            Cada reto vive en el repo del alumno: código, README, evidencia de
+            las métricas y commits con historia real. Al final del programa, ese
+            repo es tu portfolio.
+          </p>
+        </div>
+      </div>
+
+      <h2>Los retos</h2>
+      <div class="reto-list">
+        <div class="card reto">
+          <div class="num">01</div>
+          <div>
+            <div class="meta">
+              <span class="tag violet">Fase 1</span>
+              <span class="tag">Se asigna en la sesión 2</span>
+            </div>
+            <h3>Extractor estructurado</h3>
+            <p class="desc">
+              Extraer datos estructurados (JSON validado con Pydantic) de 20
+              textos libres (p. ej. ofertas de trabajo o emails de soporte)
+              usando solo prompting. Se evalúa contra un golden set: exactitud
+              por campo &ge; 90%. Sin tool use todavía: el punto es prompting
+              disciplinado + validación.
+            </p>
+            <a class="readme" href="reto-01-extractor-estructurado/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">02</div>
+          <div>
+            <div class="meta">
+              <span class="tag violet">Fase 1</span>
+              <span class="tag">Se asigna en la sesión 3</span>
+            </div>
+            <h3>Tool use robusto</h3>
+            <p class="desc">
+              Asistente con 3 herramientas via function calling (p. ej. clima,
+              conversión de moneda, búsqueda en una "DB" local). Las tools
+              fallan a propósito (timeouts, 500s, JSON malformado) mediante un
+              harness de caos provisto en el enunciado. El asistente debe
+              sobrevivir: retries con backoff exponencial, mensajes de error
+              útiles al usuario, nunca crashear. Se evalúa corriendo 20
+              conversaciones con fallos inyectados.
+            </p>
+            <a class="readme" href="reto-02-tool-use-robusto/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">03</div>
+          <div>
+            <div class="meta">
+              <span class="tag green">Fase 2</span>
+              <span class="tag">Se asigna en la sesión 4</span>
+            </div>
+            <h3>RAG básico con citas</h3>
+            <p class="desc">
+              Pipeline RAG completo sobre documentación técnica real que el
+              alumno elija (p. ej. docs de FastAPI o de la API de Anthropic):
+              ingesta, chunking justificado, embeddings, vector store local,
+              retrieval top-k, generación con citas a la fuente. Se evalúa con
+              15 preguntas de prueba: la respuesta debe ser correcta Y citar el
+              documento correcto.
+            </p>
+            <a class="readme" href="reto-03-rag-basico/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">04</div>
+          <div>
+            <div class="meta">
+              <span class="tag green">Fase 2</span>
+              <span class="tag">Se asigna en la sesión 5</span>
+            </div>
+            <h3>Tuning de retrieval con métricas</h3>
+            <p class="desc">
+              Construir un golden set de retrieval (25+ pares
+              pregunta&rarr;chunks relevantes) para el RAG del reto 3. Medir
+              recall@5 y MRR como baseline. Implementar búsqueda híbrida (BM25 +
+              vectores con RRF) y reranking. Entregable: tabla comparativa
+              baseline vs mejorado con las métricas. La mejora debe ser real y
+              explicada.
+            </p>
+            <a class="readme" href="reto-04-retrieval-tuning/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">05</div>
+          <div>
+            <div class="meta">
+              <span class="tag green">Fase 2</span>
+              <span class="tag">Se asigna en la sesión 6</span>
+            </div>
+            <h3>Agente desde cero</h3>
+            <p class="desc">
+              Agente investigador SIN frameworks (solo el SDK del modelo): loop
+              LLM &rarr; decide tool &rarr; ejecuta &rarr; observa &rarr;
+              repite, con presupuesto máximo de pasos y tokens. Tools: búsqueda
+              web o lectura de archivos locales. Produce un informe markdown con
+              fuentes citadas. Se evalúa: el loop es legible (&lt;200 líneas),
+              respeta presupuestos, el informe responde la pregunta.
+            </p>
+            <a class="readme" href="reto-05-agente-from-scratch/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">06</div>
+          <div>
+            <div class="meta">
+              <span class="tag green">Fase 2</span>
+              <span class="tag">Se asigna en la sesión 7</span>
+            </div>
+            <h3>Agente con memoria</h3>
+            <p class="desc">
+              Extender el agente del reto 5 con: (a) memoria persistente entre
+              ejecuciones (archivos o SQLite) que recuerda hallazgos previos, y
+              (b) un subagente especializado al que delega una subtarea.
+              Demostrar con un caso: segunda ejecución sobre el mismo tema
+              reutiliza memoria y es más rápida/barata. Bonus: exponer las tools
+              como MCP server.
+            </p>
+            <a class="readme" href="reto-06-agente-con-memoria/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">07</div>
+          <div>
+            <div class="meta">
+              <span class="tag green">Fase 2</span>
+              <span class="tag">Se asigna en la sesión 8</span>
+            </div>
+            <h3>Suite de evals</h3>
+            <p class="desc">
+              Suite de 30+ casos de eval para el RAG (reto 3-4) o el agente
+              (reto 5-6): mezcla de asserts programáticos y LLM-as-judge con
+              rúbrica explícita. Integrada a CI (GitHub Actions): corre en cada
+              PR y reporta score. Entregable: score baseline documentado + un
+              cambio que mejora el score, con evidencia. Esta es la pieza más
+              valiosa del portfolio.
+            </p>
+            <a class="readme" href="reto-07-suite-de-evals/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">08</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Fase 3</span>
+              <span class="tag">Se asigna en la sesión 10</span>
+            </div>
+            <h3>Hardening de producción</h3>
+            <p class="desc">
+              Tomar el mejor proyecto y endurecerlo en dos partes. Parte 1
+              (semana 10): instrumentar trazas, tokens, costo y latencia;
+              dashboard simple; reducir p95 o costo 30% (caching, routing de
+              modelos, prompts más cortos) y documentar el antes/después. Parte
+              2 (semana 11): red-team propio con 10 ataques de prompt injection
+              documentados + 3 mitigaciones implementadas y demostradas con los
+              ataques bloqueados.
+            </p>
+            <a class="readme" href="reto-08-hardening-produccion/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        AI Engineer Coaching · AI Gym — 8 retos, criterios medibles, todo en tu
+        repo.
+      </footer>
+    </div>
+  </body>
+</html>

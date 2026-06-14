@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 13 — Mock Interviews, Portfolio y Estrategia | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 4 — Entrevistas · Semanas 15-16
+        </div>
+        <h1>Sesión 13<br />Mock Interviews, Portfolio y Estrategia</h1>
+        <p class="lead">
+          Convertir 14 semanas de trabajo en evidencia que pasa entrevistas:
+          mock completa, CV con métricas y plan de aplicación.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — agente en producción de la sesión 12: demo
+            de 2 min, métricas de evals (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — anatomía de la entrevista 2026,
+            STAR, CV de evidencia y estrategia de aplicación (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — construimos un STAR Grader:
+            Claude como entrevistador que puntúa tus respuestas (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — mock grabada + CV final + lista
+            de 15 empresas (10 min)
+          </li>
+          <li>
+            <strong>Cierre</strong> — qué pasa después del programa (5 min)
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🎤</span>
+            <h3>Mock interview completa</h3>
+            <p class="muted">
+              Coding + system design + behavioral, con rúbrica. Saber dónde
+              estás parado antes de la entrevista real.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📁</span>
+            <h3>Portfolio orientado a evidencia</h3>
+            <p class="muted">
+              CV, LinkedIn y GitHub que muestran métricas de evals, no listas de
+              tecnologías.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🗺️</span>
+            <h3>Estrategia de aplicación</h3>
+            <p class="muted">
+              15 empresas objetivo, ruta de referidos y narrativa personal de 30
+              segundos.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: anatomía de la entrevista 2026 -->
+      <section class="slide">
+        <h2>Anatomía de la entrevista de AI engineer en 2026</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Etapa</th>
+              <th>Duración</th>
+              <th>Qué evalúan de verdad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Recruiter screen</strong></td>
+              <td>30 min</td>
+              <td>Narrativa de 30s, expectativa salarial, disponibilidad</td>
+            </tr>
+            <tr>
+              <td><strong>Technical screen</strong></td>
+              <td>60 min</td>
+              <td>
+                Código en vivo con un LLM API: manejo de errores, streaming,
+                structured outputs — no LeetCode puro
+              </td>
+            </tr>
+            <tr>
+              <td><strong>AI system design</strong></td>
+              <td>60 min</td>
+              <td>
+                Diseñar RAG o agente con trade-offs de costo, latencia y
+                <em>cómo lo evaluarías</em>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Behavioral</strong></td>
+              <td>45 min</td>
+              <td>STAR con tus proyectos reales; ownership y criterio</td>
+            </tr>
+            <tr>
+              <td><strong>Take-home</strong> (a veces)</td>
+              <td>2-4 h</td>
+              <td>Pipeline pequeño <strong>con evals incluidos</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Ojo 2026: muchas empresas ya permiten usar AI assistants en la
+          entrevista. Lo que mide eso es tu <strong>criterio</strong>: qué
+          aceptas, qué corriges y cómo verificas.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: behavioral con STAR -->
+      <section class="slide">
+        <h2>Behavioral con STAR — tus proyectos son tu munición</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>La fórmula con tiempos (~2 min)</h3>
+            <ul class="clean">
+              <li><strong>S</strong>ituación — contexto en 15 s, sin novela</li>
+              <li>
+                <strong>T</strong>area — tu responsabilidad concreta, 10 s
+              </li>
+              <li>
+                <strong>A</strong>cción — qué hiciste TÚ (no "el equipo"),
+                decisiones y trade-offs, 60 s
+              </li>
+              <li><strong>R</strong>esultado — métrica + aprendizaje, 20 s</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ejemplo con tu proyecto de la sesión 8</h3>
+            <p class="muted" style="font-size: 0.98rem">
+              "El retrieval de mi RAG fallaba en queries ambiguas
+              <em>(S)</em>. Yo era responsable de la calidad de respuestas
+              <em>(T)</em>. Armé un eval set de 120 queries, medí recall@5 en
+              0.61 y probé reranking vs. query rewriting; el reranker costaba 3x
+              en latencia, así que elegí rewriting con Claude <em>(A)</em>.
+              Recall@5 subió a 0.83 y la latencia p95 se mantuvo bajo 2 s
+              <em>(R)</em>."
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Prepara <strong>6 historias STAR</strong> de tus retos del programa:
+          un fallo, un trade-off, un conflicto, un deadline, una decisión
+          técnica y una mejora medible. Cubren el 90% de las preguntas.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: walk me through your project -->
+      <section class="slide">
+        <h2>"Walk me through your project" — la respuesta de 3 minutos</h2>
+        <ul class="clean">
+          <li>
+            <strong>0:00-0:30 · El problema</strong> — quién lo sufría y por qué
+            importaba. Sin mencionar tecnología todavía.
+          </li>
+          <li>
+            <strong>0:30-2:00 · Decisiones y trade-offs</strong> — 2 o 3
+            decisiones clave: "elegí X sobre Y porque Z". Aquí vive el 80% de la
+            señal de seniority.
+          </li>
+          <li>
+            <strong>2:00-2:45 · Resultados</strong> — métricas de evals,
+            latencia, costo por request. Números, no adjetivos.
+          </li>
+          <li>
+            <strong>2:45-3:00 · Qué harías distinto</strong> — una autocrítica
+            honesta cierra mejor que un "quedó perfecto".
+          </li>
+        </ul>
+        <div class="columns" style="margin-top: 1.2rem">
+          <div class="card">
+            <h3>❌ Error típico</h3>
+            <p class="muted">
+              Tour de arquitectura de 10 minutos: "y luego este servicio llama a
+              este otro…". El entrevistador desconecta al minuto 2.
+            </p>
+          </div>
+          <div class="card">
+            <h3>✅ Lo que funciona</h3>
+            <p class="muted">
+              Problema → decisiones → números. Si quieren detalle de
+              arquitectura, lo van a pedir. Deja anzuelos, no des el tour.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: CV con bullets de evidencia -->
+      <section class="slide">
+        <h2>CV: bullets de evidencia, no tecnologías sueltas</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>❌ Antes</h3>
+            <ul class="clean">
+              <li>"Trabajé con LangChain, Pinecone y la API de Anthropic"</li>
+              <li>"Desarrollé un chatbot con RAG"</li>
+              <li>"Conocimientos en prompt engineering"</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>✅ Después</h3>
+            <ul class="clean">
+              <li>
+                "Subí recall@5 de 0.61 a 0.83 en un RAG de soporte (eval set de
+                120 queries) con query rewriting"
+              </li>
+              <li>
+                "Reduje costo por conversación 38% migrando a prompt caching y
+                un modelo más chico para clasificación"
+              </li>
+              <li>
+                "Pipeline de evals en CI: 0 regresiones de calidad en 6
+                releases"
+              </li>
+            </ul>
+          </div>
+        </div>
+        <blockquote>
+          No te contratan por las herramientas que dices conocer; te contratan
+          por la evidencia medible de lo que ya hiciste con ellas.
+        </blockquote>
+      </section>
+
+      <!-- SLIDE 8: GitHub como portfolio -->
+      <section class="slide">
+        <h2>GitHub como portfolio: evals visibles o no existió</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                <strong>3 repos pulidos</strong> &gt; 30 repos muertos. Pinea
+                los del programa.
+              </li>
+              <li>
+                README con: problema, demo (GIF de 20 s), arquitectura en un
+                diagrama y <strong>tabla de métricas de evals</strong>.
+              </li>
+              <li>
+                Carpeta <code>evals/</code> ejecutable: el entrevistador que
+                puede correr tus evals ya está medio convencido.
+              </li>
+              <li>
+                Commits con historia legible: se nota cuándo un repo es un dump
+                de fin de semana.
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="c"># evals/run_evals.py — la tabla del README sale de aquí</span>
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+<span class="k">def</span> <span class="f">judge</span>(query, answer, expected):
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=10,
+        system=<span class="s">"Juez de QA. Responde solo PASS o FAIL "</span>
+               <span class="s">"comparando answer contra expected."</span>,
+        messages=[{
+            <span class="s">"role"</span>: <span class="s">"user"</span>,
+            <span class="s">"content"</span>: <span class="s">f"Q: {query}\nEsperado: {expected}\n"</span>
+                       <span class="s">f"Respuesta: {answer}"</span>,
+        }],
+    )
+    <span class="k">return</span> resp.content[0].text.<span class="f">strip</span>() == <span class="s">"PASS"</span></code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: startups vs corporates -->
+      <section class="slide">
+        <h2>Estrategia: ¿startup o corporate?</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>🚀 Startup (seed - serie B)</h3>
+            <ul class="clean">
+              <li>Proceso: 2-3 semanas, a veces una sola semana</li>
+              <li>Scope amplio: tú eres "el de AI" — del prompt al deploy</li>
+              <li>
+                Comp: base menor + equity (lotería: valórala en 0 al negociar)
+              </li>
+              <li>
+                Tu portfolio con evals pesa <strong>más</strong> que el título o
+                los años de experiencia
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🏢 Corporate / scale-up</h3>
+            <ul class="clean">
+              <li>Proceso: 4-8 semanas, 4-6 rondas estandarizadas</li>
+              <li>Scope más angosto, sistemas con tráfico real y on-call</li>
+              <li>Comp: base mayor, bonos y RSUs líquidas</li>
+              <li>
+                Filtran más por entrevista estructurada: las mocks importan
+                <strong>más</strong> aquí
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla práctica: aplica a ambas en paralelo. Las startups te dan
+          práctica de entrevista rápida y ofertas que sirven de palanca para
+          negociar con las corporates.
+        </p>
+      </section>
+
+      <!-- SLIDE 10: funnel y plan semanal -->
+      <section class="slide">
+        <h2>Volumen y referidos: el funnel real</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">📨</span>
+            <h3>Cold apply</h3>
+            <p class="muted">
+              ~2-5% pasa a screen. Es un juego de volumen y de keywords que el
+              ATS pueda leer.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🤝</span>
+            <h3>Con referido</h3>
+            <p class="muted">
+              ~5-10x más probabilidad de screen. Un mensaje directo a un
+              ingeniero del equipo vale más que 20 cold applies.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📉</span>
+            <h3>Funnel típico</h3>
+            <p class="muted">
+              100 aplicaciones → 10-15 screens → 3-5 finales → 1-2 ofertas. El
+              "no" es el caso base; no es señal personal.
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1.4rem">
+          <strong>Plan semanal mínimo:</strong> 10 aplicaciones dirigidas (CV
+          ajustado al rol, no spray-and-pray) + 5 mensajes a posibles referidos
+          + 1 mock interview. Sostenido 6-8 semanas.
+        </p>
+      </section>
+
+      <!-- SLIDE 11: negociación básica -->
+      <section class="slide">
+        <h2>Negociación básica de oferta</h2>
+        <ul class="clean">
+          <li>
+            <strong>No des tu número primero.</strong> "¿Cuál es el rango
+            presupuestado para el rol?" — en muchos países están obligados a
+            decirlo.
+          </li>
+          <li>
+            <strong>Toda primera oferta tiene margen</strong>, típicamente
+            10-20%. Pedir con datos no te quita la oferta; aceptar en la llamada
+            sí te quita dinero.
+          </li>
+          <li>
+            <strong>Nunca aceptes en vivo.</strong> "Gracias, lo reviso y te
+            confirmo en 48 horas" es una frase completa.
+          </li>
+          <li>
+            <strong>La palanca real es otra oferta</strong> (o un proceso
+            avanzado). Por eso aplicas en paralelo, no en serie.
+          </li>
+          <li>
+            <strong>Negocia el paquete, no solo la base:</strong> signing bonus,
+            fecha de revisión salarial, equity, remoto.
+          </li>
+          <li>
+            <strong>Todo por escrito.</strong> Lo que no está en la carta de
+            oferta no existe.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 12: ejercicio en vivo -->
+      <section class="slide">
+        <h2>🛠️ En vivo: construimos un STAR Grader (30 min)</h2>
+        <p>
+          Un CLI en Python que te entrevista y te puntúa — lo usarás toda la
+          semana para entrenar antes de la mock grabada.
+        </p>
+        <div class="columns-3" style="margin-top: 1rem">
+          <div class="card">
+            <span class="icon">1️⃣</span>
+            <h3>Entrevistador (10 min)</h3>
+            <p class="muted">
+              Claude (<code>claude-sonnet-4-6</code>) lanza 3 preguntas
+              behavioral basadas en tu CV, que le pasamos en el system prompt.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">2️⃣</span>
+            <h3>Juez con rúbrica (15 min)</h3>
+            <p class="muted">
+              Segunda llamada que puntúa tu respuesta 1-5 en estructura STAR,
+              métricas concretas, ownership y duración, devolviendo JSON.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">3️⃣</span>
+            <h3>Reporte (5 min)</h3>
+            <p class="muted">
+              Promedio por dimensión + el feedback más accionable. Meta de la
+              semana: pasar de tu baseline a ≥4.0 en todas.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Es la misma técnica LLM-as-judge de la sesión 9 — aplicada a ti.
+        </p>
+      </section>
+
+      <!-- SLIDE 13: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 13</span
+          ><span class="tag green">Entregable final</span>
+          <h3 style="margin-top: 0.8rem">Listo para aplicar</h3>
+          <p>
+            <strong>1. Mock interview completa grabada</strong> — coding +
+            system design + behavioral con un compañero del programa.
+            Autoevalúate con las rúbricas del coach y anota tus 3 gaps
+            principales.
+          </p>
+          <p style="margin-top: 0.6rem">
+            <strong>2. CV final</strong> — una página, cada bullet con métrica.
+            Pásalo por el filtro: si un bullet no responde "¿y qué lograste?",
+            se reescribe o se va.
+          </p>
+          <p style="margin-top: 0.6rem">
+            <strong>3. Lista de 15 empresas objetivo</strong> — 8 startups + 7
+            corporates, con posible referido identificado por empresa y plan de
+            aplicación semanal (10 applies + 5 mensajes + 1 mock).
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=O-kuHMOdjX4"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/O-kuHMOdjX4/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Inside a Real AI Engineer Interview (Mock Interview +
+                Evaluation)
+              </div>
+              <div class="vc-meta">Think in Models · Inglés</div>
+              <div class="vc-why">
+                Mock completa de AI engineer con evaluación: ve qué se puntúa y
+                cómo luce una buena respuesta.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=ZjNoipQAqRM"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/ZjNoipQAqRM/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                ML System Design Mock Interview — Classify Toxic Tweets
+              </div>
+              <div class="vc-meta">Exponent · Inglés</div>
+              <div class="vc-why">
+                Cómo narrar un sistema ML de punta a punta: el modelo para tu
+                "walk me through your project".
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=6U5MgJT9auo"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/6U5MgJT9auo/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Prepare for a Behavioral Interview | STAR for Developers
+              </div>
+              <div class="vc-meta">Geekific · Inglés</div>
+              <div class="vc-why">
+                STAR explicado para developers con ejemplos de proyectos propios
+                — directo al bloque behavioral.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=tODlQ6jeJnw"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/tODlQ6jeJnw/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                This Resume Got Me 30+ Software Engineering Interviews
+              </div>
+              <div class="vc-meta">Aman Manazir · Inglés</div>
+              <div class="vc-why">
+                Desglose de un CV real con bullets de impacto y métricas que
+                generaron 30+ entrevistas.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=e-yDDDW1SJM"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/e-yDDDW1SJM/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Así es una ENTREVISTA TÉCNICA REAL de Programación
+              </div>
+              <div class="vc-meta">diegoveloper · Español</div>
+              <div class="vc-why">
+                Mock técnica real en español: formato y errores comunes antes de
+                tu propia mock grabada.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Sé estructurar cualquier pregunta behavioral en STAR con mis 6
+            historias preparadas
+          </li>
+          <li>
+            Tengo mi "walk me through your project" de 3 minutos cronometrado y
+            ensayado
+          </li>
+          <li>Mi CV tiene solo bullets con métricas y cabe en una página</li>
+          <li>
+            Mis 3 repos pineados tienen README con demo y tabla de evals
+            ejecutable
+          </li>
+          <li>
+            Tengo 15 empresas objetivo con referidos identificados y plan
+            semanal de aplicación
+          </li>
+          <li>
+            Sé qué responder cuando pregunten expectativa salarial — y qué no
+            responder
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión: <strong>no hay — ¡fin del programa!</strong> Desde la
+          semana 17 ejecutas tu plan: 10 applies + 5 mensajes + 1 mock por
+          semana. Nos vemos en los office hours para destrabar procesos. A
+          aplicar. 🚀
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

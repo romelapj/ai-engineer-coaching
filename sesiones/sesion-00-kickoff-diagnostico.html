@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sesión 00 — Kickoff y Diagnóstico | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 0 — Diagnóstico · Semana 1
+        </div>
+        <h1>Sesión 00<br />Kickoff y Diagnóstico</h1>
+        <p class="lead">
+          Alineamos el plan de 16 semanas, medimos tu punto de partida y dejas
+          tu primera llamada a Claude funcionando hoy mismo.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso / arranque</strong> — presentaciones, expectativas y
+            reglas del programa (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — qué es un AI engineer, qué evalúan
+            las entrevistas en 2026 y cómo está armado el plan (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — setup del entorno + primera
+            llamada a la API de Anthropic, en pair programming (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — assessment de diagnóstico: qué
+            entregar y cómo se evalúa (10 min)
+          </li>
+          <li><strong>Cierre</strong> — checklist de salida y dudas (5 min)</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">🧭</span>
+            <h3>Alinear el plan</h3>
+            <p class="muted">
+              Expectativas claras: 16 semanas, 5 fases, un entregable por
+              semana. Sin entregable no hay avance.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🎯</span>
+            <h3>Entender el rol</h3>
+            <p class="muted">
+              Qué hace un AI engineer (vs ML engineer vs data scientist) y qué
+              evalúan las entrevistas del rol en 2026.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📊</span>
+            <h3>Medir la línea base</h3>
+            <p class="muted">
+              Aplicar el assessment de 3 partes: coding, integración LLM y
+              diseño oral. Es diagnóstico, no examen.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">⚙️</span>
+            <h3>Entorno funcionando</h3>
+            <p class="muted">
+              Salir de la sesión con Python listo, API key configurada y un
+              script que llama a Claude.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: roles -->
+      <section class="slide">
+        <h2>AI engineer vs ML engineer vs data scientist</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Rol</th>
+              <th>Pregunta que responde</th>
+              <th>Entregable típico</th>
+              <th>Stack núcleo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Data scientist</strong></td>
+              <td>¿Qué dicen los datos y qué decisión soportan?</td>
+              <td>Análisis, dashboards, modelos estadísticos</td>
+              <td>SQL, pandas, scikit-learn, notebooks</td>
+            </tr>
+            <tr>
+              <td><strong>ML engineer</strong></td>
+              <td>¿Cómo entreno y sirvo modelos propios a escala?</td>
+              <td>Pipelines de training y serving</td>
+              <td>PyTorch, feature stores, MLOps, GPUs</td>
+            </tr>
+            <tr>
+              <td><strong>AI engineer</strong></td>
+              <td>¿Cómo construyo producto fiable sobre modelos frontera?</td>
+              <td>Features con LLM en producción</td>
+              <td>APIs de LLM, RAG, agentes, evals</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.4rem">
+          La diferencia clave: el AI engineer
+          <strong>no entrena modelos</strong>. Consume modelos frontera vía API
+          y resuelve el problema difícil que queda: hacerlos
+          <strong>fiables, medibles y rentables</strong> en producción.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: qué evalúan las entrevistas -->
+      <section class="slide">
+        <h2>Qué evalúan las entrevistas en 2026</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🔌</span>
+            <h3>Integración LLM</h3>
+            <p class="muted">
+              Streaming, tool use, structured output, reintentos ante rate
+              limits. Lo mínimo para no quedar fuera en la primera ronda.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📚</span>
+            <h3>RAG</h3>
+            <p class="muted">
+              Chunking, embeddings, retrieval híbrido, citar fuentes. Y saber
+              decir cuándo <em>no</em> usar RAG.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🤖</span>
+            <h3>Agentes</h3>
+            <p class="muted">
+              Loop de tools, planificación, límites de pasos y presupuesto.
+              Diseñar el agente más simple que resuelve el problema.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🧪</span>
+            <h3>Evals</h3>
+            <p class="muted">
+              Datasets dorados, LLM-as-judge, regresión de prompts. Es lo que
+              separa a un junior de un senior en este rol.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🏭</span>
+            <h3>Producción</h3>
+            <p class="muted">
+              Latencia, costo por request, caching, fallbacks, observabilidad.
+              "Funciona en el demo" no es el estándar.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🗣️</span>
+            <h3>Diseño oral</h3>
+            <p class="muted">
+              Defender trade-offs en voz alta: ¿por qué RAG y no fine-tuning?
+              ¿Por qué un workflow y no un agente?
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: el plan por fases -->
+      <section class="slide">
+        <h2>El plan: 16 semanas, 5 fases</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Fase</th>
+              <th>Semanas</th>
+              <th>Tema</th>
+              <th>Sales sabiendo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>0</strong></td>
+              <td>1</td>
+              <td>Diagnóstico</td>
+              <td>Tu línea base y el entorno listo</td>
+            </tr>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>2–4</td>
+              <td>Fundamentos de LLMs</td>
+              <td>Tokens, prompting, structured output, streaming</td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>5–8</td>
+              <td>RAG</td>
+              <td>De embeddings a un RAG con citas en producción</td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td>9–12</td>
+              <td>Agentes y tool use</td>
+              <td>Agentes con límites, memoria y herramientas</td>
+            </tr>
+            <tr>
+              <td><strong>4</strong></td>
+              <td>13–14</td>
+              <td>Evals y observabilidad</td>
+              <td>Medir calidad antes y después de cada cambio</td>
+            </tr>
+            <tr>
+              <td><strong>5</strong></td>
+              <td>15–16</td>
+              <td>Capstone + entrevistas</td>
+              <td>Un proyecto defendible y mock interviews</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SLIDE 7: construir > consumir -->
+      <section class="slide">
+        <h2>La regla del programa: construir &gt; consumir</h2>
+        <blockquote>
+          Nadie te contrata por los cursos que viste. Te contratan por lo que
+          construiste y puedes defender línea por línea.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            <strong>Máximo 20%</strong> de tu tiempo semanal en cursos y videos.
+            El <strong>80%</strong> restante: código que corre.
+          </li>
+          <li>
+            Cada semana cierra con un <strong>entregable ejecutable</strong> en
+            tu repo: script, servicio o eval. Un notebook a medias no cuenta.
+          </li>
+          <li>
+            Los videos de cada sesión son <strong>refuerzo</strong>, no la
+            tarea. Si solo tienes 5 horas, constrúyelas.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 8: la plataforma -->
+      <section class="slide">
+        <h2>La plataforma del programa</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🖥️</span>
+            <h3>Decks</h3>
+            <p class="muted">
+              Una presentación HTML por sesión (como esta). Quedan en el repo:
+              son tu material de repaso y referencia.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🏋️</span>
+            <h3>AI Gym</h3>
+            <p class="muted">
+              Un reto por semana con criterios de aceptación explícitos. Se
+              revisa en vivo al inicio de la siguiente sesión.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📈</span>
+            <h3>Tracker</h3>
+            <p class="muted">
+              Registro de entregables, feedback y huecos detectados. Lo usamos
+              para ajustar el plan, no para juzgar.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: assessment -->
+      <section class="slide">
+        <h2>El assessment de diagnóstico — 3 partes</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="tag violet">Parte 1</span>
+            <h3 style="margin-top: 0.8rem">Coding — 30 min</h3>
+            <p class="muted">
+              Un problema de Python puro: estructuras de datos, manejo de
+              errores y un par de tests. Mide tu base de ingeniería.
+            </p>
+          </div>
+          <div class="card">
+            <span class="tag violet">Parte 2</span>
+            <h3 style="margin-top: 0.8rem">Integración LLM — 30 min</h3>
+            <p class="muted">
+              Un script que llama a Claude, valida la salida y maneja fallos.
+              Mide cuánto camino llevas en el stack del rol.
+            </p>
+          </div>
+          <div class="card">
+            <span class="tag violet">Parte 3</span>
+            <h3 style="margin-top: 0.8rem">Diseño oral — 20 min</h3>
+            <p class="muted">
+              Diseñas en voz alta un sistema con LLM (caso tipo entrevista).
+              Mide criterio y comunicación de trade-offs.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Es una <strong>sesión aparte de 90 min</strong> (no la de hoy), en
+          unos días. No se aprueba ni se reprueba: define tu
+          <strong>línea base</strong> y en qué fases vamos a profundizar más.
+          Guía completa en <code>coach/diagnostico.md</code>.
+        </p>
+      </section>
+
+      <!-- SLIDE 10: setup del entorno -->
+      <section class="slide">
+        <h2>Setup del entorno</h2>
+        <pre><code><span class="c"># 1. Python 3.11+ y un entorno virtual</span>
+python3 --version
+python3 -m venv .venv
+<span class="k">source</span> .venv/bin/activate
+
+<span class="c"># 2. SDK oficial de Anthropic</span>
+pip install anthropic
+
+<span class="c"># 3. API key (console.anthropic.com → API Keys)</span>
+<span class="k">export</span> ANTHROPIC_API_KEY=<span class="s">"sk-ant-..."</span>
+
+<span class="c"># Regla de higiene: la key vive en variables de entorno,</span>
+<span class="c"># NUNCA hardcodeada ni commiteada al repo.</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          El SDK lee <code>ANTHROPIC_API_KEY</code> del entorno automáticamente:
+          cero configuración extra en el código.
+        </p>
+      </section>
+
+      <!-- SLIDE 11: primera llamada -->
+      <section class="slide">
+        <h2>Tu primera llamada a Claude</h2>
+        <pre><code><span class="c"># hello_claude.py</span>
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()  <span class="c"># lee ANTHROPIC_API_KEY del entorno</span>
+
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=1024,
+    messages=[
+        {<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Explica en 2 líneas qué hace un AI engineer."</span>}
+    ],
+)
+
+<span class="f">print</span>(resp.content[0].text)
+<span class="f">print</span>(<span class="s">f"tokens → in: {resp.usage.input_tokens}, out: {resp.usage.output_tokens}"</span>)</code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Fíjate en <code>resp.usage</code>: desde el día 1 medimos tokens,
+          porque tokens = latencia y costo. Ese hábito te acompaña todo el
+          programa.
+        </p>
+      </section>
+
+      <!-- SLIDE 12: ejercicio en vivo -->
+      <section class="slide">
+        <h2>🛠️ Manos al código — 30 min en pair</h2>
+        <p>
+          Construimos juntos <code>ask.py</code>: un mini CLI que pregunta a
+          Claude desde la terminal.
+        </p>
+        <div class="columns">
+          <div class="card">
+            <h3>Qué debe hacer</h3>
+            <ul class="clean">
+              <li>
+                Recibir la pregunta como argumento:
+                <code>python ask.py "tu pregunta"</code>
+              </li>
+              <li>Llamar a <code>claude-sonnet-4-6</code> con el SDK</li>
+              <li>Imprimir la respuesta + tokens de entrada y salida</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Casos que debe sobrevivir</h3>
+            <ul class="clean">
+              <li>
+                Sin <code>ANTHROPIC_API_KEY</code> → mensaje claro, exit code 1
+              </li>
+              <li>Sin argumento → muestra cómo usarlo</li>
+              <li>
+                Error de API (<code>anthropic.APIError</code>) → captura y
+                reporta, sin traceback crudo
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Tú escribes, yo navego. Este script es la semilla del assessment y del
+          reto de la semana.
+        </p>
+      </section>
+
+      <!-- SLIDE 13: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 00</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Diagnóstico completo + script vivo</h3>
+          <p>
+            Completa el
+            <strong>assessment de diagnóstico de 3 partes</strong> siguiendo
+            <code>coach/diagnostico.md</code> (coding + integración LLM + diseño
+            oral) y deja en tu repo un <strong>script funcionando</strong> que
+            llame a la API de Anthropic.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              <strong>Criterio 1:</strong> las 3 partes del assessment
+              entregadas antes de la Sesión 01.
+            </li>
+            <li>
+              <strong>Criterio 2:</strong> <code>python ask.py "hola"</code>
+              corre limpio en tu máquina, maneja errores y reporta tokens.
+            </li>
+            <li>
+              <strong>Criterio 3:</strong> el código está en tu repo del
+              programa, con la API key fuera del código.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=Vxw0nE1qfZc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/Vxw0nE1qfZc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Data Scientist vs. AI Engineer</div>
+              <div class="vc-meta">IBM Technology · Inglés</div>
+              <div class="vc-why">
+                La comparación corta y canónica entre ambos roles: el primer
+                tema de hoy en 10 minutos.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=vJeOpf5nhj0"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/vJeOpf5nhj0/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Don't choose the WRONG career in 2026 (DS vs ML vs AI Engineer)
+              </div>
+              <div class="vc-meta">Thu Vu · Inglés</div>
+              <div class="vc-why">
+                Los tres roles comparados con datos de 2026: útil para ubicar tu
+                perfil en el diagnóstico.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=NaKCw2p382s"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/NaKCw2p382s/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                The Rise of the AI Engineer — swyx, React Summit US 2023
+              </div>
+              <div class="vc-meta">GitNation · Inglés</div>
+              <div class="vc-why">
+                La charla que definió el rol y su stack (APIs de LLM, RAG,
+                agentes): el contexto de lo que evalúan las entrevistas.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=zjkBMFhNj_g"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/zjkBMFhNj_g/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                [1hr Talk] Intro to Large Language Models
+              </div>
+              <div class="vc-meta">Andrej Karpathy · Inglés</div>
+              <div class="vc-why">
+                La introducción canónica de 1 hora a LLMs: el modelo mental base
+                de todo el programa.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=2aN_-m1uU4k"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/2aN_-m1uU4k/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Curso Inteligencia Artificial para Programadores en 2026
+              </div>
+              <div class="vc-meta">midudev · Español</div>
+              <div class="vc-why">
+                Práctico y en español: LLMs, tokens e integración de APIs.
+                Refuerza el setup y la primera llamada de hoy.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Puedo explicar en una frase qué hace un AI engineer y en qué se
+            diferencia de un ML engineer y un data scientist
+          </li>
+          <li>
+            Conozco las 5 áreas que evalúan las entrevistas: integración LLM,
+            RAG, agentes, evals y producción
+          </li>
+          <li>
+            Tengo claro el plan de 16 semanas y la regla 80/20 de construir
+            sobre consumir
+          </li>
+          <li>
+            Mi entorno corre: Python + SDK de anthropic + API key en variable de
+            entorno
+          </li>
+          <li>
+            Ejecuté mi primera llamada a <code>claude-sonnet-4-6</code> y sé
+            leer <code>resp.usage</code>
+          </li>
+          <li>
+            Sé qué entrego esta semana: assessment de 3 partes +
+            <code>ask.py</code> funcionando en mi repo
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión: <strong>Sesión 01 — Fundamentos de LLMs</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

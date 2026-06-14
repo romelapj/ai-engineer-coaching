@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 07 — Agentes II — Memoria, Multi-agente y MCP | AI Engineer
+      Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 2 — Patrones · Semana 8
+        </div>
+        <h1>Sesión 07<br />Agentes II — Memoria, Multi-agente y MCP</h1>
+        <p class="lead">
+          De un agente que se olvida de todo a un sistema que recuerda, delega y
+          se conecta a cualquier herramienta vía un protocolo estándar.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 minutos</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — reto 05: el agente con tool use que
+            construiste la semana pasada, ¿qué se le olvidó entre ejecuciones?
+            (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — context management y memoria, patrón
+            orquestador-trabajadores, MCP por dentro (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — pair programming: agente CLI con
+            memoria persistente en JSON (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — 🏋️ AI Gym 06: agente con
+            memoria + subagente especializado (10 min)
+          </li>
+          <li><strong>Cierre</strong> — checklist y próxima sesión (5 min)</li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🧠</span>
+            <h3>Gestionar contexto</h3>
+            <p class="muted">
+              Sobrevivir tareas largas con compaction y memoria externa: qué
+              comprimir, qué persistir y dónde.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🤖</span>
+            <h3>Decidir multi-agente</h3>
+            <p class="muted">
+              Cuándo el patrón orquestador-trabajadores paga el 15× de tokens
+              que cuesta — y cuándo es overengineering.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔌</span>
+            <h3>Entender MCP</h3>
+            <p class="muted">
+              El protocolo que convierte N×M integraciones en N+M: servers,
+              tools y resources.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: el contexto es un recurso finito -->
+      <section class="slide">
+        <h2>El contexto es un recurso finito (y caro)</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>El problema</h3>
+            <ul class="clean">
+              <li>
+                <code>claude-sonnet-4-6</code> tiene ventana de 1M tokens, pero
+                la calidad degrada antes de llenarla: <em>context rot</em> — el
+                modelo pierde precisión con contexto saturado de tool results
+                viejos.
+              </li>
+              <li>
+                La API es stateless: en cada turno reenvías TODO el historial.
+              </li>
+              <li>
+                100K tokens de historial × $3/MTok =
+                <strong>$0.30 por llamada</strong>. Un loop de 50 turnos:
+                <strong>$15+</strong>
+                solo en input.
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Las 3 palancas</h3>
+            <ul class="clean">
+              <li>
+                <strong>Recortar</strong> — descarta tool results viejos que ya
+                no aportan (context editing).
+              </li>
+              <li>
+                <strong>Comprimir</strong> — resume lo viejo en un párrafo
+                (compaction). Pierdes detalle, conservas decisiones.
+              </li>
+              <li>
+                <strong>Externalizar</strong> — saca el estado del contexto a
+                archivos o DB y recupéralo solo cuando haga falta.
+              </li>
+            </ul>
+            <p class="muted" style="margin-top: 0.8rem">
+              Bonus: prompt caching baja las relecturas a ~0.1× el precio.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: compaction con código -->
+      <section class="slide">
+        <h2>Compaction: resume lo viejo, conserva lo reciente</h2>
+        <pre><code><span class="c"># cuando el historial crece, comprime los turnos viejos en un resumen</span>
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+<span class="k">def</span> <span class="f">compact</span>(messages: list) -> list:
+    resumen = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=1024,
+        system=<span class="s">"Resume esta conversación: decisiones tomadas, estado actual y pendientes."</span>,
+        messages=messages[:-6],          <span class="c"># todo menos los últimos turnos</span>
+    )
+    <span class="k">return</span> [
+        {<span class="s">"role"</span>: <span class="s">"user"</span>,
+         <span class="s">"content"</span>: <span class="s">f"[Resumen de la sesión]\n{resumen.content[0].text}"</span>},
+        *messages[-6:],                  <span class="c"># lo reciente queda intacto</span>
+    ]</code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          La API también ofrece compaction server-side (beta
+          <code>compact-2026-01-12</code>): resume sola al acercarse al límite.
+          Regla práctica: dispara la compactación al ~70% del presupuesto de
+          contexto, nunca cuando ya reventó.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: memoria corto vs largo plazo -->
+      <section class="slide">
+        <h2>Memoria de corto vs largo plazo</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>⚡ Corto plazo = context window</h3>
+            <ul class="clean">
+              <li>Vive solo durante la sesión: muere con el proceso</li>
+              <li>Acceso inmediato, sin retrieval</li>
+              <li>Cara: la pagas completa en cada llamada</li>
+              <li>
+                Ejemplos: historial de turnos, tool results, scratchpad del
+                turno actual
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>💾 Largo plazo = archivos / DB</h3>
+            <ul class="clean">
+              <li>Sobrevive reinicios y sesiones</li>
+              <li>Barata de almacenar, pero exige decidir qué leer y cuándo</li>
+              <li>
+                Formatos: archivo Markdown/JSON, SQLite, vector DB si necesitas
+                búsqueda semántica
+              </li>
+              <li>
+                Ejemplos: preferencias del usuario, lecciones aprendidas, estado
+                de tareas multi-día
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          El patrón <code>MEMORY.md</code> que usa Claude Code es esto: un
+          archivo que el agente lee al arrancar y edita cuando aprende algo.
+          Empieza con un archivo plano; una vector DB solo cuando la memoria no
+          quepa en el contexto.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: memoria como tool -->
+      <section class="slide">
+        <h2>Memoria persistente como tool</h2>
+        <pre><code><span class="k">import</span> json, pathlib
+
+MEM = pathlib.<span class="f">Path</span>(<span class="s">"memoria.json"</span>)
+
+<span class="k">def</span> <span class="f">memory_write</span>(key: str, value: str) -> str:
+    data = json.<span class="f">loads</span>(MEM.<span class="f">read_text</span>()) <span class="k">if</span> MEM.<span class="f">exists</span>() <span class="k">else</span> {}
+    data[key] = value
+    MEM.<span class="f">write_text</span>(json.<span class="f">dumps</span>(data, ensure_ascii=<span class="k">False</span>, indent=2))
+    <span class="k">return</span> <span class="s">f"guardado: {key}"</span>
+
+tools = [{
+    <span class="s">"name"</span>: <span class="s">"memory_write"</span>,
+    <span class="s">"description"</span>: <span class="s">"Guarda un hecho que debas recordar en futuras sesiones."</span>,
+    <span class="s">"input_schema"</span>: {<span class="s">"type"</span>: <span class="s">"object"</span>,
+        <span class="s">"properties"</span>: {<span class="s">"key"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>},
+                       <span class="s">"value"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>}},
+        <span class="s">"required"</span>: [<span class="s">"key"</span>, <span class="s">"value"</span>]},
+}]
+
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=1024,
+    <span class="c"># la memoria entra por el system prompt; el modelo decide cuándo escribir</span>
+    system=<span class="s">f"Tu memoria persistente:\n{MEM.read_text() if MEM.exists() else '{}'}"</span>,
+    tools=tools,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Mi stack es Python + FastAPI"</span>}],
+)</code></pre>
+        <p class="muted" style="margin-top: 0.8rem">
+          Lectura barata (system prompt) + escritura explícita (tool). Anthropic
+          ofrece un memory tool oficial (<code>memory_20250818</code>) con esta
+          misma idea: tú implementas el backend de archivos.
+        </p>
+      </section>
+
+      <!-- SLIDE 8: orquestador-trabajadores -->
+      <section class="slide">
+        <h2>Multi-agente: orquestador-trabajadores</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                <strong>Orquestador</strong>: descompone la tarea, delega y
+                consolida resultados. No ejecuta el trabajo pesado.
+              </li>
+              <li>
+                <strong>Trabajadores (subagentes)</strong>: cada uno con
+                contexto limpio, system prompt especializado y el mínimo de
+                tools. Devuelven el resultado, no el proceso.
+              </li>
+              <li>
+                El beneficio real es <strong>aislamiento de contexto</strong>:
+                50K tokens de logs explorados por un worker llegan al
+                orquestador como 500 tokens de hallazgos.
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Los números de Anthropic</h3>
+            <p>
+              Su sistema de research multi-agente superó al mejor agente único
+              en <strong>~90%</strong> en su eval interna de investigación…
+            </p>
+            <p style="margin-top: 0.6rem">
+              …gastando <strong>~15× más tokens</strong> que un chat normal (un
+              agente solo ya gasta ~4×).
+            </p>
+            <p class="muted" style="margin-top: 0.6rem">
+              Multi-agente compra calidad y paralelismo con tokens. Esa es la
+              ecuación que tienes que justificar.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: código subagente -->
+      <section class="slide">
+        <h2>Un subagente son 10 líneas</h2>
+        <pre><code><span class="k">def</span> <span class="f">subagente</span>(tarea: str, rol: str) -> str:
+    <span class="c"># contexto LIMPIO: no hereda el historial del orquestador</span>
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=2048,
+        system=rol,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: tarea}],
+    )
+    <span class="k">return</span> resp.content[0].text
+
+hallazgos = <span class="f">subagente</span>(
+    tarea=<span class="s">f"Analiza estos logs y lista los errores 5xx con su causa probable:\n{logs}"</span>,
+    rol=<span class="s">"Eres analista de logs de producción. Devuelve solo hallazgos, sin paja."</span>,
+)
+<span class="c"># el orquestador recibe el RESULTADO (~500 tokens), no el proceso (~50K)</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          La interfaz importa más que el framework: tarea bien especificada de
+          entrada, resultado compacto de salida. Si el subagente necesita
+          preguntarte cosas a mitad de camino, la descomposición estuvo mal.
+        </p>
+      </section>
+
+      <!-- SLIDE 10: cuándo multi-agente -->
+      <section class="slide">
+        <h2>¿Cuándo vale la pena el multi-agente?</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>✅ Sí</h3>
+            <ul class="clean">
+              <li>
+                Subtareas paralelizables e independientes (investigar 10
+                fuentes, revisar 30 archivos)
+              </li>
+              <li>El trabajo intermedio no cabe en un solo contexto</li>
+              <li>Tareas read-heavy donde el valor justifica el costo</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>❌ No</h3>
+            <ul class="clean">
+              <li>
+                Pasos secuenciales con estado compartido — los agentes no
+                comparten contexto y se descoordinan
+              </li>
+              <li>Workflows latency-sensitive: cada subagente suma llamadas</li>
+              <li>Cuando un solo agente con mejores tools resolvería igual</li>
+            </ul>
+          </div>
+        </div>
+        <blockquote>
+          Multi-agente es una optimización, no un punto de partida: empieza con
+          un agente y buenas tools; agrega subagentes cuando el contexto, no tu
+          arquitectura, te lo pida.
+        </blockquote>
+      </section>
+
+      <!-- SLIDE 11: MCP qué resuelve -->
+      <section class="slide">
+        <h2>MCP: de N×M a N+M</h2>
+        <p>
+          Antes: cada app de IA × cada integración = un adaptador ad-hoc (5 apps
+          × 8 herramientas = 40 integraciones). Con
+          <strong>Model Context Protocol</strong> (Anthropic, nov 2024; hoy
+          adoptado también por OpenAI y Google): cada app implementa 1 cliente,
+          cada herramienta 1 server = 13 piezas. Protocolo abierto sobre
+          JSON-RPC, transporte stdio o HTTP.
+        </p>
+        <table style="margin-top: 1.4rem">
+          <thead>
+            <tr>
+              <th>Primitiva</th>
+              <th>Quién la controla</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Tools</strong></td>
+              <td>El modelo decide invocarlas</td>
+              <td>
+                <code>buscar_notas(query)</code>, <code>crear_ticket(...)</code>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Resources</strong></td>
+              <td>La aplicación las adjunta como contexto</td>
+              <td>
+                <code>notas://recientes</code>, un archivo, un esquema de DB
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Prompts</strong></td>
+              <td>El usuario las invoca (slash commands)</td>
+              <td><code>/revisar-pr</code> con plantilla predefinida</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Los MCP servers que usas en Claude Code (GitHub, Slack, Jira…) son
+          exactamente esto: procesos que exponen tools y resources por un
+          protocolo común.
+        </p>
+      </section>
+
+      <!-- SLIDE 12: MCP server en código -->
+      <section class="slide">
+        <h2>Un MCP server mínimo en Python</h2>
+        <pre><code><span class="c"># server.py — pip install "mcp[cli]"</span>
+<span class="k">from</span> mcp.server.fastmcp <span class="k">import</span> FastMCP
+
+mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
+
+<span class="c"># tool: el modelo decide cuándo llamarla</span>
+<span class="k">@mcp.tool</span>()
+<span class="k">def</span> <span class="f">buscar_notas</span>(query: str) -> str:
+    <span class="s">"""Busca en las notas técnicas del equipo."""</span>
+    <span class="k">return</span> db.<span class="f">search</span>(query)
+
+<span class="c"># resource: la app lo adjunta como contexto</span>
+<span class="k">@mcp.resource</span>(<span class="s">"notas://recientes"</span>)
+<span class="k">def</span> <span class="f">notas_recientes</span>() -> str:
+    <span class="k">return</span> db.<span class="f">ultimas</span>(10)
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    mcp.<span class="f">run</span>()  <span class="c"># transporte stdio por defecto</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          El docstring ES la descripción que ve el modelo — escríbelo como
+          instrucción de cuándo usarla. Del lado cliente, el SDK de
+          <code>anthropic</code> trae helpers (<code>anthropic[mcp]</code>) para
+          convertir tools MCP y pasarlas al tool runner.
+        </p>
+      </section>
+
+      <!-- SLIDE 13: seguridad -->
+      <section class="slide">
+        <h2>Seguridad básica de agentes</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>☠️ La trifecta letal</h3>
+            <p>
+              Un agente es explotable vía prompt injection cuando combina las
+              tres a la vez:
+            </p>
+            <ul class="clean" style="margin-top: 0.6rem">
+              <li>Acceso a datos privados</li>
+              <li>
+                Exposición a contenido no confiable (web, emails, tool results)
+              </li>
+              <li>Capacidad de exfiltrar (HTTP, email, escribir fuera)</li>
+            </ul>
+            <p class="muted" style="margin-top: 0.6rem">
+              Elimina una de las tres y el ataque pierde el camino de salida.
+            </p>
+          </div>
+          <div class="card">
+            <h3>🛡️ Reglas mínimas</h3>
+            <ul class="clean">
+              <li>
+                <strong>Mínimo privilegio</strong>: cada subagente solo las
+                tools que necesita; allowlists, no blocklists
+              </li>
+              <li>
+                <strong>Sandboxing</strong>: ejecución de código en contenedor
+                sin red o con egress restringido
+              </li>
+              <li>
+                <strong>Human-in-the-loop</strong>: confirmación para acciones
+                destructivas o irreversibles (deploy, delete, enviar)
+              </li>
+              <li>
+                <strong>Tool results = input no confiable</strong>: lo que
+                vuelve de la web puede traer instrucciones inyectadas
+              </li>
+              <li>
+                <strong>Secretos fuera del prompt</strong>: API keys en el
+                entorno del harness, nunca en el contexto
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: ejercicio en vivo -->
+      <section class="slide">
+        <h2>👩‍💻 Manos al código — 30 min en pareja</h2>
+        <p>
+          Construimos juntos un
+          <strong>agente CLI con memoria persistente</strong>: un asistente que
+          recuerda tu stack y tus preferencias aunque mates el proceso.
+        </p>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            <strong>Min 0–10</strong> — tools <code>memory_write</code> y
+            <code>memory_read</code> respaldadas por <code>memoria.json</code>
+            (el código de la slide 7 es tu punto de partida)
+          </li>
+          <li>
+            <strong>Min 10–20</strong> — loop de tool use: mientras
+            <code>stop_reason == "tool_use"</code>, ejecuta la tool y devuelve
+            el <code>tool_result</code> con su <code>tool_use_id</code>
+          </li>
+          <li>
+            <strong>Min 20–25</strong> — la prueba de fuego: cuéntale tu stack,
+            <strong>mata el proceso</strong>, relanza y pregúntale qué recuerda
+          </li>
+          <li>
+            <strong>Min 25–30</strong> — inyecta la memoria al system prompt en
+            el arranque y compara: ¿cuándo conviene tool de lectura vs system
+            prompt?
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1rem">
+          Definición de éxito: el agente responde "Python + FastAPI" en una
+          sesión nueva sin que se lo repitas.
+        </p>
+      </section>
+
+      <!-- SLIDE 15: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 06</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Agente con memoria</h3>
+          <p>
+            Un agente con <strong>memoria persistente entre ejecuciones</strong>
+            (archivo o DB, tú eliges) que además delegue trabajo a
+            <strong>un subagente especializado</strong> con contexto limpio y
+            rol propio. Criterios: la memoria sobrevive al reinicio del proceso,
+            el subagente devuelve resultados compactos al orquestador, y puedes
+            explicar qué guardaste en memoria y por qué.
+          </p>
+          <p style="margin-top: 0.8rem">
+            <strong>Bonus:</strong> expón la memoria como un MCP server propio y
+            conéctalo a Claude Code o a tu cliente MCP favorito.
+          </p>
+          <p style="margin-top: 0.8rem">
+            📄 Enunciado completo y rúbrica:
+            <a
+              href="../gym/reto-06-agente-con-memoria/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-06-agente-con-memoria</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=UF230UuclZM"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/UF230UuclZM/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Memory in AI agents</div>
+              <div class="vc-meta">Google Cloud Tech · Inglés</div>
+              <div class="vc-why">
+                Intro corta a memoria de corto vs largo plazo y working memory.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=sWH0T4Zez6I"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/sWH0T4Zez6I/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Multi Agent Systems Explained: How AI Agents &amp; LLMs Work
+                Together
+              </div>
+              <div class="vc-meta">IBM Technology · Inglés</div>
+              <div class="vc-why">
+                El patrón orquestador-trabajadores explicado en pocos minutos.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=_d0duu3dED4"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/_d0duu3dED4/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Why Everyone's Talking About MCP?</div>
+              <div class="vc-meta">ByteByteGo · Inglés</div>
+              <div class="vc-why">
+                La arquitectura de MCP y el problema N×M en 10 minutos: véelo
+                antes del workshop.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=kQmXtrmQ5Zg"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/kQmXtrmQ5Zg/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Building Agents with Model Context Protocol — Full Workshop
+                (Mahesh Murag, Anthropic)
+              </div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                El workshop canónico: tools, resources y prompts a fondo. El de
+                profundidad de la semana.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=wnHczxwukYY"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/wnHczxwukYY/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                ¡Aprende MCP! Para principiantes + Crear nuestro primer MCP
+                DESDE CERO
+              </div>
+              <div class="vc-meta">midudev · Español</div>
+              <div class="vc-why">
+                Construye un MCP server desde cero, en español — ideal para
+                arrancar el bonus del reto.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 17: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Sé explicar las 3 palancas de context management: recortar,
+            comprimir (compaction), externalizar — y cuándo usar cada una
+          </li>
+          <li>
+            Distingo memoria de corto plazo (context window) de largo plazo
+            (archivos/DB) y sé implementar la segunda como tool
+          </li>
+          <li>
+            Puedo justificar con números (calidad vs ~15× tokens) cuándo
+            multi-agente sí y cuándo es overengineering
+          </li>
+          <li>
+            Entiendo qué resuelve MCP (N×M → N+M) y la diferencia entre tools,
+            resources y prompts
+          </li>
+          <li>
+            Conozco la trifecta letal y las reglas mínimas: mínimo privilegio,
+            sandboxing, human-in-the-loop
+          </li>
+          <li>
+            Tengo el agente CLI con memoria del pair programming corriendo en mi
+            máquina
+          </li>
+          <li>Reto 06 leído y agendado antes de la próxima sesión</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong>Sesión 08 — Evals — Medir Sistemas con LLMs</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

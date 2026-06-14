@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sesión 01 — Fundamentos de LLMs | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 1 — Fundamentos · Semana 2
+        </div>
+        <h1>Sesión 01<br />Fundamentos de LLMs</h1>
+        <p class="lead">
+          Entender qué pasa por dentro de un LLM —tokens, atención, training,
+          embeddings— para dejar de usarlo como caja negra.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — entregable de la semana 1: entorno listo y
+            primera llamada al API funcionando (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — tokens y BPE, transformer a alto
+            nivel, pretraining vs post-training, embeddings (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — pair programming: construimos un
+            "Token-ó-metro" que cuenta tokens y compara costos entre modelos (30
+            min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — AI Gym: tokenización + costos +
+            embeddings con similitud coseno (10 min)
+          </li>
+          <li>
+            <strong>Cierre</strong> — checklist de salida y dudas abiertas (5
+            min)
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">🔤</span>
+            <h3>Tokens y tokenización (BPE)</h3>
+            <p class="muted">
+              Entender cómo el texto se convierte en tokens y cómo eso impacta
+              directamente tu factura.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🧠</span>
+            <h3>Transformer y training</h3>
+            <p class="muted">
+              Explicar a alto nivel atención y capas, y distinguir pretraining
+              de fine-tuning y RLHF.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📐</span>
+            <h3>Embeddings y similitud coseno</h3>
+            <p class="muted">
+              Representar texto como vectores y medir qué tan "cerca" están dos
+              frases — la base de RAG.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🎛️</span>
+            <h3>Parámetros de muestreo</h3>
+            <p class="muted">
+              Dominar <code>temperature</code>, <code>top_p</code> y
+              <code>max_tokens</code>: cuándo tocarlos y cuándo no.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: tokenización BPE -->
+      <section class="slide">
+        <h2>Tokenización BPE: el modelo no ve letras</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Cómo funciona BPE</h3>
+            <ul class="clean">
+              <li>
+                Byte-Pair Encoding: parte de bytes y fusiona los pares más
+                frecuentes hasta armar un vocabulario de ~32K–200K tokens.
+              </li>
+              <li>
+                Regla práctica en inglés: 1 token ≈ 4 caracteres ≈ 0.75
+                palabras. El español suele gastar <strong>más</strong> tokens
+                por palabra.
+              </li>
+              <li>
+                Código, JSON y emojis tokenizan distinto al texto plano — mide,
+                no asumas.
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Por qué "strawberry" confunde</h3>
+            <ul class="clean">
+              <li>
+                El modelo recibe <code>straw</code> + <code>berry</code> (2–3
+                fragmentos), nunca las 10 letras individuales.
+              </li>
+              <li>
+                Contar las "r" exige razonar sobre caracteres que el modelo
+                literalmente no vio — por eso históricamente respondía "2".
+              </li>
+              <li>
+                Misma raíz de otros fallos: invertir strings, aritmética con
+                dígitos largos, rimas exactas.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Lección: cuando un LLM falla en algo "trivial", pregúntate primero
+          cómo se ve esa entrada en tokens.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: tokens = dinero (count_tokens) -->
+      <section class="slide">
+        <h2>Tokens = dinero: mide antes de llamar</h2>
+        <pre><code><span class="c"># pip install anthropic — el endpoint count_tokens es gratis</span>
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+count = client.messages.<span class="f">count_tokens</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"¿Cuántas r tiene strawberry?"</span>}],
+)
+<span class="f">print</span>(count.input_tokens)  <span class="c"># conteo real, específico del modelo</span>
+
+<span class="c"># costo de input en Sonnet 4.6 ($3 por millón de tokens)</span>
+<span class="f">print</span>(<span class="s">f"$&#123;count.input_tokens * 3 / 1_000_000:.6f&#125;"</span>)</code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Ejemplo concreto: prompt de 1.000 tokens + respuesta de 500 en Sonnet
+          4.6 = $0.003 + $0.0075 = <strong>$0.0105 por request</strong>. A 100K
+          requests/mes son <strong>$1,050</strong>. Nunca uses
+          <code>tiktoken</code> para Claude: es el tokenizador de OpenAI y
+          subestima ~15–20%.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: comparación de modelos y context window -->
+      <section class="slide">
+        <h2>Context window, pricing y elección de modelo</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Context</th>
+              <th>Max output</th>
+              <th>Input $/M</th>
+              <th>Output $/M</th>
+              <th>Úsalo para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claude-opus-4-8</code></td>
+              <td>1M</td>
+              <td>128K</td>
+              <td>$5.00</td>
+              <td>$25.00</td>
+              <td>Razonamiento duro, agentes de largo aliento</td>
+            </tr>
+            <tr>
+              <td><code>claude-sonnet-4-6</code></td>
+              <td>1M</td>
+              <td>64K</td>
+              <td>$3.00</td>
+              <td>$15.00</td>
+              <td>Producción de alto volumen, mejor balance</td>
+            </tr>
+            <tr>
+              <td><code>claude-haiku-4-5</code></td>
+              <td>200K</td>
+              <td>64K</td>
+              <td>$1.00</td>
+              <td>$5.00</td>
+              <td>Clasificación, routing, tareas simples y rápidas</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.4rem">
+          El context window lo comparte <em>todo</em>: system prompt, historial,
+          tools y la respuesta. En un chat, cada turno re-envía la conversación
+          completa como input — el costo crece con el largo del historial, no
+          solo con el último mensaje.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: transformer -->
+      <section class="slide">
+        <h2>El transformer en una slide</h2>
+        <ul class="clean">
+          <li>
+            <strong>Pipeline:</strong> texto → tokens → embeddings → N bloques
+            (atención + feed-forward) → probabilidades del siguiente token →
+            muestreo. Es <strong>autoregresivo</strong>: repite todo el ciclo
+            por cada token que genera.
+          </li>
+          <li>
+            <strong>Atención:</strong> cada token calcula a qué tokens previos
+            "mirar" y con qué peso. Así "banco" significa distinto en "me senté
+            en el banco" vs "fui al banco a pagar" — el contexto reescribe el
+            significado en cada capa.
+          </li>
+          <li>
+            <strong>Capas:</strong> decenas de bloques apilados. Aproximación
+            útil: las primeras capturan sintaxis local; las profundas, semántica
+            y relaciones de largo alcance.
+          </li>
+          <li>
+            <strong>Lo que NO hay:</strong> ni base de datos de hechos, ni
+            memoria entre requests, ni ejecución de lógica. Solo pesos
+            congelados prediciendo el token más plausible.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 8: pretraining vs post-training -->
+      <section class="slide">
+        <h2>De completador de texto a asistente</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">📚</span>
+            <h3>1. Pretraining</h3>
+            <p class="muted">
+              Predecir el siguiente token sobre billones de tokens de internet.
+              Meses de GPU y millones de dólares. El resultado completa texto,
+              pero no conversa: a "¿capital de Francia?" puede responder con más
+              preguntas de examen.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🎓</span>
+            <h3>2. Fine-tuning (SFT)</h3>
+            <p class="muted">
+              Se reentrena con pares (instrucción → respuesta ideal) escritos
+              por humanos. Aquí aprende el formato asistente: responder la
+              pregunta, seguir instrucciones, usar markdown.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">⚖️</span>
+            <h3>3. RLHF</h3>
+            <p class="muted">
+              Humanos comparan respuestas A vs B → se entrena un reward model →
+              el LLM se optimiza hacia lo preferido. De aquí salen el estilo, la
+              utilidad y buena parte de la seguridad.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Implicación práctica: el "conocimiento" viene del pretraining (y se
+          congela ahí); el "comportamiento" viene del post-training.
+        </p>
+      </section>
+
+      <!-- SLIDE 9: embeddings y similitud coseno -->
+      <section class="slide">
+        <h2>Embeddings y similitud coseno</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                Un embedding es un vector (p. ej. 1024 dims) donde la
+                <strong>dirección</strong> codifica el significado: frases
+                similares apuntan parecido.
+              </li>
+              <li>
+                Similitud coseno = coseno del ángulo entre vectores: 1 ≈ mismo
+                significado, ~0 = sin relación.
+              </li>
+              <li>
+                Es la base de RAG, búsqueda semántica, deduplicación y
+                clustering.
+              </li>
+              <li>
+                El API de Anthropic no expone embeddings: usa
+                <strong>Voyage AI</strong> (su partner recomendado) o
+                <code>sentence-transformers</code> open source.
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="k">import</span> numpy <span class="k">as</span> np
+
+<span class="k">def</span> <span class="f">cos_sim</span>(a, b):
+    <span class="k">return</span> np.<span class="f">dot</span>(a, b) / (
+        np.linalg.<span class="f">norm</span>(a) * np.linalg.<span class="f">norm</span>(b)
+    )
+
+<span class="c"># "pagar con tarjeta" vs "checkout con visa"</span>
+<span class="c"># → ~0.83  (cercanas)</span>
+<span class="c"># "pagar con tarjeta" vs "receta de arepas"</span>
+<span class="c"># → ~0.12  (nada que ver)</span></code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: parámetros de muestreo -->
+      <section class="slide">
+        <h2>Muestreo: temperature, top_p, max_tokens</h2>
+        <pre><code><span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=300,        <span class="c"># tope DURO de salida; si lo toca, corta a media frase</span>
+    temperature=1.0,       <span class="c"># 0.0 = conservador · 1.0 = creativo (rango Claude: 0–1)</span>
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"3 nombres para una fintech"</span>}],
+)
+<span class="f">print</span>(resp.stop_reason)  <span class="c"># "end_turn" ok · "max_tokens" = se quedó corto</span>
+<span class="f">print</span>(resp.usage.input_tokens, resp.usage.output_tokens)  <span class="c"># lo que pagas</span></code></pre>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            <code>temperature</code> escala la distribución antes de muestrear;
+            <code>top_p</code> (nucleus) recorta a los tokens que acumulan p.ej.
+            el 90% de probabilidad. En Claude 4+ usa
+            <strong>uno u otro, nunca ambos</strong> — el API devuelve 400.
+          </li>
+          <li>
+            Receta: extracción/clasificación → temperature baja; brainstorming y
+            copy → alta. Revisa siempre <code>stop_reason</code> antes de
+            confiar en la salida.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 11: limitaciones -->
+      <section class="slide">
+        <h2>Limitaciones que tienes que diseñar alrededor</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🌀</span>
+            <h3>Alucinaciones</h3>
+            <p class="muted">
+              El modelo optimiza plausibilidad, no verdad: inventa con la misma
+              confianza con la que acierta. Mitiga con grounding (RAG), citas
+              verificables y permiso explícito para decir "no sé".
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📅</span>
+            <h3>Knowledge cutoff</h3>
+            <p class="muted">
+              El pretraining congela el conocimiento en una fecha. Todo lo
+              posterior no existe para el modelo — y peor: puede responder con
+              datos viejos sin avisar. Mitiga con web search o tools.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🎲</span>
+            <h3>No determinismo</h3>
+            <p class="muted">
+              Ni <code>temperature=0</code> garantiza salidas idénticas (el
+              cómputo en GPU por lotes no es determinista). Diseña tests
+              tolerantes y usa structured outputs cuando el formato importa.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 12: idea fuerza -->
+      <section class="slide">
+        <h2>Idea fuerza</h2>
+        <blockquote>
+          Un LLM no consulta hechos: predice el siguiente token. El chat, el
+          "razonamiento", las alucinaciones y la factura — todo es consecuencia
+          de eso.
+        </blockquote>
+        <p class="muted">
+          Si internalizas esta frase, el 80% del debugging con LLMs se vuelve
+          obvio: casi siempre el problema está en qué tokens entraron, no en
+          "que el modelo es tonto".
+        </p>
+      </section>
+
+      <!-- SLIDE 13: ejercicio en vivo -->
+      <section class="slide">
+        <h2>🧪 Manos al código — Token-ó-metro (30 min)</h2>
+        <p>
+          Construimos juntos un CLI en Python que responde la pregunta:
+          <strong>"¿cuánto me va a costar esto, en cada modelo?"</strong>
+        </p>
+        <ul class="clean" style="margin-top: 1rem">
+          <li>
+            <strong>Paso 1 (5 min):</strong> función que recibe un texto y lo
+            pasa por <code>client.messages.count_tokens()</code> para
+            <code>claude-sonnet-4-6</code>, <code>claude-haiku-4-5</code> y
+            <code>claude-opus-4-8</code>.
+          </li>
+          <li>
+            <strong>Paso 2 (10 min):</strong> tabla de pricing en un dict →
+            calcular costo de input por modelo y proyección a 100K requests/mes.
+          </li>
+          <li>
+            <strong>Paso 3 (10 min):</strong> imprimir tabla comparativa y
+            probar con 3 entradas: párrafo en español, JSON y código Python.
+            ¿Cuál gasta más tokens por carácter?
+          </li>
+          <li>
+            <strong>Paso 4 (5 min):</strong> hacer una llamada real con
+            <code>messages.create()</code> y comparar el estimado vs
+            <code>resp.usage</code>. ¿Qué tan cerca quedamos?
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 01</span
+          ><span class="tag green">Entregable: repo + README</span>
+          <h3 style="margin-top: 0.8rem">Tokens, costos y embeddings</h3>
+          <p>
+            <strong>Parte 1 — Tokenización y costos:</strong> script que tome 10
+            textos variados (español, inglés, código, JSON, emojis), los
+            tokenice con <code>count_tokens</code> y compare el costo de input
+            entre 3 modelos (Sonnet 4.6, Haiku 4.5, Opus 4.8) en una tabla.
+          </p>
+          <p style="margin-top: 0.8rem">
+            <strong>Parte 2 — Embeddings:</strong> genera embeddings para 20
+            frases (mezcla 3–4 temas distintos), calcula la similitud coseno
+            entre todos los pares y visualiza los más cercanos: heatmap con
+            matplotlib o un top-10 de pares ordenado.
+          </p>
+          <p class="muted" style="margin-top: 0.8rem">
+            Criterios: corre con un solo comando, README con 3 hallazgos que te
+            sorprendieron, y los pares más similares deben tener sentido a ojo
+            humano.
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=7xTGNNLPyMI"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/7xTGNNLPyMI/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Deep Dive into LLMs like ChatGPT</div>
+              <div class="vc-meta">Andrej Karpathy · Inglés · 3h31m</div>
+              <div class="vc-why">
+                La pieza de profundidad: tokenización, pretraining, RLHF y
+                alucinaciones, por un cofundador de OpenAI.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=wjZofJX0v4M"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/wjZofJX0v4M/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                But what is a GPT? Visual intro to transformers
+              </div>
+              <div class="vc-meta">3Blue1Brown · Inglés · ~27 min</div>
+              <div class="vc-why">
+                La mejor intro visual a la arquitectura transformer, justo al
+                nivel de esta sesión.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=eMlx5fFNoYc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/eMlx5fFNoYc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Attention in transformers, step-by-step
+              </div>
+              <div class="vc-meta">3Blue1Brown · Inglés · ~26 min</div>
+              <div class="vc-why">
+                El mecanismo de atención animado paso a paso — la pieza central
+                del transformer.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=wgfSDrqYMJ4"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/wgfSDrqYMJ4/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">What are Word Embeddings?</div>
+              <div class="vc-meta">IBM Technology · Inglés · corto</div>
+              <div class="vc-why">
+                Embeddings como vectores en espacio multidimensional — base
+                directa de la Parte 2 del reto.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=Sz4qacFBHLk"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/Sz4qacFBHLk/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                ¿Qué es un LLM? Enormes Modelos del Lenguaje
+              </div>
+              <div class="vc-meta">Dot CSV · Español</div>
+              <div class="vc-why">
+                El mejor explicador en español de qué es un LLM y cómo se
+                entrena.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Puedo explicar qué es un token y por qué "strawberry" confunde a los
+            modelos
+          </li>
+          <li>
+            Sé estimar el costo de una llamada antes de hacerla (<code
+              >count_tokens</code
+            >
+            + tabla de pricing)
+          </li>
+          <li>
+            Puedo explicar el pipeline del transformer y la atención en 2
+            minutos, sin notas
+          </li>
+          <li>
+            Distingo pretraining, fine-tuning (SFT) y RLHF, y qué aporta cada
+            uno
+          </li>
+          <li>Calculé una similitud coseno entre dos vectores con numpy</li>
+          <li>
+            Sé cuándo tocar <code>temperature</code>, <code>top_p</code> y
+            <code>max_tokens</code> — y que temperature y top_p no van juntos
+          </li>
+          <li>Tengo el Challenge 01 del AI Gym agendado para esta semana</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong>Sesión 02 — APIs de LLM y Prompt Engineering</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

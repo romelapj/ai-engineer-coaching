@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 09 — Producción I — Observabilidad, Costos y Latencia | AI Engineer
+      Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 3 — Producción · Semana 10
+        </div>
+        <h1>Sesión 09<br />Producción I — Observabilidad, Costos y Latencia</h1>
+        <p class="lead">
+          Instrumenta tu sistema con LLM para ver cada request, y usa esos datos
+          para recortar costo y latencia sin sacrificar calidad.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — entregable de la semana pasada: qué
+            funcionó, qué se rompió y por qué (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — observabilidad LLM, métricas que
+            importan, prompt caching, batch, routing y streaming (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — instrumentamos juntos un servicio
+            real y calculamos su p95 y costo por request (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — AI Gym reto 08 (parte 1):
+            Hardening de tu proyecto (10 min)
+          </li>
+          <li>
+            <strong>Cierre</strong> — checklist de salida y próxima sesión (5
+            min)
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🔍</span>
+            <h3>Instrumentar</h3>
+            <p class="muted">
+              Trazas, tokens, costos y latencia en cada llamada al LLM —
+              visibles en un dashboard, no en tu imaginación.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">💸</span>
+            <h3>Recortar costo</h3>
+            <p class="muted">
+              Aplicar prompt caching y elegir el modelo correcto por tarea:
+              pequeño para lo simple, grande para lo difícil.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">⚡</span>
+            <h3>Bajar latencia percibida</h3>
+            <p class="muted">
+              Streaming para que el primer token llegue en menos de un segundo,
+              aunque la respuesta completa tarde 15.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: observabilidad LLM -->
+      <section class="slide">
+        <h2>Observabilidad LLM: trazas y spans</h2>
+        <blockquote>
+          No puedes optimizar lo que no mides. Primero instrumenta, después
+          optimiza — nunca al revés.
+        </blockquote>
+        <div class="columns">
+          <div class="card">
+            <h3>Anatomía de una traza</h3>
+            <ul class="clean">
+              <li>
+                <strong>Traza</strong> = un request de usuario, de punta a punta
+              </li>
+              <li>
+                <strong>Span</strong> = cada paso: retrieval, llamada LLM, tool
+                call, parsing
+              </li>
+              <li>
+                Cada span lleva metadata: modelo, tokens in/out, costo,
+                latencia, error
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Herramientas</h3>
+            <ul class="clean">
+              <li>
+                <strong>Langfuse</strong> — open source, self-host o cloud;
+                decorador <code>@observe</code> en Python
+              </li>
+              <li>
+                <strong>Datadog LLM Observability</strong> — si tu empresa ya
+                vive en Datadog, se integra al APM existente
+              </li>
+              <li>Cualquiera sirve; lo que no sirve es no tener ninguna</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: métricas que importan -->
+      <section class="slide">
+        <h2>Las métricas que importan</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Métrica</th>
+              <th>Qué responde</th>
+              <th>Objetivo de ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Costo por request</strong></td>
+              <td>¿Cuánto me cuesta servir a un usuario?</td>
+              <td>&lt; $0.01 USD promedio</td>
+            </tr>
+            <tr>
+              <td><strong>p50 de latencia</strong></td>
+              <td>La experiencia típica</td>
+              <td>&lt; 3 s</td>
+            </tr>
+            <tr>
+              <td><strong>p95 de latencia</strong></td>
+              <td>La experiencia de los que se van</td>
+              <td>&lt; 10 s</td>
+            </tr>
+            <tr>
+              <td><strong>Tokens in / out</strong></td>
+              <td>El driver directo del costo</td>
+              <td>Detectar prompts que crecen sin control</td>
+            </tr>
+            <tr>
+              <td><strong>TTFT</strong> (time to first token)</td>
+              <td>La latencia percibida con streaming</td>
+              <td>&lt; 1 s</td>
+            </tr>
+            <tr>
+              <td><strong>Tasa de error</strong></td>
+              <td>429 (rate limit), 529 (overloaded), timeouts</td>
+              <td>&lt; 1% con retry</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Mide <strong>p95, no el promedio</strong>: el promedio esconde la
+          cola, y la cola es donde viven los usuarios frustrados.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: código instrumentación -->
+      <section class="slide">
+        <h2>Instrumentación mínima viable</h2>
+        <pre><code><span class="c"># Mide latencia y costo en CADA llamada — sin esto, vuelas a ciegas</span>
+<span class="k">import</span> time, anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+PRECIO_USD_MTOK = {<span class="s">"in"</span>: 3.00, <span class="s">"out"</span>: 15.00}  <span class="c"># claude-sonnet-4-6</span>
+
+t0 = time.<span class="f">perf_counter</span>()
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=1024,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: pregunta}],
+)
+latencia_ms = (time.<span class="f">perf_counter</span>() - t0) * 1000
+
+u = resp.usage
+costo = (u.input_tokens * PRECIO_USD_MTOK[<span class="s">"in"</span>]
+         + u.output_tokens * PRECIO_USD_MTOK[<span class="s">"out"</span>]) / 1_000_000
+
+log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp.model, ms=round(latencia_ms),
+         tokens_in=u.input_tokens, tokens_out=u.output_tokens,
+         usd=round(costo, 6), request_id=resp._request_id)</code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Un log estructurado por request. Langfuse o Datadog hacen esto por ti
+          con un decorador, pero entiende primero qué se mide y por qué.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: prompt caching concepto -->
+      <section class="slide">
+        <h2>Prompt caching: qué cachear y cuánto ahorra</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Los números (Sonnet 4.6)</h3>
+            <ul class="clean">
+              <li>Input normal: <strong>$3.00</strong> / MTok</li>
+              <li>Escritura de cache: <strong>$3.75</strong> / MTok (1.25×)</li>
+              <li>
+                Lectura de cache: <strong>$0.30</strong> / MTok (0.1×) →
+                <strong>~90% de ahorro</strong>
+              </li>
+              <li>
+                TTL: 5 min (se renueva con cada hit); 1h opcional a 2× escritura
+              </li>
+              <li>Mínimo cacheable: ~2,048 tokens de prefijo</li>
+              <li>
+                Break-even: desde el <strong>segundo request</strong> ya ganaste
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Es un prefix match exacto</h3>
+            <ul class="clean">
+              <li>
+                <strong>Cachea:</strong> system prompt grande, definiciones de
+                tools, documentos de contexto, few-shot
+              </li>
+              <li>
+                <strong>Lo rompe (silenciosamente):</strong>
+                <code>datetime.now()</code> en el system, UUIDs por request,
+                <code>json.dumps</code> sin <code>sort_keys</code>, tools que
+                cambian
+              </li>
+              <li>
+                Orden: estable primero, volátil al final — un byte distinto
+                invalida todo lo que sigue
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: código prompt caching -->
+      <section class="slide">
+        <h2>Prompt caching en código</h2>
+        <pre><code><span class="c"># El system prompt grande se escribe al cache una vez y se lee barato</span>
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=1024,
+    system=[{
+        <span class="s">"type"</span>: <span class="s">"text"</span>,
+        <span class="s">"text"</span>: SYSTEM_PROMPT_GRANDE,  <span class="c"># &gt;2k tokens, sin timestamps</span>
+        <span class="s">"cache_control"</span>: {<span class="s">"type"</span>: <span class="s">"ephemeral"</span>},  <span class="c"># TTL 5 min</span>
+    }],
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: pregunta}],
+)
+
+<span class="c"># Verifica que el cache de verdad pega — esto va a tu dashboard</span>
+<span class="f">print</span>(resp.usage.cache_creation_input_tokens)  <span class="c"># escrito (1.25x)</span>
+<span class="f">print</span>(resp.usage.cache_read_input_tokens)      <span class="c"># leído (0.1x)</span>
+<span class="f">print</span>(resp.usage.input_tokens)                 <span class="c"># sin cache (1x)</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Si <code>cache_read_input_tokens</code> es 0 en requests repetidos,
+          algo está rompiendo el prefijo. Diffea los bytes del prompt y
+          encuentra al culpable.
+        </p>
+      </section>
+
+      <!-- SLIDE 9: batch API -->
+      <section class="slide">
+        <h2>Batch API: 50% de descuento para trabajo offline</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>El trato</h3>
+            <ul class="clean">
+              <li>
+                <strong>−50%</strong> en input y output, sobre cualquier modelo
+              </li>
+              <li>La mayoría termina en &lt; 1 hora; máximo 24 h</li>
+              <li>Hasta 100,000 requests o 256 MB por batch</li>
+              <li>Compatible con prompt caching: los descuentos se apilan</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Úsalo / no lo uses</h3>
+            <ul class="clean">
+              <li>
+                <strong>Sí:</strong> evals nocturnas, clasificación masiva,
+                enriquecimiento de datos, resúmenes de backlog
+              </li>
+              <li>
+                <strong>No:</strong> nada que un usuario esté esperando en
+                pantalla
+              </li>
+              <li>Regla: si nadie mira el spinner, va por batch</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          API: <code>client.messages.batches.create(requests=[...])</code> →
+          poll de <code>processing_status</code> →
+          <code>batches.results(batch_id)</code>. Cada request lleva un
+          <code>custom_id</code> para reconciliar resultados.
+        </p>
+      </section>
+
+      <!-- SLIDE 10: model routing -->
+      <section class="slide">
+        <h2>Model routing: el modelo correcto por tarea</h2>
+        <pre><code><span class="c"># Haiku 4.5: $1 / $5 por MTok — Sonnet 4.6: $3 / $15 por MTok (3x)</span>
+MODELOS = {
+    <span class="s">"simple"</span>:   <span class="s">"claude-haiku-4-5"</span>,   <span class="c"># clasificar, extraer, formatear, FAQ</span>
+    <span class="s">"complejo"</span>: <span class="s">"claude-sonnet-4-6"</span>,  <span class="c"># razonamiento, código, agentes</span>
+}
+
+<span class="k">def</span> <span class="f">completar</span>(tipo_tarea: str, prompt: str):
+    <span class="k">return</span> client.messages.<span class="f">create</span>(
+        model=MODELOS[tipo_tarea],
+        max_tokens=1024,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
+    )</code></pre>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            Si el 70% de tu tráfico es simple, routearlo a Haiku recorta
+            <strong>~2/3 del costo</strong> de ese tráfico — y suele ser más
+            rápido
+          </li>
+          <li>
+            Empieza con reglas estáticas por endpoint; un router aprendido
+            (estilo RouteLLM) es la versión 2, no la 1
+          </li>
+          <li>
+            Valida con tus evals que el modelo pequeño no degrada calidad en esa
+            tarea — el routing sin evals es fe, no ingeniería
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 11: streaming -->
+      <section class="slide">
+        <h2>Streaming: latencia percibida ≠ latencia total</h2>
+        <pre><code><span class="c"># Una respuesta de 800 tokens tarda ~15 s completa.</span>
+<span class="c"># Con streaming, el primer token llega en menos de 1 s.</span>
+<span class="k">with</span> client.messages.<span class="f">stream</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=2048,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: pregunta}],
+) <span class="k">as</span> stream:
+    <span class="k">for</span> text <span class="k">in</span> stream.text_stream:
+        <span class="f">print</span>(text, end=<span class="s">""</span>, flush=<span class="k">True</span>)
+    final = stream.<span class="f">get_final_message</span>()  <span class="c"># usage completo al terminar</span>
+
+log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=final.usage.output_tokens)</code></pre>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            Streaming <strong>no reduce el costo ni la latencia total</strong> —
+            reduce el abandono
+          </li>
+          <li>
+            Mide <strong>TTFT</strong> como métrica de primera clase, separada
+            de la latencia total
+          </li>
+          <li>
+            Bonus: para outputs largos el SDK lo exige; sin streaming, timeouts
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 12: ejercicio en vivo -->
+      <section class="slide">
+        <h2>Manos al código — 30 min en pareja</h2>
+        <p>
+          Vamos a instrumentar un mini servicio de Q&amp;A (el de la sesión
+          pasada sirve) y a tomar decisiones con los datos:
+        </p>
+        <ul class="clean" style="margin-top: 1rem">
+          <li>
+            <strong>1. Wrapper observado (10 min)</strong> — envolver cada
+            llamada al SDK: latencia, tokens, costo y cache hits en un log JSON
+            por request
+          </li>
+          <li>
+            <strong>2. Generar tráfico (5 min)</strong> — correr 20 requests con
+            prompts variados (algunos repetidos para ver el cache pegar)
+          </li>
+          <li>
+            <strong>3. Calcular p50 / p95 y costo total (10 min)</strong> —
+            script de 15 líneas sobre los logs; nada de herramientas todavía
+          </li>
+          <li>
+            <strong>4. Decidir la palanca (5 min)</strong> — con los números en
+            la mesa: ¿qué recorta más aquí, caching, routing o streaming?
+            Defiende tu respuesta con datos
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1rem">
+          Entregable del bloque: un JSON de métricas y una frase: "la palanca
+          más barata para este servicio es ___ porque ___".
+        </p>
+      </section>
+
+      <!-- SLIDE 13: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 08 · Parte 1</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">
+            Hardening: observabilidad de tu proyecto
+          </h3>
+          <p>
+            Instrumenta tu proyecto del programa con trazas en el 100% de las
+            llamadas al LLM y monta un dashboard de costo y latencia (Langfuse o
+            Datadog). Luego usa lo de hoy — caching, routing, batch o streaming
+            — para
+            <strong>reducir el p95 o el costo por request en un 30%</strong>, y
+            documenta el antes/después con capturas del dashboard y una
+            explicación de qué palanca usaste y por qué.
+          </p>
+          <p style="margin-top: 0.8rem">
+            Enunciado completo y criterios de evaluación:
+            <a
+              href="../gym/reto-08-hardening-produccion/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-08-hardening-produccion</a
+            >
+          </p>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Sin el dashboard no hay reto: la mejora del 30% se demuestra con
+          datos, no con fe.
+        </p>
+      </section>
+
+      <!-- SLIDE 14: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=uA4pBu8leyU"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/uA4pBu8leyU/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Datadog LLM Observability: Monitor and secure your AI workloads
+              </div>
+              <div class="vc-meta">Datadog · Inglés</div>
+              <div class="vc-why">
+                Demo oficial de trazas, spans y dashboards de latencia/tokens.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=2E8iTvGo9Hs"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/2E8iTvGo9Hs/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                10 min Walkthrough of Langfuse — Open Source LLM Observability
+              </div>
+              <div class="vc-meta">Langfuse · Inglés</div>
+              <div class="vc-why">
+                Recorrido oficial: tracing, dashboard y costo/tokens por
+                request.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=u57EnkQaUTY"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/u57EnkQaUTY/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                What is Prompt Caching? Optimize LLM Latency
+              </div>
+              <div class="vc-meta">IBM Technology · Inglés</div>
+              <div class="vc-why">
+                La mecánica KV-cache y por qué lo estático va primero.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=mcZKQe2pUA0"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/mcZKQe2pUA0/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                RouteLLM Tutorial — calidad de modelo grande, 80% más barato
+              </div>
+              <div class="vc-meta">Matthew Berman · Inglés</div>
+              <div class="vc-why">
+                Model routing con código: lo simple al barato, lo difícil al
+                grande.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=fknpZg9ShNo"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/fknpZg9ShNo/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Reduce el coste de la IA x10: prompt caching y errores comunes
+              </div>
+              <div class="vc-meta">CodelyTV · Español</div>
+              <div class="vc-why">
+                Pricing por tokens y los errores que rompen el cache, en
+                español.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Sé qué es una traza, qué es un span y qué metadata debe llevar cada
+            llamada al LLM
+          </li>
+          <li>
+            Puedo calcular el costo de un request desde
+            <code>response.usage</code> y los precios por MTok
+          </li>
+          <li>Entiendo por qué se mide p95 y no el promedio, y qué es TTFT</li>
+          <li>
+            Sé qué cachear (prefijo estable ≥2k tokens) y qué rompe el cache
+            silenciosamente
+          </li>
+          <li>
+            Tengo criterio para routear: Haiku para lo simple, Sonnet para lo
+            difícil, batch para lo offline
+          </li>
+          <li>
+            Mi proyecto ya tiene el wrapper de instrumentación del bloque de
+            código — el reto 08 parte de ahí
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong
+            >Sesión 10 — Producción II — Guardrails, Seguridad y
+            Fallbacks</strong
+          >
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

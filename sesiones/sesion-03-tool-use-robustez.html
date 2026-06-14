@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 03 — Tool Use, Structured Outputs y Robustez | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 1 — Fundamentos · Semana 4
+        </div>
+        <h1>Sesión 03<br />Tool Use, Structured Outputs y Robustez</h1>
+        <p class="lead">
+          Del happy path a producción: el modelo ejecuta herramientas, devuelve
+          JSON validado y tu cliente sobrevive 429s, timeouts y basura.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — reto 01: revisamos tus prompts y qué se
+            rompió en evaluación <span class="muted">(15 min)</span>
+          </li>
+          <li>
+            <strong>Tema central</strong> — el loop de tool use, structured
+            outputs con Pydantic y los 4 pilares de robustez
+            <span class="muted">(30 min)</span>
+          </li>
+          <li>
+            <strong>Manos al código</strong> — pair programming: asistente con
+            tool + retries + validación, en vivo
+            <span class="muted">(30 min)</span>
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — AI Gym reto 02: tool use
+            robusto bajo fallos simulados <span class="muted">(10 min)</span>
+          </li>
+          <li>
+            <strong>Cierre</strong> — checklist de salida y preguntas
+            <span class="muted">(5 min)</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🔁</span>
+            <h3>Function calling end-to-end</h3>
+            <p class="muted">
+              Implementar el loop completo <code>tool_use</code> →
+              <code>tool_result</code>, incluyendo tool calls en paralelo.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📐</span>
+            <h3>Salidas estructuradas</h3>
+            <p class="muted">
+              Garantizar JSON válido con JSON Schema + Pydantic, y reintentar
+              con el error de validación cuando el modelo falla.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🛡️</span>
+            <h3>Clientes robustos</h3>
+            <p class="muted">
+              Retries con backoff exponencial y jitter, manejo de rate limits,
+              timeouts, idempotencia y logging útil.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: definición de tools -->
+      <section class="slide">
+        <h2>Definir tools: la descripción ES el prompt</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          El modelo solo ve tres cosas: <code>name</code>,
+          <code>description</code> e <code>input_schema</code>. La calidad de tu
+          tool calling depende más de la descripción que de tu código.
+        </p>
+        <div class="columns">
+          <div class="card">
+            <h3>❌ Descripción débil</h3>
+            <ul class="clean">
+              <li><code>"name": "orders"</code> — verbo ausente, ambiguo</li>
+              <li><code>"description": "Gets orders"</code> — 2 palabras</li>
+              <li>Sin formato del input ni ejemplo</li>
+              <li>Resultado: el modelo la ignora o inventa argumentos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>✅ Descripción que funciona</h3>
+            <ul class="clean">
+              <li>
+                <code>get_order_status</code> — verbo + objeto, snake_case
+              </li>
+              <li>
+                3–4 frases: qué hace, qué devuelve, <em>cuándo</em> usarla
+              </li>
+              <li>
+                Formato del input con ejemplo: "ID alfanumérico, p. ej.
+                ORD-8841"
+              </li>
+              <li>
+                <code>required</code> explícito en el schema; enums para valores
+                cerrados
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: el loop completo -->
+      <section class="slide">
+        <h2>El loop completo: tool_use → tool_result</h2>
+        <pre><code><span class="c"># El modelo no ejecuta nada: pide, tú ejecutas, tú devuelves.</span>
+messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"¿Dónde va mi orden ORD-8841?"</span>}]
+
+<span class="k">while</span> <span class="k">True</span>:
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=1024,
+        tools=tools, messages=messages,
+    )
+    <span class="k">if</span> resp.stop_reason != <span class="s">"tool_use"</span>:
+        <span class="k">break</span>  <span class="c"># respuesta final para el usuario</span>
+
+    messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content})
+    results = [
+        {<span class="s">"type"</span>: <span class="s">"tool_result"</span>, <span class="s">"tool_use_id"</span>: b.id,
+         <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}
+        <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>
+    ]
+    messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: results})</code></pre>
+        <p class="muted" style="margin-top: 0.9rem">
+          Dos errores clásicos: olvidar reinyectar el turno
+          <code>assistant</code> completo, y no cortar el loop — pon un máximo
+          de iteraciones (p. ej. 10) o un agente confundido te quema budget.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: tool calls en paralelo -->
+      <section class="slide">
+        <h2>Tool calls en paralelo</h2>
+        <div class="columns">
+          <div>
+            <p>
+              Un solo turno del modelo puede traer
+              <strong>varios bloques <code>tool_use</code></strong> — p. ej.
+              "compara el clima de Bogotá y CDMX" dispara 2 llamadas a la vez.
+            </p>
+            <ul class="clean" style="margin-top: 1rem">
+              <li>
+                Regla de oro: responde <strong>TODOS</strong> los
+                <code>tool_use</code> en <strong>un solo</strong> mensaje
+                <code>user</code>, cada uno con su <code>tool_use_id</code>.
+              </li>
+              <li>
+                Un <code>tool_use</code> sin <code>tool_result</code> =
+                <code>400 invalid_request_error</code> en el siguiente turno.
+              </li>
+              <li>
+                Ejecuta concurrente con <code>asyncio.gather</code> o
+                <code>ThreadPoolExecutor</code>: 3 tools de 2 s pasan de 6 s
+                secuenciales a ~2 s.
+              </li>
+              <li>
+                Si una tool falla, no rompas el lote: devuelve su resultado con
+                <code>"is_error": true</code> y deja que el modelo decida.
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="c"># ejecutar el lote en paralelo</span>
+calls = [b <span class="k">for</span> b <span class="k">in</span> resp.content
+         <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
+
+<span class="k">with</span> <span class="f">ThreadPoolExecutor</span>() <span class="k">as</span> ex:
+    outs = ex.<span class="f">map</span>(run_tool_safe, calls)
+
+results = [
+    {<span class="s">"type"</span>: <span class="s">"tool_result"</span>,
+     <span class="s">"tool_use_id"</span>: b.id,
+     <span class="s">"content"</span>: out.content,
+     <span class="s">"is_error"</span>: out.failed}
+    <span class="k">for</span> b, out <span class="k">in</span> <span class="f">zip</span>(calls, outs)
+]</code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: structured outputs + pydantic -->
+      <section class="slide">
+        <h2>Structured outputs: fuerza la tool, valida con Pydantic</h2>
+        <pre><code><span class="k">from</span> pydantic <span class="k">import</span> BaseModel, ValidationError
+
+<span class="k">class</span> <span class="f">Invoice</span>(BaseModel):
+    customer: str
+    total_usd: float
+    items: list[str]
+
+<span class="c"># tool_choice fuerza al modelo a "llamar" la tool: JSON garantizado</span>
+<span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(3):
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=1024,
+        tools=[extract_tool],
+        tool_choice={<span class="s">"type"</span>: <span class="s">"tool"</span>, <span class="s">"name"</span>: <span class="s">"save_invoice"</span>},
+        messages=messages,
+    )
+    block = <span class="f">next</span>(b <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>)
+    <span class="k">try</span>:
+        invoice = Invoice.<span class="f">model_validate</span>(block.input)
+        <span class="k">break</span>
+    <span class="k">except</span> ValidationError <span class="k">as</span> err:  <span class="c"># reinyecta el error y reintenta</span>
+        messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content})
+        messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: [{
+            <span class="s">"type"</span>: <span class="s">"tool_result"</span>, <span class="s">"tool_use_id"</span>: block.id,
+            <span class="s">"content"</span>: <span class="s">f"Corrige y reintenta: {err}"</span>, <span class="s">"is_error"</span>: <span class="k">True</span>}]})</code></pre>
+        <p class="muted" style="margin-top: 0.9rem">
+          El schema valida tipos y campos; Pydantic agrega reglas de negocio
+          (<code>total_usd &gt; 0</code>, fechas reales). 2–3 reintentos con el
+          error reinyectado corrigen la gran mayoría de outputs inválidos.
+        </p>
+      </section>
+
+      <!-- SLIDE 8: idea fuerza -->
+      <section class="slide">
+        <h2>De demo a producción</h2>
+        <blockquote>
+          Trata al LLM como a cualquier servicio externo: todo lo que devuelve
+          es input no confiable, y toda llamada de red va a fallar tarde o
+          temprano. Lo que separa una demo de un producto no es el prompt — es
+          lo que pasa cuando algo sale mal.
+        </blockquote>
+        <p class="muted">
+          Los 4 pilares que vienen: <strong>retries</strong> (transitorios se
+          reintentan), <strong>rate limits</strong> (respeta la señal del
+          servidor), <strong>timeouts + idempotencia</strong> (reintentar sin
+          duplicar daño) y <strong>logging</strong> (poder explicar qué pasó).
+        </p>
+      </section>
+
+      <!-- SLIDE 9: retries con backoff -->
+      <section class="slide">
+        <h2>Retries: backoff exponencial + jitter</h2>
+        <pre><code><span class="k">import</span> random, time, anthropic
+
+<span class="k">def</span> <span class="f">with_backoff</span>(fn, max_retries=5):
+    <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(max_retries):
+        <span class="k">try</span>:
+            <span class="k">return</span> <span class="f">fn</span>()
+        <span class="k">except</span> (anthropic.RateLimitError,        <span class="c"># 429</span>
+                anthropic.InternalServerError,   <span class="c"># 500 / 529</span>
+                anthropic.APITimeoutError):
+            <span class="k">if</span> attempt == max_retries - 1:
+                <span class="k">raise</span>
+            <span class="c"># full jitter: 1s, 2s, 4s, 8s... cap 60s, × random</span>
+            time.<span class="f">sleep</span>(<span class="f">min</span>(60, 2 ** attempt) * random.<span class="f">random</span>())</code></pre>
+        <ul class="clean" style="margin-top: 1rem">
+          <li>
+            ¿Por qué jitter? 100 clientes que fallan juntos y reintentan a los 2
+            s exactos crean una <em>retry storm</em>: el jitter los dispersa.
+          </li>
+          <li>
+            El SDK ya trae <code>max_retries=2</code> por defecto — súbelo con
+            <code>anthropic.Anthropic(max_retries=4)</code> antes de escribir el
+            tuyo.
+          </li>
+          <li>
+            <strong>Nunca</strong> reintentes <code>400</code> (request mal
+            armado) ni <code>401/403</code> (credenciales): reintentar un bug
+            solo lo hace más caro.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 10: rate limits -->
+      <section class="slide">
+        <h2>Rate limits: 429, 529 y qué hacer con cada error</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Error</th>
+              <th>Significa</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>429</strong></td>
+              <td><code>rate_limit_error</code></td>
+              <td>
+                Superaste tu cuota: RPM, input tokens/min u output tokens/min
+              </td>
+              <td>
+                Espera lo que diga el header <code>retry-after</code>, luego
+                backoff
+              </td>
+            </tr>
+            <tr>
+              <td><strong>529</strong></td>
+              <td><code>overloaded_error</code></td>
+              <td>La API está sobrecargada — no es culpa tuya</td>
+              <td>Backoff + jitter; degrada con gracia si persiste</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong></td>
+              <td><code>api_error</code></td>
+              <td>Error interno transitorio del servidor</td>
+              <td>Reintentar con backoff (suele resolverse en 1–2 intentos)</td>
+            </tr>
+            <tr>
+              <td><strong>400</strong></td>
+              <td><code>invalid_request_error</code></td>
+              <td>Tu request está mal (schema, tool_result faltante…)</td>
+              <td>
+                <strong>NO reintentar</strong> — loggear y arreglar el código
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.1rem">
+          Pro tip: lee <code>anthropic-ratelimit-requests-remaining</code> en
+          los headers y frena <em>antes</em> del 429 — throttling proactivo gana
+          a reactivo.
+        </p>
+      </section>
+
+      <!-- SLIDE 11: timeouts e idempotencia -->
+      <section class="slide">
+        <h2>Timeouts e idempotencia</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>⏱️ Timeouts</h3>
+            <ul class="clean">
+              <li>
+                Default del SDK: <strong>10 minutos</strong>. Para un chatbot
+                interactivo eso es una eternidad — baja a 30–60 s:
+                <code>Anthropic(timeout=30.0)</code>.
+              </li>
+              <li>
+                Trade-off: timeout corto mejora la latencia p99 percibida, pero
+                genera más retries → más costo en tokens.
+              </li>
+              <li>
+                Respuestas largas: usa <code>streaming</code> — el primer token
+                llega en segundos y resetea tu percepción de "colgado".
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🔂 Idempotencia</h3>
+            <ul class="clean">
+              <li>
+                Un timeout <strong>no garantiza</strong> que el request falló:
+                pudo completarse. Reintentar una tool que cobra o envía email =
+                cobro doble, email doble.
+              </li>
+              <li>
+                Tools con side effects: idempotency key por operación o check
+                "¿ya existe?" antes de ejecutar.
+              </li>
+              <li>
+                Diseño primero: haz las tools read-only cuando se pueda, y
+                separa "proponer acción" de "confirmar acción".
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 12: logging -->
+      <section class="slide">
+        <h2>Logging: si no lo logueaste, no pasó</h2>
+        <div class="columns">
+          <div>
+            <p>Lo mínimo por cada llamada al modelo:</p>
+            <ul class="clean" style="margin-top: 0.8rem">
+              <li>
+                <code>request_id</code> — es lo que soporte de Anthropic te va a
+                pedir para investigar
+              </li>
+              <li>
+                <code>usage.input_tokens</code> / <code>output_tokens</code> —
+                tu factura vive aquí
+              </li>
+              <li>
+                <code>stop_reason</code> — <code>max_tokens</code> aquí =
+                respuesta truncada silenciosa
+              </li>
+              <li>Latencia y número de intento (¿cuántos retries costó?)</li>
+              <li>
+                Por tool call: nombre, input, duración y resultado truncado a
+                ~500 chars
+              </li>
+            </ul>
+          </div>
+          <pre><code>t0 = time.<span class="f">monotonic</span>()
+resp = client.messages.<span class="f">create</span>(...)
+
+log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
+    <span class="s">"request_id"</span>: resp._request_id,
+    <span class="s">"model"</span>: resp.model,
+    <span class="s">"stop_reason"</span>: resp.stop_reason,
+    <span class="s">"in_tok"</span>: resp.usage.input_tokens,
+    <span class="s">"out_tok"</span>: resp.usage.output_tokens,
+    <span class="s">"latency_s"</span>: time.<span class="f">monotonic</span>() - t0,
+})
+<span class="c"># DEBUG: payload completo (sin PII)</span>
+<span class="c"># INFO:  solo métricas — esto va a prod</span></code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 13: ejercicio en vivo -->
+      <section class="slide">
+        <h2>👩‍💻 Manos al código — 30 min</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          Construimos juntos <code>tool_loop.py</code>: un asistente de soporte
+          de e-commerce, de cero, en menos de 80 líneas. Tú escribes, yo navego.
+        </p>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">1️⃣</span>
+            <h3>El loop (10 min)</h3>
+            <p class="muted">
+              Definimos <code>get_order_status</code> con descripción de 3
+              frases y armamos el loop <code>tool_use</code> →
+              <code>tool_result</code> con tope de 10 iteraciones.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">2️⃣</span>
+            <h3>Robustez (10 min)</h3>
+            <p class="muted">
+              Envolvemos la llamada con <code>with_backoff</code> y simulamos un
+              529 con un mock que falla las 2 primeras veces. Debe recuperarse
+              solo.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">3️⃣</span>
+            <h3>Validación (10 min)</h3>
+            <p class="muted">
+              Modelo Pydantic para el input de la tool, reinyección del
+              <code>ValidationError</code> y log de <code>request_id</code> +
+              tokens por llamada.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Criterio de éxito del bloque: el script corre en vivo, sobrevive el
+          fallo simulado y los logs cuentan la historia completa.
+        </p>
+      </section>
+
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 02</span
+          ><span class="tag green">Entregable: viernes</span>
+          <h3 style="margin-top: 0.8rem">Tool use robusto</h3>
+          <p>
+            Construye un asistente con <strong>3 herramientas</strong> (p. ej.
+            consulta de órdenes, cálculo de envío y FAQ) que sobreviva el
+            harness de fallos del gym: <strong>timeouts</strong>,
+            <strong>500s intermitentes</strong> y
+            <strong>respuestas malformadas</strong> de las tools.
+          </p>
+          <ul class="clean" style="margin-top: 0.9rem">
+            <li>
+              El proceso nunca crashea: todo fallo termina en
+              <code>tool_result</code> con <code>is_error</code> o en retry.
+            </li>
+            <li>
+              Toda salida estructurada pasa por Pydantic; los inputs inválidos
+              se reinyectan y reintentan (máx. 3).
+            </li>
+            <li>
+              Logs por request: <code>request_id</code>, tokens, latencia,
+              intentos.
+            </li>
+          </ul>
+          <p style="margin-top: 1rem">
+            Enunciado completo, harness y rúbrica:
+            <a
+              href="../gym/reto-02-tool-use-robusto/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-02-tool-use-robusto</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=yj-wSRJwrrc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/yj-wSRJwrrc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Pydantic is all you need — Jason Liu</div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                La charla canónica sobre structured outputs: por qué validar con
+                Pydantic cambia cómo construyes con LLMs.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=pZ4DIH2BVqg"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/pZ4DIH2BVqg/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Pydantic is STILL all you need — Jason Liu
+              </div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                La secuela con lecciones de producción: validación, reintentos
+                ante outputs inválidos y robustez real.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=liV0bfZ5Wu0"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/liV0bfZ5Wu0/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                How to Connect an LLM to Python Functions (Tool Calling
+                Tutorial)
+              </div>
+              <div class="vc-meta">Dataquest · Inglés</div>
+              <div class="vc-why">
+                Walkthrough práctico del loop completo: definir tools, parsear
+                argumentos y reinyectar resultados al historial.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=cjCYcTPryw8"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/cjCYcTPryw8/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Build AI Function Calling with LangChain &amp; Advanced AI
+                Models
+              </div>
+              <div class="vc-meta">IBM Technology · Inglés</div>
+              <div class="vc-why">
+                Pieza corta sobre diseño de tools: nombres y descripciones que
+                el modelo realmente entiende.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=-3-wq_kvc3A"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/-3-wq_kvc3A/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Tutorial Assistants API de OpenAI — Parte 2: Function Calling
+              </div>
+              <div class="vc-meta">LLM Master · Español</div>
+              <div class="vc-why">
+                Function calling paso a paso en español. Ojo: usa la Assistants
+                API (hoy en deprecación), pero los conceptos siguen vigentes.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Puedo explicar el loop <code>tool_use</code> →
+            <code>tool_result</code> sin mirar la documentación
+          </li>
+          <li>
+            Respondo TODOS los <code>tool_use</code> de un turno en un solo
+            mensaje <code>user</code>, con sus <code>tool_use_id</code>
+          </li>
+          <li>
+            Valido toda salida estructurada con Pydantic y reinyecto el
+            <code>ValidationError</code> cuando falla
+          </li>
+          <li>
+            Tengo un wrapper de retries con backoff exponencial + jitter, y sé
+            qué errores NO se reintentan (400, 401, 403)
+          </li>
+          <li>
+            Distingo 429 de 529 y respeto <code>retry-after</code> antes de
+            volver a golpear la API
+          </li>
+          <li>
+            Mis tools con side effects son idempotentes o tienen guardas contra
+            ejecución doble
+          </li>
+          <li>
+            Logueo <code>request_id</code>, tokens, <code>stop_reason</code> y
+            latencia de cada llamada
+          </li>
+          <li>Reto 02 del AI Gym agendado — entrega el viernes</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong
+            >Sesión 04 — RAG I — Embeddings, Chunking y Vector Stores</strong
+          >
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

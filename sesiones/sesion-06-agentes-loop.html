@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 06 — Agentes I — El Loop Agéntico y Herramientas | AI Engineer
+      Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 2 — Patrones · Semana 7
+        </div>
+        <h1>Sesión 06<br />Agentes I — El Loop Agéntico y Herramientas</h1>
+        <p class="lead">
+          Hoy construyes un agente real en ~30 líneas de Python, sin frameworks,
+          y aprendes a decidir cuándo NO necesitas uno.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso (15 min)</strong> — reto 04: dos demos rápidas,
+            bloqueos y qué haríamos distinto.
+          </li>
+          <li>
+            <strong>Tema central (30 min)</strong> — workflows vs agentes, el
+            loop agéntico paso a paso, diseño de tools y stopping conditions.
+          </li>
+          <li>
+            <strong>Manos al código (30 min)</strong> — pair programming: agente
+            investigador mínimo con la API de Claude, cero frameworks.
+          </li>
+          <li>
+            <strong>Reto de la semana (10 min)</strong> — AI Gym reto 05: agente
+            desde cero con presupuesto de pasos.
+          </li>
+          <li>
+            <strong>Cierre (5 min)</strong> — checklist de salida y preview de
+            la Sesión 07.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🧭</span>
+            <h3>Workflow vs agente</h3>
+            <p class="muted">
+              Entender la diferencia y saber elegir cuál usar — la pregunta que
+              decide la arquitectura (y la factura).
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔁</span>
+            <h3>El loop desde cero</h3>
+            <p class="muted">
+              Implementar el agent loop completo sin frameworks: decide →
+              ejecuta → observa → repite.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🛠️</span>
+            <h3>Tools bien diseñadas</h3>
+            <p class="muted">
+              Escribir herramientas que el modelo usa bien: descripciones
+              claras, errores accionables, granularidad correcta.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: workflows vs agentes -->
+      <section class="slide">
+        <h2>Workflows vs agentes — "Building Effective Agents"</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Workflow</h3>
+            <ul class="clean">
+              <li>
+                <strong>Tu código orquesta</strong>; los LLMs rellenan pasos
+                predefinidos.
+              </li>
+              <li>
+                Patrones: prompt chaining, routing, parallelization,
+                orchestrator-workers, evaluator-optimizer.
+              </li>
+              <li>
+                Predecible y testeable: el mismo camino en cada ejecución.
+              </li>
+              <li>
+                Úsalo cuando <strong>conoces los pasos de antemano</strong>.
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Agente</h3>
+            <ul class="clean">
+              <li>
+                <strong>El LLM dirige su propio proceso</strong>: decide qué
+                tool llamar y cuándo terminar.
+              </li>
+              <li>El camino emerge en runtime; no es conocible a priori.</li>
+              <li>
+                Flexible pero caro: cada paso reenvía el historial completo.
+              </li>
+              <li>
+                Úsalo cuando <strong>no puedes hardcodear el camino</strong>:
+                debugging, research, coding.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Regla de Anthropic: busca la solución más simple posible y sube de
+          complejidad <em>solo</em> si la tarea lo exige. La mayoría de
+          "agentes" en producción son workflows — y está bien.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: idea fuerza -->
+      <section class="slide">
+        <h2>La idea fuerza</h2>
+        <blockquote>
+          Un agente es un LLM usando herramientas en un loop. Eso es todo.
+        </blockquote>
+        <p class="muted">
+          Memoria, planning, multi-agente, MCP… todo lo que verás después son
+          extensiones de este loop de ~30 líneas. Si entiendes el loop, ningún
+          framework te va a intimidar — porque sabrás exactamente qué esconden
+          debajo.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: anatomía del loop -->
+      <section class="slide">
+        <h2>Anatomía del loop</h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">1️⃣</span>
+            <h3>Decide</h3>
+            <p class="muted">
+              El modelo ve el historial y elige: ¿respondo o llamo una tool? Lo
+              lees en <code>stop_reason</code>: <code>"tool_use"</code> o
+              <code>"end_turn"</code>.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">2️⃣</span>
+            <h3>Ejecuta</h3>
+            <p class="muted">
+              <strong>Tu código</strong> corre la tool. El modelo nunca ejecuta
+              nada: solo emite JSON con nombre y argumentos.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">3️⃣</span>
+            <h3>Observa</h3>
+            <p class="muted">
+              El resultado vuelve como <code>tool_result</code> dentro de un
+              mensaje con rol <code>user</code>, enlazado por
+              <code>tool_use_id</code>.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">4️⃣</span>
+            <h3>Repite</h3>
+            <p class="muted">
+              Hasta que el modelo decida terminar (<code>end_turn</code>) o tú
+              agotes el presupuesto de pasos. Nunca
+              <code>while True</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: código del loop -->
+      <section class="slide">
+        <h2>El loop completo — sin frameworks</h2>
+        <pre><code><span class="c"># agent.py — esto ES el agente. Todo lo demás es decoración.</span>
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+MAX_STEPS = 10
+messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Investiga el tema X y cita fuentes"</span>}]
+
+<span class="k">for</span> step <span class="k">in</span> <span class="f">range</span>(MAX_STEPS):          <span class="c"># presupuesto, no while True</span>
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=4096,
+        tools=TOOLS, messages=messages,
+    )
+    messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content})
+    <span class="k">if</span> resp.stop_reason != <span class="s">"tool_use"</span>:
+        <span class="k">break</span>                            <span class="c"># 1. DECIDE: el modelo terminó</span>
+    results = [{<span class="s">"type"</span>: <span class="s">"tool_result"</span>, <span class="s">"tool_use_id"</span>: b.id,
+                <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}   <span class="c"># 2. EJECUTA</span>
+               <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
+    messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: results})  <span class="c"># 3. OBSERVA → 4. REPITE</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Fíjate: el historial <code>messages</code> crece en cada paso y se
+          reenvía completo. Esa es la memoria de trabajo del agente — y también
+          su costo.
+        </p>
+      </section>
+
+      <!-- SLIDE 8: diseño de tools -->
+      <section class="slide">
+        <h2>Diseño de tools — 3 reglas que separan junior de senior</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">📝</span>
+            <h3>Descripciones = onboarding</h3>
+            <p class="muted">
+              Escribe la <code>description</code> como si entrenaras a un nuevo
+              dev: qué hace, cuándo usarla, cuándo NO, qué formato devuelve. El
+              modelo solo sabe lo que tú le cuentas.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🚨</span>
+            <h3>Errores accionables</h3>
+            <p class="muted">
+              Nunca lances excepciones al loop ni devuelvas
+              <code>"error"</code> a secas. Devuelve qué falló y qué probar
+              después — el modelo se autocorrige si le das con qué.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🧩</span>
+            <h3>Granularidad correcta</h3>
+            <p class="muted">
+              Pocas tools, sin solapamiento, a prueba de errores. Ejemplo de
+              Anthropic en SWE-bench: exigir rutas absolutas en vez de relativas
+              eliminó una clase entera de fallos.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Métrica práctica: si tú no sabrías cuál de dos tools usar leyendo solo
+          sus descripciones, el modelo tampoco.
+        </p>
+      </section>
+
+      <!-- SLIDE 9: código de tools -->
+      <section class="slide">
+        <h2>Tool bien diseñada — descripción y error</h2>
+        <pre><code>TOOLS = [{
+    <span class="s">"name"</span>: <span class="s">"fetch_page"</span>,
+    <span class="s">"description"</span>: (<span class="s">"Descarga una URL y devuelve su texto en markdown "</span>
+        <span class="s">"(máx 8.000 chars). Úsala DESPUÉS de search_web, con una URL "</span>
+        <span class="s">"exacta de sus resultados. No soporta PDFs ni páginas con login."</span>),
+    <span class="s">"input_schema"</span>: {<span class="s">"type"</span>: <span class="s">"object"</span>, <span class="s">"required"</span>: [<span class="s">"url"</span>],
+        <span class="s">"properties"</span>: {<span class="s">"url"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>,
+            <span class="s">"description"</span>: <span class="s">"URL completa con https://"</span>}}},
+}]
+
+<span class="k">def</span> <span class="f">fetch_page</span>(url: str) -&gt; str:
+    <span class="k">try</span>:
+        r = httpx.<span class="f">get</span>(url, timeout=10, follow_redirects=<span class="k">True</span>)
+        r.<span class="f">raise_for_status</span>()
+        <span class="k">return</span> <span class="f">to_markdown</span>(r.text)[:8000]   <span class="c"># truncar: el contexto es presupuesto</span>
+    <span class="k">except</span> httpx.HTTPStatusError <span class="k">as</span> e:
+        <span class="c"># error INFORMATIVO: dice qué pasó y qué hacer después</span>
+        <span class="k">return</span> (<span class="k">f</span><span class="s">"ERROR {e.response.status_code} al abrir {url}. "</span>
+                <span class="s">"Prueba otra URL de los resultados de búsqueda."</span>)</code></pre>
+      </section>
+
+      <!-- SLIDE 10: stopping conditions -->
+      <section class="slide">
+        <h2>Stopping conditions y presupuestos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Condición</th>
+              <th>Implementación</th>
+              <th>Nota de coach</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>El modelo termina</td>
+              <td><code>stop_reason == "end_turn"</code></td>
+              <td>La salida feliz. No la asumas: verifícala.</td>
+            </tr>
+            <tr>
+              <td>Presupuesto de pasos</td>
+              <td><code>for step in range(MAX_STEPS)</code></td>
+              <td>
+                8–15 para research. <code>while True</code> = factura abierta.
+              </td>
+            </tr>
+            <tr>
+              <td>Presupuesto de tokens</td>
+              <td>
+                acumula <code>resp.usage.input_tokens + output_tokens</code>
+              </td>
+              <td>
+                Con historial creciente, 10 pasos pueden costar 30–50× una
+                llamada simple.
+              </td>
+            </tr>
+            <tr>
+              <td>Timeout de reloj</td>
+              <td><code>time.monotonic() - t0 &gt; 120</code></td>
+              <td>Protege contra tools lentas (red, scraping).</td>
+            </tr>
+            <tr>
+              <td>Respuesta cortada</td>
+              <td><code>stop_reason == "max_tokens"</code></td>
+              <td>La salida quedó incompleta: no la entregues como final.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Al agotar presupuesto, haz una última llamada
+          <strong>sin tools</strong>: "entrega el mejor informe posible con lo
+          que tienes". Nunca devuelvas vacío.
+        </p>
+      </section>
+
+      <!-- SLIDE 11: cuándo NO usar un agente -->
+      <section class="slide">
+        <h2>Cuándo NO usar un agente</h2>
+        <ul class="clean">
+          <li>
+            <strong>El camino es conocido</strong> → un workflow de 2–3 llamadas
+            encadenadas da el mismo resultado: más barato, determinista y
+            testeable.
+          </li>
+          <li>
+            <strong>No hay señal de verificación</strong> — si nada le dice al
+            modelo si un paso salió bien (tests, errores, resultados de
+            búsqueda), el loop deriva sin rumbo.
+          </li>
+          <li>
+            <strong>Latencia dura</strong> — un SLA de p95 &lt; 2 s no aguanta
+            10 round-trips al modelo.
+          </li>
+          <li>
+            <strong>Errores caros e irreversibles</strong> — un agente que
+            ejecuta pagos o borra datos sin checkpoint humano es un incidente
+            esperando fecha.
+          </li>
+          <li>
+            <strong>Una sola llamada con buen prompt resuelve</strong> — el caso
+            más común y el más ignorado.
+          </li>
+        </ul>
+        <blockquote>
+          Test de Barry Zhang (Anthropic): usa agentes solo en tareas
+          <strong>ambiguas</strong> (no puedes mapear los pasos),
+          <strong>valiosas</strong> (justifican el costo) y
+          <strong>verificables</strong> (con errores recuperables).
+        </blockquote>
+      </section>
+
+      <!-- SLIDE 12: frameworks vs from-scratch -->
+      <section class="slide">
+        <h2>Frameworks vs from-scratch — y qué decir en entrevista</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>From-scratch (API directa)</h3>
+            <ul class="clean">
+              <li>
+                El loop son ~30 líneas: control total del prompt y el contexto.
+              </li>
+              <li>
+                Debug = leer un <code>print</code> por paso. Ves cada token que
+                pagas.
+              </li>
+              <li>Cero dependencias que se rompan con cada release.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>LangGraph, CrewAI, Agents SDK…</h3>
+            <ul class="clean">
+              <li>
+                Te regalan checkpointing, retries, streaming, human-in-the-loop.
+              </li>
+              <li>
+                Costo: capas de abstracción que esconden el prompt final que se
+                envía.
+              </li>
+              <li>
+                Útiles en producción <em>cuando ya entiendes</em> lo que hacen
+                por debajo.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top: 1.4rem">
+          <strong>En entrevista:</strong> "empiezo con la API directa porque
+          necesito ver cada prompt; adopto un framework cuando el proyecto pide
+          persistencia o human-in-the-loop en producción" —
+          <span class="muted"
+            >eso te contrata. "Uso LangChain porque es el estándar" sin poder
+            explicar el loop — eso te descarta.</span
+          >
+        </p>
+      </section>
+
+      <!-- SLIDE 13: ejercicio en vivo -->
+      <section class="slide">
+        <h2>🧪 Manos al código — agente "wiki-researcher" (30 min)</h2>
+        <p>
+          Construimos juntos, en un solo <code>agent.py</code>, un agente que
+          responde preguntas factuales con fuentes usando la API de Wikipedia.
+          Sin frameworks.
+        </p>
+        <ul class="clean" style="margin-top: 1rem">
+          <li>
+            <strong>Min 0–5</strong> — definir <code>TOOLS</code>:
+            <code>search_wikipedia(query)</code> y
+            <code>get_article(title)</code>, con descripciones estilo
+            onboarding.
+          </li>
+          <li>
+            <strong>Min 5–15</strong> — escribir el loop con
+            <code>MAX_STEPS = 8</code> y una traza por consola: paso, tool
+            llamada y argumentos.
+          </li>
+          <li>
+            <strong>Min 15–25</strong> — correrlo con "¿qué países han ganado
+            más de 3 mundiales y en qué años?" y leer la trayectoria completa
+            paso a paso.
+          </li>
+          <li>
+            <strong>Min 25–30</strong> — romperlo a propósito: devolver un error
+            genérico vs uno informativo y comparar cómo se recupera el modelo.
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1rem">
+          Entregable del bloque: el loop corriendo en tu máquina antes de que
+          termine la sesión.
+        </p>
+      </section>
+
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 05</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Agente desde cero</h3>
+          <p>
+            Construye un <strong>agente investigador sin frameworks</strong>:
+            tools de búsqueda y lectura, presupuesto de pasos configurable y
+            respetado, y como salida un informe en markdown
+            <strong>con las fuentes citadas</strong>.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              Solo SDK de <code>anthropic</code> + <code>httpx</code>. Nada de
+              LangChain/LangGraph.
+            </li>
+            <li>
+              Al agotar el presupuesto, el agente entrega igual el mejor informe
+              posible.
+            </li>
+            <li>
+              Incluye la traza de la trayectoria: qué tool llamó en cada paso y
+              por qué.
+            </li>
+          </ul>
+          <p style="margin-top: 1rem">
+            Enunciado completo y criterios de evaluación:
+            <a
+              href="../gym/reto-05-agente-from-scratch/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-05-agente-from-scratch</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=D7_ipDqhtwk"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/D7_ipDqhtwk/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                How We Build Effective Agents: Barry Zhang, Anthropic
+              </div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                La versión charla del paper: workflows vs agentes y cuándo NO
+                construir uno. El corazón de esta sesión.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=LP5OCa20Zpg"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/LP5OCa20Zpg/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Tips for building AI agents</div>
+              <div class="vc-meta">Anthropic · Inglés</div>
+              <div class="vc-why">
+                Los coautores del post discuten pitfalls comunes y diseño de
+                tools, directo de la fuente canónica.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=TdcAslNDCGc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/TdcAslNDCGc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Stop Using Frameworks: Build an AI Agent From First Principles
+              </div>
+              <div class="vc-meta">VinciBits · Inglés</div>
+              <div class="vc-why">
+                Construye el loop completo en Python puro con la API de Claude —
+                el mismo ejercicio del lab de hoy.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=sal78ACtGTc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/sal78ACtGTc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                What's next for AI agentic workflows ft. Andrew Ng of AI Fund
+              </div>
+              <div class="vc-meta">Sequoia Capital · Inglés</div>
+              <div class="vc-why">
+                Los 4 patrones agénticos de Andrew Ng: por qué el tool-use loop
+                mejora resultados.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=MjK-j7YJ5YI"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/MjK-j7YJ5YI/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Tu Primer Agente de IA en Python (Sin Frameworks)
+              </div>
+              <div class="vc-meta">Ringa Tech · Español</div>
+              <div class="vc-why">
+                El loop agéntico con tools desde cero, en español y con código
+                en GitHub. Espejo directo del lab.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Puedo explicar workflow vs agente con un ejemplo concreto de cada
+            uno — y por qué el workflow gana casi siempre.
+          </li>
+          <li>
+            Tengo el loop de ~30 líneas corriendo en mi máquina, sin frameworks.
+          </li>
+          <li>
+            Mis tools tienen descripciones estilo onboarding y devuelven errores
+            que el modelo puede usar para corregirse.
+          </li>
+          <li>
+            Sé enumerar 3+ stopping conditions y por qué
+            <code>while True</code> nunca va a producción.
+          </li>
+          <li>
+            Puedo defender en entrevista cuándo NO usaría un agente y mi postura
+            framework vs from-scratch.
+          </li>
+          <li>Reto 05 leído y repo creado antes del viernes.</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong>Sesión 07 — Agentes II — Memoria, Multi-agente y MCP</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sesión 11 — Hardening Final y Demo Day | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 3 — Producción · Semana 12
+        </div>
+        <h1>Sesión 11<br />Hardening Final y Demo Day</h1>
+        <p class="lead">
+          Cerrar su proyecto production-ready y presentarlo como a stakeholders:
+          problema → solución → evidencia.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 minutos</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — estado del proyecto: qué quedó pendiente
+            del hardening de la Sesión 10 (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — checklist de production-readiness,
+            README de calidad y anatomía de una demo que convence (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — construimos juntos el reporte de
+            evidencia (<code>EVIDENCE.md</code>) y ensayamos la apertura de la
+            demo (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — demo grabada de 15 min + README
+            final + 5 preguntas de entrevista con respuestas (10 min)
+          </li>
+          <li>
+            <strong>Cierre</strong> — checklist de salida y preview de la Sesión
+            12 (5 min)
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🔒</span>
+            <h3>Cerrar la Fase 3</h3>
+            <p class="muted">
+              Proyecto production-ready y documentado: checklist completo,
+              README con decisiones explicadas, diagrama de arquitectura final.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🎤</span>
+            <h3>Demo como a stakeholders</h3>
+            <p class="muted">
+              Estructura problema → solución → evidencia en 10 minutos, con
+              métricas de evals como argumento central, no como apéndice.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🥊</span>
+            <h3>Sobrevivir las preguntas</h3>
+            <p class="muted">
+              Practicar el manejo de las 5 preguntas técnicas difíciles que le
+              harían en una entrevista sobre su proyecto.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: checklist de production-readiness -->
+      <section class="slide">
+        <h2>Checklist de production-readiness</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Confiabilidad</h3>
+            <ul class="clean">
+              <li>
+                Timeouts explícitos y retries con backoff — el SDK de
+                <code>anthropic</code> ya reintenta 429/5xx 2 veces; configure
+                <code>max_retries</code> y un timeout &lt; al de su API
+              </li>
+              <li>
+                Manejo de <code>RateLimitError</code> y respuesta degradada:
+                ¿qué ve el usuario cuando el LLM no responde?
+              </li>
+              <li>
+                Suite de evals en CI: si el score baja del umbral (ej. 0.85), el
+                PR no se mergea
+              </li>
+              <li>Inputs validados: tamaño máximo, tipos, sanitización</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Operación</h3>
+            <ul class="clean">
+              <li>
+                Observabilidad: log de <code>request_id</code>, latencia
+                p50/p95, tokens y costo por request
+              </li>
+              <li>
+                Costos bajo control: prompt caching activo (lecturas a ~0.1x del
+                precio de input) y presupuesto mensual estimado
+              </li>
+              <li>
+                Secrets en variables de entorno o secret manager — cero keys en
+                el repo, verificado con un scan del historial de git
+              </li>
+              <li>
+                Modelo y versión fijados explícitamente (ej.
+                <code>claude-sonnet-4-6</code>), no "el default"
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla: si un ítem no está, no es "casi listo" — es un bug conocido.
+          Documentarlo en "Limitaciones" del README también cuenta como
+          cerrarlo.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: README de calidad -->
+      <section class="slide">
+        <h2>README de calidad: decisiones y trade-offs</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>❌ README que nadie lee</h3>
+            <ul class="clean">
+              <li>Lista de features sin contexto del problema</li>
+              <li>"Instalar dependencias y correr" — y nada más</li>
+              <li>Cero números: ni latencia, ni costo, ni accuracy</li>
+              <li>Las decisiones técnicas parecen accidentes</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>✅ README que consigue entrevistas</h3>
+            <ul class="clean">
+              <li>El problema en 2 líneas y a quién le duele</li>
+              <li>
+                Decisiones con trade-off: "RAG en vez de fine-tuning porque el
+                corpus cambia semanalmente"; "Sonnet en vez de Opus: 40% menos
+                costo por request perdiendo 2 puntos de score en mi eval"
+              </li>
+              <li>Tabla de métricas de evals con metodología</li>
+              <li>Setup reproducible en 3 comandos + sección "Limitaciones"</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Un reclutador técnico le dedica 90 segundos. La sección de trade-offs
+          es la que lo diferencia de los mil proyectos de tutorial.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: diagrama de arquitectura -->
+      <section class="slide">
+        <h2>Diagrama de arquitectura final</h2>
+        <pre><code><span class="c"># una página, el flujo de un request de punta a punta</span>
+
+Usuario ──▶ API (FastAPI) ──▶ Orquestador
+                                  │
+                ┌─────────────────┼───────────────────┐
+                ▼                 ▼                   ▼
+           Retriever        claude-sonnet-4-6       Tools
+          (pgvector)       (prompt + caching)   (APIs externas)
+                │                 │                   │
+                └────────▶ Logging / Evals ◀──────────┘
+                       (traces · p95 · costo)</code></pre>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            Una sola página: si necesita dos, su sistema o su diagrama tienen un
+            problema
+          </li>
+          <li>
+            Nombres concretos en cada caja: modelo con versión, base de datos
+            real, no "vector store genérico"
+          </li>
+          <li>
+            El logging y los evals aparecen en el diagrama — son parte de la
+            arquitectura, no un extra
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 7: estructura de la demo -->
+      <section class="slide">
+        <h2>Anatomía de la demo: 10 min + 10 de preguntas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Minuto</th>
+              <th>Qué muestra</th>
+              <th>Por qué</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0–2</td>
+              <td>El problema y a quién le duele</td>
+              <td>Sin dolor no hay proyecto: contexto antes que código</td>
+            </tr>
+            <tr>
+              <td>2–4</td>
+              <td>Arquitectura en 1 diagrama</td>
+              <td>Demuestra que las piezas fueron decisiones, no defaults</td>
+            </tr>
+            <tr>
+              <td>4–8</td>
+              <td>Demo en vivo: happy path + 1 caso difícil</td>
+              <td>El caso difícil que ya domó es su mejor argumento</td>
+            </tr>
+            <tr>
+              <td>8–10</td>
+              <td>Evidencia: tabla de métricas de evals</td>
+              <td>Cierra con números, no con "y bueno, eso es todo"</td>
+            </tr>
+            <tr>
+              <td>10–20</td>
+              <td>Preguntas</td>
+              <td>Aquí se gana o se pierde la entrevista — se practica</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Plan B obligatorio: video de respaldo de 60 segundos por si la demo en
+          vivo falla. Nadie perdona "es que en mi máquina sí funcionaba".
+        </p>
+      </section>
+
+      <!-- SLIDE 8: evals como evidencia -->
+      <section class="slide">
+        <h2>Evidencia: las métricas de evals son el argumento</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Métrica</th>
+              <th>Baseline (Semana 6)</th>
+              <th>Final (Semana 12)</th>
+              <th>Cómo se mide</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Faithfulness (sin alucinar)</td>
+              <td>0.62</td>
+              <td>0.91</td>
+              <td>Juez LLM sobre 50 casos etiquetados</td>
+            </tr>
+            <tr>
+              <td>Answer relevance</td>
+              <td>0.71</td>
+              <td>0.88</td>
+              <td>Juez LLM + revisión manual del 20%</td>
+            </tr>
+            <tr>
+              <td>Latencia p95</td>
+              <td>9.4 s</td>
+              <td>3.1 s</td>
+              <td>Traces de producción, últimos 7 días</td>
+            </tr>
+            <tr>
+              <td>Costo por request</td>
+              <td>$0.042</td>
+              <td>$0.011</td>
+              <td>Tokens × precio, con caching activo</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            "Funciona" no es evidencia. Un delta medido con metodología, sí
+          </li>
+          <li>
+            La columna "cómo se mide" es la que da credibilidad: tamaño de la
+            muestra, quién juzga, qué ventana de tiempo
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 9: código del juez LLM -->
+      <section class="slide">
+        <h2>El juez LLM que genera su evidencia</h2>
+        <pre><code><span class="c"># evals/judge.py — convierte su suite de evals en números para la demo</span>
+<span class="k">import</span> anthropic, json
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+<span class="k">def</span> <span class="f">juzgar</span>(pregunta: str, respuesta: str, contexto: str) -&gt; dict:
+    <span class="s">"""Devuelve {"score": 0-1, "razon": str} para un caso de la suite."""</span>
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=1024,
+        system=<span class="s">"Eres un juez estricto de faithfulness. Evalúa si la "</span>
+               <span class="s">"respuesta se sostiene SOLO en el contexto dado. "</span>
+               <span class="s">"Responde únicamente JSON: {\"score\": float, \"razon\": str}"</span>,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>:
+            <span class="k">f</span><span class="s">"Contexto:\n{contexto}\n\nPregunta: {pregunta}\n\nRespuesta: {respuesta}"</span>}],
+    )
+    <span class="k">return</span> json.<span class="f">loads</span>(resp.content[0].text)
+
+<span class="c"># 50 casos × ~600 tokens ≈ $0.15 por corrida completa con Sonnet</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Mismo modelo de juez en baseline y final — si cambia el juez, sus
+          deltas no significan nada.
+        </p>
+      </section>
+
+      <!-- SLIDE 10: las 5 preguntas difíciles -->
+      <section class="slide">
+        <h2>Las 5 preguntas que le van a hacer</h2>
+        <ul class="clean">
+          <li>
+            <strong
+              >¿Por qué no fine-tuning en vez de RAG (o viceversa)?</strong
+            >
+            — pregunta de trade-offs: costo de entrenamiento, frescura del
+            corpus, control de fuentes
+          </li>
+          <li>
+            <strong
+              >¿Cómo sabe que no alucina? ¿Qué mide exactamente su eval?</strong
+            >
+            — pregunta de rigor: muestra, juez, casos adversariales
+          </li>
+          <li>
+            <strong
+              >¿Qué pasa si el proveedor del LLM se cae o lo
+              rate-limitea?</strong
+            >
+            — pregunta de producción: retries, degradación, fallback
+          </li>
+          <li>
+            <strong
+              >¿Cuánto cuesta por usuario al mes y cómo lo bajaría 10x?</strong
+            >
+            — pregunta de negocio: caching, modelo más pequeño, batch API
+          </li>
+          <li>
+            <strong
+              >¿Cómo maneja prompt injection y datos sensibles en los
+              inputs?</strong
+            >
+            — pregunta de seguridad: validación, separación de instrucciones y
+            datos, qué se loguea
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1rem">
+          Fórmula para responder:
+          <strong>decisión + trade-off aceptado + evidencia</strong>. Nunca
+          "porque el tutorial lo hacía así".
+        </p>
+      </section>
+
+      <!-- SLIDE 11: idea fuerza -->
+      <section class="slide">
+        <h2>Idea fuerza</h2>
+        <blockquote>
+          Una demo no es para mostrar que funciona — es para probar, con
+          números, que usted toma buenas decisiones de ingeniería.
+        </blockquote>
+        <p class="muted">
+          Cualquiera puede pegar un wrapper sobre un LLM en un fin de semana. Lo
+          que distingue a un AI Engineer es el rastro de decisiones medidas: por
+          qué este modelo, por qué esta arquitectura, qué se sacrificó y cómo se
+          verificó. Eso es lo que el entrevistador está comprando.
+        </p>
+      </section>
+
+      <!-- SLIDE 12: ejercicio en vivo -->
+      <section class="slide">
+        <h2>Manos al código: el reporte de evidencia (30 min)</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Qué construimos juntos</h3>
+            <ul class="clean">
+              <li>
+                <strong>Min 0–10:</strong> conectar el juez de
+                <code>evals/judge.py</code> a su suite de 20+ casos y correrla
+                completa contra su proyecto
+              </li>
+              <li>
+                <strong>Min 10–20:</strong> script
+                <code>make evidence</code> que genera <code>EVIDENCE.md</code>:
+                tabla de métricas baseline vs final + 3 fallos que corrigió, con
+                el antes y el después
+              </li>
+              <li>
+                <strong>Min 20–30:</strong> ensayo cronometrado de la apertura
+                de 2 minutos (problema + arquitectura) con feedback en vivo
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Criterio de éxito al salir</h3>
+            <ul class="clean">
+              <li><code>EVIDENCE.md</code> generado y commiteado</li>
+              <li>
+                Al menos una métrica con baseline, valor final y metodología
+              </li>
+              <li>Su apertura de 2 min dicha en voz alta una vez, sin leer</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 13: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 11</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Demo Day: el paquete completo</h3>
+          <ul class="clean" style="margin-top: 0.6rem">
+            <li>
+              <strong>Demo grabada de 15 min</strong> siguiendo la estructura de
+              la sesión: problema → arquitectura → demo en vivo → evidencia (10
+              min) + respuestas a preguntas simuladas (5 min)
+            </li>
+            <li>
+              <strong>README final</strong> con decisiones y trade-offs,
+              métricas de evals, diagrama de arquitectura y limitaciones
+            </li>
+            <li>
+              <strong>5 preguntas difíciles de entrevista</strong> sobre su
+              proyecto, con respuestas preparadas por escrito usando la fórmula
+              decisión + trade-off + evidencia
+            </li>
+          </ul>
+          <p class="muted" style="margin-top: 0.8rem">
+            Evaluación: <code>coach/rubrica-demo-day.md</code>. La rúbrica pesa
+            evidencia y manejo de preguntas más que pulido visual — inviertan el
+            tiempo donde puntúa.
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=spvXj9tnWAQ"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/spvXj9tnWAQ/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Engineering Better Evals: Scalable LLM Evaluation Pipelines That
+                Work
+              </div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                Pipelines de evals en producción — la profundidad técnica para
+                usar métricas como evidencia central de su demo.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=zs7dDujtYPE"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/zs7dDujtYPE/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                How to build and deliver compelling technical demos
+              </div>
+              <div class="vc-meta">Dev Rel · Inglés</div>
+              <div class="vc-why">
+                Demos técnicas para audiencias de ingenieros — el formato exacto
+                de esta sesión: demo + preguntas.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=jILRVuLAS74"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/jILRVuLAS74/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                AI Projects That Actually Get You Hired in 2026
+              </div>
+              <div class="vc-meta">Aditya Singh · Inglés</div>
+              <div class="vc-why">
+                Qué proyectos de IA impresionan a reclutadores (agentes, RAG en
+                producción) — para enmarcar el suyo.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=Twn1q82SKpE"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/Twn1q82SKpE/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                How to explain a technical project during an interview
+              </div>
+              <div class="vc-meta">mthree · Inglés</div>
+              <div class="vc-why">
+                Estructura corta para el qué, por qué y cómo — preparación
+                directa para las 5 preguntas difíciles.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=aUbasIfag-E"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/aUbasIfag-E/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Tutorial | Cómo Escribir un README desde Cero en GitHub
+              </div>
+              <div class="vc-meta">Mauro · Español</div>
+              <div class="vc-why">
+                README profesional paso a paso — cubre el entregable de
+                documentación del reto.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Checklist de production-readiness recorrido contra su proyecto: cada
+            ítem cerrado o documentado en "Limitaciones"
+          </li>
+          <li>
+            <code>EVIDENCE.md</code> generado con al menos una métrica baseline
+            → final y su metodología
+          </li>
+          <li>Estructura de demo clara: minuto a minuto, con plan B grabado</li>
+          <li>
+            Sabe responder con la fórmula decisión + trade-off + evidencia
+          </li>
+          <li>
+            Reto agendado: demo de 15 min grabada + README final + 5 preguntas
+            con respuestas, antes de la próxima sesión
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong>Sesión 12 — System Design de Sistemas con LLMs</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

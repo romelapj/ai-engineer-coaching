@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sesión 12 — System Design de Sistemas con LLMs | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <!-- SLIDE 1: portada -->
+      <section class="slide active">
+        <div class="kicker">
+          AI Engineer Coaching · Fase 4 — Entrevistas · Semanas 13-14
+        </div>
+        <h1>Sesión 12<br />System Design de Sistemas con LLMs</h1>
+        <p class="lead">
+          Un marco repetible para diseñar sistemas con LLMs en 45 minutos:
+          requisitos, arquitectura, números y trade-offs dichos en voz alta.
+        </p>
+      </section>
+
+      <!-- SLIDE 2: agenda -->
+      <section class="slide">
+        <h2>Agenda — 90 minutos</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso</strong> — reto anterior + calentamiento: ¿qué le
+            preguntas al entrevistador <em>antes</em> de dibujar una sola caja?
+            (15 min)
+          </li>
+          <li>
+            <strong>Tema central</strong> — el marco de 6 pasos, los 4 casos
+            típicos y los 3 trade-offs que siempre caen (30 min)
+          </li>
+          <li>
+            <strong>Manos al código</strong> — pair programming:
+            <code>estimador.py</code>, tu calculadora de costos para la pizarra
+            (30 min)
+          </li>
+          <li>
+            <strong>Reto de la semana</strong> — 2 system designs por escrito,
+            45 min cada uno, con timer y rúbrica (10 min)
+          </li>
+          <li>
+            <strong>Cierre</strong> — checklist de salida y próxima sesión (5
+            min)
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 3: objetivos -->
+      <section class="slide">
+        <h2>Objetivos de la sesión</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🧭</span>
+            <h3>Dominar el marco</h3>
+            <p class="muted">
+              Requisitos → arquitectura → datos/retrieval → evals →
+              costos/escala → riesgos. Repetible hasta que salga solo, bajo
+              presión.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">⏱️</span>
+            <h3>2 casos timeboxed</h3>
+            <p class="muted">
+              Practicar el formato completo de entrevista: 45 minutos por caso,
+              con timer real. Sin timer no cuenta.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🗣️</span>
+            <h3>Trade-offs en voz alta</h3>
+            <p class="muted">
+              El entrevistador evalúa lo que oye, no lo que piensas. Cada
+              decisión se comunica con su alternativa y su número.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: el marco de 6 pasos -->
+      <section class="slide">
+        <h2>El marco: 6 pasos, siempre en este orden</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Paso</th>
+              <th>Qué resuelves</th>
+              <th>Dilo en voz alta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Requisitos</strong></td>
+              <td>Usuarios, volumen, latencia, qué es "correcto"</td>
+              <td>
+                "¿Cuántas requests/día? ¿P95 tolerable? ¿Qué pasa si la
+                respuesta es mala?"
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2. Arquitectura</strong></td>
+              <td>Componentes mínimos que cumplen los requisitos</td>
+              <td>
+                "Empiezo simple: una llamada al modelo. Agrego piezas solo si
+                algo lo exige."
+              </td>
+            </tr>
+            <tr>
+              <td><strong>3. Datos / retrieval</strong></td>
+              <td>Chunking, embeddings, índice, filtros, frescura</td>
+              <td>"El sistema vale lo que vale su retrieval."</td>
+            </tr>
+            <tr>
+              <td><strong>4. Evals</strong></td>
+              <td>Golden set, LLM-as-judge, métricas online</td>
+              <td>
+                "¿Cómo sé que la v2 es mejor que la v1? Sin eval, no se
+                despliega."
+              </td>
+            </tr>
+            <tr>
+              <td><strong>5. Costos / escala</strong></td>
+              <td>Tokens × volumen, caching, batch, tamaño de modelo</td>
+              <td>"Hagamos la cuenta: 100,000 req/día × 2,500 tokens…"</td>
+            </tr>
+            <tr>
+              <td><strong>6. Riesgos</strong></td>
+              <td>Prompt injection, alucinaciones, PII, degradación</td>
+              <td>"¿Qué hago cuando el modelo falla? Porque va a fallar."</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SLIDE 5: casos típicos -->
+      <section class="slide">
+        <h2>Los 4 casos que más caen en entrevista</h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">🤖</span>
+            <h3>Asistente de soporte con RAG</h3>
+            <p class="muted">
+              Retrieval + citas + escalamiento a humano. La calidad muere en el
+              chunking y el retrieval, no en el modelo. Mide groundedness, no
+              solo "suena bien".
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">👨‍💻</span>
+            <h3>Copiloto de código</h3>
+            <p class="muted">
+              Dos rutas con presupuestos distintos: autocompletar ~300–500 ms
+              (modelo pequeño, contexto local) vs. chat 2–5 s con streaming
+              (modelo grande, contexto de repo).
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📄</span>
+            <h3>Extracción masiva de documentos</h3>
+            <p class="muted">
+              Nadie mira un spinner → async con colas. Batch API: −50% de costo,
+              hasta 100,000 requests por lote. Structured outputs + validación
+              contra esquema.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔍</span>
+            <h3>Búsqueda semántica</h3>
+            <p class="muted">
+              Embeddings solos pierden con nombres propios, códigos y SKUs.
+              Híbrido (BM25 + vectores) con re-ranking casi siempre gana. Dilo
+              antes de que te lo pregunten.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: trade-off RAG vs fine-tune -->
+      <section class="slide">
+        <h2>Trade-off #1 — RAG vs fine-tuning</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>RAG: conocimiento</h3>
+            <ul class="clean">
+              <li>Datos que cambian (políticas, catálogo, docs)</li>
+              <li>Citas y verificabilidad — clave en soporte y legal</li>
+              <li>Aislamiento por tenant: cada cliente, su índice</li>
+              <li>Time-to-market: días, no semanas</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Fine-tuning: comportamiento</h3>
+            <ul class="clean">
+              <li>Formato, tono y estilo consistentes a escala</li>
+              <li>Dominio estable que no cambia cada semana</li>
+              <li>Prompts más cortos → menos tokens por request</li>
+              <li>
+                Costo oculto: pipeline de datos + re-entrenar en cada cambio
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.5rem">
+          Frase para la entrevista:
+          <strong
+            >"RAG para conocimiento, fine-tune para comportamiento — y prompt
+            engineering antes que ambos, porque es gratis."</strong
+          >
+        </p>
+      </section>
+
+      <!-- SLIDE 7: trade-off sync vs async -->
+      <section class="slide">
+        <h2>Trade-off #2 — Sync vs async</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>Sync: hay un humano esperando</h3>
+            <ul class="clean">
+              <li>Chat, copilotos, búsqueda interactiva</li>
+              <li>
+                Streaming: el primer token en &lt;1 s cambia la percepción
+              </li>
+              <li>Diseña para P95, no para el promedio</li>
+              <li>Timeouts + fallback a modelo más rápido</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Async: nadie mira el spinner</h3>
+            <ul class="clean">
+              <li>Extracción masiva, reportes, enriquecimiento de datos</li>
+              <li>Colas + workers + reintentos idempotentes</li>
+              <li>
+                Batch API: <strong>−50% de costo</strong>, mayoría de lotes en
+                &lt;1 h
+              </li>
+              <li>Hasta 100,000 requests o 256 MB por lote</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.5rem">
+          Regla rápida: ¿hay un humano mirando? Sync con streaming. ¿No lo hay?
+          Async con batch — y te acabas de ahorrar la mitad de la factura.
+        </p>
+      </section>
+
+      <!-- SLIDE 8: trade-off modelo grande vs pequeño -->
+      <section class="slide">
+        <h2>Trade-off #3 — Modelo grande vs pequeño</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Input $/M tok</th>
+              <th>Output $/M tok</th>
+              <th>Úsalo para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claude-opus-4-8</code></td>
+              <td>$5.00</td>
+              <td>$25.00</td>
+              <td>Razonamiento profundo, tareas agénticas largas</td>
+            </tr>
+            <tr>
+              <td><code>claude-sonnet-4-6</code></td>
+              <td>$3.00</td>
+              <td>$15.00</td>
+              <td>El workhorse de producción: calidad/costo balanceado</td>
+            </tr>
+            <tr>
+              <td><code>claude-haiku-4-5</code></td>
+              <td>$1.00</td>
+              <td>$5.00</td>
+              <td>Clasificación, routing, alta frecuencia, baja latencia</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.5rem">
+          Patrón ganador en entrevista: <strong>cascada</strong> — el modelo
+          pequeño clasifica/filtra el 80% barato y rápido; el grande resuelve el
+          20% difícil. Justifica el modelo con el caso y el número, nunca con el
+          hype.
+        </p>
+      </section>
+
+      <!-- SLIDE 9: costos en la pizarra -->
+      <section class="slide">
+        <h2>Costos en la pizarra: tokens × volumen</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          Caso: asistente de soporte, 100,000 req/día. Input 2,500 tok (2,000
+          estables: system + políticas + ejemplos; 500 variables) · output 300
+          tok · <code>claude-sonnet-4-6</code>.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Cálculo</th>
+              <th>$/día</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Input sin optimizar</td>
+              <td>250M tok × $3/M</td>
+              <td>$750</td>
+            </tr>
+            <tr>
+              <td>Output</td>
+              <td>30M tok × $15/M</td>
+              <td>$450</td>
+            </tr>
+            <tr>
+              <td><strong>Total sin optimizar</strong></td>
+              <td>—</td>
+              <td><strong>$1,200/día ≈ $36,000/mes</strong></td>
+            </tr>
+            <tr>
+              <td>Input con prompt caching</td>
+              <td>200M tok × $0.30/M (cache read ≈ 0.1×) + 50M × $3/M</td>
+              <td>$210</td>
+            </tr>
+            <tr>
+              <td><strong>Total optimizado</strong></td>
+              <td>—</td>
+              <td><strong>$660/día ≈ $19,800/mes (−45%)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Hacer esta cuenta en voz alta, con aritmética visible, te separa del
+          90% de los candidatos. Palancas siempre en este orden: caching → batch
+          → modelo más pequeño → recortar contexto.
+        </p>
+      </section>
+
+      <!-- SLIDE 10: código prompt caching -->
+      <section class="slide">
+        <h2>La palanca #1 en código: prompt caching</h2>
+        <pre><code><span class="c"># Asistente de soporte: RAG + caching del prefijo estable</span>
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=1024,
+    system=[{
+        <span class="s">"type"</span>: <span class="s">"text"</span>,
+        <span class="s">"text"</span>: POLITICAS_Y_EJEMPLOS,  <span class="c"># ~2,000 tokens estables</span>
+        <span class="s">"cache_control"</span>: {<span class="s">"type"</span>: <span class="s">"ephemeral"</span>},  <span class="c"># lectura ≈ 0.1× del precio</span>
+    }],
+    messages=[{
+        <span class="s">"role"</span>: <span class="s">"user"</span>,
+        <span class="s">"content"</span>: <span class="s">f"Contexto:\n{chunks}\n\nPregunta: {pregunta}"</span>,  <span class="c"># lo variable, al final</span>
+    }],
+)
+<span class="f">print</span>(resp.usage.cache_read_input_tokens)  <span class="c"># si esto da 0, no estás ahorrando nada</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          El cache es un prefix match: lo estable va primero, lo variable
+          (pregunta, chunks) al final. Un timestamp en el system prompt mata el
+          cache completo.
+        </p>
+      </section>
+
+      <!-- SLIDE 11: los 45 minutos -->
+      <section class="slide">
+        <h2>Cómo repartir los 45 minutos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Minuto</th>
+              <th>Bloque</th>
+              <th>Qué demuestras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0–5</td>
+              <td>Requisitos y alcance</td>
+              <td>Que no saltas a la solución</td>
+            </tr>
+            <tr>
+              <td>5–15</td>
+              <td>Arquitectura high-level</td>
+              <td>Que empiezas simple y justificas cada caja</td>
+            </tr>
+            <tr>
+              <td>15–25</td>
+              <td>Deep dive: datos y retrieval</td>
+              <td>Dominio técnico real, no buzzwords</td>
+            </tr>
+            <tr>
+              <td>25–32</td>
+              <td>Evals</td>
+              <td>Que piensas en calidad medible</td>
+            </tr>
+            <tr>
+              <td>32–38</td>
+              <td>Costos y escala</td>
+              <td>Números en la pizarra</td>
+            </tr>
+            <tr>
+              <td>38–43</td>
+              <td>Riesgos y trade-offs</td>
+              <td>Madurez de producción</td>
+            </tr>
+            <tr>
+              <td>43–45</td>
+              <td>Resumen y siguientes pasos</td>
+              <td>Comunicación ejecutiva</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Truco: anuncia el plan en el minuto 0 ("voy a cubrir requisitos,
+          arquitectura, datos, evals, costos y riesgos"). El entrevistador
+          relaja, tú controlas el reloj.
+        </p>
+      </section>
+
+      <!-- SLIDE 12: errores fatales + idea fuerza -->
+      <section class="slide">
+        <h2>Errores fatales</h2>
+        <ul class="clean">
+          <li>
+            <strong>Saltar a la solución sin requisitos</strong> — el error #1.
+            Dibujar antes de preguntar es reprobar en el minuto 2.
+          </li>
+          <li>Diseñar sin números: ni volumen, ni latencia, ni costo.</li>
+          <li>
+            "Le ponemos un agente" como respuesta a todo — complejidad sin
+            justificación es un red flag, no un plus.
+          </li>
+          <li>No mencionar evals: diseñaste algo que no sabes si funciona.</li>
+          <li>Pensar en silencio 3 minutos: lo que no se oye, no existe.</li>
+          <li>Defender tu primer diseño en vez de iterar con el feedback.</li>
+        </ul>
+        <blockquote>
+          Sin requisitos no hay diseño: hay una adivinanza cara. Pregunta
+          primero, dibuja después y ponle números a todo.
+        </blockquote>
+      </section>
+
+      <!-- SLIDE 13: ejercicio en vivo -->
+      <section class="slide">
+        <h2>🛠️ Ejercicio en vivo — pair programming (30 min)</h2>
+        <div class="card">
+          <span class="tag">Pair programming</span>
+          <span class="tag violet">30 min</span>
+          <h3 style="margin-top: 0.8rem">
+            <code>estimador.py</code> — tu calculadora de costos para la pizarra
+          </h3>
+          <p>
+            Un CLI en Python que recibe modelo, requests/día, tokens de
+            input/output, % de input cacheado y si va por Batch API — y devuelve
+            $/día, $/mes y costo por request.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              <strong>Min 0–10:</strong> función base — tokens × volumen ×
+              precio por modelo
+            </li>
+            <li>
+              <strong>Min 10–20:</strong> palancas — cache read a 0.1× del input
+              y batch a −50%
+            </li>
+            <li>
+              <strong>Min 20–30:</strong> correr 3 escenarios del caso de
+              soporte y decidir cuál defenderías en entrevista, en voz alta
+            </li>
+          </ul>
+          <p class="muted" style="margin-top: 0.8rem">
+            Entregable: el script queda en el repo. Lo vas a reutilizar en el
+            reto de la semana — la aritmética del paso 5 sale de aquí.
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 12</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">
+            2 system designs por escrito, con timer
+          </h3>
+          <p>
+            Resuelve dos casos completos usando el marco de 6 pasos,
+            <strong>45 minutos cada uno con timer real</strong> — cuando suena,
+            sueltas el lápiz: (1) asistente de soporte con RAG para un banco;
+            (2) pipeline de extracción masiva de facturas.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              Cada entrega: diagrama + los 6 pasos + estimación de costo con
+              aritmética visible
+            </li>
+            <li>
+              Mínimo 3 trade-offs explícitos con su justificación numérica
+            </li>
+            <li>
+              Autoevalúate con
+              <code>coach/rubrica-mock-system-design.md</code> y anota tus 2
+              puntos más débiles
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: videos -->
+      <section class="slide">
+        <h2>📺 Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=I9-PUPYZyiw"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/I9-PUPYZyiw/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Design ChatGPT — System Design Mock Interview (with eBay EM)
+              </div>
+              <div class="vc-meta">Exponent · Inglés</div>
+              <div class="vc-why">
+                Mock real de 45 min: el flujo completo que practicas hoy, de
+                requisitos a capas.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=zYGDpG-pTho"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/zYGDpG-pTho/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                RAG vs Fine-Tuning vs Prompt Engineering: Optimizing AI Models
+              </div>
+              <div class="vc-meta">IBM Technology · Inglés</div>
+              <div class="vc-why">
+                La matriz del trade-off #1 en 13 minutos, con el ángulo de costo
+                incluido.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=LzeC1AQ-U5o"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/LzeC1AQ-U5o/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Building Blocks for LLM Systems &amp; Products: Eugene Yan
+              </div>
+              <div class="vc-meta">AI Engineer · Inglés</div>
+              <div class="vc-why">
+                Los patrones de producción (evals, RAG, guardrails) que
+                sustentan el marco de 6 pasos.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=HqvCipfNiwI"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/HqvCipfNiwI/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                LLM System Design Interview: How to Optimise Inference Latency
+              </div>
+              <div class="vc-meta">Peetha Academy · Inglés</div>
+              <div class="vc-why">
+                Sync vs async, batching, caching y modelo grande vs pequeño,
+                aplicados a latencia.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=6r2SJyDRD9E"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/6r2SJyDRD9E/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                ¿Qué es RAG?: Retrieval Augmented Generation
+              </div>
+              <div class="vc-meta">Carlos Alarcón - AI · Español</div>
+              <div class="vc-why">
+                Nivelación en español de embeddings, base vectorial y
+                recuperación antes de los casos.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>Recito el marco de 6 pasos sin mirar notas</li>
+          <li>
+            Sé repartir los 45 minutos y anuncio el plan en voz alta al empezar
+          </li>
+          <li>
+            Tengo frase preparada para los 3 trade-offs: RAG vs fine-tune, sync
+            vs async, modelo grande vs pequeño
+          </li>
+          <li>
+            Puedo estimar el costo de un sistema en la pizarra: tokens ×
+            volumen, caching, batch
+          </li>
+          <li><code>estimador.py</code> corre y está commiteado en el repo</li>
+          <li>
+            Reto agendado: 2 designs de 45 min con timer antes de la próxima
+            sesión, autoevaluados con la rúbrica
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.5rem">
+          Próxima sesión:
+          <strong>Sesión 13 — Mock Interviews, Portfolio y Estrategia</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>
