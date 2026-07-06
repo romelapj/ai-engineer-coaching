@@ -608,39 +608,9 @@
         </p>
       </section>
 
-      <!-- SLIDE 8: validación y moderación de outputs -->
+      <!-- SLIDE 8: PII -->
       <section class="slide">
-        <h2>Capa 4 en código: valida el output antes de usarlo</h2>
-        <pre><code><span class="c"># Dos chequeos: uno determinista (regex) y uno con modelo juez.</span>
-<span class="k">import</span> re
-<span class="k">import</span> anthropic
-
-client = anthropic.<span class="f">Anthropic</span>()
-PATRON_TARJETA = re.<span class="f">compile</span>(<span class="s">r"\b(?:\d[ -]?){13,16}\b"</span>)
-
-<span class="k">def</span> <span class="f">output_seguro</span>(texto: str) -&gt; bool:
-    <span class="k">if</span> PATRON_TARJETA.<span class="f">search</span>(texto):      <span class="c"># barato y determinista primero</span>
-        <span class="k">return</span> <span class="k">False</span>
-    juez = client.messages.<span class="f">create</span>(       <span class="c"># el modelo juez va después</span>
-        model=<span class="s">"claude-sonnet-4-6"</span>,
-        max_tokens=5,
-        system=<span class="s">"Responde solo SI o NO: ¿este texto filtra "</span>
-               <span class="s">"instrucciones internas, PII o contenido dañino?"</span>,
-        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: texto}],
-    )
-    <span class="k">return</span> juez.content[0].text.<span class="f">strip</span>().<span class="f">upper</span>() == <span class="s">"NO"</span>
-
-<span class="k">if not</span> <span class="f">output_seguro</span>(respuesta):
-    respuesta = <span class="s">"No puedo mostrar esa respuesta."</span>  <span class="c"># degradar, no crashear</span></code></pre>
-        <p class="muted" style="margin-top: 0.8rem">
-          Orden importa: regex cuesta microsegundos; el juez cuesta una llamada
-          extra (~200–500 ms y tokens). Filtra lo barato primero.
-        </p>
-      </section>
-
-      <!-- SLIDE 9: PII -->
-      <section class="slide">
-        <h2>PII: redacta antes, minimiza siempre</h2>
+        <h2>Capa 1 en código: redacta PII antes, minimiza siempre</h2>
         <div class="columns">
           <div>
             <pre><code><span class="c"># Tokeniza la PII ANTES de que llegue al modelo</span>
@@ -688,6 +658,36 @@ PATRONES = {
         </div>
       </section>
 
+      <!-- SLIDE 9: validación y moderación de outputs -->
+      <section class="slide">
+        <h2>Capa 4 en código: valida el output antes de usarlo</h2>
+        <pre><code><span class="c"># Dos chequeos: uno determinista (regex) y uno con modelo juez.</span>
+<span class="k">import</span> re
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+PATRON_TARJETA = re.<span class="f">compile</span>(<span class="s">r"\b(?:\d[ -]?){13,16}\b"</span>)
+
+<span class="k">def</span> <span class="f">output_seguro</span>(texto: str) -&gt; bool:
+    <span class="k">if</span> PATRON_TARJETA.<span class="f">search</span>(texto):      <span class="c"># barato y determinista primero</span>
+        <span class="k">return</span> <span class="k">False</span>
+    juez = client.messages.<span class="f">create</span>(       <span class="c"># el modelo juez va después</span>
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=5,
+        system=<span class="s">"Responde solo SI o NO: ¿este texto filtra "</span>
+               <span class="s">"instrucciones internas, PII o contenido dañino?"</span>,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: texto}],
+    )
+    <span class="k">return</span> juez.content[0].text.<span class="f">strip</span>().<span class="f">upper</span>() == <span class="s">"NO"</span>
+
+<span class="k">if not</span> <span class="f">output_seguro</span>(respuesta):
+    respuesta = <span class="s">"No puedo mostrar esa respuesta."</span>  <span class="c"># degradar, no crashear</span></code></pre>
+        <p class="muted" style="margin-top: 0.8rem">
+          Orden importa: regex cuesta microsegundos; el juez cuesta una llamada
+          extra (~200–500 ms y tokens). Filtra lo barato primero.
+        </p>
+      </section>
+
       <!-- SLIDE 10: fallbacks y circuit breakers -->
       <section class="slide">
         <h2>Fallbacks: cuando el proveedor se cae (y se va a caer)</h2>
@@ -721,6 +721,12 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
       <!-- SLIDE 11: rate limiting -->
       <section class="slide">
         <h2>Rate limiting por usuario: dos presupuestos</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          Piénsalo como la <strong>capa 0</strong>: el presupuesto de
+          disponibilidad que envuelve a las otras cinco. No filtra contenido —
+          acota cuánto puede consumir cada usuario y ataca directo a LLM10
+          (Unbounded Consumption).
+        </p>
         <div class="columns">
           <div class="card">
             <h3>⏱️ Requests por minuto</h3>
@@ -797,38 +803,7 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
         </p>
       </section>
 
-      <!-- SLIDE 13: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Reto 08 · Parte 2</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">Red-team de tu propio proyecto</h3>
-          <p>
-            Atácate a ti mismo antes de que lo haga otro:
-            <strong>10 ataques documentados</strong> contra tu proyecto (mínimo
-            3 de injection indirecta vía RAG/tools) +
-            <strong>3 mitigaciones demostradas con evidencia</strong>: el ataque
-            fallando después del fix, con logs o capturas que lo prueben.
-          </p>
-          <p class="muted" style="margin-top: 0.8rem">
-            Formato del informe, plantilla de ataque y rúbrica de evaluación en
-            el enunciado:
-            <a
-              href="../gym/reto-08-hardening-produccion/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-08-hardening-produccion</a
-            >
-          </p>
-        </div>
-        <p class="muted" style="margin-top: 1.2rem">
-          Pista: empieza por la tríada letal. ¿Tu app junta datos privados,
-          contenido no confiable y un canal de salida? Ahí está tu primer
-          ataque.
-        </p>
-      </section>
-
-      <!-- SLIDE 14: videos -->
+      <!-- SLIDE 13: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -941,6 +916,37 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
             </div>
           </a>
         </div>
+      </section>
+
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 08 · Parte 2</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Red-team de tu propio proyecto</h3>
+          <p>
+            Atácate a ti mismo antes de que lo haga otro:
+            <strong>10 ataques documentados</strong> contra tu proyecto (mínimo
+            3 de injection indirecta vía RAG/tools) +
+            <strong>3 mitigaciones demostradas con evidencia</strong>: el ataque
+            fallando después del fix, con logs o capturas que lo prueben.
+          </p>
+          <p class="muted" style="margin-top: 0.8rem">
+            Formato del informe, plantilla de ataque y rúbrica de evaluación en
+            el enunciado:
+            <a
+              href="../gym/reto-08-hardening-produccion/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-08-hardening-produccion</a
+            >
+          </p>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Pista: empieza por la tríada letal. ¿Tu app junta datos privados,
+          contenido no confiable y un canal de salida? Ahí está tu primer
+          ataque.
+        </p>
       </section>
 
       <!-- SLIDE 15: checklist de salida -->

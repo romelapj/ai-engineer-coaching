@@ -411,9 +411,10 @@
         <h2>Agenda — 90 minutos</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — reto anterior + calentamiento: ¿qué le
-            preguntas al entrevistador <em>antes</em> de dibujar una sola caja?
-            (15 min)
+            <strong>Repaso</strong> — calentamiento: pasamos tu proyecto del
+            Demo Day (S11) por el marco de 6 pasos en 5 min. Ya conoces las
+            respuestas; hoy aprendes a darlas en frío. Y antes de dibujar una
+            caja: ¿qué le preguntas al entrevistador? (15 min)
           </li>
           <li>
             <strong>Tema central</strong> — el marco de 6 pasos, los 4 casos
@@ -520,6 +521,11 @@
             </tr>
           </tbody>
         </table>
+        <p class="muted" style="margin-top: 1.5rem">
+          Estrena el marco con algo que ya conoces: tu proyecto del Demo Day. Si
+          sabes responder los 6 pasos sobre él, sabes recorrerlos en frío sobre
+          cualquier caso nuevo.
+        </p>
       </section>
 
       <!-- SLIDE 5: casos típicos -->
@@ -677,6 +683,10 @@
       <!-- SLIDE 9: costos en la pizarra -->
       <section class="slide">
         <h2>Costos en la pizarra: tokens × volumen</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          Los tres trade-offs anteriores no son teoría: se pagan en la factura.
+          Hagamos la cuenta.
+        </p>
         <p class="muted" style="margin-bottom: 1.2rem">
           Caso: asistente de soporte, 100,000 req/día. Input 2,500 tok (2,000
           estables: system + políticas + ejemplos; 500 variables) · output 300
@@ -868,39 +878,7 @@ resp = client.messages.<span class="f">create</span>(
         </div>
       </section>
 
-      <!-- SLIDE 14: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 12</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">
-            2 system designs por escrito, con timer
-          </h3>
-          <p>
-            Resuelve dos casos completos usando el marco de 6 pasos,
-            <strong>45 minutos cada uno con timer real</strong> — cuando suena,
-            sueltas el lápiz: (1) asistente de soporte con RAG para un banco;
-            (2) pipeline de extracción masiva de facturas.
-          </p>
-          <ul class="clean" style="margin-top: 0.8rem">
-            <li>
-              Cada entrega: diagrama + los 6 pasos + estimación de costo con
-              aritmética visible
-            </li>
-            <li>
-              Mínimo 3 trade-offs explícitos con su justificación numérica
-            </li>
-            <li>
-              Autoevalúate con
-              <code>coach/rubrica-mock-system-design.md</code> y anota tus 2
-              puntos más débiles
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- SLIDE 15: videos -->
+      <!-- SLIDE 14: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -1012,6 +990,38 @@ resp = client.messages.<span class="f">create</span>(
         </div>
       </section>
 
+      <!-- SLIDE 15: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 12</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">
+            2 system designs por escrito, con timer
+          </h3>
+          <p>
+            Resuelve dos casos completos usando el marco de 6 pasos,
+            <strong>45 minutos cada uno con timer real</strong> — cuando suena,
+            sueltas el lápiz: (1) asistente de soporte con RAG para un banco;
+            (2) pipeline de extracción masiva de facturas.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              Cada entrega: diagrama + los 6 pasos + estimación de costo con
+              aritmética visible
+            </li>
+            <li>
+              Mínimo 3 trade-offs explícitos con su justificación numérica
+            </li>
+            <li>
+              Autoevalúate con
+              <code>coach/rubrica-mock-system-design.md</code> y anota tus 2
+              puntos más débiles
+            </li>
+          </ul>
+        </div>
+      </section>
+
       <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -1035,8 +1045,10 @@ resp = client.messages.<span class="f">create</span>(
           </li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
-          Próxima sesión:
-          <strong>Sesión 13 — Mock Interviews, Portfolio y Estrategia</strong>
+          Próxima sesión —
+          <strong>Sesión 13: Mock Interviews, Portfolio y Estrategia</strong>:
+          el marco que dominaste ES la ronda de system design de la entrevista;
+          la próxima arma las otras rondas y tu portfolio para llegar a ellas.
         </p>
       </section>
     </main>

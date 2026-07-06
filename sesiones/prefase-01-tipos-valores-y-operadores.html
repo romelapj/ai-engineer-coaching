@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Pre-Fase N01 — Tipos, valores y operadores | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <section class="slide active">
+        <div class="kicker">
+          Pre-Fase 0.5 — Fundamentos de Python · Día 2 de 6
+        </div>
+        <h1>Tipos, valores<br />y operadores</h1>
+        <p class="lead">
+          Aquí vive la mitad de lo que hace que un código "se vea Pythonic". Si
+          esto te sale fluido, leer código ajeno deja de tener sorpresas.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso (5 min):</strong> un traceback nuevo, en voz alta, en
+            60 segundos.
+          </li>
+          <li>
+            <strong>Tema central (35 min):</strong> tipos, conversión, trampas
+            numéricas, f-strings, truthiness, mutabilidad, <code>is</code> vs
+            <code>==</code>.
+          </li>
+          <li>
+            <strong>Manos al código (35 min):</strong> un conversor de unidades
+            + un formateador de reportes.
+          </li>
+          <li>
+            <strong>Kata del día (10 min):</strong> kata-01 — tipos y
+            conversión.
+          </li>
+          <li><strong>Cierre (5 min):</strong> checklist de salida.</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          El día más denso en "cosas Pythonic". Vamos rápido en lo universal y
+          despacio en lo que es propio de Python.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Los tipos que vas a usar todo el día</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Qué es</th>
+              <th>Ejemplos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>int</code></td>
+              <td>Enteros de precisión arbitraria (no hay overflow)</td>
+              <td><code>42</code>, <code>-7</code>, <code>10_000</code></td>
+            </tr>
+            <tr>
+              <td><code>float</code></td>
+              <td>Coma flotante IEEE 754</td>
+              <td>
+                <code>3.14</code>, <code>1e-3</code>, <code>float('inf')</code>
+              </td>
+            </tr>
+            <tr>
+              <td><code>str</code></td>
+              <td>Texto Unicode <strong>inmutable</strong></td>
+              <td><code>'hola'</code>, <code>'linea\n'</code></td>
+            </tr>
+            <tr>
+              <td><code>bool</code></td>
+              <td>
+                Subtipo de <code>int</code>: <code>True==1</code>,
+                <code>False==0</code>
+              </td>
+              <td><code>True</code>, <code>False</code></td>
+            </tr>
+            <tr>
+              <td><code>None</code></td>
+              <td>Ausencia de valor (singleton)</td>
+              <td><code>None</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Cinco tipos básicos. <code>bool</code> es literalmente un
+          <code>int</code> disfrazado, y eso será útil más adelante.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Conversión SIEMPRE explícita</h2>
+        <pre><code><span class="c"># El dato que nos acompaña hoy: una linea de un CSV de precios</span>
+fila = <span class="s">"café,1990,"</span>              <span class="c"># nombre, precio (texto), stock (vacio)</span>
+nombre, precio_str, stock_str = fila.<span class="f">split</span>(<span class="s">","</span>)
+
+<span class="c"># print(precio_str + 100)       # TypeError: no se mezcla str con int</span>
+precio = <span class="f">int</span>(precio_str)          <span class="c"># conversion explicita: '1990' -&gt; 1990</span>
+etiqueta = <span class="s">"Total: $"</span> + <span class="f">str</span>(precio)  <span class="c"># concatenar pide str() explicito</span>
+<span class="f">print</span>(nombre, etiqueta)          <span class="c"># café Total: $1990</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>int()</code>, <code>float()</code>, <code>str()</code>,
+          <code>bool()</code> son los conversores. Ojo:
+          <code>int('3.0')</code> lanza <code>ValueError</code> (no es un entero
+          literal), pero <code>int(float('3.0'))</code> funciona — el camino
+          importa.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Dos trampas numéricas que debes conocer</h2>
+        <pre><code><span class="f">print</span>(0.1 + 0.2)                     <span class="c"># 0.30000000000000004</span>
+<span class="k">import</span> math
+<span class="f">print</span>(math.<span class="f">isclose</span>(0.1 + 0.2, 0.3)) <span class="c"># True</span>
+
+<span class="f">print</span>(7 / 2, 7 // 2, 7 % 2)         <span class="c"># 3.5 3 1</span>
+
+activos = [<span class="k">True</span>, <span class="k">False</span>, <span class="k">True</span>, <span class="k">True</span>]
+<span class="f">print</span>(<span class="f">sum</span>(activos))                 <span class="c"># 3   (bool suma como int)</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>float</code> no es exacto: nunca compares floats con
+          <code>==</code> a secas — usa <code>math.isclose</code>. Para dinero
+          (como el <code>precio</code> de la fila) usa enteros en centavos o
+          <code>decimal.Decimal</code>. Recuerda: <code>/</code> siempre da
+          float, <code>//</code> es división entera, <code>%</code> es el resto.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>f-strings: formato que se lee</h2>
+        <pre><code>nombre, precio = <span class="s">"café"</span>, 1990
+<span class="f">print</span>(<span class="s">f"&#123;nombre:&lt;10&#125;|&#123;precio:&gt;10.2f&#125;"</span>)  <span class="c"># café      |   1990.00</span>
+
+tasa = 0.3082
+<span class="f">print</span>(<span class="s">f"Error: &#123;tasa:.1%&#125;"</span>)             <span class="c"># Error: 30.8%</span>
+
+total = 1500000
+<span class="f">print</span>(<span class="s">f"&#123;total:,&#125;"</span>)                      <span class="c"># 1,500,000</span>
+
+x = 42
+<span class="f">print</span>(<span class="s">f"&#123;x=&#125;"</span>)                          <span class="c"># x=42   (debug instantaneo)</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Mini-lenguaje tras <code>:</code> — <code>.2f</code> dos decimales,
+          <code>&gt;8</code> ancho 8 a la derecha, <code>,</code> separador de
+          miles, <code>.1%</code> porcentaje, <code>!r</code> usa
+          <code>repr()</code>. Y <code>f'&#123;valor=&#125;'</code> imprime
+          nombre y valor: oro puro para depurar.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Truthiness: "falso" sin ser False</h2>
+        <div class="columns">
+          <div>
+            <h3>Qué pasa en un <code>if</code></h3>
+            <ul class="clean">
+              <li>
+                En un <code>if</code> o en <code>and</code>/<code>or</code>,
+                Python evalúa la "verdad" del objeto, no solo
+                <code>True</code>/<code>False</code>.
+              </li>
+              <li>
+                <strong>Falsy:</strong> <code>None</code>, <code>False</code>,
+                <code>0</code>, <code>0.0</code>, <code>''</code>,
+                <code>[]</code>, <code>&#123;&#125;</code>,
+                <code>set()</code> vacío.
+              </li>
+              <li>
+                <strong>Truthy:</strong> todo lo demás — cualquier número no
+                cero, cualquier colección no vacía.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Por qué importa</h3>
+            <ul class="clean">
+              <li>
+                <code>if items:</code> es idiomático para "si la lista no está
+                vacía", mejor que <code>if len(items) &gt; 0</code>.
+              </li>
+              <li>
+                <code>and</code>/<code>or</code> devuelven
+                <strong>un operando</strong>, no un bool.
+              </li>
+              <li>
+                <code>nombre or "anonimo"</code> da un <em>default</em> elegante
+                en una línea.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Truthiness en la práctica</h2>
+        <pre><code><span class="k">def</span> <span class="f">resumen</span>(nombres):
+    <span class="k">if</span> <span class="k">not</span> nombres:                 <span class="c"># None o lista vacia</span>
+        <span class="k">return</span> <span class="s">"sin datos"</span>
+    <span class="k">return</span> <span class="s">", "</span>.<span class="f">join</span>(nombres)
+
+<span class="f">print</span>(<span class="f">resumen</span>([]))                  <span class="c"># 'sin datos'</span>
+<span class="f">print</span>(<span class="f">resumen</span>([<span class="s">"Ana"</span>, <span class="s">"Beto"</span>]))     <span class="c"># 'Ana, Beto'</span>
+
+stock_str = <span class="s">""</span>                     <span class="c"># el mismo campo vacio de la fila de café</span>
+stock = stock_str <span class="k">or</span> <span class="s">"sin stock"</span>   <span class="c"># '' es falsy -&gt; usa el default</span>
+<span class="f">print</span>(stock)                        <span class="c"># 'sin stock'</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Cuidado con la trampa: <code>0</code> es falsy, así que
+          <code>stock or 10</code> convierte un <code>0</code> legítimo (un
+          stock agotado) en <code>10</code>. Cuando el cero es un valor válido,
+          usa <code>stock if stock is not None else 10</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>La gran línea: mutable vs inmutable</h2>
+        <blockquote>
+          "Modificar" un <code>str</code> con <code>s.upper()</code> en realidad
+          crea un <code>str</code> nuevo; el original jamás cambió. Esa
+          distinción decide si pasar un objeto a una función puede alterarlo
+          desde fuera.
+        </blockquote>
+        <div class="columns">
+          <div>
+            <h3>Inmutables</h3>
+            <ul class="clean">
+              <li>
+                <code>int</code>, <code>float</code>, <code>str</code>,
+                <code>bool</code>, <code>tuple</code>, <code>frozenset</code>.
+              </li>
+              <li>
+                Una vez creados, <strong>no</strong> cambian. Pasarlos a una
+                función es seguro.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Mutables</h3>
+            <ul class="clean">
+              <li><code>list</code>, <code>dict</code>, <code>set</code>.</li>
+              <li>
+                Se modifican en su sitio (<code>.append</code>,
+                <code>[k]=v</code>, <code>.add</code>). Una función puede
+                mutarlos.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Es la causa #1 de bugs sutiles para quien viene de lenguajes con otra
+          semántica de copia.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Mutabilidad: el bug del aliasing</h2>
+        <pre><code>a = [1, 2, 3]
+b = a                  <span class="c"># b NO es una copia: misma lista</span>
+b.<span class="f">append</span>(4)
+<span class="f">print</span>(a)               <span class="c"># [1, 2, 3, 4]  &lt;- a tambien cambio</span>
+
+c = a[:]               <span class="c"># ahora si, una copia superficial</span>
+c.<span class="f">append</span>(99)
+<span class="f">print</span>(a)               <span class="c"># [1, 2, 3, 4]  &lt;- a intacta</span>
+
+s = <span class="s">"hola"</span>
+t = s.<span class="f">upper</span>()          <span class="c"># crea un str nuevo</span>
+<span class="f">print</span>(s, t)            <span class="c"># hola HOLA   &lt;- s NO cambio</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Reasignar (<code>s = s + 'x'</code>) crea un objeto nuevo; mutar
+          (<code>lista.append('x')</code>) toca el mismo. Dos nombres pueden
+          apuntar a la MISMA lista: el clásico aliasing inesperado cuando crees
+          que copiaste pero solo etiquetaste.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>is vs == : identidad vs igualdad</h2>
+        <pre><code>a = [1, 2]
+b = [1, 2]
+<span class="f">print</span>(a == b)     <span class="c"># True  (mismo valor)</span>
+<span class="f">print</span>(a <span class="k">is</span> b)     <span class="c"># False (objetos distintos)</span>
+
+descuento = <span class="k">None</span>  <span class="c"># la fila de café no traia columna de descuento</span>
+<span class="f">print</span>(descuento <span class="k">is</span> <span class="k">None</span>)  <span class="c"># True  &lt;- idiomatico</span>
+
+n = 1000
+m = 1000
+<span class="f">print</span>(n == m)     <span class="c"># True  (siempre, por valor)</span>
+<span class="c"># print(n is m)   # depende de la cache: NO te apoyes en esto</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>==</code> compara VALOR (¿representan lo mismo?);
+          <code>is</code> compara IDENTIDAD (¿son el mismo objeto?). Casi
+          siempre quieres <code>==</code>; usa <code>is</code> solo con
+          singletons: <code>None</code>, <code>True</code>, <code>False</code>.
+          Enteros chicos y strings cortos a veces comparten objeto por caché,
+          pero NUNCA dependas de eso.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Asignación múltiple y desempaquetado</h2>
+        <pre><code>x, y = 10, 20
+x, y = y, x                 <span class="c"># swap, sin variable temporal</span>
+<span class="f">print</span>(x, y)                 <span class="c"># 20 10</span>
+
+punto = (4, 7)
+col, fila = punto           <span class="c"># nombres con sentido &gt; punto[0], punto[1]</span>
+
+primero, *resto = [1, 2, 3, 4]
+<span class="f">print</span>(primero, resto)       <span class="c"># 1 [2, 3, 4]</span>
+
+anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span>(<span class="s">"-"</span>)   <span class="c"># desempaquetado tras split</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          En <code>a, b = b, a</code> Python construye primero la tupla de la
+          derecha, luego la desempaqueta: por eso el swap funciona sin temporal.
+          El <code>*</code> captura "el resto" en una lista.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Manos al código — Conversor + formateador (35 min)</h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">🌡️</span>
+            <h3>1 · Conversor de temperaturas (10 min)</h3>
+            <p class="muted">
+              Lee strings, convierte explícito, devuelve floats. Maneja
+              <code>'37.5'</code> y entradas vacías sin reventar.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📊</span>
+            <h3>2 · Formateador de reportes (15 min)</h3>
+            <p class="muted">
+              Dada una lista de <code>(producto, precio, cantidad)</code>,
+              imprime una tabla alineada con f-strings: precios a 2 decimales,
+              totales con separador de miles.
+            </p>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">✨</span>
+            <h3>3 · Truthiness drill (5 min)</h3>
+            <p class="muted">
+              Reescribe 5 condiciones verbosas (<code>len(x) &gt; 0</code>,
+              <code>x != None</code>) a su forma idiomática.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔍</span>
+            <h3>4 · is vs == (5 min)</h3>
+            <p class="muted">
+              Predice la salida de 6 comparaciones <strong>antes</strong> de
+              correrlas; explica cada una en una frase.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=vTX3IwquFkc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/vTX3IwquFkc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                String Formatting — Advanced Operations (f-strings)
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Cubre el mini-lenguaje de formato de f-strings (decimales,
+                ancho, alineación) que esta sesión exige fluido.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=mO_dS3rXDIs"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/mO_dS3rXDIs/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">Python's '==' vs 'is' Operators</div>
+              <div class="vc-meta">mCoding · Inglés</div>
+              <div class="vc-why">
+                Aclara identidad vs igualdad y la trampa de la caché de enteros
+                sin caer en mitos.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/results?search_query=MoureDev+tipos+de+datos+y+variables+en+Python"
+            target="_blank"
+            rel="noopener"
+          >
+            <div>
+              <div class="vc-title">Tipos de datos y variables en Python</div>
+              <div class="vc-meta">MoureDev by Brais Moure · Español</div>
+              <div class="vc-why">
+                Refuerzo en español de tipos, conversión y mutabilidad para
+                afianzar el modelo antes de las estructuras.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Kata del día — kata-01</h2>
+        <div class="card">
+          <span class="tag violet">Kata kata-01</span>
+          <span class="tag green">Entregable</span>
+          <h3>Tipos y conversión — conversor de unidades</h3>
+          <p class="muted">
+            Construye un conversor de unidades con conversiones explícitas desde
+            <code>str</code> o <code>float</code>. Demuestra que distingues
+            <code>str</code> de número, que conviertes a propósito y que
+            formateas con f-strings. Cero comparaciones de strings donde van
+            números.
+          </p>
+          <p class="muted" style="margin-top: 1.2rem">
+            <strong>Criterio medible:</strong> <code>pytest</code> verde contra
+            salidas exactas, incluyendo floats redondeados y casos borde
+            (entrada vacía, decimales como string).
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Convierto entre tipos siempre explícito y sé qué entradas hacen
+            fallar <code>int()</code>/<code>float()</code>.
+          </li>
+          <li>
+            Uso truthiness idiomático (<code>if items</code>,
+            <code>x or default</code>) y sé cuándo <code>0</code>/<code
+              >''</code
+            >
+            me traicionan.
+          </li>
+          <li>
+            Escribo f-strings con decimales, ancho, alineación, <code>%</code> y
+            separador de miles sin consultar.
+          </li>
+          <li>
+            Predigo si una operación muta o crea un objeto nuevo, y entiendo el
+            aliasing.
+          </li>
+          <li>
+            Uso <code>is None</code> para singletons y <code>==</code> para
+            valores; explico la diferencia.
+          </li>
+          <li>Hago swap y desempaquetado sin variable temporal.</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Próxima sesión:
+          <strong>Estructuras de datos — listas, tuplas, dicts y sets</strong>
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

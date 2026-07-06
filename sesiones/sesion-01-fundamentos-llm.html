@@ -402,6 +402,11 @@
           Entender qué pasa por dentro de un LLM —tokens, atención, training,
           embeddings— para dejar de usarlo como caja negra.
         </p>
+        <blockquote>
+          Arrancamos con una pregunta tonta que casi ningún LLM respondía bien:
+          ¿cuántas "r" tiene <em>strawberry</em>? La respuesta explica los
+          tokens, la factura y la mitad de los bugs que vas a ver.
+        </blockquote>
       </section>
 
       <!-- SLIDE 2: agenda -->
@@ -591,9 +596,41 @@ count = client.messages.<span class="f">count_tokens</span>(
         </p>
       </section>
 
+      <section class="slide">
+        <h2>Muestreo: temperature, top_p, max_tokens</h2>
+        <pre><code><span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+resp = client.messages.<span class="f">create</span>(
+    model=<span class="s">"claude-sonnet-4-6"</span>,
+    max_tokens=300,        <span class="c"># tope DURO de salida; si lo toca, corta a media frase</span>
+    temperature=1.0,       <span class="c"># 0.0 = conservador · 1.0 = creativo (rango Claude: 0–1)</span>
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"3 nombres para una fintech"</span>}],
+)
+<span class="f">print</span>(resp.stop_reason)  <span class="c"># "end_turn" ok · "max_tokens" = se quedó corto</span>
+<span class="f">print</span>(resp.usage.input_tokens, resp.usage.output_tokens)  <span class="c"># lo que pagas</span></code></pre>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            <code>temperature</code> escala la distribución antes de muestrear;
+            <code>top_p</code> (nucleus) recorta a los tokens que acumulan p.ej.
+            el 90% de probabilidad. En Claude 4+ usa
+            <strong>uno u otro, nunca ambos</strong> — el API devuelve 400.
+          </li>
+          <li>
+            Receta: extracción/clasificación → temperature baja; brainstorming y
+            copy → alta. Revisa siempre <code>stop_reason</code> antes de
+            confiar en la salida.
+          </li>
+        </ul>
+      </section>
+
       <!-- SLIDE 7: transformer -->
       <section class="slide">
         <h2>El transformer en una slide</h2>
+        <p class="muted" style="margin-bottom: 1.4rem">
+          Ya sabes cuánto cuesta cada token y cómo controlar la salida. Abramos
+          la caja: ¿por qué el modelo responde lo que responde?
+        </p>
         <ul class="clean">
           <li>
             <strong>Pipeline:</strong> texto → tokens → embeddings → N bloques
@@ -659,75 +696,6 @@ count = client.messages.<span class="f">count_tokens</span>(
         </p>
       </section>
 
-      <!-- SLIDE 9: embeddings y similitud coseno -->
-      <section class="slide">
-        <h2>Embeddings y similitud coseno</h2>
-        <div class="columns">
-          <div>
-            <ul class="clean">
-              <li>
-                Un embedding es un vector (p. ej. 1024 dims) donde la
-                <strong>dirección</strong> codifica el significado: frases
-                similares apuntan parecido.
-              </li>
-              <li>
-                Similitud coseno = coseno del ángulo entre vectores: 1 ≈ mismo
-                significado, ~0 = sin relación.
-              </li>
-              <li>
-                Es la base de RAG, búsqueda semántica, deduplicación y
-                clustering.
-              </li>
-              <li>
-                El API de Anthropic no expone embeddings: usa
-                <strong>Voyage AI</strong> (su partner recomendado) o
-                <code>sentence-transformers</code> open source.
-              </li>
-            </ul>
-          </div>
-          <pre><code><span class="k">import</span> numpy <span class="k">as</span> np
-
-<span class="k">def</span> <span class="f">cos_sim</span>(a, b):
-    <span class="k">return</span> np.<span class="f">dot</span>(a, b) / (
-        np.linalg.<span class="f">norm</span>(a) * np.linalg.<span class="f">norm</span>(b)
-    )
-
-<span class="c"># "pagar con tarjeta" vs "checkout con visa"</span>
-<span class="c"># → ~0.83  (cercanas)</span>
-<span class="c"># "pagar con tarjeta" vs "receta de arepas"</span>
-<span class="c"># → ~0.12  (nada que ver)</span></code></pre>
-        </div>
-      </section>
-
-      <!-- SLIDE 10: parámetros de muestreo -->
-      <section class="slide">
-        <h2>Muestreo: temperature, top_p, max_tokens</h2>
-        <pre><code><span class="k">import</span> anthropic
-
-client = anthropic.<span class="f">Anthropic</span>()
-resp = client.messages.<span class="f">create</span>(
-    model=<span class="s">"claude-sonnet-4-6"</span>,
-    max_tokens=300,        <span class="c"># tope DURO de salida; si lo toca, corta a media frase</span>
-    temperature=1.0,       <span class="c"># 0.0 = conservador · 1.0 = creativo (rango Claude: 0–1)</span>
-    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"3 nombres para una fintech"</span>}],
-)
-<span class="f">print</span>(resp.stop_reason)  <span class="c"># "end_turn" ok · "max_tokens" = se quedó corto</span>
-<span class="f">print</span>(resp.usage.input_tokens, resp.usage.output_tokens)  <span class="c"># lo que pagas</span></code></pre>
-        <ul class="clean" style="margin-top: 1.2rem">
-          <li>
-            <code>temperature</code> escala la distribución antes de muestrear;
-            <code>top_p</code> (nucleus) recorta a los tokens que acumulan p.ej.
-            el 90% de probabilidad. En Claude 4+ usa
-            <strong>uno u otro, nunca ambos</strong> — el API devuelve 400.
-          </li>
-          <li>
-            Receta: extracción/clasificación → temperature baja; brainstorming y
-            copy → alta. Revisa siempre <code>stop_reason</code> antes de
-            confiar en la salida.
-          </li>
-        </ul>
-      </section>
-
       <!-- SLIDE 11: limitaciones -->
       <section class="slide">
         <h2>Limitaciones que tienes que diseñar alrededor</h2>
@@ -777,6 +745,50 @@ resp = client.messages.<span class="f">create</span>(
         </p>
       </section>
 
+      <section class="slide">
+        <h2>Embeddings y similitud coseno</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          Cambiamos de tema, no de herramienta: estos mismos vectores son la
+          base de RAG —lo que construimos en la Fase 2— y los tocas hoy en el
+          ejercicio.
+        </p>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                Un embedding es un vector (p. ej. 1024 dims) donde la
+                <strong>dirección</strong> codifica el significado: frases
+                similares apuntan parecido.
+              </li>
+              <li>
+                Similitud coseno = coseno del ángulo entre vectores: 1 ≈ mismo
+                significado, ~0 = sin relación.
+              </li>
+              <li>
+                Es la base de RAG, búsqueda semántica, deduplicación y
+                clustering.
+              </li>
+              <li>
+                El API de Anthropic no expone embeddings: usa
+                <strong>Voyage AI</strong> (su partner recomendado) o
+                <code>sentence-transformers</code> open source.
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="k">import</span> numpy <span class="k">as</span> np
+
+<span class="k">def</span> <span class="f">cos_sim</span>(a, b):
+    <span class="k">return</span> np.<span class="f">dot</span>(a, b) / (
+        np.linalg.<span class="f">norm</span>(a) * np.linalg.<span class="f">norm</span>(b)
+    )
+
+<span class="c"># "pagar con tarjeta" vs "checkout con visa"</span>
+<span class="c"># → ~0.83  (cercanas)</span>
+<span class="c"># "pagar con tarjeta" vs "receta de arepas"</span>
+<span class="c"># → ~0.12  (nada que ver)</span></code></pre>
+        </div>
+      </section>
+
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
         <h2>🧪 Manos al código — Token-ó-metro (30 min)</h2>
@@ -805,34 +817,15 @@ resp = client.messages.<span class="f">create</span>(
             <code>messages.create()</code> y comparar el estimado vs
             <code>resp.usage</code>. ¿Qué tan cerca quedamos?
           </li>
+          <li>
+            <strong>Paso 5 (bonus):</strong> toma 2 frases del mismo tema y 1 de
+            otro, genera sus embeddings (Voyage o
+            <code>sentence-transformers</code>) y calcula la
+            <code>cos_sim</code>
+            entre pares — comprueba que las del mismo tema puntúan más alto. Es
+            la semilla de la Parte 2 del reto.
+          </li>
         </ul>
-      </section>
-
-      <!-- SLIDE 14: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 01</span
-          ><span class="tag green">Entregable: repo + README</span>
-          <h3 style="margin-top: 0.8rem">Tokens, costos y embeddings</h3>
-          <p>
-            <strong>Parte 1 — Tokenización y costos:</strong> script que tome 10
-            textos variados (español, inglés, código, JSON, emojis), los
-            tokenice con <code>count_tokens</code> y compare el costo de input
-            entre 3 modelos (Sonnet 4.6, Haiku 4.5, Opus 4.8) en una tabla.
-          </p>
-          <p style="margin-top: 0.8rem">
-            <strong>Parte 2 — Embeddings:</strong> genera embeddings para 20
-            frases (mezcla 3–4 temas distintos), calcula la similitud coseno
-            entre todos los pares y visualiza los más cercanos: heatmap con
-            matplotlib o un top-10 de pares ordenado.
-          </p>
-          <p class="muted" style="margin-top: 0.8rem">
-            Criterios: corre con un solo comando, README con 3 hallazgos que te
-            sorprendieron, y los pares más similares deben tener sentido a ojo
-            humano.
-          </p>
-        </div>
       </section>
 
       <!-- SLIDE 15: videos -->
@@ -943,6 +936,32 @@ resp = client.messages.<span class="f">create</span>(
         </div>
       </section>
 
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 01</span
+          ><span class="tag green">Entregable: repo + README</span>
+          <h3 style="margin-top: 0.8rem">Tokens, costos y embeddings</h3>
+          <p>
+            <strong>Parte 1 — Tokenización y costos:</strong> script que tome 10
+            textos variados (español, inglés, código, JSON, emojis), los
+            tokenice con <code>count_tokens</code> y compare el costo de input
+            entre 3 modelos (Sonnet 4.6, Haiku 4.5, Opus 4.8) en una tabla.
+          </p>
+          <p style="margin-top: 0.8rem">
+            <strong>Parte 2 — Embeddings:</strong> genera embeddings para 20
+            frases (mezcla 3–4 temas distintos), calcula la similitud coseno
+            entre todos los pares y visualiza los más cercanos: heatmap con
+            matplotlib o un top-10 de pares ordenado.
+          </p>
+          <p class="muted" style="margin-top: 0.8rem">
+            Criterios: corre con un solo comando, README con 3 hallazgos que te
+            sorprendieron, y los pares más similares deben tener sentido a ojo
+            humano.
+          </p>
+        </div>
+      </section>
+
       <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -974,7 +993,9 @@ resp = client.messages.<span class="f">create</span>(
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
-          <strong>Sesión 02 — APIs de LLM y Prompt Engineering</strong>
+          <strong>Sesión 02 — APIs de LLM y Prompt Engineering</strong> —
+          dejamos de "preguntarle a la IA" y empezamos a diseñar prompts
+          medibles contra un golden set.
         </p>
       </section>
     </main>

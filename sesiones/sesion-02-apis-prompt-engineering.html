@@ -452,10 +452,11 @@
           </div>
           <div class="card">
             <span class="icon">📏</span>
-            <h3>Iterar con métricas</h3>
+            <h3>Iterar contra un golden set</h3>
             <p class="muted">
-              Cada cambio de prompt se mide contra casos de prueba fijos. "Se ve
-              mejor" no es un criterio.
+              Desde hoy el juez es tu <strong>golden set</strong>: un puñado de
+              casos con su salida esperada. Few-shot, CoT y XML se vuelven
+              movimientos para subir ese score, no trucos sueltos.
             </p>
           </div>
         </div>
@@ -507,6 +508,11 @@ resp = client.messages.<span class="f">create</span>(
             </ul>
           </div>
         </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Este "analista de soporte" que clasifica reclamos es el caso que
+          llevamos toda la sesión: de un request suelto a un clasificador
+          medible.
+        </p>
       </section>
 
       <!-- SLIDE 5: multi-turn / stateless -->
@@ -577,6 +583,11 @@ final = stream.<span class="f">get_final_message</span>()</code></pre>
             </div>
           </div>
         </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Nuestro clasificador de reclamos es justo ese caso: corre en batch y
+          necesitamos el JSON completo para medir el score contra el golden set
+          — ahí streaming solo suma complejidad.
+        </p>
       </section>
 
       <!-- SLIDE 7: few-shot -->
@@ -860,38 +871,6 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
         </p>
       </section>
 
-      <!-- SLIDE 14: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Reto 01</span
-          ><span class="tag green">Entregable: viernes</span>
-          <h3 style="margin-top: 0.8rem">Extractor estructurado</h3>
-          <p>
-            Extraer JSON validado de <strong>20 textos libres</strong> usando
-            solo prompting — sin tool use, sin structured outputs (eso es la
-            sesión 03). Tu score se mide contra un golden set: cada campo
-            correcto suma, un JSON que no parsea da 0 en ese caso.
-          </p>
-          <ul class="clean" style="margin-top: 0.8rem">
-            <li>
-              Mínimo 2 versiones de prompt en <code>prompts/</code> con su score
-              documentado en el CHANGELOG.
-            </li>
-            <li>Script de evaluación reproducible: un comando, un número.</li>
-            <li>Meta: ≥ 17/20. Con las técnicas de hoy alcanza.</li>
-          </ul>
-          <p style="margin-top: 1rem">
-            Enunciado completo:
-            <a
-              href="../gym/reto-01-extractor-estructurado/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-01-extractor-estructurado</a
-            >
-          </p>
-        </div>
-      </section>
-
       <!-- SLIDE 15: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
@@ -998,6 +977,37 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
               </div>
             </div>
           </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 01</span
+          ><span class="tag green">Entregable: viernes</span>
+          <h3 style="margin-top: 0.8rem">Extractor estructurado</h3>
+          <p>
+            Extraer JSON validado de <strong>20 textos libres</strong> usando
+            solo prompting — sin tool use, sin structured outputs (eso es la
+            sesión 03). Tu score se mide contra un golden set: cada campo
+            correcto suma, un JSON que no parsea da 0 en ese caso.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              Mínimo 2 versiones de prompt en <code>prompts/</code> con su score
+              documentado en el CHANGELOG.
+            </li>
+            <li>Script de evaluación reproducible: un comando, un número.</li>
+            <li>Meta: ≥ 17/20. Con las técnicas de hoy alcanza.</li>
+          </ul>
+          <p style="margin-top: 1rem">
+            Enunciado completo:
+            <a
+              href="../gym/reto-01-extractor-estructurado/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-01-extractor-estructurado</a
+            >
+          </p>
         </div>
       </section>
 

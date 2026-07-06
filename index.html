@@ -261,6 +261,11 @@
         color: var(--rose);
         background: rgba(244, 114, 182, 0.1);
       }
+      .tag.fp {
+        color: var(--amber);
+        background: rgba(251, 191, 36, 0.12);
+        border-color: rgba(251, 191, 36, 0.35);
+      }
       /* ---------- timeline ---------- */
       .timeline {
         position: relative;
@@ -318,6 +323,9 @@
       }
       .tl-item.f4 {
         --dot: var(--rose);
+      }
+      .tl-item.fp {
+        --dot: var(--amber);
       }
       .tl-card {
         background: var(--surface);
@@ -444,6 +452,46 @@
         color: var(--muted);
         opacity: 0.6;
       }
+      /* ---------- subsecciones de sesiones ---------- */
+      .subsec {
+        margin-top: 3.2rem;
+      }
+      .subsec:first-of-type {
+        margin-top: 0;
+      }
+      .subsec-head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+      .subsec-head h3 {
+        font-size: 1.35rem;
+        margin-bottom: 0;
+      }
+      .subsec-desc {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin: 0.4rem 0 1.3rem;
+        max-width: 75ch;
+      }
+      .sessions.nivel {
+        border-color: rgba(251, 191, 36, 0.35);
+      }
+      .sessions.nivel .s-row {
+        grid-template-columns: 110px 56px 1fr 200px;
+      }
+      .sessions.nivel .s-row.head {
+        background: rgba(251, 191, 36, 0.07);
+      }
+      .sessions.nivel .s-row:not(.head):hover {
+        background: rgba(251, 191, 36, 0.05);
+      }
+      .sessions.nivel .s-num {
+        background: linear-gradient(120deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
       /* ---------- cards de navegación ---------- */
       a.nav-card {
         display: flex;
@@ -517,7 +565,8 @@
       }
       /* ---------- responsive ---------- */
       @media (max-width: 960px) {
-        .s-row {
+        .s-row,
+        .sessions.nivel .s-row {
           grid-template-columns: 90px 44px 1fr 150px;
         }
         .s-row .s-fase-col {
@@ -536,7 +585,8 @@
         .grid-2 {
           grid-template-columns: 1fr;
         }
-        .s-row {
+        .s-row,
+        .sessions.nivel .s-row {
           grid-template-columns: 1fr;
           gap: 0.5rem;
         }
@@ -565,6 +615,7 @@
         <div class="nav-links">
           <a href="#metodologia">Metodología</a>
           <a href="#fases">Fases</a>
+          <a href="#nivelacion">Nivelación</a>
           <a href="#sesiones">Sesiones</a>
           <a href="#recursos">Recursos</a>
           <a href="#como-usar">Cómo usar</a>
@@ -655,8 +706,30 @@
       style="background: var(--bg2); border-block: 1px solid var(--border)"
     >
       <div class="wrap">
-        <h2>El camino: 4 fases</h2>
+        <h2>El camino: 4 fases (+ nivelación opcional)</h2>
         <div class="timeline">
+          <div class="tl-item fp">
+            <div class="tl-card">
+              <div class="tl-head">
+                <div>
+                  <span class="tag fp">Pre-Fase 0.5</span>
+                  <h3 style="margin-top: 0.5rem">Fundamentos de Python</h3>
+                </div>
+                <span class="tl-weeks">Pre-semanas A-B · condicional</span>
+              </div>
+              <p>
+                Curso de fundamentos de Python para devs que vienen de otro
+                lenguaje (JS, Java, Go, C#) pero no dominan Python: modelo de
+                datos, tipos, estructuras, funciones, errores y lo Pythonic.
+                Enseña el lenguaje de verdad —no a aprobar el diagnóstico—.
+                <strong
+                  >Solo se activa si el diagnóstico (regla #1, Parte A ≤ 2) lo
+                  indica.</strong
+                >
+                Puerta de entrada a Fase 1.
+              </p>
+            </div>
+          </div>
           <div class="tl-item f0">
             <div class="tl-card">
               <div class="tl-head">
@@ -742,360 +815,557 @@
       </div>
     </section>
 
-    <!-- ============ 4. LAS 14 SESIONES ============ -->
+    <!-- ============ 4. SESIONES: NIVELACIÓN + PROGRAMA ============ -->
     <section id="sesiones">
       <div class="wrap">
-        <h2>Las 14 sesiones</h2>
+        <h2>Las sesiones</h2>
         <p class="muted" style="margin-top: -1rem; margin-bottom: 1.6rem">
           Cada sesión tiene su presentación. Las sesiones con 🏋️ desbloquean un
-          reto del AI Gym.
+          reto o kata del AI Gym.
         </p>
-        <div class="sessions">
-          <div class="s-row head">
-            <span>Semana</span>
-            <span>#</span>
-            <span>Sesión</span>
-            <span class="s-fase-col">Fase</span>
-            <span style="text-align: right">Material</span>
-          </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 1</span>
-            <span class="s-num">00</span>
-            <span class="s-title"
-              >Kickoff y Diagnóstico
-              <span class="s-resumen"
-                >Alinear expectativas y el plan de 16 semanas</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f0">Fase 0 — Diagnóstico</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-00-kickoff-diagnostico.html"
-                >▶ Presentación</a
-              >
-            </span>
+        <!-- ---- Bloque A: nivelación de Python (condicional) ---- -->
+        <div class="subsec" id="nivelacion">
+          <div class="subsec-head">
+            <h3>🐍 Nivelación de Python</h3>
+            <span class="tag fp">Pre-Fase 0.5 · condicional</span>
           </div>
+          <p class="subsec-desc">
+            6 sesiones en 2 pre-semanas para devs que vienen de otro lenguaje
+            (JS, Java, Go, C#) pero no dominan Python. Solo se activa si el
+            diagnóstico (regla #1, Parte A ≤ 2) lo indica. Es la puerta de
+            entrada a la Fase 1.
+          </p>
+          <div class="sessions nivel">
+            <div class="s-row head">
+              <span>Semana</span>
+              <span>#</span>
+              <span>Sesión</span>
+              <span style="text-align: right">Material</span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 2</span>
-            <span class="s-num">01</span>
-            <span class="s-title"
-              >Fundamentos de LLMs
-              <span class="s-resumen"
-                >Entender tokens y tokenización (BPE) y su impacto en
-                costos</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f1">Fase 1 — Fundamentos</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-01-fundamentos-llm.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Pre-Sem 1</span>
+              <span class="s-num">N00</span>
+              <span class="s-title"
+                >Python y su modelo mental
+                <span class="s-resumen"
+                  >cómo se ejecuta Python, el REPL, todo-es-objeto, tipado
+                  dinámico-fuerte, None y leer tracebacks</span
+                ></span
               >
-            </span>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/prefase-00-python-y-modelo-mental.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-00-smoke-test-entorno/README.md"
+                  >🏋️ Kata 00</a
+                >
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Pre-Sem 1</span>
+              <span class="s-num">N01</span>
+              <span class="s-title"
+                >Tipos, valores y operadores
+                <span class="s-resumen"
+                  >int/float/str/bool/None, conversión explícita, truthiness,
+                  f-strings, mutabilidad e is vs ==</span
+                ></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/prefase-01-tipos-valores-y-operadores.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-01-conversor-tipado/README.md"
+                  >🏋️ Kata 01</a
+                >
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Pre-Sem 1</span>
+              <span class="s-num">N02</span>
+              <span class="s-title"
+                >Estructuras de datos
+                <span class="s-resumen"
+                  >list/tuple/dict/set, slicing, iteración con
+                  enumerate/zip/items y comprehensions</span
+                ></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/prefase-02-estructuras-de-datos.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-02-frecuencia-de-palabras/README.md"
+                  >🏋️ Kata 02</a
+                >
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Pre-Sem 2</span>
+              <span class="s-num">N03</span>
+              <span class="s-title"
+                >Control de flujo y funciones
+                <span class="s-resumen"
+                  >for-else, *args/**kwargs, el bug del default mutable, scope
+                  LEGB, lambda y type hints</span
+                ></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/prefase-03-control-de-flujo-y-funciones.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-03-transformar-coleccion-funciones-puras/README.md"
+                  >🏋️ Kata 03</a
+                >
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Pre-Sem 2</span>
+              <span class="s-num">N04</span>
+              <span class="s-title"
+                >Strings, archivos y errores
+                <span class="s-resumen"
+                  >métodos de str, pathlib, with, json/csv de la stdlib y
+                  excepciones (try/except, EAFP)</span
+                ></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/prefase-04-strings-archivos-y-errores.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-04-csv-a-json-pipeline/README.md"
+                  >🏋️ Kata 04</a
+                >
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Pre-Sem 2</span>
+              <span class="s-num">N05</span>
+              <span class="s-title"
+                >Pythonic, organización y herramientas
+                <span class="s-resumen"
+                  >generadores (yield), defaultdict/Counter, módulos,
+                  dataclasses, pytest y el capstone de cierre</span
+                ></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/prefase-05-pythonic-organizacion-y-herramientas.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-06-dataclass-de-dominio/README.md"
+                  >🏋️ Kata 06</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/kata-07-capstone-a-eleccion/README.md"
+                  >🏋️ Kata 07</a
+                >
+              </span>
+            </div>
           </div>
+        </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 3</span>
-            <span class="s-num">02</span>
-            <span class="s-title"
-              >APIs de LLM y Prompt Engineering
-              <span class="s-resumen"
-                >Dominar la anatomía de la API de mensajes (system, user,
-                multi-turn, streaming)</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f1">Fase 1 — Fundamentos</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-02-apis-prompt-engineering.html"
-                >▶ Presentación</a
-              >
-              <a
-                class="btn gym"
-                href="view.html?doc=gym/reto-01-extractor-estructurado/README.md"
-                >🏋️ Reto 01</a
-              >
-            </span>
+        <!-- ---- Bloque B: programa AI Engineer ---- -->
+        <div class="subsec" id="programa">
+          <div class="subsec-head">
+            <h3>🤖 Programa AI Engineer</h3>
+            <span class="tag f2">14 sesiones · 4 fases · 16 semanas</span>
           </div>
+          <p class="subsec-desc">
+            El core del programa: de fundamentos de LLMs a entrevistas, pasando
+            por RAG, agentes, evals y producción.
+          </p>
+          <div class="sessions">
+            <div class="s-row head">
+              <span>Semana</span>
+              <span>#</span>
+              <span>Sesión</span>
+              <span class="s-fase-col">Fase</span>
+              <span style="text-align: right">Material</span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 4</span>
-            <span class="s-num">03</span>
-            <span class="s-title"
-              >Tool Use, Structured Outputs y Robustez
-              <span class="s-resumen"
-                >Implementar function calling end-to-end con el loop tool_use →
-                tool_result</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f1">Fase 1 — Fundamentos</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-03-tool-use-robustez.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 1</span>
+              <span class="s-num">00</span>
+              <span class="s-title"
+                >Kickoff y Diagnóstico
+                <span class="s-resumen"
+                  >Alinear expectativas y el plan de 16 semanas</span
+                ></span
               >
-              <a class="btn gym" href="view.html?doc=gym/reto-02-tool-use-robusto/README.md"
-                >🏋️ Reto 02</a
+              <span class="s-fase-col"
+                ><span class="tag f0">Fase 0 — Diagnóstico</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-00-kickoff-diagnostico.html"
+                  >▶ Presentación</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 5</span>
-            <span class="s-num">04</span>
-            <span class="s-title"
-              >RAG I — Embeddings, Chunking y Vector Stores
-              <span class="s-resumen"
-                >Construir un pipeline RAG completo: ingesta → chunking →
-                embeddings → retrieval → generación</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f2">Fase 2 — Patrones</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-04-rag-fundamentos.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 2</span>
+              <span class="s-num">01</span>
+              <span class="s-title"
+                >Fundamentos de LLMs
+                <span class="s-resumen"
+                  >Entender tokens y tokenización (BPE) y su impacto en
+                  costos</span
+                ></span
               >
-              <a class="btn gym" href="view.html?doc=gym/reto-03-rag-basico/README.md"
-                >🏋️ Reto 03</a
+              <span class="s-fase-col"
+                ><span class="tag f1">Fase 1 — Fundamentos</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-01-fundamentos-llm.html"
+                  >▶ Presentación</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 6</span>
-            <span class="s-num">05</span>
-            <span class="s-title"
-              >RAG II — Retrieval Híbrido, Reranking y Evaluación
-              <span class="s-resumen"
-                >Diagnosticar por qué falla el retrieval con métricas (recall@k,
-                MRR)</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f2">Fase 2 — Patrones</span></span
-            >
-            <span class="s-links">
-              <a class="btn primary" href="sesiones/sesion-05-rag-avanzado.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 3</span>
+              <span class="s-num">02</span>
+              <span class="s-title"
+                >APIs de LLM y Prompt Engineering
+                <span class="s-resumen"
+                  >Dominar la anatomía de la API de mensajes (system, user,
+                  multi-turn, streaming)</span
+                ></span
               >
-              <a class="btn gym" href="view.html?doc=gym/reto-04-retrieval-tuning/README.md"
-                >🏋️ Reto 04</a
+              <span class="s-fase-col"
+                ><span class="tag f1">Fase 1 — Fundamentos</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-02-apis-prompt-engineering.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-01-extractor-estructurado/README.md"
+                  >🏋️ Reto 01</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 7</span>
-            <span class="s-num">06</span>
-            <span class="s-title"
-              >Agentes I — El Loop Agéntico y Herramientas
-              <span class="s-resumen"
-                >Entender la diferencia entre workflows y agentes (cuándo cada
-                uno)</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f2">Fase 2 — Patrones</span></span
-            >
-            <span class="s-links">
-              <a class="btn primary" href="sesiones/sesion-06-agentes-loop.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 4</span>
+              <span class="s-num">03</span>
+              <span class="s-title"
+                >Tool Use, Structured Outputs y Robustez
+                <span class="s-resumen"
+                  >Implementar function calling end-to-end con el loop tool_use
+                  → tool_result</span
+                ></span
               >
-              <a
-                class="btn gym"
-                href="view.html?doc=gym/reto-05-agente-from-scratch/README.md"
-                >🏋️ Reto 05</a
+              <span class="s-fase-col"
+                ><span class="tag f1">Fase 1 — Fundamentos</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-03-tool-use-robustez.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-02-tool-use-robusto/README.md"
+                  >🏋️ Reto 02</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 8</span>
-            <span class="s-num">07</span>
-            <span class="s-title"
-              >Agentes II — Memoria, Multi-agente y MCP
-              <span class="s-resumen"
-                >Gestionar contexto en tareas largas: compaction y memoria
-                externa</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f2">Fase 2 — Patrones</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-07-agentes-memoria-mcp.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 5</span>
+              <span class="s-num">04</span>
+              <span class="s-title"
+                >RAG I — Embeddings, Chunking y Vector Stores
+                <span class="s-resumen"
+                  >Construir un pipeline RAG completo: ingesta → chunking →
+                  embeddings → retrieval → generación</span
+                ></span
               >
-              <a class="btn gym" href="view.html?doc=gym/reto-06-agente-con-memoria/README.md"
-                >🏋️ Reto 06</a
+              <span class="s-fase-col"
+                ><span class="tag f2">Fase 2 — Patrones</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-04-rag-fundamentos.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-03-rag-basico/README.md"
+                  >🏋️ Reto 03</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 9</span>
-            <span class="s-num">08</span>
-            <span class="s-title"
-              >Evals — Medir Sistemas con LLMs
-              <span class="s-resumen"
-                >Entender por qué evals es la habilidad #1 que diferencia
-                candidatos</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f2">Fase 2 — Patrones</span></span
-            >
-            <span class="s-links">
-              <a class="btn primary" href="sesiones/sesion-08-evals.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 6</span>
+              <span class="s-num">05</span>
+              <span class="s-title"
+                >RAG II — Retrieval Híbrido, Reranking y Evaluación
+                <span class="s-resumen"
+                  >Diagnosticar por qué falla el retrieval con métricas
+                  (recall@k, MRR)</span
+                ></span
               >
-              <a class="btn gym" href="view.html?doc=gym/reto-07-suite-de-evals/README.md"
-                >🏋️ Reto 07</a
+              <span class="s-fase-col"
+                ><span class="tag f2">Fase 2 — Patrones</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-05-rag-avanzado.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-04-retrieval-tuning/README.md"
+                  >🏋️ Reto 04</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 10</span>
-            <span class="s-num">09</span>
-            <span class="s-title"
-              >Producción I — Observabilidad, Costos y Latencia
-              <span class="s-resumen"
-                >Instrumentar trazas, tokens, costos y latencia en un sistema
-                con LLM</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f3">Fase 3 — Producción</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-09-produccion-observabilidad.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 7</span>
+              <span class="s-num">06</span>
+              <span class="s-title"
+                >Agentes I — El Loop Agéntico y Herramientas
+                <span class="s-resumen"
+                  >Entender la diferencia entre workflows y agentes (cuándo cada
+                  uno)</span
+                ></span
               >
-              <a
-                class="btn gym"
-                href="view.html?doc=gym/reto-08-hardening-produccion/README.md"
-                >🏋️ Reto 08</a
+              <span class="s-fase-col"
+                ><span class="tag f2">Fase 2 — Patrones</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-06-agentes-loop.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-05-agente-from-scratch/README.md"
+                  >🏋️ Reto 05</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 11</span>
-            <span class="s-num">10</span>
-            <span class="s-title"
-              >Producción II — Guardrails, Seguridad y Fallbacks
-              <span class="s-resumen"
-                >Conocer las amenazas: prompt injection directa e indirecta,
-                exfiltración de datos</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f3">Fase 3 — Producción</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-10-produccion-seguridad.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 8</span>
+              <span class="s-num">07</span>
+              <span class="s-title"
+                >Agentes II — Memoria, Multi-agente y MCP
+                <span class="s-resumen"
+                  >Gestionar contexto en tareas largas: compaction y memoria
+                  externa</span
+                ></span
               >
-              <a
-                class="btn gym"
-                href="view.html?doc=gym/reto-08-hardening-produccion/README.md"
-                >🏋️ Reto 08</a
+              <span class="s-fase-col"
+                ><span class="tag f2">Fase 2 — Patrones</span></span
               >
-            </span>
-          </div>
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-07-agentes-memoria-mcp.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-06-agente-con-memoria/README.md"
+                  >🏋️ Reto 06</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semana 12</span>
-            <span class="s-num">11</span>
-            <span class="s-title"
-              >Hardening Final y Demo Day
-              <span class="s-resumen"
-                >Cerrar la Fase 3 con un proyecto production-ready y
-                documentado</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f3">Fase 3 — Producción</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-11-hardening-demo-day.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 9</span>
+              <span class="s-num">08</span>
+              <span class="s-title"
+                >Evals — Medir Sistemas con LLMs
+                <span class="s-resumen"
+                  >Entender por qué evals es la habilidad #1 que diferencia
+                  candidatos</span
+                ></span
               >
-              <span class="no-reto">Sin reto</span>
-            </span>
-          </div>
+              <span class="s-fase-col"
+                ><span class="tag f2">Fase 2 — Patrones</span></span
+              >
+              <span class="s-links">
+                <a class="btn primary" href="sesiones/sesion-08-evals.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-07-suite-de-evals/README.md"
+                  >🏋️ Reto 07</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semanas 13-14</span>
-            <span class="s-num">12</span>
-            <span class="s-title"
-              >System Design de Sistemas con LLMs
-              <span class="s-resumen"
-                >Dominar un marco repetible: requisitos → arquitectura →
-                datos/retrieval → evals → costos/escala → riesgos</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f4">Fase 4 — Entrevistas</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-12-system-design-llm.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 10</span>
+              <span class="s-num">09</span>
+              <span class="s-title"
+                >Producción I — Observabilidad, Costos y Latencia
+                <span class="s-resumen"
+                  >Instrumentar trazas, tokens, costos y latencia en un sistema
+                  con LLM</span
+                ></span
               >
-              <span class="no-reto">Sin reto</span>
-            </span>
-          </div>
+              <span class="s-fase-col"
+                ><span class="tag f3">Fase 3 — Producción</span></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-09-produccion-observabilidad.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-08-hardening-produccion/README.md"
+                  >🏋️ Reto 08</a
+                >
+              </span>
+            </div>
 
-          <div class="s-row">
-            <span class="s-week">Semanas 15-16</span>
-            <span class="s-num">13</span>
-            <span class="s-title"
-              >Mock Interviews, Portfolio y Estrategia
-              <span class="s-resumen"
-                >Completar una mock interview completa: coding + system design +
-                behavioral</span
-              ></span
-            >
-            <span class="s-fase-col"
-              ><span class="tag f4">Fase 4 — Entrevistas</span></span
-            >
-            <span class="s-links">
-              <a
-                class="btn primary"
-                href="sesiones/sesion-13-entrevistas-portfolio.html"
-                >▶ Presentación</a
+            <div class="s-row">
+              <span class="s-week">Semana 11</span>
+              <span class="s-num">10</span>
+              <span class="s-title"
+                >Producción II — Guardrails, Seguridad y Fallbacks
+                <span class="s-resumen"
+                  >Conocer las amenazas: prompt injection directa e indirecta,
+                  exfiltración de datos</span
+                ></span
               >
-              <span class="no-reto">Sin reto</span>
-            </span>
+              <span class="s-fase-col"
+                ><span class="tag f3">Fase 3 — Producción</span></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-10-produccion-seguridad.html"
+                  >▶ Presentación</a
+                >
+                <a
+                  class="btn gym"
+                  href="view.html?doc=gym/reto-08-hardening-produccion/README.md"
+                  >🏋️ Reto 08</a
+                >
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Semana 12</span>
+              <span class="s-num">11</span>
+              <span class="s-title"
+                >Hardening Final y Demo Day
+                <span class="s-resumen"
+                  >Cerrar la Fase 3 con un proyecto production-ready y
+                  documentado</span
+                ></span
+              >
+              <span class="s-fase-col"
+                ><span class="tag f3">Fase 3 — Producción</span></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-11-hardening-demo-day.html"
+                  >▶ Presentación</a
+                >
+                <span class="no-reto">Sin reto</span>
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Semanas 13-14</span>
+              <span class="s-num">12</span>
+              <span class="s-title"
+                >System Design de Sistemas con LLMs
+                <span class="s-resumen"
+                  >Dominar un marco repetible: requisitos → arquitectura →
+                  datos/retrieval → evals → costos/escala → riesgos</span
+                ></span
+              >
+              <span class="s-fase-col"
+                ><span class="tag f4">Fase 4 — Entrevistas</span></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-12-system-design-llm.html"
+                  >▶ Presentación</a
+                >
+                <span class="no-reto">Sin reto</span>
+              </span>
+            </div>
+
+            <div class="s-row">
+              <span class="s-week">Semanas 15-16</span>
+              <span class="s-num">13</span>
+              <span class="s-title"
+                >Mock Interviews, Portfolio y Estrategia
+                <span class="s-resumen"
+                  >Completar una mock interview completa: coding + system design
+                  + behavioral</span
+                ></span
+              >
+              <span class="s-fase-col"
+                ><span class="tag f4">Fase 4 — Entrevistas</span></span
+              >
+              <span class="s-links">
+                <a
+                  class="btn primary"
+                  href="sesiones/sesion-13-entrevistas-portfolio.html"
+                  >▶ Presentación</a
+                >
+                <span class="no-reto">Sin reto</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -1165,8 +1435,8 @@
               </li>
               <li>
                 <strong>Al cierre de cada sesión</strong>, actualiza
-                <a href="view.html?doc=progress.md">progress.md</a> con avances, feedback y
-                acuerdos de la semana.
+                <a href="view.html?doc=progress.md">progress.md</a> con avances,
+                feedback y acuerdos de la semana.
               </li>
             </ul>
           </div>

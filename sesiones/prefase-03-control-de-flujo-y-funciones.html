@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Pre-Fase N03 — Control de flujo y funciones | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <section class="slide active">
+        <div class="kicker">
+          Pre-Fase 0.5 — Fundamentos de Python · Día 4 de 6
+        </div>
+        <h1>Control de flujo<br />y funciones</h1>
+        <p class="lead">
+          Lo universal a ritmo rápido; lo Pythonic (for-else, *args, LEGB,
+          funciones-objeto) con calma. El reto de hoy ya está sobre la mesa: un
+          script de ~60 líneas en un solo bloque que, al cerrar la sesión,
+          partirás en funciones puras que se leen solas. Aquí se decide si tu
+          código es legible o ese bloque interminable.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso (5 min):</strong> una comprehension de ayer, dicha en
+            voz alta para confirmar que la "lees" sin traducir.
+          </li>
+          <li>
+            <strong>Tema central (35 min):</strong> control de flujo, funciones,
+            <code>*args</code>/<code>**kwargs</code>, scope LEGB,
+            funciones-objeto y type hints.
+          </li>
+          <li>
+            <strong>Manos al código (35 min):</strong> refactorizar un script
+            monolítico en funciones puras + un buscador con callback.
+          </li>
+          <li>
+            <strong>Kata del día (10 min):</strong>
+            <span class="tag violet">kata-03</span> funciones y comprehensions.
+          </li>
+          <li><strong>Cierre (5 min):</strong> checklist de salida.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>Control de flujo, a la Pythonic</h2>
+        <p class="muted">
+          El <code>for</code> itera sobre el <strong>iterable directo</strong>,
+          no sobre índices. El <code>while</code> es para "hasta que se cumpla
+          una condición"; casi siempre prefieres <code>for</code>. Y salir
+          temprano con <code>return</code>/<code>break</code> expresa mejor la
+          intención que una bandera booleana.
+        </p>
+        <pre><code><span class="k">def</span> <span class="f">primer_negativo</span>(nums):
+    <span class="k">for</span> n <span class="k">in</span> nums:
+        <span class="k">if</span> n &lt; 0:
+            <span class="k">return</span> n          <span class="c"># salir temprano &gt; bandera + break</span>
+    <span class="k">return</span> <span class="k">None</span>
+
+<span class="f">print</span>(<span class="f">primer_negativo</span>([3, 7, -2, 9]))   <span class="c"># -2</span>
+
+<span class="c"># saltar elementos invalidos sin anidar ifs:</span>
+<span class="k">for</span> linea <span class="k">in</span> [<span class="s">"ok"</span>, <span class="s">""</span>, <span class="s">"dato"</span>, <span class="s">"  "</span>]:
+    <span class="k">if</span> <span class="k">not</span> linea.<span class="f">strip</span>():
+        <span class="k">continue</span>              <span class="c"># ignora vacias</span>
+    <span class="f">print</span>(linea)</code></pre>
+      </section>
+
+      <section class="slide">
+        <h2>for-else: el patrón que casi nadie conoce</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                El <code>else</code> de un <code>for</code>/<code>while</code>
+                se ejecuta
+                <strong>solo si el loop terminó sin <code>break</code></strong
+                >.
+              </li>
+              <li>
+                Léelo como <strong>"no-break"</strong>: el
+                <code>else</code> corre cuando <strong>no</strong> encontraste
+                lo que buscabas.
+              </li>
+              <li>
+                Reemplaza la bandera <code>encontrado = False</code> por algo
+                declarativo.
+              </li>
+              <li>
+                Aplica igual al <code>while</code>; úsalo para búsquedas y
+                validaciones.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <pre><code><span class="k">def</span> <span class="f">buscar</span>(secuencia, objetivo):
+    <span class="k">for</span> x <span class="k">in</span> secuencia:
+        <span class="k">if</span> x == objetivo:
+            <span class="f">print</span>(<span class="s">f"encontrado: &#123;x&#125;"</span>)
+            <span class="k">break</span>
+    <span class="k">else</span>:
+        <span class="f">print</span>(<span class="s">"no estaba en la secuencia"</span>)
+
+<span class="f">buscar</span>([1, 2, 3], 2)   <span class="c"># encontrado: 2</span>
+<span class="f">buscar</span>([1, 2, 3], 9)   <span class="c"># no estaba</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Funciones: posicionales, nombrados y defaults</h2>
+        <p class="muted">
+          El control de flujo decide <em>qué</em> corre; las funciones deciden
+          si eso queda <strong>legible</strong> o en un bloque interminable: son
+          las piezas con nombre en las que partirás el monolito de hoy. Los
+          argumentos van por posición o por nombre; los
+          <strong>defaults</strong> se ponen al final de la firma. Llamar por
+          <em>keyword</em> hace el call-site legible. Un argumento con default
+          es opcional; sin default es obligatorio. Devuelve varios valores como
+          tupla y desempaquétalos.
+        </p>
+        <pre><code><span class="k">def</span> <span class="f">crear_usuario</span>(nombre, rol=<span class="s">"lector"</span>, activo=<span class="k">True</span>):
+    <span class="k">return</span> &#123;<span class="s">"nombre"</span>: nombre, <span class="s">"rol"</span>: rol, <span class="s">"activo"</span>: activo&#125;
+
+<span class="f">print</span>(<span class="f">crear_usuario</span>(<span class="s">"Ada"</span>))
+<span class="f">print</span>(<span class="f">crear_usuario</span>(<span class="s">"Alan"</span>, rol=<span class="s">"admin"</span>))   <span class="c"># keyword: legible</span>
+
+<span class="k">def</span> <span class="f">dividir</span>(a, b):
+    <span class="k">return</span> a // b, a % b        <span class="c"># devuelve una tupla</span>
+
+cociente, resto = <span class="f">dividir</span>(17, 5)   <span class="c"># desempaquetado</span>
+<span class="f">print</span>(cociente, resto)             <span class="c"># 3 2</span></code></pre>
+      </section>
+
+      <section class="slide">
+        <h2>*args y **kwargs: aridad variable</h2>
+        <p class="muted">
+          <code>*args</code> recoge posicionales extra como
+          <strong>tupla</strong>; <code>**kwargs</code> recoge nombrados extra
+          como <strong>dict</strong>. En la llamada, <code>*</code> desempaqueta
+          una lista en posicionales y <code>**</code> un dict en nombrados.
+          Ideal para <em>wrappers</em> que reenvían argumentos sin conocerlos.
+          Orden de firma: posicionales, <code>*args</code>, keyword-only,
+          <code>**kwargs</code>.
+        </p>
+        <pre><code><span class="k">def</span> <span class="f">suma</span>(*numeros):
+    <span class="k">return</span> <span class="f">sum</span>(numeros)
+<span class="f">print</span>(<span class="f">suma</span>(1, 2, 3, 4))          <span class="c"># 10</span>
+
+<span class="k">def</span> <span class="f">configurar</span>(**opciones):
+    <span class="k">for</span> k, v <span class="k">in</span> opciones.<span class="f">items</span>():
+        <span class="f">print</span>(<span class="s">f"&#123;k&#125; = &#123;v&#125;"</span>)
+<span class="f">configurar</span>(debug=<span class="k">True</span>, nivel=3)
+
+valores = [1, 2, 3]
+<span class="f">print</span>(<span class="f">suma</span>(*valores))            <span class="c"># desempaqueta la lista -&gt; 6</span></code></pre>
+      </section>
+
+      <section class="slide">
+        <h2>El bug del default mutable</h2>
+        <blockquote>
+          Los defaults se evalúan <strong>una sola vez</strong>, cuando se
+          define la función — no en cada llamada. Por eso
+          <code>def f(items=[])</code> comparte la <strong>misma</strong> lista
+          entre todas las llamadas: se acumula basura.
+        </blockquote>
+        <p class="muted" style="margin-top: 1.2rem">
+          El patrón correcto es default <code>None</code> y crear la colección
+          dentro. Es uno de los <em>gotchas</em> más preguntados en entrevistas
+          — y un bug real en producción.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Default mutable: el patrón correcto</h2>
+        <pre><code><span class="c"># MAL: la lista se comparte entre llamadas</span>
+<span class="k">def</span> <span class="f">agregar_malo</span>(item, bolsa=[]):
+    bolsa.<span class="f">append</span>(item)
+    <span class="k">return</span> bolsa
+<span class="f">print</span>(<span class="f">agregar_malo</span>(<span class="s">"a"</span>))   <span class="c"># ['a']</span>
+<span class="f">print</span>(<span class="f">agregar_malo</span>(<span class="s">"b"</span>))   <span class="c"># ['a', 'b']  &lt;- fuga!</span>
+
+<span class="c"># BIEN:</span>
+<span class="k">def</span> <span class="f">agregar</span>(item, bolsa=<span class="k">None</span>):
+    <span class="k">if</span> bolsa <span class="k">is</span> <span class="k">None</span>:
+        bolsa = []
+    bolsa.<span class="f">append</span>(item)
+    <span class="k">return</span> bolsa
+<span class="f">print</span>(<span class="f">agregar</span>(<span class="s">"a"</span>))   <span class="c"># ['a']</span>
+<span class="f">print</span>(<span class="f">agregar</span>(<span class="s">"b"</span>))   <span class="c"># ['b']  &lt;- aislado</span></code></pre>
+      </section>
+
+      <section class="slide">
+        <h2>Scope: la regla LEGB</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                Python resuelve nombres en este orden: <strong>L</strong>ocal →
+                <strong>E</strong>nclosing → <strong>G</strong>lobal →
+                <strong>B</strong>uilt-in.
+              </li>
+              <li>
+                No declaras variables: <strong>asignar</strong> dentro de una
+                función crea un nombre <em>local</em>.
+              </li>
+              <li>
+                Para reasignar una global desde dentro necesitas
+                <code>global</code>; para una enclosing,
+                <code>nonlocal</code> (ambos raros).
+              </li>
+              <li>
+                <strong>Leer</strong> una variable de fuera sí funciona sin
+                nada; el problema es solo al reasignar.
+              </li>
+              <li>
+                Built-in es el último escalón: <code>len</code>,
+                <code>print</code>, <code>range</code> — no los pises (no llames
+                <code>list</code> a una lista).
+              </li>
+            </ul>
+          </div>
+          <div>
+            <pre><code>x = <span class="s">"global"</span>
+
+<span class="k">def</span> <span class="f">externa</span>():
+    x = <span class="s">"enclosing"</span>
+    <span class="k">def</span> <span class="f">interna</span>():
+        x = <span class="s">"local"</span>      <span class="c"># crea LOCAL nuevo</span>
+        <span class="f">print</span>(x)
+    <span class="f">interna</span>()             <span class="c"># local</span>
+    <span class="f">print</span>(x)                 <span class="c"># enclosing</span>
+
+<span class="f">externa</span>()
+<span class="f">print</span>(x)                     <span class="c"># global</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Funciones como objetos de primera clase</h2>
+        <p class="muted">
+          Una función es un objeto: la <strong>asignas</strong>, la
+          <strong>pasas</strong> como argumento, la <strong>devuelves</strong>.
+          <code>sorted(key=...)</code>, <code>map()</code> y
+          <code>filter()</code> reciben una función. Es la base de los callbacks
+          y, más adelante, de los decoradores. <code>lambda</code> es una
+          función anónima de una expresión: úsala para <em>keys</em> cortas, no
+          para lógica compleja.
+        </p>
+        <pre><code><span class="k">def</span> <span class="f">aplicar</span>(func, datos):
+    <span class="k">return</span> [<span class="f">func</span>(x) <span class="k">for</span> x <span class="k">in</span> datos]
+
+<span class="f">print</span>(<span class="f">aplicar</span>(str.upper, [<span class="s">"a"</span>, <span class="s">"b"</span>]))   <span class="c"># ['A', 'B']</span>
+
+productos = [(<span class="s">"taza"</span>, 5), (<span class="s">"libro"</span>, 12), (<span class="s">"pin"</span>, 2)]
+por_precio = <span class="f">sorted</span>(productos, key=<span class="k">lambda</span> p: p[1])
+<span class="f">print</span>(por_precio[0])        <span class="c"># ('pin', 2)</span>
+
+<span class="k">import</span> operator
+por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class="f">itemgetter</span>(1))  <span class="c"># sin lambda</span></code></pre>
+      </section>
+
+      <section class="slide">
+        <h2>Type hints: documentación que se lee (y verifica mypy)</h2>
+        <p class="muted">
+          Las anotaciones documentan tipos en la firma:
+          <strong>no cambian el comportamiento en runtime</strong>. Python no
+          valida, pero tú, tu IDE y <code>mypy</code> sí. Las que más usarás:
+          <code>list[int]</code>, <code>dict[str, float]</code>,
+          <code>str | None</code> (opcional). Hacen el código autoexplicativo y
+          atrapan bugs antes de correr, con una herramienta aparte.
+        </p>
+        <pre><code><span class="k">def</span> <span class="f">promedio</span>(valores: list[float]) -&gt; float:
+    <span class="k">return</span> <span class="f">sum</span>(valores) / <span class="f">len</span>(valores)
+
+<span class="k">def</span> <span class="f">buscar_precio</span>(catalogo: dict[str, float], nombre: str) -&gt; float | <span class="k">None</span>:
+    <span class="k">return</span> catalogo.<span class="f">get</span>(nombre)   <span class="c"># None si no esta</span>
+
+<span class="c"># Python NO obliga el tipo en runtime:</span>
+<span class="f">print</span>(<span class="f">promedio</span>([1, 2, 3]))      <span class="c"># 2.0  (ints pasan, el hint no falla)</span>
+<span class="c"># pero `mypy archivo.py` avisaria de un mal uso antes de correr</span></code></pre>
+      </section>
+
+      <section class="slide">
+        <h2>
+          Manos al código — Refactor a funciones puras + callback (35 min)
+        </h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">🧩</span>
+            <h3>1 · Refactor (15 min)</h3>
+            <p class="muted">
+              Te doy un script de ~60 líneas en un solo bloque; pártelo en
+              <strong>3-4 funciones puras</strong> con nombres claros y type
+              hints.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔁</span>
+            <h3>2 · for-else (5 min)</h3>
+            <p class="muted">
+              Reescribe una búsqueda con
+              <strong>bandera booleana</strong> usando <code>for-else</code>.
+            </p>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">🎯</span>
+            <h3>3 · Callback (10 min)</h3>
+            <p class="muted">
+              Escribe <code>filtrar(datos, predicado)</code> que reciba una
+              función y aplícala con <strong>3 predicados distintos</strong>.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🐛</span>
+            <h3>4 · Cazar el default mutable (5 min)</h3>
+            <p class="muted">
+              Te doy una función con el bug;
+              <strong>reprodúcelo y arréglalo</strong> con el patrón
+              <code>None</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=9Os0o3wzS_I"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/9Os0o3wzS_I/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Python Tutorial for Beginners 8: Functions
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Cubre defaults, *args/**kwargs y retorno múltiple con la
+                claridad que esta sesión necesita.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/results?search_query=mCoding+mutable+default+argument+gotcha"
+            target="_blank"
+            rel="noopener"
+          >
+            <div>
+              <div class="vc-title">The Mutable Default Argument Gotcha</div>
+              <div class="vc-meta">mCoding · Inglés</div>
+              <div class="vc-why">
+                Explica el bug del default mutable y el patrón correcto: el
+                gotcha que esta sesión convierte en hábito.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=dgBCEB2jVU0"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/dgBCEB2jVU0/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Type Hints — How to Use Them Effectively
+              </div>
+              <div class="vc-meta">ArjanCodes · Inglés</div>
+              <div class="vc-why">
+                Enseña type hints como documentación y herramienta de diseño,
+                alineado con el cierre de la sesión.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Kata del día — kata-03</h2>
+        <div class="card">
+          <span class="tag violet">Kata kata-03</span
+          ><span class="tag green">Entregable</span>
+          <h3>Funciones y comprehensions</h3>
+          <p class="muted">
+            Transforma y filtra una colección usando
+            <strong>funciones puras</strong> (sin efectos secundarios).
+            Demuestra descomposición en funciones, type hints y
+            <code>map</code>/<code>filter</code>/comprehension con criterio. Sin
+            sobre-ingeniería: nada de clases para 30 líneas.
+          </p>
+          <p class="muted" style="margin-top: 1.2rem">
+            <strong>Criterio medible:</strong> <code>pytest</code> verde,
+            funciones sin efectos secundarios y salidas exactas.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Escribo <code>for</code>/<code>while</code>/<code>for-else</code>
+            idiomático y uso <code>return</code>/<code>break</code> para salir
+            temprano.
+          </li>
+          <li>
+            Defino funciones con defaults, <code>*args</code> y
+            <code>**kwargs</code>, y desempaqueto en la llamada.
+          </li>
+          <li>
+            Evito el default mutable usando <code>None</code> y creando la
+            colección dentro.
+          </li>
+          <li>
+            Razono el scope con LEGB y sé cuándo necesito
+            <code>global</code>/<code>nonlocal</code> (casi nunca).
+          </li>
+          <li>
+            Paso funciones como argumentos y uso <code>lambda</code> solo para
+            keys cortas.
+          </li>
+          <li>Anoto funciones con type hints como documentación.</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Próxima sesión: <strong>N04 — Strings, archivos y errores</strong> —
+          tus funciones puras de hoy empiezan a tocar el mundo real: leer
+          archivos, transformar texto y sobrevivir a datos rotos.
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

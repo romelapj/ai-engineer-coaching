@@ -402,8 +402,8 @@
         </div>
         <h1>Sesión 06<br />Agentes I — El Loop Agéntico y Herramientas</h1>
         <p class="lead">
-          Hoy construyes un agente real en ~30 líneas de Python, sin frameworks,
-          y aprendes a decidir cuándo NO necesitas uno.
+          ¿Cuándo necesitas un agente… y cuándo NO? Hoy lo decides con criterio
+          — y construyes uno real en ~30 líneas de Python, sin frameworks.
         </p>
       </section>
 
@@ -413,7 +413,8 @@
         <ul class="clean">
           <li>
             <strong>Repaso (15 min)</strong> — reto 04: dos demos rápidas,
-            bloqueos y qué haríamos distinto.
+            bloqueos y qué haríamos distinto. Cerramos la mitad de RAG: ese
+            retrieval que mediste puede volverse una tool más de un agente.
           </li>
           <li>
             <strong>Tema central (30 min)</strong> — workflows vs agentes, el
@@ -520,6 +521,11 @@
           Un agente es un LLM usando herramientas en un loop. Eso es todo.
         </blockquote>
         <p class="muted">
+          Recuerda el tool use de la sesión 03: el modelo pedía una herramienta,
+          tú la ejecutabas y le devolvías el resultado. Un agente es exactamente
+          eso, pero en un loop que el modelo controla hasta decidir que terminó.
+        </p>
+        <p class="muted" style="margin-top: 1rem">
           Memoria, planning, multi-agente, MCP… todo lo que verás después son
           extensiones de este loop de ~30 líneas. Si entiendes el loop, ningún
           framework te va a intimidar — porque sabrás exactamente qué esconden
@@ -713,39 +719,42 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
         </p>
       </section>
 
-      <!-- SLIDE 11: cuándo NO usar un agente -->
+      <!-- SLIDE 11: checklist de descarte -->
       <section class="slide">
-        <h2>Cuándo NO usar un agente</h2>
+        <h2>Checklist de descarte: ¿de verdad necesitas un agente?</h2>
+        <p style="margin-bottom: 1rem">
+          Antes de escribir el loop, corre esta lista. Marcar
+          <strong>una sola</strong> casilla ya es razón para NO usar agente:
+          resuélvelo con un workflow o una llamada directa.
+        </p>
         <ul class="clean">
           <li>
-            <strong>El camino es conocido</strong> → un workflow de 2–3 llamadas
-            encadenadas da el mismo resultado: más barato, determinista y
-            testeable.
+            <strong>El camino es predecible</strong> — puedes mapear los pasos
+            de antemano → workflow encadenado, determinista y testeable.
           </li>
           <li>
-            <strong>No hay señal de verificación</strong> — si nada le dice al
-            modelo si un paso salió bien (tests, errores, resultados de
-            búsqueda), el loop deriva sin rumbo.
+            <strong>No hay señal de verificación</strong> — nada (tests,
+            errores, resultados) le dice al modelo si un paso salió bien; el
+            loop deriva sin rumbo.
           </li>
           <li>
-            <strong>Latencia dura</strong> — un SLA de p95 &lt; 2 s no aguanta
-            10 round-trips al modelo.
+            <strong>La latencia es dura</strong> — un SLA de p95 &lt; 2 s no
+            aguanta 10 round-trips al modelo.
           </li>
           <li>
-            <strong>Errores caros e irreversibles</strong> — un agente que
-            ejecuta pagos o borra datos sin checkpoint humano es un incidente
-            esperando fecha.
+            <strong>Los errores son caros e irreversibles</strong> — pagos o
+            borrados sin checkpoint humano: incidente esperando fecha.
           </li>
           <li>
-            <strong>Una sola llamada con buen prompt resuelve</strong> — el caso
-            más común y el más ignorado.
+            <strong>Una sola llamada con buen prompt ya resuelve</strong> — el
+            caso más común y el más ignorado.
           </li>
         </ul>
         <blockquote>
-          Test de Barry Zhang (Anthropic): usa agentes solo en tareas
-          <strong>ambiguas</strong> (no puedes mapear los pasos),
-          <strong>valiosas</strong> (justifican el costo) y
-          <strong>verificables</strong> (con errores recuperables).
+          Test de Barry Zhang (Anthropic): construye un agente solo si la tarea
+          es <strong>ambigua</strong>, <strong>valiosa</strong> y
+          <strong>verificable</strong> a la vez. Si falla una, no es para
+          agente.
         </blockquote>
       </section>
 
@@ -830,45 +839,7 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
         </p>
       </section>
 
-      <!-- SLIDE 14: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 05</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">Agente desde cero</h3>
-          <p>
-            Construye un <strong>agente investigador sin frameworks</strong>:
-            tools de búsqueda y lectura, presupuesto de pasos configurable y
-            respetado, y como salida un informe en markdown
-            <strong>con las fuentes citadas</strong>.
-          </p>
-          <ul class="clean" style="margin-top: 0.8rem">
-            <li>
-              Solo SDK de <code>anthropic</code> + <code>httpx</code>. Nada de
-              LangChain/LangGraph.
-            </li>
-            <li>
-              Al agotar el presupuesto, el agente entrega igual el mejor informe
-              posible.
-            </li>
-            <li>
-              Incluye la traza de la trayectoria: qué tool llamó en cada paso y
-              por qué.
-            </li>
-          </ul>
-          <p style="margin-top: 1rem">
-            Enunciado completo y criterios de evaluación:
-            <a
-              href="../gym/reto-05-agente-from-scratch/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-05-agente-from-scratch</a
-            >
-          </p>
-        </div>
-      </section>
-
-      <!-- SLIDE 15: videos -->
+      <!-- SLIDE 14: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -978,6 +949,44 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
         </div>
       </section>
 
+      <!-- SLIDE 15: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 05</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Agente desde cero</h3>
+          <p>
+            Construye un <strong>agente investigador sin frameworks</strong>:
+            tools de búsqueda y lectura, presupuesto de pasos configurable y
+            respetado, y como salida un informe en markdown
+            <strong>con las fuentes citadas</strong>.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              Solo SDK de <code>anthropic</code> + <code>httpx</code>. Nada de
+              LangChain/LangGraph.
+            </li>
+            <li>
+              Al agotar el presupuesto, el agente entrega igual el mejor informe
+              posible.
+            </li>
+            <li>
+              Incluye la traza de la trayectoria: qué tool llamó en cada paso y
+              por qué.
+            </li>
+          </ul>
+          <p style="margin-top: 1rem">
+            Enunciado completo y criterios de evaluación:
+            <a
+              href="../gym/reto-05-agente-from-scratch/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-05-agente-from-scratch</a
+            >
+          </p>
+        </div>
+      </section>
+
       <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -1006,6 +1015,9 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
           <strong>Sesión 07 — Agentes II — Memoria, Multi-agente y MCP</strong>
+          — tu agente hoy se olvida de todo al terminar; la 07 le da memoria que
+          sobrevive al proceso, subagentes que delegan y MCP para conectarlo a
+          cualquier herramienta.
         </p>
       </section>
     </main>

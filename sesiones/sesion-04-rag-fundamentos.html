@@ -402,8 +402,9 @@
         </div>
         <h1>Sesión 04<br />RAG I — Embeddings, Chunking y Vector Stores</h1>
         <p class="lead">
-          De un montón de documentos a respuestas con citas verificables: hoy
-          construyes tu primer pipeline RAG completo.
+          Tu chatbot inventa respuestas sobre tus propios docs y no puedes
+          auditar de dónde salieron. Hoy construyes el pipeline RAG que las
+          obliga a citar su fuente — o a admitir que no la tienen.
         </p>
       </section>
 
@@ -466,37 +467,7 @@
         </div>
       </section>
 
-      <!-- SLIDE 4: qué es RAG / idea fuerza -->
-      <section class="slide">
-        <h2>El pipeline RAG en una línea</h2>
-        <p>
-          <strong>Ingesta</strong> → <strong>Chunking</strong> →
-          <strong>Embeddings</strong> → <strong>Vector store</strong> →
-          <strong>Retrieval (top-k)</strong> →
-          <strong>Generación con citas</strong>
-        </p>
-        <blockquote>
-          El modelo no puede citar lo que tu retrieval no encontró. La calidad
-          de un RAG se decide <em>antes</em> de llamar al LLM.
-        </blockquote>
-        <ul class="clean">
-          <li>
-            <strong>Indexación</strong> (offline): partes los documentos, los
-            conviertes en vectores y los guardas. Se paga una vez por documento.
-          </li>
-          <li>
-            <strong>Consulta</strong> (online): conviertes la pregunta en
-            vector, recuperas los k chunks más cercanos y se los pasas al modelo
-            con instrucciones de citar. Se paga en cada query.
-          </li>
-          <li>
-            El 80% de los bugs de RAG en producción están en indexación: chunks
-            mal cortados, metadata perdida, modelo de embeddings inconsistente.
-          </li>
-        </ul>
-      </section>
-
-      <!-- SLIDE 5: RAG vs fine-tuning vs long context -->
+      <!-- SLIDE 4: cuándo usar RAG -->
       <section class="slide">
         <h2>RAG vs fine-tuning vs long context</h2>
         <table>
@@ -545,6 +516,40 @@
           Regla práctica: si la pregunta es "¿cómo le doy conocimiento de mis
           docs al modelo?", la respuesta casi siempre empieza por RAG.
           Fine-tuning para conocimiento es el error de novato más caro.
+        </p>
+      </section>
+
+      <!-- SLIDE 5: el pipeline RAG / mapa -->
+      <section class="slide">
+        <h2>El pipeline RAG en una línea</h2>
+        <p>
+          <strong>Ingesta</strong> → <strong>Chunking</strong> →
+          <strong>Embeddings</strong> → <strong>Vector store</strong> →
+          <strong>Retrieval (top-k)</strong> →
+          <strong>Generación con citas</strong>
+        </p>
+        <blockquote>
+          El modelo no puede citar lo que tu retrieval no encontró. La calidad
+          de un RAG se decide <em>antes</em> de llamar al LLM.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            <strong>Indexación</strong> (offline): partes los documentos, los
+            conviertes en vectores y los guardas. Se paga una vez por documento.
+          </li>
+          <li>
+            <strong>Consulta</strong> (online): conviertes la pregunta en
+            vector, recuperas los k chunks más cercanos y se los pasas al modelo
+            con instrucciones de citar. Se paga en cada query.
+          </li>
+          <li>
+            El 80% de los bugs de RAG en producción están en indexación: chunks
+            mal cortados, metadata perdida, modelo de embeddings inconsistente.
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Ese es el mapa de hoy: de aquí en adelante recorremos cada caja del
+          diagrama, una por una — arrancando por el chunking.
         </p>
       </section>
 
@@ -833,41 +838,7 @@ resp = client.messages.<span class="f">create</span>(
         </p>
       </section>
 
-      <!-- SLIDE 13: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Reto 03</span
-          ><span class="tag green">Entregable: repo + demo</span>
-          <h3 style="margin-top: 0.8rem">RAG básico con citas</h3>
-          <p>
-            Pipeline RAG completo sobre documentación técnica real: ingesta,
-            chunking (justifica tu estrategia en el README), embeddings, vector
-            store y generación con citas verificables.
-          </p>
-          <ul class="clean" style="margin-top: 0.8rem">
-            <li>
-              Se evalúa con <strong>15 preguntas de prueba</strong>: exactitud
-              de la respuesta, validez de las citas y manejo de preguntas sin
-              respuesta en el corpus.
-            </li>
-            <li>
-              Cada cita debe apuntar a un chunk real recuperado — citas
-              inventadas descalifican la pregunta.
-            </li>
-            <li>
-              Enunciado completo, corpus y rúbrica:
-              <a
-                href="../gym/reto-03-rag-basico/README.md"
-                style="color: var(--accent2)"
-                >gym/reto-03-rag-basico/README.md</a
-              >
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- SLIDE 14: videos -->
+      <!-- SLIDE 13: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -974,6 +945,40 @@ resp = client.messages.<span class="f">create</span>(
         </div>
       </section>
 
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 03</span
+          ><span class="tag green">Entregable: repo + demo</span>
+          <h3 style="margin-top: 0.8rem">RAG básico con citas</h3>
+          <p>
+            Pipeline RAG completo sobre documentación técnica real: ingesta,
+            chunking (justifica tu estrategia en el README), embeddings, vector
+            store y generación con citas verificables.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              Se evalúa con <strong>15 preguntas de prueba</strong>: exactitud
+              de la respuesta, validez de las citas y manejo de preguntas sin
+              respuesta en el corpus.
+            </li>
+            <li>
+              Cada cita debe apuntar a un chunk real recuperado — citas
+              inventadas descalifican la pregunta.
+            </li>
+            <li>
+              Enunciado completo, corpus y rúbrica:
+              <a
+                href="../gym/reto-03-rag-basico/README.md"
+                style="color: var(--accent2)"
+                >gym/reto-03-rag-basico/README.md</a
+              >
+            </li>
+          </ul>
+        </div>
+      </section>
+
       <!-- SLIDE 15: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -1009,6 +1014,8 @@ resp = client.messages.<span class="f">create</span>(
             >Sesión 05 — RAG II — Retrieval Híbrido, Reranking y
             Evaluación</strong
           >
+          — tu RAG ya responde; ahora vas a medir por qué a veces recupera mal y
+          subir el recall con números, no con corazonadas.
         </p>
       </section>
     </main>

@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pre-Fase N02 — Estructuras de datos | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <section class="slide active">
+        <div class="kicker">
+          Pre-Fase 0.5 — Fundamentos de Python · Día 3 de 6
+        </div>
+        <h1>Estructuras<br />de datos</h1>
+        <p class="lead">
+          list, tuple, dict, set: el pan de cada día. Las comprehensions son
+          donde el código deja de parecer "traducido de Java" y empieza a leerse
+          como Python.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso (5 min):</strong> truthiness y mutabilidad de ayer,
+            con un ejemplo concreto
+          </li>
+          <li>
+            <strong>Tema central (35 min):</strong> las 4 estructuras, slicing,
+            iteración idiomática y comprehensions
+          </li>
+          <li>
+            <strong>Manos al código (35 min):</strong> un inventario con dict +
+            un agregador con comprehensions
+          </li>
+          <li>
+            <strong>Kata del día (10 min):</strong> kata-02 — estructuras y
+            agregación
+          </li>
+          <li><strong>Cierre (5 min):</strong> checklist de salida</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Objetivo del día: elegir la estructura correcta
+          <strong>por sus propiedades</strong>, no por costumbre, y escribir el
+          primer código que se siente Pythonic.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Las 4 estructuras: cuándo cada una</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Propiedad</th>
+              <th>Cuándo usarla</th>
+              <th>Literal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag">list</span></td>
+              <td>ordenada y <strong>mutable</strong></td>
+              <td>colección que crece, se ordena, se itera</td>
+              <td><code>[1, 2, 3]</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag violet">tuple</span></td>
+              <td>ordenada e <strong>inmutable</strong></td>
+              <td>registro fijo, clave de dict, retorno múltiple</td>
+              <td><code>(x, y)</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag green">dict</span></td>
+              <td>mapeo clave→valor, claves únicas</td>
+              <td>buscar por clave, agrupar, contar</td>
+              <td><code>{'a': 1}</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag">set</span></td>
+              <td>sin orden, sin duplicados</td>
+              <td>pertenencia rápida, deduplicar, conjuntos</td>
+              <td><code>{1, 2}</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla mental: <strong>¿necesito orden?</strong> list/tuple.
+          <strong>¿busco por clave?</strong> dict.
+          <strong>¿solo me importa pertenencia/unicidad?</strong> set.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>list: la navaja suiza</h2>
+        <pre><code>tareas = [<span class="s">"comprar"</span>, <span class="s">"cocinar"</span>, <span class="s">"limpiar"</span>]
+tareas.<span class="f">append</span>(<span class="s">"lavar"</span>)
+tareas.<span class="f">sort</span>(key=<span class="f">len</span>)            <span class="c"># ordena por longitud, EN SITIO</span>
+<span class="f">print</span>(tareas)                  <span class="c"># ['lavar', 'comprar', 'cocinar', 'limpiar']</span>
+
+por_nombre = <span class="f">sorted</span>(tareas)    <span class="c"># NUEVA lista, alfabetica</span>
+<span class="f">print</span>(<span class="s">"cocinar"</span> <span class="k">in</span> tareas)     <span class="c"># True</span>
+ultima = tareas.<span class="f">pop</span>()          <span class="c"># quita y devuelve la ultima</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Métodos del día a día: <code>append</code>, <code>extend</code>,
+          <code>insert</code>, <code>pop</code>, <code>remove</code>,
+          <code>sort</code>, <code>reverse</code>. Ojo a la diferencia clave:
+          <code>sort()</code> ordena <strong>en sitio</strong> y devuelve
+          <code>None</code>; <code>sorted()</code> devuelve una
+          <strong>lista nueva</strong>. El <code>in</code> sobre listas es
+          lineal: si harás muchas búsquedas, usa un <code>set</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Slicing: rebanar secuencias</h2>
+        <pre><code>nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+<span class="f">print</span>(nums[2:5])      <span class="c"># [2, 3, 4]       (fin exclusivo)</span>
+<span class="f">print</span>(nums[:3])       <span class="c"># [0, 1, 2]</span>
+<span class="f">print</span>(nums[-3:])      <span class="c"># [7, 8, 9]       (ultimos 3)</span>
+<span class="f">print</span>(nums[::2])      <span class="c"># [0, 2, 4, 6, 8] (paso 2)</span>
+<span class="f">print</span>(nums[::-1])     <span class="c"># [9, 8, 7, ..., 0] (invertida)</span>
+
+<span class="f">print</span>(<span class="s">"2026-06-19"</span>[:4])   <span class="c"># '2026'  (mismo slicing en str)</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          La sintaxis es <code>seq[inicio:fin:paso]</code>: el
+          <strong>fin es exclusivo</strong> y cualquier parte es opcional. Los
+          índices negativos cuentan desde el final (<code>seq[-1]</code> es el
+          último). Una idea, tres tipos: funciona idéntico en
+          <strong>list</strong>, <strong>tuple</strong> y <strong>str</strong>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>dict: la estructura que más vas a usar</h2>
+        <blockquote>
+          Buscar por clave es O(1). Por eso casi todo lo que sea agrupar, contar
+          o indexar termina, antes o después, en un dict.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            <code>d.get(clave, default)</code> evita el
+            <code>KeyError</code> cuando la clave puede faltar
+          </li>
+          <li>
+            <code>d.setdefault(clave, [])</code> inicializa-y-devuelve para
+            acumular en una sola pasada
+          </li>
+          <li>
+            <code>clave in d</code> verifica existencia (chequea claves, no
+            valores)
+          </li>
+          <li>
+            <code>list(d)</code>, <code>d.keys()</code>,
+            <code>d.values()</code>, <code>d.items()</code> te dan las vistas
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Desde Python 3.7 el dict
+          <strong>conserva el orden de inserción</strong>: ya no necesitas
+          <code>OrderedDict</code> para eso.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>dict en acción: indexar y agrupar</h2>
+        <pre><code>precios = {<span class="s">"cafe"</span>: 3.5, <span class="s">"te"</span>: 2.0}
+<span class="f">print</span>(precios.<span class="f">get</span>(<span class="s">"agua"</span>, 0.0))     <span class="c"># 0.0  (sin KeyError)</span>
+
+<span class="c"># Agrupar nombres por inicial, sin if-clave-in-dict:</span>
+nombres = [<span class="s">"Ada"</span>, <span class="s">"Alan"</span>, <span class="s">"Beto"</span>, <span class="s">"Bea"</span>]
+por_inicial = {}
+<span class="k">for</span> n <span class="k">in</span> nombres:
+    por_inicial.<span class="f">setdefault</span>(n[0], []).<span class="f">append</span>(n)
+<span class="f">print</span>(por_inicial)   <span class="c"># {'A': ['Ada', 'Alan'], 'B': ['Beto', 'Bea']}</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>get</code> con default elimina el
+          <code>if clave in dict</code> de cada vez;
+          <code>setdefault</code> construye listas por clave sin inicializarlas
+          a mano. Las claves deben ser <strong>inmutables</strong> (str, int,
+          tuple) — por eso una <code>list</code> no puede ser clave, pero una
+          <code>tuple</code> sí.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Iteración idiomática: enumerate, zip, items</h2>
+        <pre><code>colores = [<span class="s">"rojo"</span>, <span class="s">"verde"</span>, <span class="s">"azul"</span>]
+<span class="k">for</span> i, color <span class="k">in</span> <span class="f">enumerate</span>(colores, start=1):
+    <span class="f">print</span>(i, color)               <span class="c"># 1 rojo / 2 verde / 3 azul</span>
+
+nombres = [<span class="s">"Ada"</span>, <span class="s">"Alan"</span>]
+edades = [36, 41]
+<span class="k">for</span> n, e <span class="k">in</span> <span class="f">zip</span>(nombres, edades):
+    <span class="f">print</span>(<span class="s">f"&#123;n&#125; tiene &#123;e&#125;"</span>)
+
+stock = {<span class="s">"manzana"</span>: 12, <span class="s">"pera"</span>: 5}
+<span class="k">for</span> fruta, cant <span class="k">in</span> stock.<span class="f">items</span>():
+    <span class="f">print</span>(fruta, cant)</code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Señal de "todavía pienso en C": <code>for i in range(len(x))</code>.
+          Lo Pythonic es <code>enumerate(x)</code> cuando necesitas el índice,
+          <code>zip(a, b)</code> para recorrer en paralelo (se detiene en la más
+          corta), y <code>.items()</code> para clave <strong>y</strong> valor a
+          la vez, desempaquetando dentro del <code>for</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>set: pertenencia, deduplicar, conjuntos</h2>
+        <pre><code>visitas = [<span class="s">"ana"</span>, <span class="s">"beto"</span>, <span class="s">"ana"</span>, <span class="s">"caro"</span>, <span class="s">"beto"</span>]
+unicos = <span class="f">set</span>(visitas)
+<span class="f">print</span>(<span class="f">len</span>(unicos))            <span class="c"># 3</span>
+
+permitidos = {<span class="s">"GET"</span>, <span class="s">"POST"</span>}
+<span class="f">print</span>(<span class="s">"DELETE"</span> <span class="k">in</span> permitidos)  <span class="c"># False</span>
+
+a = {1, 2, 3, 4}
+b = {3, 4, 5}
+<span class="f">print</span>(a &amp; b)   <span class="c"># {3, 4}   interseccion</span>
+<span class="f">print</span>(a - b)   <span class="c"># {1, 2}   en a pero no en b</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          El <code>in</code> sobre un set es O(1): ideal para "¿ya lo vi?" o
+          listas de exclusión. <code>set(lista)</code> deduplica de un golpe
+          (pero pierde el orden). Operadores: <code>|</code> unión,
+          <code>&amp;</code> intersección, <code>-</code> diferencia — perfectos
+          para comparar dos colecciones.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Comprehensions: el salto a Pythonic</h2>
+        <blockquote>
+          Una comprehension construye una colección en una sola expresión:
+          <code>[transformar(x) for x in datos if condicion]</code>.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            Reemplaza el patrón <strong>lista vacía + for + append</strong> por
+            una línea legible
+          </li>
+          <li>
+            Existen en cuatro sabores: list <code>[ ]</code>, set
+            <code>{ }</code>, dict <code>{k: v}</code> y generator
+            <code>( )</code>
+          </li>
+          <li>
+            El <code>if</code> al final <strong>filtra</strong>; la expresión al
+            inicio <strong>transforma</strong>
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla de oro: si cabe legible en una línea, comprehension; si necesita
+          lógica compleja o varios pasos, vuelve a un <code>for</code> normal.
+          Legibilidad &gt; brevedad.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Comprehensions: transformar y filtrar</h2>
+        <pre><code>nums = [1, 2, 3, 4, 5, 6]
+cuadrados = [n * n <span class="k">for</span> n <span class="k">in</span> nums]            <span class="c"># [1, 4, 9, 16, 25, 36]</span>
+pares = [n <span class="k">for</span> n <span class="k">in</span> nums <span class="k">if</span> n % 2 == 0]      <span class="c"># [2, 4, 6]</span>
+
+palabras = [<span class="s">"hola"</span>, <span class="s">"a"</span>, <span class="s">"mundo"</span>, <span class="s">"py"</span>]
+largos = {p: <span class="f">len</span>(p) <span class="k">for</span> p <span class="k">in</span> palabras}       <span class="c"># dict comprehension</span>
+<span class="c"># {'hola': 4, 'a': 1, 'mundo': 5, 'py': 2}</span>
+
+iniciales = {p[0] <span class="k">for</span> p <span class="k">in</span> palabras}         <span class="c"># set: {'h', 'a', 'm', 'p'}</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          El mismo molde para tres estructuras: cambia solo el delimitador.
+          Anidar es legal (<code>[x for fila in matriz for x in fila]</code>),
+          pero en cuanto se vuelve difícil de leer, vuelve al <code>for</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Juntándolo: un mini-análisis de inventario</h2>
+        <pre><code>ventas = [(<span class="s">"libro"</span>, 3), (<span class="s">"taza"</span>, 5), (<span class="s">"libro"</span>, 2), (<span class="s">"taza"</span>, 1), (<span class="s">"pin"</span>, 9)]
+
+distintos = {producto <span class="k">for</span> producto, _ <span class="k">in</span> ventas}   <span class="c"># set: productos unicos</span>
+<span class="f">print</span>(<span class="f">len</span>(distintos), <span class="s">"productos"</span>)              <span class="c"># 3 productos</span>
+
+totales = {}
+<span class="k">for</span> producto, n <span class="k">in</span> ventas:
+    totales[producto] = totales.<span class="f">get</span>(producto, 0) + n
+<span class="c"># {'libro': 5, 'taza': 6, 'pin': 9}</span>
+
+ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), key=<span class="k">lambda</span> kv: kv[1], reverse=True)
+<span class="k">for</span> producto, total <span class="k">in</span> ranking:
+    <span class="f">print</span>(<span class="s">f"&#123;producto:&lt;8&#125;&#123;total:&gt;3&#125;"</span>)   <span class="c"># pin 9 / taza 6 / libro 5</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Este es el patrón que repetirás en mil dominios:
+          <strong>agrupar → calcular → ordenar</strong>. En una pantalla se
+          juntan las <strong>cuatro</strong> estructuras del día: una
+          <code>list</code> de <code>tuple</code>s (las ventas), un
+          <code>set</code> (productos únicos), un <code>dict</code> (los
+          totales), más iteración con <code>.items()</code> y
+          <code>sorted(key=...)</code>. Ese es el remate de la sesión: todo lo
+          de hoy en un solo bloque.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Manos al código — Inventario + agregador (35 min)</h2>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">📦</span>
+            <h3>1) Inventario con dict · 15 min</h3>
+            <p class="muted">
+              Agrega y quita stock, consulta con <code>get</code> (sin reventar
+              si no existe) y lista los productos por debajo de un umbral.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔢</span>
+            <h3>2) Frecuencia con comprehension · 10 min</h3>
+            <p class="muted">
+              Cuenta las palabras de un texto y saca el
+              <strong>top-3</strong> por frecuencia con
+              <code>sorted(key=...)</code>.
+            </p>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">✂️</span>
+            <h3>3) Slicing drill · 5 min</h3>
+            <p class="muted">
+              Dada una fecha en str y una lista, extrae partes con
+              <strong>slices</strong> — sin <code>split</code> donde un slice
+              basta.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔗</span>
+            <h3>4) zip / enumerate · 5 min</h3>
+            <p class="muted">
+              Combina dos listas en un dict con <code>zip</code> y luego enumera
+              el resultado con <code>enumerate</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=W8KRzm-HUcc"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/W8KRzm-HUcc/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Python Tutorial for Beginners 4: Lists, Tuples, and Sets
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Recorre las cuatro estructuras con criterio de cuándo usar cada
+                una, justo el foco de la sesión.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=zPHB1NwU_Eg"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/zPHB1NwU_Eg/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">List Comprehensions in Python</div>
+              <div class="vc-meta">mCoding · Inglés</div>
+              <div class="vc-why">
+                Enseña a usar comprehensions de forma legible y a no abusarlas,
+                la otra mitad del aprendizaje.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/results?search_query=Hola+Mundo+estructuras+de+datos+en+Python+listas+tuplas+diccionarios"
+            target="_blank"
+            rel="noopener"
+          >
+            <div>
+              <div class="vc-title">
+                Estructuras de datos en Python: listas, tuplas, diccionarios
+              </div>
+              <div class="vc-meta">Hola Mundo · Español</div>
+              <div class="vc-why">
+                Refuerzo en español de las cuatro estructuras para afianzar el
+                criterio de elección.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Kata del día — kata-02</h2>
+        <div class="card">
+          <span class="tag violet">Kata kata-02</span>
+          <span class="tag green">Entregable</span>
+          <h3>Estructuras y agregación: frecuencia de palabras</h3>
+          <p class="muted">
+            Cuenta la frecuencia de palabras de un texto con
+            <code>dict</code> (o <code>Counter</code>) y devuelve un ranking
+            ordenado, con <strong>desempate determinista</strong> (p. ej. por
+            frecuencia descendente y luego alfabético).
+          </p>
+          <p class="muted" style="margin-top: 1.2rem">
+            <strong>Criterio medible:</strong> <code>pytest</code> en verde
+            contra un ranking exacto. Debes demostrar agrupado por clave
+            idiomático, orden con <code>key=</code> sobre tupla y construcción
+            con comprehension.
+            <strong>Cero contadores inicializados a mano.</strong>
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Elijo list/tuple/dict/set por sus propiedades y justifico la
+            elección
+          </li>
+          <li>Hago slicing con paso e índices negativos sin pensar</li>
+          <li>Itero con enumerate/zip/items en vez de range(len())</li>
+          <li>
+            Escribo list/dict/set comprehensions legibles y sé cuándo NO usarlas
+          </li>
+          <li>
+            Agrupo y cuento con dict (get/setdefault) sin inicializar a mano
+          </li>
+          <li>Uso set para deduplicar y para pertenencia rápida</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Próxima sesión:
+          <strong
+            >Funciones y módulos — argumentos, *args/**kwargs, retorno múltiple
+            y organización del código</strong
+          >
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

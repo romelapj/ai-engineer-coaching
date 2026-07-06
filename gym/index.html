@@ -272,6 +272,154 @@
         </div>
       </div>
 
+            <h2>Katas de nivelación — Pre-Fase 0.5</h2>
+      <p class="lead" style="margin-bottom: 1.5rem">
+        Ocho katas de <strong>fundamentos de Python</strong> (kata-00 a kata-07),
+        cada una entrena un fundamento distinto sobre su propio dominio pequeño
+        —entorno, conversores, texto, contactos, CSV→JSON, errores, una clase— y
+        cierran con un capstone a elección. Cada una trae harness
+        <code>pytest</code> con datos golden inline: se consideran <em>done</em>
+        con <code>pytest -q</code> en verde. Bloque condicional — solo se activan
+        si el diagnóstico indica nivelación.
+      </p>
+      <div class="reto-list">
+        <div class="card reto">
+          <div class="num">00</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N00</span>
+            </div>
+            <h3>Smoke test de entorno</h3>
+            <p class="desc">
+              Repo con venv, <code>requirements.txt</code> y un <code>pytest</code> que verifica imports, versión de Python 3.10+ y una función propia. Verde garantizado, sin red. De-riskea el entorno antes de escribir lógica.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-00-smoke-test-entorno/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">01</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N01</span>
+            </div>
+            <h3>Conversor de unidades tipado</h3>
+            <p class="desc">
+              Convierte temperaturas/distancias desde <code>str</code> o <code>float</code> con conversión explícita, redondeo y f-strings alineadas; las entradas inválidas lanzan <code>ValueError</code>. Tipos y truthiness en acción.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-01-conversor-tipado/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">02</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N02</span>
+            </div>
+            <h3>Frecuencia de palabras con ranking</h3>
+            <p class="desc">
+              Cuenta palabras con <code>Counter</code>/<code>defaultdict</code> y rankea por conteo descendente con desempate alfabético determinista, sin contadores manuales. Estructuras + comprehensions + <code>sorted(key=...)</code>.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-02-frecuencia-de-palabras/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">03</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N03</span>
+            </div>
+            <h3>Transformar una colección con funciones puras</h3>
+            <p class="desc">
+              Filtra, agrupa y resume contactos con funciones puras, type hints, comprehensions y predicados pasados como argumento. Descomposición y funciones como objetos.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-03-transformar-coleccion-funciones-puras/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">04</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N04</span>
+            </div>
+            <h3>De CSV a JSON: leer, transformar, escribir</h3>
+            <p class="desc">
+              Pipeline leer-transformar-escribir con <code>pathlib</code>, <code>with</code>, <code>csv.DictReader</code> y <code>json.dump</code>, convirtiendo tipos por columna y contando filas malformadas. Archivos y stdlib, sin pandas.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-04-csv-a-json-pipeline/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">05</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N04</span>
+            </div>
+            <h3>Entradas malas, errores específicos</h3>
+            <p class="desc">
+              Valida con excepciones propias y EAFP, captura tipos concretos, preserva la causa con <code>raise ... from</code> y acumula fallos sin reventar. Manejo de errores de verdad, no <code>except: pass</code>.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-05-errores-robustos/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">06</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en N05</span>
+            </div>
+            <h3>Modelar un dominio con dataclass</h3>
+            <p class="desc">
+              Un carrito de compras con <code>@dataclass</code>, métodos derivados, <code>__repr__</code>/<code>__eq__</code> gratis y <code>default_factory</code> seguro, sin herencia ni boilerplate. OOP-lite Pythonic.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-06-dataclass-de-dominio/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+
+        <div class="card reto">
+          <div class="num">07</div>
+          <div>
+            <div class="meta">
+              <span class="tag amber">Pre-Fase 0.5</span>
+              <span class="tag">Se asigna en Capstone · se cierra en N05</span>
+            </div>
+            <h3>Capstone a elección: un programita completo</h3>
+            <p class="desc">
+              Un programita pequeño y completo a elección (CLI, procesador de datos, juego de texto, agenda… o un analizador) que integra estructuras, funciones, archivos, errores, una clase y tests, defendido de punta a punta.
+            </p>
+            <a class="readme" href="../view.html?doc=gym/kata-07-capstone-a-eleccion/README.md"
+              >Ver enunciado →</a
+            >
+          </div>
+        </div>
+      </div>
+
       <h2>Los retos</h2>
       <div class="reto-list">
         <div class="card reto">
@@ -289,7 +437,9 @@
               por campo &ge; 90%. Sin tool use todavía: el punto es prompting
               disciplinado + validación.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-01-extractor-estructurado/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-01-extractor-estructurado/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -312,7 +462,9 @@
               útiles al usuario, nunca crashear. Se evalúa corriendo 20
               conversaciones con fallos inyectados.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-02-tool-use-robusto/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-02-tool-use-robusto/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -334,7 +486,9 @@
               15 preguntas de prueba: la respuesta debe ser correcta Y citar el
               documento correcto.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-03-rag-basico/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-03-rag-basico/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -356,7 +510,9 @@
               baseline vs mejorado con las métricas. La mejora debe ser real y
               explicada.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-04-retrieval-tuning/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-04-retrieval-tuning/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -378,7 +534,9 @@
               fuentes citadas. Se evalúa: el loop es legible (&lt;200 líneas),
               respeta presupuestos, el informe responde la pregunta.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-05-agente-from-scratch/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-05-agente-from-scratch/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -400,7 +558,9 @@
               reutiliza memoria y es más rápida/barata. Bonus: exponer las tools
               como MCP server.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-06-agente-con-memoria/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-06-agente-con-memoria/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -422,7 +582,9 @@
               cambio que mejora el score, con evidencia. Esta es la pieza más
               valiosa del portfolio.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-07-suite-de-evals/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-07-suite-de-evals/README.md"
               >Ver enunciado →</a
             >
           </div>
@@ -445,7 +607,9 @@
               documentados + 3 mitigaciones implementadas y demostradas con los
               ataques bloqueados.
             </p>
-            <a class="readme" href="../view.html?doc=gym/reto-08-hardening-produccion/README.md"
+            <a
+              class="readme"
+              href="../view.html?doc=gym/reto-08-hardening-produccion/README.md"
               >Ver enunciado →</a
             >
           </div>

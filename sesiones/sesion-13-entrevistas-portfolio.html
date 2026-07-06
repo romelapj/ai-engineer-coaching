@@ -411,8 +411,9 @@
         <h2>Agenda — 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — agente en producción de la sesión 12: demo
-            de 2 min, métricas de evals (15 min)
+            <strong>Repaso</strong> — tus 2 system designs de la S12 con timer:
+            defiende uno en voz alta en 5 min, incluida la estimación de costos
+            que sacaste con <code>estimador.py</code> (15 min)
           </li>
           <li>
             <strong>Tema central</strong> — anatomía de la entrevista 2026,
@@ -674,114 +675,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         </div>
       </section>
 
-      <!-- SLIDE 9: startups vs corporates -->
-      <section class="slide">
-        <h2>Estrategia: ¿startup o corporate?</h2>
-        <div class="columns">
-          <div class="card">
-            <h3>🚀 Startup (seed - serie B)</h3>
-            <ul class="clean">
-              <li>Proceso: 2-3 semanas, a veces una sola semana</li>
-              <li>Scope amplio: tú eres "el de AI" — del prompt al deploy</li>
-              <li>
-                Comp: base menor + equity (lotería: valórala en 0 al negociar)
-              </li>
-              <li>
-                Tu portfolio con evals pesa <strong>más</strong> que el título o
-                los años de experiencia
-              </li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>🏢 Corporate / scale-up</h3>
-            <ul class="clean">
-              <li>Proceso: 4-8 semanas, 4-6 rondas estandarizadas</li>
-              <li>Scope más angosto, sistemas con tráfico real y on-call</li>
-              <li>Comp: base mayor, bonos y RSUs líquidas</li>
-              <li>
-                Filtran más por entrevista estructurada: las mocks importan
-                <strong>más</strong> aquí
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p class="muted" style="margin-top: 1.2rem">
-          Regla práctica: aplica a ambas en paralelo. Las startups te dan
-          práctica de entrevista rápida y ofertas que sirven de palanca para
-          negociar con las corporates.
-        </p>
-      </section>
-
-      <!-- SLIDE 10: funnel y plan semanal -->
-      <section class="slide">
-        <h2>Volumen y referidos: el funnel real</h2>
-        <div class="columns-3">
-          <div class="card">
-            <span class="icon">📨</span>
-            <h3>Cold apply</h3>
-            <p class="muted">
-              ~2-5% pasa a screen. Es un juego de volumen y de keywords que el
-              ATS pueda leer.
-            </p>
-          </div>
-          <div class="card">
-            <span class="icon">🤝</span>
-            <h3>Con referido</h3>
-            <p class="muted">
-              ~5-10x más probabilidad de screen. Un mensaje directo a un
-              ingeniero del equipo vale más que 20 cold applies.
-            </p>
-          </div>
-          <div class="card">
-            <span class="icon">📉</span>
-            <h3>Funnel típico</h3>
-            <p class="muted">
-              100 aplicaciones → 10-15 screens → 3-5 finales → 1-2 ofertas. El
-              "no" es el caso base; no es señal personal.
-            </p>
-          </div>
-        </div>
-        <p style="margin-top: 1.4rem">
-          <strong>Plan semanal mínimo:</strong> 10 aplicaciones dirigidas (CV
-          ajustado al rol, no spray-and-pray) + 5 mensajes a posibles referidos
-          + 1 mock interview. Sostenido 6-8 semanas.
-        </p>
-      </section>
-
-      <!-- SLIDE 11: negociación básica -->
-      <section class="slide">
-        <h2>Negociación básica de oferta</h2>
-        <ul class="clean">
-          <li>
-            <strong>No des tu número primero.</strong> "¿Cuál es el rango
-            presupuestado para el rol?" — en muchos países están obligados a
-            decirlo.
-          </li>
-          <li>
-            <strong>Toda primera oferta tiene margen</strong>, típicamente
-            10-20%. Pedir con datos no te quita la oferta; aceptar en la llamada
-            sí te quita dinero.
-          </li>
-          <li>
-            <strong>Nunca aceptes en vivo.</strong> "Gracias, lo reviso y te
-            confirmo en 48 horas" es una frase completa.
-          </li>
-          <li>
-            <strong>La palanca real es otra oferta</strong> (o un proceso
-            avanzado). Por eso aplicas en paralelo, no en serie.
-          </li>
-          <li>
-            <strong>Negocia el paquete, no solo la base:</strong> signing bonus,
-            fecha de revisión salarial, equity, remoto.
-          </li>
-          <li>
-            <strong>Todo por escrito.</strong> Lo que no está en la carta de
-            oferta no existe.
-          </li>
-        </ul>
-      </section>
-
-      <!-- SLIDE 12: ejercicio en vivo -->
+      <!-- SLIDE 9: ejercicio en vivo -->
       <section class="slide">
         <h2>🛠️ En vivo: construimos un STAR Grader (30 min)</h2>
         <p>
@@ -819,33 +713,114 @@ client = anthropic.<span class="f">Anthropic</span>()
         </p>
       </section>
 
-      <!-- SLIDE 13: reto de la semana -->
+      <!-- SLIDE 10: startups vs corporates -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 13</span
-          ><span class="tag green">Entregable final</span>
-          <h3 style="margin-top: 0.8rem">Listo para aplicar</h3>
-          <p>
-            <strong>1. Mock interview completa grabada</strong> — coding +
-            system design + behavioral con un compañero del programa.
-            Autoevalúate con las rúbricas del coach y anota tus 3 gaps
-            principales.
-          </p>
-          <p style="margin-top: 0.6rem">
-            <strong>2. CV final</strong> — una página, cada bullet con métrica.
-            Pásalo por el filtro: si un bullet no responde "¿y qué lograste?",
-            se reescribe o se va.
-          </p>
-          <p style="margin-top: 0.6rem">
-            <strong>3. Lista de 15 empresas objetivo</strong> — 8 startups + 7
-            corporates, con posible referido identificado por empresa y plan de
-            aplicación semanal (10 applies + 5 mensajes + 1 mock).
-          </p>
+        <h2>Estrategia: ¿startup o corporate?</h2>
+        <div class="columns">
+          <div class="card">
+            <h3>🚀 Startup (seed - serie B)</h3>
+            <ul class="clean">
+              <li>Proceso: 2-3 semanas, a veces una sola semana</li>
+              <li>Scope amplio: tú eres "el de AI" — del prompt al deploy</li>
+              <li>
+                Comp: base menor + equity (lotería: valórala en 0 al negociar)
+              </li>
+              <li>
+                Tu portfolio con evals pesa <strong>más</strong> que el título o
+                los años de experiencia
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🏢 Corporate / scale-up</h3>
+            <ul class="clean">
+              <li>Proceso: 4-8 semanas, 4-6 rondas estandarizadas</li>
+              <li>Scope más angosto, sistemas con tráfico real y on-call</li>
+              <li>Comp: base mayor, bonos y RSUs líquidas</li>
+              <li>
+                Filtran más por entrevista estructurada: las mocks importan
+                <strong>más</strong> aquí
+              </li>
+            </ul>
+          </div>
         </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Regla práctica: aplica a ambas en paralelo. Las startups te dan
+          práctica de entrevista rápida y ofertas que sirven de palanca para
+          negociar con las corporates.
+        </p>
       </section>
 
-      <!-- SLIDE 14: videos -->
+      <!-- SLIDE 11: funnel y plan semanal -->
+      <section class="slide">
+        <h2>Volumen y referidos: el funnel real</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">📨</span>
+            <h3>Cold apply</h3>
+            <p class="muted">
+              ~2-5% pasa a screen. Es un juego de volumen y de keywords que el
+              ATS pueda leer.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🤝</span>
+            <h3>Con referido</h3>
+            <p class="muted">
+              ~5-10x más probabilidad de screen. Un mensaje directo a un
+              ingeniero del equipo vale más que 20 cold applies.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📉</span>
+            <h3>Funnel típico</h3>
+            <p class="muted">
+              100 aplicaciones → 10-15 screens → 3-5 finales → 1-2 ofertas. El
+              "no" es el caso base; no es señal personal.
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1.4rem">
+          <strong>Plan semanal mínimo:</strong> 10 aplicaciones dirigidas (CV
+          ajustado al rol, no spray-and-pray) + 5 mensajes a posibles referidos
+          + 1 mock interview. Sostenido 6-8 semanas.
+        </p>
+      </section>
+
+      <!-- SLIDE 12: negociación básica -->
+      <section class="slide">
+        <h2>Negociación básica de oferta</h2>
+        <ul class="clean">
+          <li>
+            <strong>No des tu número primero.</strong> "¿Cuál es el rango
+            presupuestado para el rol?" — en muchos países están obligados a
+            decirlo.
+          </li>
+          <li>
+            <strong>Toda primera oferta tiene margen</strong>, típicamente
+            10-20%. Pedir con datos no te quita la oferta; aceptar en la llamada
+            sí te quita dinero.
+          </li>
+          <li>
+            <strong>Nunca aceptes en vivo.</strong> "Gracias, lo reviso y te
+            confirmo en 48 horas" es una frase completa.
+          </li>
+          <li>
+            <strong>La palanca real es otra oferta</strong> (o un proceso
+            avanzado). Por eso aplicas en paralelo, no en serie.
+          </li>
+          <li>
+            <strong>Negocia el paquete, no solo la base:</strong> signing bonus,
+            fecha de revisión salarial, equity, remoto.
+          </li>
+          <li>
+            <strong>Todo por escrito.</strong> Lo que no está en la carta de
+            oferta no existe.
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 13: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -958,7 +933,71 @@ client = anthropic.<span class="f">Anthropic</span>()
         </div>
       </section>
 
-      <!-- SLIDE 15: checklist de salida -->
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 13</span
+          ><span class="tag green">Entregable final</span>
+          <h3 style="margin-top: 0.8rem">Listo para aplicar</h3>
+          <p>
+            <strong>1. Mock interview completa grabada</strong> — coding +
+            system design + behavioral con un compañero del programa.
+            Autoevalúate con las rúbricas del coach y anota tus 3 gaps
+            principales.
+          </p>
+          <p style="margin-top: 0.6rem">
+            <strong>2. CV final</strong> — una página, cada bullet con métrica.
+            Pásalo por el filtro: si un bullet no responde "¿y qué lograste?",
+            se reescribe o se va.
+          </p>
+          <p style="margin-top: 0.6rem">
+            <strong>3. Lista de 15 empresas objetivo</strong> — 8 startups + 7
+            corporates, con posible referido identificado por empresa y plan de
+            aplicación semanal (10 applies + 5 mensajes + 1 mock).
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>16 semanas: de dev a AI engineer</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">🧱</span>
+            <h3>Qué construiste</h3>
+            <p class="muted">
+              De los fundamentos y tu primer RAG a un proyecto production-ready
+              con su Demo Day (Fase 3). Ya no sigues tutoriales: tomas
+              decisiones de arquitectura y las defiendes.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📏</span>
+            <h3>Qué mides ahora</h3>
+            <p class="muted">
+              Faithfulness, recall@k, latencia p95 y costo por request. Pasaste
+              de "funciona" a un delta con metodología — la evidencia que nadie
+              discute.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🗣️</span>
+            <h3>Qué sabes defender</h3>
+            <p class="muted">
+              El marco de system design de 6 pasos, cada trade-off con su número
+              y tu historia en STAR. Entras a la entrevista a competir por el
+              rol, no a pedir permiso.
+            </p>
+          </div>
+        </div>
+        <blockquote style="margin-top: 1.4rem">
+          Empezaste sabiendo programar. Sales sabiendo decidir, medir y
+          demostrar — que es exactamente lo que separa a un AI engineer del
+          resto.
+        </blockquote>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
         <ul class="checklist">

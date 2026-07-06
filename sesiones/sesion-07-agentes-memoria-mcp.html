@@ -435,11 +435,18 @@
       <!-- SLIDE 3: objetivos -->
       <section class="slide">
         <h2>Objetivos de la sesión</h2>
+        <p style="margin-bottom: 1.5rem">
+          La <strong>memoria</strong> es la columna vertebral de hoy: es lo que
+          construyes en el lab. <strong>Multi-agente</strong> y
+          <strong>MCP</strong> son las dos extensiones que le cuelgas encima una
+          vez que el agente ya recuerda.
+        </p>
         <div class="columns-3">
           <div class="card">
             <span class="icon">🧠</span>
             <h3>Gestionar contexto</h3>
-            <p class="muted">
+            <span class="tag green">columna vertebral</span>
+            <p class="muted" style="margin-top: 0.5rem">
               Sobrevivir tareas largas con compaction y memoria externa: qué
               comprimir, qué persistir y dónde.
             </p>
@@ -447,7 +454,8 @@
           <div class="card">
             <span class="icon">🤖</span>
             <h3>Decidir multi-agente</h3>
-            <p class="muted">
+            <span class="tag violet">extensión</span>
+            <p class="muted" style="margin-top: 0.5rem">
               Cuándo el patrón orquestador-trabajadores paga el 15× de tokens
               que cuesta — y cuándo es overengineering.
             </p>
@@ -455,7 +463,8 @@
           <div class="card">
             <span class="icon">🔌</span>
             <h3>Entender MCP</h3>
-            <p class="muted">
+            <span class="tag violet">extensión</span>
+            <p class="muted" style="margin-top: 0.5rem">
               El protocolo que convierte N×M integraciones en N+M: servers,
               tools y resources.
             </p>
@@ -618,6 +627,12 @@ resp = client.messages.<span class="f">create</span>(
       <!-- SLIDE 8: orquestador-trabajadores -->
       <section class="slide">
         <h2>Multi-agente: orquestador-trabajadores</h2>
+        <p style="margin-bottom: 1.4rem">
+          Ya sabes que tu agente recuerda entre sesiones. El siguiente límite no
+          es la memoria: es cuando el trabajo intermedio no cabe en
+          <strong>un solo</strong> contexto. Ahí dejas de agrandar el loop y
+          empiezas a <strong>delegar</strong>.
+        </p>
         <div class="columns">
           <div>
             <ul class="clean">
@@ -717,6 +732,11 @@ hallazgos = <span class="f">subagente</span>(
       <!-- SLIDE 11: MCP qué resuelve -->
       <section class="slide">
         <h2>MCP: de N×M a N+M</h2>
+        <p style="margin-bottom: 1.2rem">
+          Memoria y subagentes resuelven <em>cómo piensa</em> tu agente. Falta
+          <em>con qué actúa</em>: sus herramientas. Cablear cada agente a cada
+          herramienta a mano no escala — y justo eso es lo que MCP estandariza.
+        </p>
         <p>
           Antes: cada app de IA × cada integración = un adaptador ad-hoc (5 apps
           × 8 herramientas = 40 integraciones). Con
@@ -791,56 +811,7 @@ mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
         </p>
       </section>
 
-      <!-- SLIDE 13: seguridad -->
-      <section class="slide">
-        <h2>Seguridad básica de agentes</h2>
-        <div class="columns">
-          <div class="card">
-            <h3>☠️ La trifecta letal</h3>
-            <p>
-              Un agente es explotable vía prompt injection cuando combina las
-              tres a la vez:
-            </p>
-            <ul class="clean" style="margin-top: 0.6rem">
-              <li>Acceso a datos privados</li>
-              <li>
-                Exposición a contenido no confiable (web, emails, tool results)
-              </li>
-              <li>Capacidad de exfiltrar (HTTP, email, escribir fuera)</li>
-            </ul>
-            <p class="muted" style="margin-top: 0.6rem">
-              Elimina una de las tres y el ataque pierde el camino de salida.
-            </p>
-          </div>
-          <div class="card">
-            <h3>🛡️ Reglas mínimas</h3>
-            <ul class="clean">
-              <li>
-                <strong>Mínimo privilegio</strong>: cada subagente solo las
-                tools que necesita; allowlists, no blocklists
-              </li>
-              <li>
-                <strong>Sandboxing</strong>: ejecución de código en contenedor
-                sin red o con egress restringido
-              </li>
-              <li>
-                <strong>Human-in-the-loop</strong>: confirmación para acciones
-                destructivas o irreversibles (deploy, delete, enviar)
-              </li>
-              <li>
-                <strong>Tool results = input no confiable</strong>: lo que
-                vuelve de la web puede traer instrucciones inyectadas
-              </li>
-              <li>
-                <strong>Secretos fuera del prompt</strong>: API keys en el
-                entorno del harness, nunca en el contexto
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 14: ejercicio en vivo -->
+      <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
         <h2>👩‍💻 Manos al código — 30 min en pareja</h2>
         <p>
@@ -875,37 +846,7 @@ mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
         </p>
       </section>
 
-      <!-- SLIDE 15: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Reto 06</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">Agente con memoria</h3>
-          <p>
-            Un agente con <strong>memoria persistente entre ejecuciones</strong>
-            (archivo o DB, tú eliges) que además delegue trabajo a
-            <strong>un subagente especializado</strong> con contexto limpio y
-            rol propio. Criterios: la memoria sobrevive al reinicio del proceso,
-            el subagente devuelve resultados compactos al orquestador, y puedes
-            explicar qué guardaste en memoria y por qué.
-          </p>
-          <p style="margin-top: 0.8rem">
-            <strong>Bonus:</strong> expón la memoria como un MCP server propio y
-            conéctalo a Claude Code o a tu cliente MCP favorito.
-          </p>
-          <p style="margin-top: 0.8rem">
-            📄 Enunciado completo y rúbrica:
-            <a
-              href="../gym/reto-06-agente-con-memoria/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-06-agente-con-memoria</a
-            >
-          </p>
-        </div>
-      </section>
-
-      <!-- SLIDE 16: videos -->
+      <!-- SLIDE 14: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -1014,6 +955,93 @@ mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
         </div>
       </section>
 
+      <!-- SLIDE 15: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 06</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Agente con memoria</h3>
+          <p>
+            Un agente con <strong>memoria persistente entre ejecuciones</strong>
+            (archivo o DB, tú eliges) que además delegue trabajo a
+            <strong>un subagente especializado</strong> con contexto limpio y
+            rol propio. Criterios: la memoria sobrevive al reinicio del proceso,
+            el subagente devuelve resultados compactos al orquestador, y puedes
+            explicar qué guardaste en memoria y por qué.
+          </p>
+          <p style="margin-top: 0.8rem">
+            <strong>Bonus:</strong> expón la memoria como un MCP server propio y
+            conéctalo a Claude Code o a tu cliente MCP favorito.
+          </p>
+          <p style="margin-top: 0.8rem">
+            📄 Enunciado completo y rúbrica:
+            <a
+              href="../gym/reto-06-agente-con-memoria/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-06-agente-con-memoria</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: seguridad (cierre transversal) -->
+      <section class="slide">
+        <h2>Seguridad: el hilo que cruza los tres pilares</h2>
+        <p style="margin-bottom: 1.4rem">
+          Todo lo de hoy abre superficie de ataque: la
+          <strong>memoria</strong> externa puede envenenarse, cada
+          <strong>subagente</strong> amplía el set de tools, y un
+          <strong>MCP server</strong> trae herramientas de terceros. Una sola
+          disciplina las cruza — trata todo lo que entra al contexto como no
+          confiable.
+        </p>
+        <div class="columns">
+          <div class="card">
+            <h3>☠️ La trifecta letal</h3>
+            <p>
+              Un agente es explotable vía prompt injection cuando combina las
+              tres a la vez:
+            </p>
+            <ul class="clean" style="margin-top: 0.6rem">
+              <li>Acceso a datos privados</li>
+              <li>
+                Exposición a contenido no confiable (web, emails, tool results)
+              </li>
+              <li>Capacidad de exfiltrar (HTTP, email, escribir fuera)</li>
+            </ul>
+            <p class="muted" style="margin-top: 0.6rem">
+              Elimina una de las tres y el ataque pierde el camino de salida.
+            </p>
+          </div>
+          <div class="card">
+            <h3>🛡️ Reglas mínimas</h3>
+            <ul class="clean">
+              <li>
+                <strong>Mínimo privilegio</strong>: cada subagente solo las
+                tools que necesita; allowlists, no blocklists
+              </li>
+              <li>
+                <strong>Sandboxing</strong>: ejecución de código en contenedor
+                sin red o con egress restringido
+              </li>
+              <li>
+                <strong>Human-in-the-loop</strong>: confirmación para acciones
+                destructivas o irreversibles (deploy, delete, enviar)
+              </li>
+              <li>
+                <strong>Tool results = input no confiable</strong>: lo que
+                vuelve de la web puede traer instrucciones inyectadas
+              </li>
+              <li>
+                <strong>Secretos fuera del prompt</strong>: API keys en el
+                entorno del harness, nunca en el contexto
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <!-- SLIDE 17: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -1047,6 +1075,8 @@ mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
           <strong>Sesión 08 — Evals — Medir Sistemas con LLMs</strong>
+          — ya construiste RAG y agentes; ahora aprendes a medir si de verdad
+          funcionan, con evals que reemplazan el "a mí me funciona".
         </p>
       </section>
     </main>

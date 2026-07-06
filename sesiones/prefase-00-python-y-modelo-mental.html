@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Pre-Fase N00 — Python y su modelo mental | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <section class="slide active">
+        <div class="kicker">
+          Pre-Fase 0.5 — Fundamentos de Python · Día 1 de 6
+        </div>
+        <h1>Python<br />y su modelo mental</h1>
+        <p class="lead">
+          Vienes de JS, Java, Go o C#. Esto corre sin avisar y explota en
+          runtime:
+        </p>
+        <pre><code>Traceback (most recent call last):
+  File <span class="s">"agenda.py"</span>, line 12, <span class="k">in</span> &lt;module&gt;
+    edad = <span class="f">int</span>(fila[<span class="s">"edad"</span>])
+ValueError: invalid literal for int() with base 10: <span class="s">''</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Tu instinto es mirar la primera línea o cambiar el <code>int()</code>;
+          ninguna de las dos arregla esto. En 90 minutos leerás este traceback
+          de un vistazo y sabrás por qué el dato llegó vacío. La meta de las 6
+          sesiones es leer y escribir Python idiomático con fluidez — aprobar el
+          diagnóstico sale como consecuencia, no como meta.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Encuadre (5 min):</strong> qué significa "saber Python"
+            cuando ya programas en otro lenguaje.
+          </li>
+          <li>
+            <strong>Tema central (35 min):</strong> cómo se ejecuta Python, el
+            REPL, todo-es-objeto, tipado, <code>None</code> y tracebacks.
+          </li>
+          <li>
+            <strong>Manos al código (35 min):</strong> montar el entorno y cazar
+            3 tracebacks reales en el REPL.
+          </li>
+          <li>
+            <strong>Kata del día (10 min):</strong> <code>kata-00</code>, un
+            smoke test de entorno.
+          </li>
+          <li><strong>Cierre (5 min):</strong> checklist de salida.</li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Iremos <strong>rápido</strong> en lo universal y
+          <strong>denso</strong> en lo Pythonic.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>De tu lenguaje a Python: el mapa rápido</h2>
+        <div class="columns">
+          <div>
+            <h3>Lo que ya sabes</h3>
+            <ul class="clean">
+              <li>
+                Variables, <code>if</code>, <code>for</code>,
+                <code>while</code> y funciones son universales: iremos rápido
+                ahí.
+              </li>
+              <li>
+                Sin <code>new</code>, sin punto y coma, sin compilar a binario:
+                editas y corres.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Lo que es nuevo (lo denso)</h3>
+            <ul class="clean">
+              <li>
+                Lo Pythonic: truthiness, mutabilidad, comprehensions,
+                generadores, dunder, EAFP.
+              </li>
+              <li>
+                Sin llaves: la <strong>indentación</strong> ES la sintaxis de
+                bloque (4 espacios, nunca tabs).
+              </li>
+              <li>
+                Tipado dinámico pero <strong>no débil</strong>: Python no
+                convierte <code>'3' + 4</code> por ti.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Cómo se ejecuta tu código</h2>
+        <div class="columns">
+          <div>
+            <h3>El intérprete</h3>
+            <ul class="clean">
+              <li>
+                CPython lee tu <code>.py</code>, lo compila a
+                <strong>bytecode</strong> (<code>.pyc</code>) y lo ejecuta en
+                una máquina virtual.
+              </li>
+              <li>
+                No hay paso de "compilar a ejecutable" como en Go o Java:
+                <code>python script.py</code> corre directo.
+              </li>
+              <li>
+                Los errores de <strong>sintaxis</strong> se ven al cargar; los
+                de <strong>ejecución</strong> saltan al llegar a la línea.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>El REPL</h3>
+            <ul class="clean">
+              <li>
+                <code>python</code> sin argumentos evalúa expresiones una a una:
+                tu laboratorio interactivo.
+              </li>
+              <li>
+                <code>python -i script.py</code> corre el script y te deja
+                <strong>dentro</strong>, con todas las variables vivas para
+                inspeccionar.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Todo es un objeto</h2>
+        <blockquote>
+          Un <code>int</code>, una función, una clase, un módulo: en Python TODO
+          es un objeto con identidad, tipo y valor. Un nombre no "contiene" un
+          valor — es una etiqueta que apunta a un objeto en memoria.
+        </blockquote>
+        <p class="muted">
+          Con <code>type(x)</code> ves la clase, con <code>id(x)</code> la
+          identidad y con <code>dir(x)</code> qué sabe hacer. Esto explica casi
+          todo lo raro de Python: por qué dos listas "iguales" no son "la
+          misma", o por qué pasar una lista a una función puede mutarla.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Nombres, objetos y el REPL como microscopio</h2>
+        <pre><code>&gt;&gt;&gt; precio = 1990          <span class="c"># 'precio' apunta a un objeto int</span>
+&gt;&gt;&gt; <span class="f">type</span>(precio)
+&lt;class <span class="s">'int'</span>&gt;
+&gt;&gt;&gt; texto = <span class="s">"1990"</span>
+&gt;&gt;&gt; <span class="f">type</span>(texto), <span class="f">repr</span>(texto)
+(&lt;class <span class="s">'str'</span>&gt;, <span class="s">"'1990'"</span>)
+&gt;&gt;&gt; precio == texto         <span class="c"># int vs str: nunca iguales</span>
+<span class="k">False</span>
+&gt;&gt;&gt; <span class="f">dir</span>(texto)[-5:]         <span class="c"># explorar qué sabe hacer un str</span>
+[<span class="s">'swapcase'</span>, <span class="s">'title'</span>, <span class="s">'translate'</span>, <span class="s">'upper'</span>, <span class="s">'zfill'</span>]</code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          No escribas 40 líneas y reces: carga <strong>un</strong> dato y
+          míralo. <code>repr('500')</code> muestra comillas y distingue el
+          <code>str</code> del <code>int</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Tipado dinámico, pero fuerte</h2>
+        <div class="columns">
+          <div>
+            <h3>Dinámico</h3>
+            <ul class="clean">
+              <li>
+                Una variable puede apuntar a un <code>int</code> hoy y a un
+                <code>str</code> después; no declaras el tipo en la firma.
+              </li>
+            </ul>
+            <h3>Fuerte</h3>
+            <ul class="clean">
+              <li>
+                Python <strong>no</strong> mezcla tipos a la fuerza:
+                <code>'3' + 4</code> lanza <code>TypeError</code>, no devuelve
+                <code>'34'</code> ni <code>7</code>.
+              </li>
+              <li>
+                Compáralo con JS, donde <code>'3' + 4 === '34'</code>: Python
+                prefiere fallar ruidoso a adivinar.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <pre><code><span class="c"># Conversión SIEMPRE explícita</span>
+<span class="f">int</span>(<span class="s">"3"</span>) + 4        <span class="c"># 7</span>
+<span class="f">str</span>(4) + <span class="s">"3"</span>        <span class="c"># '43'</span>
+
+<span class="s">"3"</span> + 4              <span class="c"># TypeError</span></code></pre>
+            <p class="muted">
+              Es una virtud: el error salta donde está el bug, no tres funciones
+              después.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>None y la verdad sobre la ausencia</h2>
+        <pre><code><span class="k">def</span> <span class="f">saludar</span>(nombre):
+    <span class="f">print</span>(<span class="s">f"Hola, &#123;nombre&#125;"</span>)
+    <span class="c"># sin return explícito</span>
+
+resultado = <span class="f">saludar</span>(<span class="s">"Ada"</span>)
+<span class="f">print</span>(resultado)            <span class="c"># None</span>
+<span class="f">print</span>(resultado <span class="k">is</span> <span class="k">None</span>)    <span class="c"># True  <- la forma idiomática</span>
+
+config = &#123;<span class="s">"timeout"</span>: 30&#125;
+valor = config.<span class="f">get</span>(<span class="s">"reintentos"</span>)   <span class="c"># clave ausente -> None, no error</span>
+<span class="f">print</span>(valor <span class="k">is</span> <span class="k">None</span>)        <span class="c"># True</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>None</code> es el objeto singleton que representa "ausencia de
+          valor" (como <code>null</code>/<code>nil</code>, pero es un objeto).
+          Se compara con <code>is None</code>, no con <code>== None</code> — el
+          porqué lo vemos en N01: identidad vs igualdad.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Indentación: la sintaxis del bloque</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                En Python la indentación NO es estética: define qué pertenece a
+                cada bloque.
+              </li>
+              <li>
+                4 espacios por nivel, consistentes; mezclar tabs y espacios
+                lanza
+                <code>TabError</code>.
+              </li>
+              <li>
+                No hay llaves ni <code>end</code>: el bloque empieza tras los
+                dos puntos y termina cuando baja la indentación.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <ul class="clean">
+              <li>
+                Un <code>IndentationError</code> casi siempre es un espacio de
+                más o de menos, o un tab colado.
+              </li>
+              <li>
+                Configura tu editor: "insertar espacios al pulsar Tab" y 4
+                espacios.
+              </li>
+            </ul>
+            <pre><code><span class="k">if</span> activo:
+    <span class="f">print</span>(<span class="s">"dentro"</span>)
+<span class="f">print</span>(<span class="s">"fuera"</span>)</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Anatomía de un traceback</h2>
+        <p class="muted" style="margin-bottom: 1.4rem">
+          Aquí el modelo mental deja de ser teoría: si sabes qué es un objeto,
+          un tipo y un nombre, un traceback deja de ser ruido que asusta y pasa
+          a ser un mensaje preciso — nombra el tipo del error y el objeto exacto
+          que lo provocó.
+        </p>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                Se lee de <strong>abajo hacia arriba</strong>: la última línea
+                es el tipo y el mensaje del error.
+              </li>
+              <li>
+                La sección de arriba es la pila de llamadas; busca el frame de
+                <strong>tu</strong> código.
+              </li>
+              <li>
+                La penúltima sección dice archivo y número de línea exacto donde
+                explotó.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <ul class="clean">
+              <li>
+                <code
+                  >ValueError: invalid literal for int() with base 10:
+                  'abc'</code
+                >
+                significa que hiciste <code>int('abc')</code>.
+              </li>
+              <li>
+                La causa raíz casi nunca es la línea del error: suele ser el
+                dato que llegó sucio.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Los 5 tracebacks que más vas a ver</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Excepción</th>
+              <th>Ejemplo típico</th>
+              <th>Qué la causa / cómo evitarla</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ValueError</code></td>
+              <td><code>int('abc')</code>, float malformado</td>
+              <td>El dato venía sucio: convierte con cuidado.</td>
+            </tr>
+            <tr>
+              <td><code>KeyError</code></td>
+              <td><code>d['nope']</code> en un dict normal</td>
+              <td>
+                Usa <code>d.get(k, default)</code> o <code>defaultdict</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>TypeError</code></td>
+              <td><code>'x' + 3</code>, <code>None + int</code></td>
+              <td>Conversión de tipos olvidada.</td>
+            </tr>
+            <tr>
+              <td><code>IndexError</code></td>
+              <td><code>lista[5]</code> con 3 elementos</td>
+              <td>Valida <code>len()</code> antes de indexar.</td>
+            </tr>
+            <tr>
+              <td><code>FileNotFoundError</code></td>
+              <td><code>open()</code> con ruta mala</td>
+              <td>
+                Usa <code>pathlib</code> y verifica <code>.exists()</code>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide">
+        <h2>Leyendo un traceback de verdad</h2>
+        <pre><code><span class="c"># Lee de ABAJO hacia ARRIBA</span>
+Traceback (most recent call last):
+  File <span class="s">"agenda.py"</span>, line 12, <span class="k">in</span> &lt;module&gt;
+    edad = <span class="f">int</span>(fila[<span class="s">"edad"</span>])
+ValueError: invalid literal for int() with base 10: <span class="s">''</span>
+
+<span class="c"># tipo=ValueError | archivo=agenda.py | línea=12 | causa=int('')</span>
+<span class="c"># Causa raíz: una fila de la agenda venía con 'edad' vacía</span>
+<span class="c"># Reproducción mínima en el REPL:  int('')  -> reproduce el bug</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <strong>Patrón:</strong> lee el mensaje, ve a la línea, reproduce el
+          error en una línea en el REPL. <strong>Anti-patrón:</strong> cambiar
+          código al azar hasta que "deje de fallar". El error te dice qué pasó;
+          tu trabajo es entender por qué llegó ese dato.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>El ritual de entorno, de memoria</h2>
+        <pre><code><span class="c"># Esto tiene que salirte sin pensar</span>
+python3 -m venv .venv
+<span class="k">source</span> .venv/bin/activate          <span class="c"># Windows: .venv\Scripts\activate</span>
+python -m pip install --upgrade pip
+pip install pytest
+pip freeze &gt; requirements.txt
+
+<span class="c"># Verifica SIEMPRE antes de seguir:</span>
+python -c <span class="s">"import sys; print(sys.version)"</span>
+which python                       <span class="c"># debe apuntar dentro de .venv</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>venv</code> aísla dependencias por proyecto y mata el "funciona
+          en mi máquina"; <code>requirements.txt</code> es tu contrato de
+          reproducibilidad. Tenlo a mano: es el primer paso del montaje.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Manos al código — Entorno + cazar 3 tracebacks (35 min)</h2>
+        <ul class="clean">
+          <li>
+            <strong>1) Montar (10 min):</strong> carpeta
+            <code>nivelacion-python/</code>, crear venv, instalar
+            <code>pytest</code>, <code>pip freeze</code> y verificar con un
+            <code>import</code>.
+          </li>
+          <li>
+            <strong>2) Mirar antes de codear (5 min):</strong> abre un dataset
+            chico en el REPL y di qué tipo es cada campo.
+          </li>
+          <li>
+            <strong>3) Cazar 3 tracebacks (15 min):</strong> recibes 3 scripts
+            rotos (<code>ValueError</code>, <code>KeyError</code>,
+            <code>IndexError</code>); para cada uno di tipo/línea/causa en voz
+            alta, reprodúcelo en el REPL y arréglalo.
+          </li>
+          <li>
+            <strong>4) Inspeccionar estado (5 min):</strong> corre
+            <code>python -i</code> sobre el script arreglado y explora las
+            variables vivas.
+          </li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=Kg1Yvry_Ydk"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/Kg1Yvry_Ydk/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Python Tutorial: VENV — How to Use Virtual Environments
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                El estándar de oro para entender qué resuelve un venv y el ciclo
+                crear/activar/instalar/congelar.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=lEd-YAumkP4"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/lEd-YAumkP4/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">How to Read a Python Traceback</div>
+              <div class="vc-meta">mCoding · Inglés</div>
+              <div class="vc-why">
+                Enseña a leer el traceback de abajo hacia arriba: la habilidad
+                de depuración más rentable del curso.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/results?search_query=Píldoras+Informáticas+curso+python+instalación+entorno"
+            target="_blank"
+            rel="noopener"
+          >
+            <div>
+              <div class="vc-title">
+                Curso de Python desde cero — Instalación y entorno
+              </div>
+              <div class="vc-meta">Píldoras Informáticas · Español</div>
+              <div class="vc-why">
+                Refuerzo en español del setup de entorno para quien arranca con
+                fricción de instalación.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Kata del día — kata-00</h2>
+        <div class="card">
+          <span class="tag violet">Kata kata-00</span>
+          <span class="tag green">Entregable</span>
+          <h3>Smoke test de entorno</h3>
+          <p class="muted">
+            Un repo con <code>venv</code>, <code>requirements.txt</code> y un
+            <code>test_smoke.py</code> que verifique que importas
+            <code>pytest</code>, que la versión de Python es 3.10+ y que una
+            función propia trivial devuelve lo esperado.
+          </p>
+          <p class="muted">
+            <strong>Criterio medible:</strong> <code>pytest</code> pasa 3/3 en
+            verde y el <code>python -c</code> del import no falla. De-riskea el
+            "no me corrió nada" antes de que importe en katas con datos reales.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Creo y activo un venv, instalo paquetes y genero
+            <code>requirements.txt</code> sin googlear.
+          </li>
+          <li>
+            Uso el REPL y <code>python -i</code> para inspeccionar tipos y
+            valores antes de escribir el script completo.
+          </li>
+          <li>
+            Explico "todo es objeto" y por qué un nombre es una etiqueta, no una
+            caja.
+          </li>
+          <li>
+            Distingo tipado dinámico (no declaro tipos) de tipado fuerte (no se
+            mezclan tipos a la fuerza).
+          </li>
+          <li>
+            Leo un traceback nuevo y digo tipo, archivo, línea y causa raíz en
+            menos de un minuto.
+          </li>
+          <li>
+            <code>kata-00</code> en verde: <code>pytest</code> pasa y el entorno
+            es reproducible.
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Próxima sesión:
+          <strong
+            >N01 — Identidad vs igualdad, mutabilidad y los tipos fundamentales
+            de Python</strong
+          >
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

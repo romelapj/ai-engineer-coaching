@@ -404,6 +404,22 @@
         </p>
       </section>
 
+      <section class="slide">
+        <div class="kicker">Por qué estás aquí</div>
+        <h2>"AI engineer" es el puesto que todos piden y nadie define</h2>
+        <p class="lead" style="max-width: 60ch">
+          En 2026 las vacantes lo gritan por todos lados, pero cada una describe
+          algo distinto. Detrás del ruido hay un rol con un núcleo concreto y
+          evaluable: construir producto fiable sobre los mejores modelos del
+          mundo, sin entrenar ninguno.
+        </p>
+        <blockquote>
+          En los próximos 90 minutos vas a saber exactamente qué evalúan las
+          entrevistas de este rol — y vas a dejar tu primera llamada a Claude
+          corriendo en tu máquina.
+        </blockquote>
+      </section>
+
       <!-- SLIDE 2: agenda -->
       <section class="slide">
         <h2>Agenda — 90 min</h2>
@@ -506,6 +522,10 @@
           y resuelve el problema difícil que queda: hacerlos
           <strong>fiables, medibles y rentables</strong> en producción.
         </p>
+        <p class="muted" style="margin-top: 0.8rem">
+          Ese "hacerlo fiable en producción" no es una sola cosa: se reparte en
+          áreas concretas — y son exactamente las que evalúan las entrevistas.
+        </p>
       </section>
 
       <!-- SLIDE 5: qué evalúan las entrevistas -->
@@ -561,6 +581,10 @@
             </p>
           </div>
         </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Nadie llega dominando las seis. Por eso el programa las recorre una a
+          una — así se arma el plan de 16 semanas.
+        </p>
       </section>
 
       <!-- SLIDE 6: el plan por fases -->
@@ -614,6 +638,10 @@
             </tr>
           </tbody>
         </table>
+        <p class="muted" style="margin-top: 1.4rem">
+          Dieciséis semanas parecen muchas, pero solo funcionan con una regla —
+          y es la que define todo el programa.
+        </p>
       </section>
 
       <!-- SLIDE 7: construir > consumir -->
@@ -637,6 +665,9 @@
             tarea. Si solo tienes 5 horas, constrúyelas.
           </li>
         </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          ¿Y dónde construyes todo eso? En la plataforma del programa.
+        </p>
       </section>
 
       <!-- SLIDE 8: la plataforma -->
@@ -668,42 +699,9 @@
             </p>
           </div>
         </div>
-      </section>
-
-      <!-- SLIDE 9: assessment -->
-      <section class="slide">
-        <h2>El assessment de diagnóstico — 3 partes</h2>
-        <div class="columns-3">
-          <div class="card">
-            <span class="tag violet">Parte 1</span>
-            <h3 style="margin-top: 0.8rem">Coding — 30 min</h3>
-            <p class="muted">
-              Un problema de Python puro: estructuras de datos, manejo de
-              errores y un par de tests. Mide tu base de ingeniería.
-            </p>
-          </div>
-          <div class="card">
-            <span class="tag violet">Parte 2</span>
-            <h3 style="margin-top: 0.8rem">Integración LLM — 30 min</h3>
-            <p class="muted">
-              Un script que llama a Claude, valida la salida y maneja fallos.
-              Mide cuánto camino llevas en el stack del rol.
-            </p>
-          </div>
-          <div class="card">
-            <span class="tag violet">Parte 3</span>
-            <h3 style="margin-top: 0.8rem">Diseño oral — 20 min</h3>
-            <p class="muted">
-              Diseñas en voz alta un sistema con LLM (caso tipo entrevista).
-              Mide criterio y comunicación de trade-offs.
-            </p>
-          </div>
-        </div>
         <p class="muted" style="margin-top: 1.4rem">
-          Es una <strong>sesión aparte de 90 min</strong> (no la de hoy), en
-          unos días. No se aprueba ni se reprueba: define tu
-          <strong>línea base</strong> y en qué fases vamos a profundizar más.
-          Guía completa en <code>coach/diagnostico.md</code>.
+          Basta de teoría: abramos la terminal. En los próximos 30 minutos dejas
+          el entorno listo y escribes <code>ask.py</code>, tu primer script.
         </p>
       </section>
 
@@ -793,35 +791,40 @@ resp = client.messages.<span class="f">create</span>(
         </p>
       </section>
 
-      <!-- SLIDE 13: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 00</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">Diagnóstico completo + script vivo</h3>
-          <p>
-            Completa el
-            <strong>assessment de diagnóstico de 3 partes</strong> siguiendo
-            <code>coach/diagnostico.md</code> (coding + integración LLM + diseño
-            oral) y deja en tu repo un <strong>script funcionando</strong> que
-            llame a la API de Anthropic.
-          </p>
-          <ul class="clean" style="margin-top: 0.8rem">
-            <li>
-              <strong>Criterio 1:</strong> las 3 partes del assessment
-              entregadas antes de la Sesión 01.
-            </li>
-            <li>
-              <strong>Criterio 2:</strong> <code>python ask.py "hola"</code>
-              corre limpio en tu máquina, maneja errores y reporta tokens.
-            </li>
-            <li>
-              <strong>Criterio 3:</strong> el código está en tu repo del
-              programa, con la API key fuera del código.
-            </li>
-          </ul>
+        <h2>El assessment de diagnóstico — 3 partes</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="tag violet">Parte 1</span>
+            <h3 style="margin-top: 0.8rem">Coding — 30 min</h3>
+            <p class="muted">
+              Un problema de Python puro: estructuras de datos, manejo de
+              errores y un par de tests. Mide tu base de ingeniería.
+            </p>
+          </div>
+          <div class="card">
+            <span class="tag violet">Parte 2</span>
+            <h3 style="margin-top: 0.8rem">Integración LLM — 30 min</h3>
+            <p class="muted">
+              Un script que llama a Claude, valida la salida y maneja fallos.
+              Mide cuánto camino llevas en el stack del rol.
+            </p>
+          </div>
+          <div class="card">
+            <span class="tag violet">Parte 3</span>
+            <h3 style="margin-top: 0.8rem">Diseño oral — 20 min</h3>
+            <p class="muted">
+              Diseñas en voz alta un sistema con LLM (caso tipo entrevista).
+              Mide criterio y comunicación de trade-offs.
+            </p>
+          </div>
         </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Es una <strong>sesión aparte de 90 min</strong> (no la de hoy), en
+          unos días. No se aprueba ni se reprueba: define tu
+          <strong>línea base</strong> y en qué fases vamos a profundizar más.
+          Guía completa en <code>coach/diagnostico.md</code>.
+        </p>
       </section>
 
       <!-- SLIDE 14: videos -->
@@ -934,6 +937,35 @@ resp = client.messages.<span class="f">create</span>(
         </div>
       </section>
 
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 00</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Diagnóstico completo + script vivo</h3>
+          <p>
+            Completa el <strong>assessment de diagnóstico</strong> (las 3 partes
+            descritas antes) siguiendo <code>coach/diagnostico.md</code> y deja
+            en tu repo un <strong>script funcionando</strong> que llame a la API
+            de Anthropic.
+          </p>
+          <ul class="clean" style="margin-top: 0.8rem">
+            <li>
+              <strong>Criterio 1:</strong> las 3 partes del assessment
+              entregadas antes de la Sesión 01.
+            </li>
+            <li>
+              <strong>Criterio 2:</strong> <code>python ask.py "hola"</code>
+              corre limpio en tu máquina, maneja errores y reporta tokens.
+            </li>
+            <li>
+              <strong>Criterio 3:</strong> el código está en tu repo del
+              programa, con la API key fuera del código.
+            </li>
+          </ul>
+        </div>
+      </section>
+
       <!-- SLIDE 15: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -964,7 +996,9 @@ resp = client.messages.<span class="f">create</span>(
           </li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
-          Próxima sesión: <strong>Sesión 01 — Fundamentos de LLMs</strong>
+          Próxima sesión: <strong>Sesión 01 — Fundamentos de LLMs</strong> —
+          abrimos la caja negra para entender por qué el modelo responde lo que
+          responde y por qué cuesta lo que cuesta.
         </p>
       </section>
     </main>

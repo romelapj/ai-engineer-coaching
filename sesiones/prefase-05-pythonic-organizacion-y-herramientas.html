@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Pre-Fase N05 — Pythonic, organización y herramientas | AI Engineer
+      Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <section class="slide active">
+        <div class="kicker">
+          Pre-Fase 0.5 — Fundamentos de Python · Día 6 de 6
+        </div>
+        <h1>Pythonic, organización<br />y herramientas</h1>
+        <p class="lead">
+          Generadores, collections, módulos, OOP-lite, dataclasses y pytest: el
+          día que convierte "sé la sintaxis" en "escribo Python idiomático".
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso (5 min):</strong> un manejo de errores de ayer,
+            explicado en voz alta.
+          </li>
+          <li>
+            <strong>Tema central (35 min):</strong> generadores, collections,
+            módulos, OOP-lite/dataclasses, pytest.
+          </li>
+          <li>
+            <strong>Manos al código (35 min):</strong> modelar un dominio con
+            dataclass + un generador perezoso + un test — es la
+            <code>kata-06</code>, la dejas encaminada en vivo.
+          </li>
+          <li>
+            <strong>Capstone (10 min):</strong> elegir y arrancar
+            <code>kata-07</code> (capstone a elección).
+          </li>
+          <li>
+            <strong>Cierre (5 min):</strong> checklist de
+            <strong>FLUIDEZ</strong> del curso completo.
+          </li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>Generadores: perezosos y de memoria constante</h2>
+        <blockquote>
+          Una función con <code>yield</code> no calcula ni guarda todo: pausa en
+          cada <code>yield</code> y reanuda cuando le pides el siguiente.
+          Procesa un archivo de 50 GB con memoria casi constante porque nunca lo
+          carga entero.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            Produce valores <strong>uno a uno, bajo demanda</strong>: pides lo
+            que necesitas, cuando lo necesitas.
+          </li>
+          <li>Es "consumir &gt; producir" aplicado al flujo de datos.</li>
+          <li>
+            Una <em>generator expression</em> <code>( ... )</code> es la versión
+            de una línea: <code>sum(x*x for x in nums)</code> no crea la lista
+            intermedia.
+          </li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>yield en acción: el concepto que cambia la escala</h2>
+        <pre><code><span class="k">def</span> <span class="f">lineas_validas</span>(ruta):
+    <span class="k">with</span> <span class="f">open</span>(ruta, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+        <span class="k">for</span> linea <span class="k">in</span> f:                 <span class="c"># lee una a una</span>
+            linea = linea.<span class="f">strip</span>()
+            <span class="k">if</span> linea <span class="k">and</span> <span class="k">not</span> linea.<span class="f">startswith</span>(<span class="s">"#"</span>):
+                <span class="k">yield</span> linea             <span class="c"># entrega sin acumular</span>
+
+<span class="c"># Memoria constante aunque el archivo sea enorme:</span>
+total = <span class="f">sum</span>(1 <span class="k">for</span> _ <span class="k">in</span> <span class="f">lineas_validas</span>(<span class="s">"datos.log"</span>))
+
+<span class="c"># generator expression: sin lista intermedia</span>
+suma_cuadrados = <span class="f">sum</span>(n * n <span class="k">for</span> n <span class="k">in</span> <span class="f">range</span>(1_000_000))</code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Un generador se consume <strong>una vez</strong>: recórrelo con
+          <code>for</code> o avanza con <code>next()</code>. Materializar con
+          <code>list()</code> anula la ventaja, hazlo solo si necesitas la
+          colección completa.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>collections: defaultdict y Counter</h2>
+        <pre><code><span class="k">from</span> collections <span class="k">import</span> defaultdict, Counter
+
+logs = [(<span class="s">"GET"</span>, 200), (<span class="s">"POST"</span>, 500), (<span class="s">"GET"</span>, 200), (<span class="s">"GET"</span>, 404)]
+
+por_metodo = <span class="f">defaultdict</span>(<span class="f">list</span>)
+<span class="k">for</span> metodo, codigo <span class="k">in</span> logs:
+    por_metodo[metodo].<span class="f">append</span>(codigo)   <span class="c"># sin inicializar la lista</span>
+
+palabras = <span class="s">"el gato y el perro y el pez"</span>.<span class="f">split</span>()
+conteo = <span class="f">Counter</span>(palabras)
+<span class="f">print</span>(conteo.<span class="f">most_common</span>(2))   <span class="c"># [('el', 3), ('y', 2)]</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>defaultdict(list)</code> crea la lista vacía al primer acceso;
+          <code>defaultdict(int)</code> cuenta desde 0 sin inicializar.
+          <code>Counter</code> es la forma idiomática de lo que en N02 hacías a
+          mano con <code>get</code>/<code>setdefault</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Módulos, imports y if __name__</h2>
+        <p class="muted" style="margin-bottom: 1.4rem">
+          Ya procesas datos de forma Pythonic. El siguiente salto no es de
+          sintaxis sino de organización: cuando el script crece, lo partes en
+          módulos.
+        </p>
+        <div class="columns">
+          <div>
+            <h3>Qué es un módulo</h3>
+            <ul class="clean">
+              <li>
+                Un archivo <code>.py</code>; lo importas para reusar sus
+                funciones y clases.
+              </li>
+              <li>
+                <code>import modulo</code> /
+                <code>from modulo import nombre</code> /
+                <code>import modulo as alias</code>.
+              </li>
+              <li>
+                Evita <code>from x import *</code>: contamina el namespace y
+                oscurece de dónde viene cada nombre.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Por qué existe el guard</h3>
+            <ul class="clean">
+              <li>
+                Importar un módulo <strong>ejecuta</strong> su código de nivel
+                superior.
+              </li>
+              <li>
+                <code>if __name__ == "__main__":</code> separa "código que corre
+                al ejecutar" de "código que se importa".
+              </li>
+              <li>
+                Así un archivo es
+                <strong>script ejecutable y librería importable</strong> sin
+                efectos colaterales.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>El guard if __name__ y la estructura de un módulo</h2>
+        <pre><code><span class="c"># conversor.py</span>
+<span class="k">def</span> <span class="f">celsius_a_fahrenheit</span>(c: <span class="f">float</span>) -&gt; <span class="f">float</span>:
+    <span class="k">return</span> c * 9 / 5 + 32
+
+<span class="k">def</span> <span class="f">main</span>() -&gt; <span class="k">None</span>:
+    <span class="k">for</span> c <span class="k">in</span> (0, 37, 100):
+        <span class="f">print</span>(<span class="s">f"&#123;c&#125;C = &#123;celsius_a_fahrenheit(c)&#125;F"</span>)
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    <span class="f">main</span>()           <span class="c"># corre solo si ejecutas: python conversor.py</span>
+<span class="c"># 'from conversor import celsius_a_fahrenheit' NO dispara main()</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Al importar, <code>__name__</code> es el nombre del módulo; al
+          ejecutarlo directo, es <code>"__main__"</code>. Patrón estándar:
+          funciones arriba, una <code>main()</code>, guard al final.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>OOP-lite: class, __init__, self, __repr__</h2>
+        <pre><code><span class="k">class</span> <span class="f">CuentaBancaria</span>:
+    <span class="k">def</span> <span class="f">__init__</span>(self, titular: <span class="f">str</span>, saldo: <span class="f">float</span> = 0.0):
+        self.titular = titular
+        self.saldo = saldo
+
+    <span class="k">def</span> <span class="f">depositar</span>(self, monto: <span class="f">float</span>) -&gt; <span class="k">None</span>:
+        self.saldo += monto
+
+    <span class="k">def</span> <span class="f">__repr__</span>(self) -&gt; <span class="f">str</span>:
+        <span class="k">return</span> <span class="s">f"CuentaBancaria(&#123;self.titular!r&#125;, saldo=&#123;self.saldo&#125;)"</span>
+
+c = <span class="f">CuentaBancaria</span>(<span class="s">"Ada"</span>, 100.0)
+c.<span class="f">depositar</span>(50)
+<span class="f">print</span>(c)        <span class="c"># CuentaBancaria('Ada', saldo=150.0)</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>self</code> es la instancia actual; los métodos la reciben como
+          primer parámetro. Un buen <code>__repr__</code> te ahorra horas de
+          depuración. No abuses: para un script de 30 líneas, una función basta
+          — usa clases cuando
+          <strong>estado y comportamiento van juntos</strong>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>dataclasses: el atajo para clases de datos</h2>
+        <pre><code><span class="k">from</span> dataclasses <span class="k">import</span> dataclass, field
+
+@dataclass
+<span class="k">class</span> <span class="f">Producto</span>:
+    nombre: <span class="f">str</span>
+    precio: <span class="f">float</span>
+    etiquetas: <span class="f">list</span>[<span class="f">str</span>] = <span class="f">field</span>(default_factory=<span class="f">list</span>)  <span class="c"># default seguro</span>
+
+    <span class="k">def</span> <span class="f">con_iva</span>(self, tasa: <span class="f">float</span> = 0.19) -&gt; <span class="f">float</span>:
+        <span class="k">return</span> <span class="f">round</span>(self.precio * (1 + tasa), 2)
+
+p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span class="s">"hogar"</span>])
+<span class="f">print</span>(p)              <span class="c"># Producto(nombre='Taza', precio=10.0, etiquetas=['hogar'])</span>
+<span class="f">print</span>(p.<span class="f">con_iva</span>())    <span class="c"># 11.9</span>
+<span class="f">print</span>(p == <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span class="s">"hogar"</span>]))  <span class="c"># True  (__eq__ gratis)</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>@dataclass</code> genera <code>__init__</code>,
+          <code>__repr__</code> y <code>__eq__</code> desde los campos anotados.
+          <code>field(default_factory=list)</code> resuelve el default mutable
+          de N03 limpiamente; <code>frozen=True</code> la hace inmutable.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>pytest: por qué testear cambia cómo diseñas</h2>
+        <pre><code><span class="c"># solution.py</span>
+<span class="k">def</span> <span class="f">normalizar</span>(nombre: <span class="f">str</span>) -&gt; <span class="f">str</span>:
+    <span class="k">return</span> nombre.<span class="f">strip</span>().<span class="f">lower</span>()
+
+<span class="c"># test_solution.py</span>
+<span class="k">from</span> solution <span class="k">import</span> normalizar
+
+<span class="k">def</span> <span class="f">test_normaliza_espacios_y_mayusculas</span>():
+    <span class="k">assert</span> <span class="f">normalizar</span>(<span class="s">"  Ada  "</span>) == <span class="s">"ada"</span>
+
+<span class="k">def</span> <span class="f">test_cadena_vacia_es_borde</span>():
+    <span class="k">assert</span> <span class="f">normalizar</span>(<span class="s">"   "</span>) == <span class="s">""</span>
+<span class="c"># pytest -q  ->  2 passed</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Un test es una función <code>test_*</code> con un <code>assert</code>;
+          pytest la descubre y reporta verde/rojo. Testear te empuja a funciones
+          puras:
+          <strong>lo difícil de testear suele estar mal diseñado</strong>. Cubre
+          el camino feliz Y los bordes (vacío, malformado, límite). Verde
+          objetivo &gt; "se ve bien".
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Cuándo función, cuándo clase, cuándo dataclass</h2>
+        <div class="columns-3">
+          <div class="card">
+            <span class="icon">⚙️</span>
+            <h3>Función</h3>
+            <p class="muted">
+              Una transformación sin estado persistente. Es el
+              <strong>80%</strong> de tu código.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">📦</span>
+            <h3>dataclass</h3>
+            <p class="muted">
+              Un registro de datos (con quizá un par de métodos derivados).
+              Ideal para modelar un dominio.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">🔁</span>
+            <h3>Clase normal</h3>
+            <p class="muted">
+              Estado mutable + comportamiento que evolucionan juntos: una
+              cuenta, una sesión, un parser con estado.
+            </p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          <strong>Anti-patrón:</strong> jerarquías de herencia para 3 campos.
+          <strong>Regla:</strong> empieza con lo más simple que funcione; sube
+          de nivel solo cuando el dolor lo justifique — la sobre-ingeniería
+          cuesta tu propio tiempo.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Manos al código — dataclass + generador + test (35 min)</h2>
+        <div class="columns">
+          <div>
+            <div class="card">
+              <span class="icon">📦</span>
+              <h3>1 · Modela (10 min)</h3>
+              <p class="muted">
+                Define una <code>@dataclass</code> de tu dominio (pedido,
+                evento, transacción) con campos tipados y
+                <code>field(default_factory=list)</code> donde toque.
+              </p>
+            </div>
+            <div class="card">
+              <span class="icon">🔁</span>
+              <h3>2 · Genera (10 min)</h3>
+              <p class="muted">
+                Escribe un generador que lea registros uno a uno y los convierta
+                en instancias — memoria constante, como el <code>yield</code> de
+                hoy.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <span class="icon">✅</span>
+              <h3>3 · Testea (10 min)</h3>
+              <p class="muted">
+                Dos tests con pytest: el camino feliz y un borde (registro
+                malformado). Verde objetivo &gt; "se ve bien".
+              </p>
+            </div>
+            <div class="card">
+              <span class="icon">🚪</span>
+              <h3>4 · Remata (5 min)</h3>
+              <p class="muted">
+                Guard <code>if __name__ == "__main__"</code>: tu módulo queda
+                ejecutable e importable a la vez.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Esto ES la <strong>kata-06 (dataclass de dominio)</strong>: sales de
+          la sesión con ella encaminada. El capstone (kata-07) es el paso
+          siguiente.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=bD05uGo_sVI"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/bD05uGo_sVI/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Python Generators — How to Use Them and the Benefits You Receive
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Explica yield, la pereza y la memoria constante como concepto,
+                exactamente el eje de la sesión.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=ZDa-Z5JzLYM"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/ZDa-Z5JzLYM/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Python OOP Tutorial 1: Classes and Instances
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Cubre class, __init__, self y __repr__ con la profundidad justa
+                para OOP-lite sin sobre-ingeniería.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=vBH6GRJ1REM"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/vBH6GRJ1REM/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Dataclasses — The Best Way to Create Classes in Python
+              </div>
+              <div class="vc-meta">mCoding · Inglés</div>
+              <div class="vc-why">
+                Muestra @dataclass, default_factory y __eq__ gratis, el atajo
+                idiomático para modelar datos.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Capstone — kata-07 a elección</h2>
+        <div class="card">
+          <span class="tag violet">Kata kata-07</span>
+          <span class="tag green">Entregable</span>
+          <h3>Un programita pequeño y completo, a tu elección</h3>
+          <p class="muted">
+            Elige UNO que ejercite amplitud: CLI, procesador de datos, juego de
+            texto, agenda, conversor. Debe usar varios fundamentos: estructuras,
+            funciones, archivos o errores, una
+            <code>class</code>/<code>dataclass</code>, y tests. El analizador de
+            logs es <strong>una opción entre varias</strong>, no la obligatoria.
+          </p>
+          <p class="muted">
+            <strong>Criterio medible:</strong> <code>pytest</code> verde, código
+            idiomático, README breve, y lo defiendes en 5 minutos de punta a
+            punta.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Checklist de FLUIDEZ del curso</h2>
+        <ul class="checklist">
+          <li>
+            Leo y escribo Python idiomático: comprehensions, truthiness,
+            <code>enumerate</code>/<code>zip</code>, EAFP.
+          </li>
+          <li>
+            Explico el modelo de datos: objetos, mutabilidad, <code>is</code> vs
+            <code>==</code>, scope LEGB.
+          </li>
+          <li>
+            Manejo archivos, <code>json</code>/<code>csv</code> y errores con
+            scope correcto y stdlib.
+          </li>
+          <li>
+            Entiendo generadores como concepto: perezosos, memoria constante, no
+            materializar.
+          </li>
+          <li>
+            Modelo un dominio con dataclass/clase sin sobre-ingeniería y lo
+            testeo con pytest.
+          </li>
+          <li>
+            Mi capstone corre, pasa tests y lo puedo defender de punta a punta.
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Fin de la Pre-Fase 0.5 🎓 Siguiente parada:
+          <strong>Fase 1 — Fundamentos de LLMs</strong>. Todo este bloque se
+          vuelve herramienta: dicts y dataclasses para los payloads de la API,
+          generadores para el streaming de tokens, excepciones para los errores
+          de red y pytest para tus primeros evals.
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

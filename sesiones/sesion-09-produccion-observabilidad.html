@@ -402,8 +402,9 @@
         </div>
         <h1>Sesión 09<br />Producción I — Observabilidad, Costos y Latencia</h1>
         <p class="lead">
-          Instrumenta tu sistema con LLM para ver cada request, y usa esos datos
-          para recortar costo y latencia sin sacrificar calidad.
+          Ahora mismo no sabes cuánto te cuesta cada request ni por qué el p95
+          se dispara. Hoy instrumentas tu sistema para verlo todo — y usas esos
+          datos para recortar costo y latencia sin sacrificar calidad.
         </p>
       </section>
 
@@ -412,12 +413,14 @@
         <h2>Agenda — 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — entregable de la semana pasada: qué
-            funcionó, qué se rompió y por qué (15 min)
+            <strong>Repaso</strong> — la suite de evals de la S08 es el
+            guardrail de hoy: nos deja recortar costo y latencia sabiendo que la
+            calidad no se degrada en silencio (15 min)
           </li>
           <li>
             <strong>Tema central</strong> — observabilidad LLM, métricas que
-            importan, prompt caching, batch, routing y streaming (30 min)
+            importan y las palancas por eje: costo (caching, routing, batch) y
+            latencia percibida (streaming) (30 min)
           </li>
           <li>
             <strong>Manos al código</strong> — instrumentamos juntos un servicio
@@ -586,7 +589,35 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
         </p>
       </section>
 
-      <!-- SLIDE 7: prompt caching concepto -->
+      <!-- SLIDE 7: puente medir → optimizar -->
+      <section class="slide">
+        <h2>Ya mides. Ahora, ¿qué palanca mueves?</h2>
+        <blockquote>
+          Ya tienes los números en la mesa: costo por request, p95, TTFT.
+          Optimizar no es probar todo — es elegir la palanca que mueve TU
+          número.
+        </blockquote>
+        <div class="columns">
+          <div class="card">
+            <span class="icon">💸</span>
+            <h3>Eje costo</h3>
+            <p class="muted">
+              Prompt caching, model routing y batch: pagas menos por el mismo
+              trabajo. Se miden en tokens y precio por MTok.
+            </p>
+          </div>
+          <div class="card">
+            <span class="icon">⚡</span>
+            <h3>Eje latencia percibida</h3>
+            <p class="muted">
+              Streaming: no cambia el costo ni la latencia total, cambia lo que
+              el usuario siente mientras espera. Se mide en TTFT.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: prompt caching concepto -->
       <section class="slide">
         <h2>Prompt caching: qué cachear y cuánto ahorra</h2>
         <div class="columns">
@@ -630,7 +661,7 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
         </div>
       </section>
 
-      <!-- SLIDE 8: código prompt caching -->
+      <!-- SLIDE 9: código prompt caching -->
       <section class="slide">
         <h2>Prompt caching en código</h2>
         <pre><code><span class="c"># El system prompt grande se escribe al cache una vez y se lee barato</span>
@@ -656,7 +687,39 @@ resp = client.messages.<span class="f">create</span>(
         </p>
       </section>
 
-      <!-- SLIDE 9: batch API -->
+      <!-- SLIDE 10: model routing -->
+      <section class="slide">
+        <h2>Model routing: el modelo correcto por tarea</h2>
+        <pre><code><span class="c"># Haiku 4.5: $1 / $5 por MTok — Sonnet 4.6: $3 / $15 por MTok (3x)</span>
+MODELOS = {
+    <span class="s">"simple"</span>:   <span class="s">"claude-haiku-4-5"</span>,   <span class="c"># clasificar, extraer, formatear, FAQ</span>
+    <span class="s">"complejo"</span>: <span class="s">"claude-sonnet-4-6"</span>,  <span class="c"># razonamiento, código, agentes</span>
+}
+
+<span class="k">def</span> <span class="f">completar</span>(tipo_tarea: str, prompt: str):
+    <span class="k">return</span> client.messages.<span class="f">create</span>(
+        model=MODELOS[tipo_tarea],
+        max_tokens=1024,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
+    )</code></pre>
+        <ul class="clean" style="margin-top: 1.2rem">
+          <li>
+            Si el 70% de tu tráfico es simple, routearlo a Haiku recorta
+            <strong>~2/3 del costo</strong> de ese tráfico — y suele ser más
+            rápido
+          </li>
+          <li>
+            Empieza con reglas estáticas por endpoint; un router aprendido
+            (estilo RouteLLM) es la versión 2, no la 1
+          </li>
+          <li>
+            Valida con tus evals que el modelo pequeño no degrada calidad en esa
+            tarea — el routing sin evals es fe, no ingeniería
+          </li>
+        </ul>
+      </section>
+
+      <!-- SLIDE 11: batch API -->
       <section class="slide">
         <h2>Batch API: 50% de descuento para trabajo offline</h2>
         <div class="columns">
@@ -694,39 +757,7 @@ resp = client.messages.<span class="f">create</span>(
         </p>
       </section>
 
-      <!-- SLIDE 10: model routing -->
-      <section class="slide">
-        <h2>Model routing: el modelo correcto por tarea</h2>
-        <pre><code><span class="c"># Haiku 4.5: $1 / $5 por MTok — Sonnet 4.6: $3 / $15 por MTok (3x)</span>
-MODELOS = {
-    <span class="s">"simple"</span>:   <span class="s">"claude-haiku-4-5"</span>,   <span class="c"># clasificar, extraer, formatear, FAQ</span>
-    <span class="s">"complejo"</span>: <span class="s">"claude-sonnet-4-6"</span>,  <span class="c"># razonamiento, código, agentes</span>
-}
-
-<span class="k">def</span> <span class="f">completar</span>(tipo_tarea: str, prompt: str):
-    <span class="k">return</span> client.messages.<span class="f">create</span>(
-        model=MODELOS[tipo_tarea],
-        max_tokens=1024,
-        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
-    )</code></pre>
-        <ul class="clean" style="margin-top: 1.2rem">
-          <li>
-            Si el 70% de tu tráfico es simple, routearlo a Haiku recorta
-            <strong>~2/3 del costo</strong> de ese tráfico — y suele ser más
-            rápido
-          </li>
-          <li>
-            Empieza con reglas estáticas por endpoint; un router aprendido
-            (estilo RouteLLM) es la versión 2, no la 1
-          </li>
-          <li>
-            Valida con tus evals que el modelo pequeño no degrada calidad en esa
-            tarea — el routing sin evals es fe, no ingeniería
-          </li>
-        </ul>
-      </section>
-
-      <!-- SLIDE 11: streaming -->
+      <!-- SLIDE 12: streaming -->
       <section class="slide">
         <h2>Streaming: latencia percibida ≠ latencia total</h2>
         <pre><code><span class="c"># Una respuesta de 800 tokens tarda ~15 s completa.</span>
@@ -756,7 +787,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
         </ul>
       </section>
 
-      <!-- SLIDE 12: ejercicio en vivo -->
+      <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
         <h2>Manos al código — 30 min en pareja</h2>
         <p>
@@ -786,39 +817,6 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
         <p class="muted" style="margin-top: 1rem">
           Entregable del bloque: un JSON de métricas y una frase: "la palanca
           más barata para este servicio es ___ porque ___".
-        </p>
-      </section>
-
-      <!-- SLIDE 13: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Reto 08 · Parte 1</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">
-            Hardening: observabilidad de tu proyecto
-          </h3>
-          <p>
-            Instrumenta tu proyecto del programa con trazas en el 100% de las
-            llamadas al LLM y monta un dashboard de costo y latencia (Langfuse o
-            Datadog). Luego usa lo de hoy — caching, routing, batch o streaming
-            — para
-            <strong>reducir el p95 o el costo por request en un 30%</strong>, y
-            documenta el antes/después con capturas del dashboard y una
-            explicación de qué palanca usaste y por qué.
-          </p>
-          <p style="margin-top: 0.8rem">
-            Enunciado completo y criterios de evaluación:
-            <a
-              href="../gym/reto-08-hardening-produccion/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-08-hardening-produccion</a
-            >
-          </p>
-        </div>
-        <p class="muted" style="margin-top: 1.2rem">
-          Sin el dashboard no hay reto: la mejora del 30% se demuestra con
-          datos, no con fe.
         </p>
       </section>
 
@@ -932,7 +930,40 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
         </div>
       </section>
 
-      <!-- SLIDE 15: checklist de salida -->
+      <!-- SLIDE 15: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 08 · Parte 1</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">
+            Hardening: observabilidad de tu proyecto
+          </h3>
+          <p>
+            Instrumenta tu proyecto del programa con trazas en el 100% de las
+            llamadas al LLM y monta un dashboard de costo y latencia (Langfuse o
+            Datadog). Luego usa lo de hoy — caching, routing, batch o streaming
+            — para
+            <strong>reducir el p95 o el costo por request en un 30%</strong>, y
+            documenta el antes/después con capturas del dashboard y una
+            explicación de qué palanca usaste y por qué.
+          </p>
+          <p style="margin-top: 0.8rem">
+            Enunciado completo y criterios de evaluación:
+            <a
+              href="../gym/reto-08-hardening-produccion/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-08-hardening-produccion</a
+            >
+          </p>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Sin el dashboard no hay reto: la mejora del 30% se demuestra con
+          datos, no con fe.
+        </p>
+      </section>
+
+      <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
         <ul class="checklist">
@@ -964,6 +995,8 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
             >Sesión 10 — Producción II — Guardrails, Seguridad y
             Fallbacks</strong
           >
+          — el dashboard que montaste hoy es lo que te avisará cuando un usuario
+          hostil intente quemar tu presupuesto o romper tu app.
         </p>
       </section>
     </main>

@@ -537,33 +537,7 @@
         </p>
       </section>
 
-      <!-- SLIDE 6: asserts programáticos -->
-      <section class="slide">
-        <h2>Asserts programáticos: pytest es tu primer eval</h2>
-        <pre><code><span class="c"># evals/test_extractor.py — corre con `pytest evals/`</span>
-<span class="k">import</span> json, anthropic
-
-client = anthropic.<span class="f">Anthropic</span>()
-
-<span class="k">def</span> <span class="f">test_extrae_factura</span>():
-    resp = client.messages.<span class="f">create</span>(
-        model=<span class="s">"claude-sonnet-4-6"</span>,
-        max_tokens=300,
-        system=PROMPT_EXTRACTOR,
-        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: FACTURA_EJEMPLO}],
-    )
-    texto = resp.content[0].text
-    data = json.<span class="f">loads</span>(texto)                  <span class="c"># 1. ¿es JSON válido?</span>
-    <span class="k">assert</span> data[<span class="s">"total"</span>] == 1250.50          <span class="c"># 2. exact match</span>
-    <span class="k">assert</span> data[<span class="s">"moneda"</span>] <span class="k">in</span> {<span class="s">"COP"</span>, <span class="s">"USD"</span>}  <span class="c"># 3. pertenencia</span>
-    <span class="k">assert</span> <span class="s">"lo siento"</span> <span class="k">not in</span> texto.lower()  <span class="c"># 4. anti-disculpa</span></code></pre>
-        <p class="muted" style="margin-top: 1rem">
-          Cuatro asserts, cero infraestructura nueva. Si ya sabes pytest, ya
-          sabes escribir evals.
-        </p>
-      </section>
-
-      <!-- SLIDE 7: golden dataset -->
+      <!-- SLIDE 6: golden dataset -->
       <section class="slide">
         <h2>Golden dataset: 30 casos buenos &gt; 1000 sintéticos</h2>
         <div class="columns">
@@ -614,6 +588,32 @@ client = anthropic.<span class="f">Anthropic</span>()
         <p class="muted" style="margin-top: 1.2rem">
           Punto de partida realista: 30-50 casos, 70% típicos / 30% difíciles,
           una tarde de trabajo. Eso ya te cambia el juego.
+        </p>
+      </section>
+
+      <!-- SLIDE 7: asserts programáticos -->
+      <section class="slide">
+        <h2>Asserts programáticos: pytest es tu primer eval</h2>
+        <pre><code><span class="c"># evals/test_extractor.py — corre con `pytest evals/`</span>
+<span class="k">import</span> json, anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()
+
+<span class="k">def</span> <span class="f">test_extrae_factura</span>():
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=300,
+        system=PROMPT_EXTRACTOR,
+        messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: FACTURA_EJEMPLO}],
+    )
+    texto = resp.content[0].text
+    data = json.<span class="f">loads</span>(texto)                  <span class="c"># 1. ¿es JSON válido?</span>
+    <span class="k">assert</span> data[<span class="s">"total"</span>] == 1250.50          <span class="c"># 2. exact match</span>
+    <span class="k">assert</span> data[<span class="s">"moneda"</span>] <span class="k">in</span> {<span class="s">"COP"</span>, <span class="s">"USD"</span>}  <span class="c"># 3. pertenencia</span>
+    <span class="k">assert</span> <span class="s">"lo siento"</span> <span class="k">not in</span> texto.lower()  <span class="c"># 4. anti-disculpa</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Cuatro asserts, cero infraestructura nueva. Si ya sabes pytest, ya
+          sabes escribir evals.
         </p>
       </section>
 
@@ -755,6 +755,12 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
       <!-- SLIDE 12: herramientas -->
       <section class="slide">
         <h2>Herramientas: y cuándo basta pytest</h2>
+        <p class="muted" style="margin-bottom: 1.4rem">
+          Ya sabes escribir evals a mano y meterlos en CI. La pregunta ahora es
+          cuándo graduarte a una herramienta dedicada — y la respuesta depende
+          de cuántos casos manejas, cuántas variantes comparas y cuánta gente
+          toca el pipeline.
+        </p>
         <table>
           <thead>
             <tr>
@@ -839,33 +845,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
         </p>
       </section>
 
-      <!-- SLIDE 14: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 07</span
-          ><span class="tag green">Entregable: repo + CI verde</span>
-          <h3 style="margin-top: 0.8rem">Suite de evals</h3>
-          <p>
-            Construye una suite de <strong>30+ casos</strong> para tu RAG o
-            agente: golden dataset en JSONL, asserts programáticos +
-            LLM-as-judge con rúbrica, <strong>integrada a CI</strong> con umbral
-            que bloquea merges. Documenta el score base y demuestra
-            <strong>una mejora medida</strong> (prompt, retrieval o modelo) con
-            el delta antes/después en el README.
-          </p>
-          <p style="margin-top: 0.8rem">
-            Enunciado completo y criterios de evaluación:
-            <a
-              href="../gym/reto-07-suite-de-evals/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-07-suite-de-evals</a
-            >
-          </p>
-        </div>
-      </section>
-
-      <!-- SLIDE 15: videos -->
+      <!-- SLIDE 14: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -978,6 +958,32 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
         </div>
       </section>
 
+      <!-- SLIDE 15: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 07</span
+          ><span class="tag green">Entregable: repo + CI verde</span>
+          <h3 style="margin-top: 0.8rem">Suite de evals</h3>
+          <p>
+            Construye una suite de <strong>30+ casos</strong> para tu RAG o
+            agente: golden dataset en JSONL, asserts programáticos +
+            LLM-as-judge con rúbrica, <strong>integrada a CI</strong> con umbral
+            que bloquea merges. Documenta el score base y demuestra
+            <strong>una mejora medida</strong> (prompt, retrieval o modelo) con
+            el delta antes/después en el README.
+          </p>
+          <p style="margin-top: 0.8rem">
+            Enunciado completo y criterios de evaluación:
+            <a
+              href="../gym/reto-07-suite-de-evals/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-07-suite-de-evals</a
+            >
+          </p>
+        </div>
+      </section>
+
       <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -1013,6 +1019,8 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
             >Sesión 09 — Producción I — Observabilidad, Costos y
             Latencia</strong
           >
+          — tu suite de evals pasa a ser el guardrail que te deja recortar costo
+          y latencia sin degradar la calidad en silencio.
         </p>
       </section>
     </main>

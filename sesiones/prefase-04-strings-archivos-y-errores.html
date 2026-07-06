@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Pre-Fase N04 — Strings, archivos y errores | AI Engineer Coaching
+    </title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --bg2: #0e1424;
+        --surface: #151d31;
+        --border: #243047;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      /* ---------- progreso ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--grad);
+        transition: width 0.25s ease;
+      }
+      /* ---------- slides ---------- */
+      main {
+        position: relative;
+        height: 100vh;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7vh 9vw;
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(139, 92, 246, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 110%,
+            rgba(34, 211, 238, 0.07),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .slide.active {
+        display: flex;
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 2rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--grad);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .lead {
+        font-size: 1.3rem;
+        color: var(--muted);
+        margin-top: 1.2rem;
+        max-width: 46ch;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      ul.clean {
+        list-style: none;
+      }
+      ul.clean li {
+        padding-left: 1.6em;
+        position: relative;
+        margin-bottom: 0.65em;
+      }
+      ul.clean li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      /* ---------- layout ---------- */
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .columns-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card .icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        background: rgba(34, 211, 238, 0.08);
+        margin-right: 0.5em;
+      }
+      .tag.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.12);
+      }
+      .tag.green {
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+      }
+      .big {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      blockquote {
+        border-left: 4px solid var(--accent);
+        padding: 0.8rem 1.4rem;
+        background: rgba(139, 92, 246, 0.07);
+        border-radius: 0 12px 12px 0;
+        font-size: 1.15rem;
+        font-style: italic;
+        color: var(--text);
+        margin: 1.2rem 0;
+      }
+      /* ---------- código ---------- */
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        overflow: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        max-height: 56vh;
+      }
+      code {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        color: #c9d4e3;
+      }
+      pre .c {
+        color: #64748b;
+      } /* comentario */
+      pre .k {
+        color: #c4b5fd;
+      } /* keyword */
+      pre .s {
+        color: #86efac;
+      } /* string */
+      pre .f {
+        color: #67e8f9;
+      } /* función */
+      p code,
+      li code {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        color: #c4b5fd;
+      }
+      /* ---------- videos ---------- */
+      .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+      }
+      a.video-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+      a.video-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .video-card img {
+        width: 168px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 9px;
+        flex-shrink: 0;
+      }
+      .video-card .vc-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.35;
+        margin-bottom: 0.3rem;
+      }
+      .video-card .vc-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .video-card .vc-why {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+        line-height: 1.4;
+      }
+      /* ---------- checklist ---------- */
+      ul.checklist {
+        list-style: none;
+      }
+      ul.checklist li {
+        padding-left: 1.8em;
+        position: relative;
+        margin-bottom: 0.7em;
+        font-size: 1.05rem;
+      }
+      ul.checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--green);
+        font-weight: 800;
+      }
+      /* ---------- tabla ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.7em 0.9em;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+      /* ---------- HUD ---------- */
+      .hud {
+        position: fixed;
+        bottom: 1.1rem;
+        right: 1.4rem;
+        z-index: 50;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .hud .counter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3em 1em;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud .hint {
+        opacity: 0.7;
+      }
+      .navzone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 18vw;
+        z-index: 40;
+        cursor: pointer;
+      }
+      .navzone.left {
+        left: 0;
+      }
+      .navzone.right {
+        right: 0;
+      }
+      @media (max-width: 820px) {
+        .slide {
+          padding: 5vh 6vw;
+        }
+        .columns,
+        .columns-3,
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+        .video-card img {
+          width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <main id="deck">
+      <section class="slide active">
+        <div class="kicker">Pre-Fase 0.5 — Fundamentos de Python · Día 5</div>
+        <h1>Strings, archivos<br />y errores</h1>
+        <p class="lead">
+          Texto, archivos, json/csv y el manejo de errores que separa un script
+          de un programa. EAFP: el estilo que hace que Python no se parezca a tu
+          lenguaje anterior.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Agenda — 90 min</h2>
+        <ul class="clean">
+          <li>
+            <strong>Repaso (5 min):</strong> una función de ayer con type hints,
+            en voz alta.
+          </li>
+          <li>
+            <strong>Tema central (35 min):</strong> métodos de <code>str</code>,
+            <code>pathlib</code>, <code>with</code>, json/csv, excepciones, EAFP
+            vs LBYL.
+          </li>
+          <li>
+            <strong>Manos al código (35 min):</strong> leer un CSV,
+            transformarlo, escribirlo como JSON, con manejo de errores.
+          </li>
+          <li>
+            <strong>Katas del día (10 min):</strong> kata-04 archivos + kata-05
+            errores se asignan esta semana.
+          </li>
+          <li><strong>Cierre (5 min):</strong> checklist de salida.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>Métodos de string que usarás a diario</h2>
+        <pre><code>linea = <span class="s">"  2026-06-19 , Ada , admin \n"</span>
+campos = [c.<span class="f">strip</span>() <span class="k">for</span> c <span class="k">in</span> linea.<span class="f">split</span>(<span class="s">","</span>)]
+<span class="f">print</span>(campos)                 <span class="c"># ['2026-06-19', 'Ada', 'admin']</span>
+
+partes = [<span class="s">"informe"</span>, <span class="s">"2026"</span>, <span class="s">"final"</span>]
+<span class="f">print</span>(<span class="s">"_"</span>.<span class="f">join</span>(partes))       <span class="c"># 'informe_2026_final'</span>
+
+correo = <span class="s">"Ada@Ejemplo.COM"</span>
+<span class="f">print</span>(correo.<span class="f">strip</span>().<span class="f">lower</span>()) <span class="c"># 'ada@ejemplo.com'</span>
+<span class="f">print</span>(correo.<span class="f">endswith</span>(<span class="s">".COM"</span>))<span class="c"># True</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>join</code> es método del <strong>separador</strong>, no de la
+          lista. <code>find</code> devuelve <code>-1</code> si no encuentra;
+          <code>index</code> lanza <code>ValueError</code>. Los
+          <code>str</code> son <strong>inmutables</strong>: estos métodos
+          devuelven uno NUEVO, no tocan el original.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>pathlib: rutas como objetos, no strings</h2>
+        <pre><code><span class="k">from</span> pathlib <span class="k">import</span> Path
+
+base = <span class="f">Path</span>(<span class="s">"datos"</span>)
+archivo = base / <span class="s">"usuarios.csv"</span>      <span class="c"># datos/usuarios.csv</span>
+<span class="f">print</span>(archivo.<span class="f">exists</span>(), archivo.suffix)   <span class="c"># False .csv</span>
+
+<span class="k">for</span> csv <span class="k">in</span> base.<span class="f">glob</span>(<span class="s">"*.csv"</span>):
+    <span class="f">print</span>(csv.name)
+
+(base / <span class="s">"nota.txt"</span>).<span class="f">write_text</span>(<span class="s">"hola\n"</span>, encoding=<span class="s">"utf-8"</span>)</code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          El operador <code>/</code> compone rutas y cruza plataformas sin que
+          te preocupes por separadores. <code>read_text()</code> lee todo de
+          una; para archivos grandes, itera línea a línea con
+          <code>open()</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>with: context managers que cierran solos</h2>
+        <pre><code><span class="k">from</span> pathlib <span class="k">import</span> Path
+
+ruta = <span class="f">Path</span>(<span class="s">"eventos.log"</span>)
+validas = 0
+<span class="k">with</span> ruta.<span class="f">open</span>(encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+    <span class="k">for</span> linea <span class="k">in</span> f:                 <span class="c"># streaming: una linea a la vez</span>
+        linea = linea.<span class="f">strip</span>()
+        <span class="k">if</span> linea:
+            validas += 1
+<span class="c"># al salir del with, el archivo ya esta cerrado</span>
+<span class="f">print</span>(validas)</code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>with</code> garantiza el cierre aunque haya una excepción.
+          Iterar el archivo es <strong>memoria constante</strong>, ideal para
+          archivos grandes. Y no es solo para archivos: sirve para locks,
+          conexiones, cualquier recurso con setup/teardown.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>json: serializar y parsear</h2>
+        <pre><code><span class="k">import</span> json
+
+texto = <span class="s">'&#123;"nombre": "Ada", "roles": ["admin", "dev"], "activo": true&#125;'</span>
+dato = json.<span class="f">loads</span>(texto)
+<span class="f">print</span>(dato[<span class="s">"roles"</span>][0])         <span class="c"># 'admin'</span>
+<span class="f">print</span>(dato[<span class="s">"activo"</span>] <span class="k">is</span> <span class="k">True</span>)   <span class="c"># True   (true -> True)</span>
+
+salida = json.<span class="f">dumps</span>(dato, indent=2, ensure_ascii=<span class="k">False</span>)
+<span class="f">print</span>(salida)                   <span class="c"># JSON legible, con acentos intactos</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>loads</code>/<code>dumps</code> trabajan con texto;
+          <code>load</code>/<code>dump</code> con archivos. Correspondencias:
+          dict↔object, list↔array, <code>None</code>↔null. Un JSON malformado
+          lanza <code>json.JSONDecodeError</code> (subclase de
+          <code>ValueError</code>).
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>csv: filas y diccionarios</h2>
+        <pre><code><span class="k">import</span> csv
+<span class="k">from</span> io <span class="k">import</span> StringIO
+
+datos = <span class="s">"nombre,edad\nAda,36\nAlan,41\n"</span>
+lector = csv.<span class="f">DictReader</span>(<span class="f">StringIO</span>(datos))
+<span class="k">for</span> fila <span class="k">in</span> lector:
+    <span class="f">print</span>(fila[<span class="s">"nombre"</span>], <span class="f">int</span>(fila[<span class="s">"edad"</span>]))   <span class="c"># Ada 36 / Alan 41</span>
+<span class="c"># DictReader usa la primera fila como claves; cada fila es un dict</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          <code>csv.reader</code> da filas como listas;
+          <code>DictReader</code> da dicts usando la cabecera. Maneja comas
+          dentro de comillas por ti:
+          <strong>no parsees CSV con <code>split(',')</code> a mano</strong>. Al
+          abrir un archivo real usa <code>newline=''</code> para evitar filas en
+          blanco espurias. Para escribir: <code>csv.writer</code> /
+          <code>DictWriter</code> con <code>writeheader()</code>.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Errores: try/except/else/finally</h2>
+        <blockquote>
+          Captura tipos CONCRETOS y reacciona a ESE fallo.
+          <code>except: pass</code> a ciegas se traga todo — incluidos tus
+          propios bugs.
+        </blockquote>
+        <ul class="clean">
+          <li><strong>try:</strong> el código que puede fallar.</li>
+          <li>
+            <strong>except TipoEspecífico:</strong> cómo reaccionas a ESE fallo
+            (<code>ValueError</code>, <code>KeyError</code>...).
+          </li>
+          <li>
+            <strong>else:</strong> corre si NO hubo excepción — separa lo
+            arriesgado de lo seguro.
+          </li>
+          <li>
+            <strong>finally:</strong> corre siempre (limpieza), haya o no
+            excepción.
+          </li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>Manejo de errores con scope correcto</h2>
+        <pre><code><span class="k">def</span> <span class="f">parsear_fila</span>(linea):
+    campos = linea.<span class="f">split</span>(<span class="s">","</span>)
+    <span class="k">if</span> <span class="f">len</span>(campos) != 3:
+        <span class="k">raise</span> <span class="f">ValueError</span>(<span class="s">f"esperaba 3 campos, vi &#123;len(campos)&#125;"</span>)
+    nombre, edad, rol = campos
+    <span class="k">return</span> &#123;<span class="s">"nombre"</span>: nombre, <span class="s">"edad"</span>: <span class="f">int</span>(edad), <span class="s">"rol"</span>: rol&#125;
+
+descartadas = 0
+<span class="k">for</span> linea <span class="k">in</span> [<span class="s">"Ada,36,admin"</span>, <span class="s">"corrupta"</span>, <span class="s">"Bea,xx,dev"</span>]:
+    <span class="k">try</span>:
+        fila = <span class="f">parsear_fila</span>(linea)
+    <span class="k">except</span> <span class="f">ValueError</span>:             <span class="c"># tipo concreto, scope minimo</span>
+        descartadas += 1           <span class="c"># descarta + cuenta, no revienta</span>
+    <span class="k">else</span>:
+        <span class="f">print</span>(fila)
+<span class="f">print</span>(<span class="s">"descartadas:"</span>, descartadas) <span class="c"># descartadas: 2</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          El <code>try</code> envuelve SOLO la línea que puede fallar, no medio
+          programa. <code>raise</code> lanza una excepción;
+          <code>raise NuevaError(...) from e</code> preserva la causa original.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>La jerarquía de excepciones</h2>
+        <div class="columns">
+          <div>
+            <h3>Cómo se ordena</h3>
+            <ul class="clean">
+              <li>
+                Todas heredan de <code>BaseException</code>; las que
+                <strong>capturas</strong> heredan de <code>Exception</code>.
+              </li>
+              <li>
+                <code>ValueError</code>, <code>KeyError</code>,
+                <code>IndexError</code>, <code>TypeError</code>,
+                <code>FileNotFoundError</code> son subclases concretas.
+              </li>
+              <li>
+                Capturar una superclase atrapa a sus hijas:
+                <code>except Exception</code> atrapa casi todo — por eso es
+                peligroso.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Tu regla práctica</h3>
+            <ul class="clean">
+              <li>
+                Puedes definir las tuyas:
+                <code>class DatosInvalidos(Exception): pass</code>.
+              </li>
+              <li>
+                Captura lo <strong>más específico</strong> que puedas
+                reaccionar.
+              </li>
+              <li>
+                Deja <strong>subir</strong> lo que no sabes manejar — un fallo
+                visible vence a uno silenciado.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>EAFP vs LBYL</h2>
+        <blockquote>
+          EAFP — Easier to Ask Forgiveness than Permission: intenta el camino
+          feliz y captura el caso raro específico.
+        </blockquote>
+        <ul class="clean">
+          <li>
+            <strong>LBYL</strong> (Look Before You Leap): comprueba condiciones
+            ANTES de actuar — <code>if clave in dict: ...</code>.
+          </li>
+          <li>
+            <strong>EAFP</strong>: intenta y captura el fallo —
+            <code>try: d[k]</code> / <code>except KeyError</code>.
+          </li>
+          <li>
+            Python <strong>favorece EAFP</strong>: más rápido (sin doble
+            lookup), evita race conditions y suele leerse mejor.
+          </li>
+          <li>
+            No es absoluto: para una validación simple, un <code>if</code> claro
+            gana; para operaciones que normalmente funcionan, EAFP.
+          </li>
+          <li>
+            La clave: capturar el tipo concreto, no envolver todo en un
+            <code>try</code> gigante por superstición.
+          </li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <h2>EAFP en acción + leer tracebacks, otra vez</h2>
+        <pre><code><span class="k">def</span> <span class="f">a_entero</span>(valor, default=0):
+    <span class="k">try</span>:
+        <span class="k">return</span> <span class="f">int</span>(valor)          <span class="c"># EAFP: intenta</span>
+    <span class="k">except</span> (<span class="f">ValueError</span>, <span class="f">TypeError</span>):
+        <span class="k">return</span> default             <span class="c"># captura SOLO lo que esperas</span>
+
+<span class="f">print</span>(<span class="f">a_entero</span>(<span class="s">"42"</span>))   <span class="c"># 42</span>
+<span class="f">print</span>(<span class="f">a_entero</span>(<span class="s">"abc"</span>))  <span class="c"># 0</span>
+<span class="f">print</span>(<span class="f">a_entero</span>(<span class="k">None</span>))   <span class="c"># 0</span>
+
+<span class="c"># Si capturas de mas (except Exception), ocultas bugs reales tuyos.</span></code></pre>
+        <p class="muted" style="margin-top: 1.2rem">
+          Cuando un <code>except</code> te sorprende, el
+          <strong>traceback</strong> te dice exactamente qué subió. Repite el
+          hábito de N00: leer de abajo a arriba, ir a la línea, reproducir.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Manos al código — CSV → transformar → JSON (35 min)</h2>
+        <div class="columns">
+          <div>
+            <div class="card">
+              <span class="icon">📥</span>
+              <h3>1 · Leer (10 min)</h3>
+              <p class="muted">
+                Abre un CSV con <code>DictReader</code>, convierte tipos por
+                columna y maneja filas malformadas con
+                <code>try/except</code> contando <code>descartadas</code>.
+              </p>
+            </div>
+            <div class="card">
+              <span class="icon">🔧</span>
+              <h3>2 · Transformar (10 min)</h3>
+              <p class="muted">
+                Filtra y enriquece los registros con una comprehension.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <span class="icon">📤</span>
+              <h3>3 · Escribir (10 min)</h3>
+              <p class="muted">
+                Vuelca el resultado a JSON con <code>json.dump</code> indentado
+                y <code>encoding</code> correcto.
+              </p>
+            </div>
+            <div class="card">
+              <span class="icon">🛡️</span>
+              <h3>4 · Robustez (5 min)</h3>
+              <p class="muted">
+                Corre el script contra un archivo inexistente y maneja
+                <code>FileNotFoundError</code> con un mensaje claro.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Este pipeline junta TODO el día: <code>pathlib</code> para la ruta,
+          <code>with</code> para abrir, <code>csv</code> para leer,
+          <code>json</code> para escribir y excepciones con scope correcto para
+          las filas rotas.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Videos para reforzar</h2>
+        <div class="video-grid">
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=9N6a-VLBa2I"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/9N6a-VLBa2I/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Working with JSON Data using the json Module
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Cubre loads/dumps/load/dump con archivos reales, exactamente el
+                manos-al-código de la sesión.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/watch?v=NIWwJbo-9_8"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              src="https://img.youtube.com/vi/NIWwJbo-9_8/hqdefault.jpg"
+              alt=""
+            />
+            <div>
+              <div class="vc-title">
+                Exceptions — try, except, else, finally
+              </div>
+              <div class="vc-meta">Corey Schafer · Inglés</div>
+              <div class="vc-why">
+                Recorre los cuatro bloques y la captura de tipos concretos que
+                esta sesión exige.
+              </div>
+            </div>
+          </a>
+          <a
+            class="video-card"
+            href="https://www.youtube.com/results?search_query=python+pathlib+tech+with+tim"
+            target="_blank"
+            rel="noopener"
+          >
+            <div>
+              <div class="vc-title">
+                Python pathlib — Manipulación moderna de rutas y archivos
+              </div>
+              <div class="vc-meta">Tech With Tim · Inglés</div>
+              <div class="vc-why">
+                Refuerza pathlib como reemplazo moderno de os.path, base del
+                manejo robusto de archivos.
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Katas del día — kata-04 y kata-05</h2>
+        <div class="card">
+          <span class="tag violet">Kata kata-04</span>
+          <span class="tag violet">Kata kata-05</span>
+          <span class="tag green">Entregable</span>
+          <h3>Archivos + errores robustos</h3>
+          <p class="muted">
+            <strong>kata-04 (archivos y json/csv):</strong>
+            leer-transformar-escribir un dataset pequeño y variado.
+            <strong>kata-05 (errores robustos):</strong> manejar entradas malas
+            con excepciones específicas en varios escenarios.
+          </p>
+          <p class="muted" style="margin-top: 1.2rem">
+            <strong>Criterio medible:</strong> pytest verde, archivos de salida
+            exactos, <code>descartadas</code> contadas y tipos correctos. Debe
+            demostrar <code>pathlib</code>, <code>with</code>, json/csv de
+            stdlib y manejo de errores con scope correcto.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide">
+        <h2>Checklist de salida</h2>
+        <ul class="checklist">
+          <li>
+            Manipulo texto con split/join/strip y sé que devuelven strings
+            nuevos.
+          </li>
+          <li>
+            Uso pathlib para rutas y with para abrir archivos que se cierran
+            solos.
+          </li>
+          <li>Leo/escribo json y csv con la stdlib sin recurrir a pandas.</li>
+          <li>
+            Manejo errores con try/except/else/finally y capturo tipos
+            concretos.
+          </li>
+          <li>Uso raise y entiendo la jerarquía de excepciones.</li>
+          <li>
+            Aplico EAFP cuando corresponde y leo el traceback cuando un except
+            me sorprende.
+          </li>
+        </ul>
+        <p class="muted" style="margin-top: 1.2rem">
+          Próxima sesión:
+          <strong
+            >Cierre de la Pre-Fase 0.5 → capstone + checklist de fluidez</strong
+          >
+          — el pipeline de hoy se vuelve idiomático: generadores, dataclasses y
+          pytest para rematar el bloque.
+        </p>
+      </section>
+    </main>
+
+    <div class="navzone left" onclick="prev()"></div>
+    <div class="navzone right" onclick="next()"></div>
+    <div class="hud">
+      <span class="hint">← → para navegar</span>
+      <span class="counter" id="counter">1 / 1</span>
+    </div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let idx = 0;
+      function show(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, j) => s.classList.toggle("active", j === idx));
+        document.getElementById("counter").textContent =
+          idx + 1 + " / " + slides.length;
+        document.getElementById("progressBar").style.width =
+          ((idx + 1) / slides.length) * 100 + "%";
+        history.replaceState(null, "", "#" + (idx + 1));
+      }
+      function next() {
+        show(idx + 1);
+      }
+      function prev() {
+        show(idx - 1);
+      }
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", " ", "PageDown"].includes(e.key)) {
+          e.preventDefault();
+          next();
+        }
+        if (["ArrowLeft", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+      const fromHash = parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    </script>
+  </body>
+</html>

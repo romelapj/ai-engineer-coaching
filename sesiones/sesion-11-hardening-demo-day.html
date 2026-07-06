@@ -399,8 +399,27 @@
         </div>
         <h1>Sesión 11<br />Hardening Final y Demo Day</h1>
         <p class="lead">
-          Cerrar su proyecto production-ready y presentarlo como a stakeholders:
+          Cerrar tu proyecto production-ready y presentarlo como a stakeholders:
           problema → solución → evidencia.
+        </p>
+      </section>
+
+      <section class="slide">
+        <h2>Tu proyecto no habla solo</h2>
+        <p class="lead" style="max-width: 54ch">
+          Terminaste algo que funciona. Pero "funciona" no es lo que te contrata: a
+          los ojos de un entrevistador, un proyecto sin evidencia es
+          indistinguible de un wrapper pegado en un fin de semana.
+        </p>
+        <blockquote>
+          Una demo no es para mostrar que funciona — es para probar, con
+          números, que tú tomas buenas decisiones de ingeniería.
+        </blockquote>
+        <p class="muted">
+          Lo que distingue a un AI Engineer es el rastro de decisiones medidas:
+          por qué este modelo, por qué esta arquitectura, qué se sacrificó y
+          cómo se verificó. Eso es lo que el entrevistador está comprando — y lo
+          que hoy dejas listo.
         </p>
       </section>
 
@@ -456,8 +475,8 @@
             <span class="icon">🥊</span>
             <h3>Sobrevivir las preguntas</h3>
             <p class="muted">
-              Practicar el manejo de las 5 preguntas técnicas difíciles que le
-              harían en una entrevista sobre su proyecto.
+              Practicar el manejo de las 5 preguntas técnicas difíciles que te
+              harían en una entrevista sobre tu proyecto.
             </p>
           </div>
         </div>
@@ -472,8 +491,8 @@
             <ul class="clean">
               <li>
                 Timeouts explícitos y retries con backoff — el SDK de
-                <code>anthropic</code> ya reintenta 429/5xx 2 veces; configure
-                <code>max_retries</code> y un timeout &lt; al de su API
+                <code>anthropic</code> ya reintenta 429/5xx 2 veces; configura
+                <code>max_retries</code> y un timeout &lt; al de tu API
               </li>
               <li>
                 Manejo de <code>RateLimitError</code> y respuesta degradada:
@@ -543,8 +562,8 @@
           </div>
         </div>
         <p class="muted" style="margin-top: 1.2rem">
-          Un reclutador técnico le dedica 90 segundos. La sección de trade-offs
-          es la que lo diferencia de los mil proyectos de tutorial.
+          Un reclutador técnico te dedica 90 segundos. La sección de trade-offs
+          es la que te diferencia de los mil proyectos de tutorial.
         </p>
       </section>
 
@@ -564,7 +583,7 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
                        (traces · p95 · costo)</code></pre>
         <ul class="clean" style="margin-top: 1.2rem">
           <li>
-            Una sola página: si necesita dos, su sistema o su diagrama tienen un
+            Una sola página: si necesitas dos, tu sistema o tu diagrama tienen un
             problema
           </li>
           <li>
@@ -581,6 +600,11 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
       <!-- SLIDE 7: estructura de la demo -->
       <section class="slide">
         <h2>Anatomía de la demo: 10 min + 10 de preguntas</h2>
+        <p class="muted" style="margin-bottom: 1.2rem">
+          Ya endureciste el sistema (checklist) y lo documentaste (README +
+          diagrama). Lo que falta no es más código: es contarlo. De la
+          documentación pasamos a la demo.
+        </p>
         <table>
           <thead>
             <tr>
@@ -603,7 +627,7 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
             <tr>
               <td>4–8</td>
               <td>Demo en vivo: happy path + 1 caso difícil</td>
-              <td>El caso difícil que ya domó es su mejor argumento</td>
+              <td>El caso difícil que ya domaste es tu mejor argumento</td>
             </tr>
             <tr>
               <td>8–10</td>
@@ -675,8 +699,8 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
 
       <!-- SLIDE 9: código del juez LLM -->
       <section class="slide">
-        <h2>El juez LLM que genera su evidencia</h2>
-        <pre><code><span class="c"># evals/judge.py — convierte su suite de evals en números para la demo</span>
+        <h2>El juez LLM que genera tu evidencia</h2>
+        <pre><code><span class="c"># evals/judge.py — convierte tu suite de evals en números para la demo</span>
 <span class="k">import</span> anthropic, json
 
 client = anthropic.<span class="f">Anthropic</span>()
@@ -696,14 +720,14 @@ client = anthropic.<span class="f">Anthropic</span>()
 
 <span class="c"># 50 casos × ~600 tokens ≈ $0.15 por corrida completa con Sonnet</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
-          Mismo modelo de juez en baseline y final — si cambia el juez, sus
+          Mismo modelo de juez en baseline y final — si cambia el juez, tus
           deltas no significan nada.
         </p>
       </section>
 
       <!-- SLIDE 10: las 5 preguntas difíciles -->
       <section class="slide">
-        <h2>Las 5 preguntas que le van a hacer</h2>
+        <h2>Las 5 preguntas que te van a hacer</h2>
         <ul class="clean">
           <li>
             <strong
@@ -714,26 +738,26 @@ client = anthropic.<span class="f">Anthropic</span>()
           </li>
           <li>
             <strong
-              >¿Cómo sabe que no alucina? ¿Qué mide exactamente su eval?</strong
+              >¿Cómo sabes que no alucina? ¿Qué mide exactamente tu eval?</strong
             >
             — pregunta de rigor: muestra, juez, casos adversariales
           </li>
           <li>
             <strong
-              >¿Qué pasa si el proveedor del LLM se cae o lo
+              >¿Qué pasa si el proveedor del LLM se cae o te
               rate-limitea?</strong
             >
             — pregunta de producción: retries, degradación, fallback
           </li>
           <li>
             <strong
-              >¿Cuánto cuesta por usuario al mes y cómo lo bajaría 10x?</strong
+              >¿Cuánto cuesta por usuario al mes y cómo lo bajarías 10x?</strong
             >
             — pregunta de negocio: caching, modelo más pequeño, batch API
           </li>
           <li>
             <strong
-              >¿Cómo maneja prompt injection y datos sensibles en los
+              >¿Cómo manejas prompt injection y datos sensibles en los
               inputs?</strong
             >
             — pregunta de seguridad: validación, separación de instrucciones y
@@ -747,21 +771,6 @@ client = anthropic.<span class="f">Anthropic</span>()
         </p>
       </section>
 
-      <!-- SLIDE 11: idea fuerza -->
-      <section class="slide">
-        <h2>Idea fuerza</h2>
-        <blockquote>
-          Una demo no es para mostrar que funciona — es para probar, con
-          números, que usted toma buenas decisiones de ingeniería.
-        </blockquote>
-        <p class="muted">
-          Cualquiera puede pegar un wrapper sobre un LLM en un fin de semana. Lo
-          que distingue a un AI Engineer es el rastro de decisiones medidas: por
-          qué este modelo, por qué esta arquitectura, qué se sacrificó y cómo se
-          verificó. Eso es lo que el entrevistador está comprando.
-        </p>
-      </section>
-
       <!-- SLIDE 12: ejercicio en vivo -->
       <section class="slide">
         <h2>Manos al código: el reporte de evidencia (30 min)</h2>
@@ -771,13 +780,13 @@ client = anthropic.<span class="f">Anthropic</span>()
             <ul class="clean">
               <li>
                 <strong>Min 0–10:</strong> conectar el juez de
-                <code>evals/judge.py</code> a su suite de 20+ casos y correrla
-                completa contra su proyecto
+                <code>evals/judge.py</code> a tu suite de 20+ casos y correrla
+                completa contra tu proyecto
               </li>
               <li>
                 <strong>Min 10–20:</strong> script
                 <code>make evidence</code> que genera <code>EVIDENCE.md</code>:
-                tabla de métricas baseline vs final + 3 fallos que corrigió, con
+                tabla de métricas baseline vs final + 3 fallos que corregiste, con
                 el antes y el después
               </li>
               <li>
@@ -793,44 +802,13 @@ client = anthropic.<span class="f">Anthropic</span>()
               <li>
                 Al menos una métrica con baseline, valor final y metodología
               </li>
-              <li>Su apertura de 2 min dicha en voz alta una vez, sin leer</li>
+              <li>Tu apertura de 2 min dicha en voz alta una vez, sin leer</li>
             </ul>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 13: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Challenge 11</span
-          ><span class="tag green">Entregable</span>
-          <h3 style="margin-top: 0.8rem">Demo Day: el paquete completo</h3>
-          <ul class="clean" style="margin-top: 0.6rem">
-            <li>
-              <strong>Demo grabada de 15 min</strong> siguiendo la estructura de
-              la sesión: problema → arquitectura → demo en vivo → evidencia (10
-              min) + respuestas a preguntas simuladas (5 min)
-            </li>
-            <li>
-              <strong>README final</strong> con decisiones y trade-offs,
-              métricas de evals, diagrama de arquitectura y limitaciones
-            </li>
-            <li>
-              <strong>5 preguntas difíciles de entrevista</strong> sobre su
-              proyecto, con respuestas preparadas por escrito usando la fórmula
-              decisión + trade-off + evidencia
-            </li>
-          </ul>
-          <p class="muted" style="margin-top: 0.8rem">
-            Evaluación: <code>coach/rubrica-demo-day.md</code>. La rúbrica pesa
-            evidencia y manejo de preguntas más que pulido visual — inviertan el
-            tiempo donde puntúa.
-          </p>
-        </div>
-      </section>
-
-      <!-- SLIDE 14: videos -->
+      <!-- SLIDE 13: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -852,7 +830,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               <div class="vc-meta">AI Engineer · Inglés</div>
               <div class="vc-why">
                 Pipelines de evals en producción — la profundidad técnica para
-                usar métricas como evidencia central de su demo.
+                usar métricas como evidencia central de tu demo.
               </div>
             </div>
           </a>
@@ -894,7 +872,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               <div class="vc-meta">Aditya Singh · Inglés</div>
               <div class="vc-why">
                 Qué proyectos de IA impresionan a reclutadores (agentes, RAG en
-                producción) — para enmarcar el suyo.
+                producción) — para enmarcar el tuyo.
               </div>
             </div>
           </a>
@@ -943,12 +921,43 @@ client = anthropic.<span class="f">Anthropic</span>()
         </div>
       </section>
 
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Challenge 11</span
+          ><span class="tag green">Entregable</span>
+          <h3 style="margin-top: 0.8rem">Demo Day: el paquete completo</h3>
+          <ul class="clean" style="margin-top: 0.6rem">
+            <li>
+              <strong>Demo grabada de 15 min</strong> siguiendo la estructura de
+              la sesión: problema → arquitectura → demo en vivo → evidencia (10
+              min) + respuestas a preguntas simuladas (5 min)
+            </li>
+            <li>
+              <strong>README final</strong> con decisiones y trade-offs,
+              métricas de evals, diagrama de arquitectura y limitaciones
+            </li>
+            <li>
+              <strong>5 preguntas difíciles de entrevista</strong> sobre tu
+              proyecto, con respuestas preparadas por escrito usando la fórmula
+              decisión + trade-off + evidencia
+            </li>
+          </ul>
+          <p class="muted" style="margin-top: 0.8rem">
+            Evaluación: <code>coach/rubrica-demo-day.md</code>. La rúbrica pesa
+            evidencia y manejo de preguntas más que pulido visual — invierte el
+            tiempo donde puntúa.
+          </p>
+        </div>
+      </section>
+
       <!-- SLIDE 15: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
         <ul class="checklist">
           <li>
-            Checklist de production-readiness recorrido contra su proyecto: cada
+            Checklist de production-readiness recorrido contra tu proyecto: cada
             ítem cerrado o documentado en "Limitaciones"
           </li>
           <li>
@@ -957,16 +966,22 @@ client = anthropic.<span class="f">Anthropic</span>()
           </li>
           <li>Estructura de demo clara: minuto a minuto, con plan B grabado</li>
           <li>
-            Sabe responder con la fórmula decisión + trade-off + evidencia
+            Sabes responder con la fórmula decisión + trade-off + evidencia
           </li>
           <li>
             Reto agendado: demo de 15 min grabada + README final + 5 preguntas
             con respuestas, antes de la próxima sesión
           </li>
         </ul>
-        <p class="muted" style="margin-top: 1.5rem">
-          Próxima sesión:
-          <strong>Sesión 12 — System Design de Sistemas con LLMs</strong>
+        <blockquote style="margin-top: 1.4rem">
+          Recuerda el porqué: la demo no prueba que funciona, prueba que tú
+          decides bien y lo respalda con números.
+        </blockquote>
+        <p class="muted" style="margin-top: 1.2rem">
+          Próxima sesión —
+          <strong>Sesión 12: System Design de Sistemas con LLMs</strong>: tu
+          proyecto de hoy es el primer caso que pondremos sobre la pizarra, así
+          que llega con el diagrama y las métricas a la mano.
         </p>
       </section>
     </main>

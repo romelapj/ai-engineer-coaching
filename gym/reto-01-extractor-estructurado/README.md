@@ -16,7 +16,7 @@ La tarea más común que un AI Engineer hace en producción no es "construir un 
 
 La trampa en la que cae la mayoría de devs que vienen de backend es tratar al LLM como una API determinista: escriben un prompt una vez, ven que "funciona" con 2 ejemplos y lo dan por terminado. En entrevista eso se nota de inmediato. La pregunta que este reto te prepara para responder es: _"¿Cómo garantizas que la salida de un LLM cumple un esquema, y cómo mides qué tan bien extrae?"_. La respuesta esperada no es "le pido que devuelva JSON" — es: esquema explícito en el prompt, parsing tolerante, validación con Pydantic, política de reintentos, y un **eval con golden set y métrica por campo**. Eso es exactamente lo que vas a construir.
 
-Este reto es deliberadamente **sin tool use ni structured-output nativo del proveedor**: cuando aprendas esas features en la Fase 2 vas a entender exactamente qué problema resuelven y qué hacían por ti. Primero hay que sufrir (un poco) el problema a mano.
+Este reto es deliberadamente **sin tool use ni structured-output nativo del proveedor**: cuando aprendas esas features en la Sesión 03 vas a entender exactamente qué problema resuelven y qué hacían por ti. Primero hay que sufrir (un poco) el problema a mano.
 
 ## Enunciado
 

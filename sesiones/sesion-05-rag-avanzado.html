@@ -418,8 +418,9 @@
             tu retrieval hoy? (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — híbrido BM25 + vectores, reranking,
-            query rewriting, contextual retrieval y métricas (30 min)
+            <strong>Tema central</strong> — golden set y métricas primero, luego
+            híbrido BM25 + vectores, reranking, query rewriting y contextual
+            retrieval (30 min)
           </li>
           <li>
             <strong>Manos al código</strong> — pair programming: golden set,
@@ -503,7 +504,50 @@
         </p>
       </section>
 
-      <!-- SLIDE 5: BM25 + RRF -->
+      <!-- SLIDE 5: golden set + métricas (el instrumento primero) -->
+      <section class="slide">
+        <h2>Golden set: recall@k y MRR — el instrumento primero</h2>
+        <blockquote>
+          Una mejora de retrieval sin métrica es una anécdota. Con golden set,
+          es un dato que puedes defender en un PR.
+        </blockquote>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                <strong>Golden set</strong>: 20–50 queries reales mapeadas al
+                chunk que <em>debería</em> salir. Hazlo a mano: 1 hora bien
+                invertida.
+              </li>
+              <li>
+                <strong>recall@k</strong>: ¿en qué fracción de queries el chunk
+                correcto está en el top-k? Tu métrica principal.
+              </li>
+              <li>
+                <strong>MRR</strong>: promedio de 1/posición del primer acierto.
+                Premia que lo correcto salga arriba, no solo que salga.
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="k">def</span> <span class="f">recall_at_k</span>(golden, results, k=5):
+    hits = <span class="f">sum</span>(1 <span class="k">for</span> q <span class="k">in</span> golden
+               <span class="k">if</span> golden[q] <span class="k">in</span> results[q][:k])
+    <span class="k">return</span> hits / <span class="f">len</span>(golden)
+
+<span class="k">def</span> <span class="f">mrr</span>(golden, results):
+    total = 0.0
+    <span class="k">for</span> q <span class="k">in</span> golden:
+        <span class="k">if</span> golden[q] <span class="k">in</span> results[q]:
+            total += 1 / (results[q].index(golden[q]) + 1)
+    <span class="k">return</span> total / <span class="f">len</span>(golden)</code></pre>
+        </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Con el instrumento montado, cada técnica que sigue se prueba contra
+          él: la activas, mides y comparas. Sin esto, todo lo demás es fe.
+        </p>
+      </section>
+
+      <!-- SLIDE 6: BM25 + RRF -->
       <section class="slide">
         <h2>Búsqueda híbrida: BM25 + vectores con RRF</h2>
         <p style="margin-bottom: 1rem">
@@ -524,11 +568,12 @@ fused = <span class="f">rrf</span>([bm25_top50, vector_top50])[:20]  <span class
         <p class="muted" style="margin-top: 1rem">
           10 líneas, cero modelos nuevos, y suele subir recall@5 entre 5 y 15
           puntos en corpus con jerga técnica. Es la mejora con mejor ROI de toda
-          la sesión.
+          la sesión. Aun así: actívalo, corre el golden set y deja que el número
+          decida.
         </p>
       </section>
 
-      <!-- SLIDE 6: rerankers -->
+      <!-- SLIDE 7: rerankers -->
       <section class="slide">
         <h2>Rerankers: precisión cara, úsala al final</h2>
         <p style="margin-bottom: 1rem">
@@ -571,11 +616,12 @@ fused = <span class="f">rrf</span>([bm25_top50, vector_top50])[:20]  <span class
         <p class="muted" style="margin-top: 1.2rem">
           Regla de decisión: si tu recall@50 es alto pero tu recall@5 es bajo,
           el reranker paga su latencia. Si recall@50 ya es malo, el problema
-          está antes — arregla el retrieval, no el orden.
+          está antes — arregla el retrieval, no el orden. Como siempre:
+          actívalo, corre el golden set y deja que el número decida.
         </p>
       </section>
 
-      <!-- SLIDE 7: query rewriting -->
+      <!-- SLIDE 8: query rewriting -->
       <section class="slide">
         <h2>Query rewriting y expansión</h2>
         <p style="margin-bottom: 1rem">
@@ -601,12 +647,13 @@ client = anthropic.<span class="f">Anthropic</span>()
 <span class="c"># "qué pasa si falla el 3DS" →</span>
 <span class="c"># "fallo de autenticación 3DS (3-D Secure) en pagos: causas y manejo de errores"</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
-          Costo: una llamada corta (~300–500 ms). Mídelo: si no sube recall en
-          tu golden set, quítalo. No todo paso "avanzado" gana en tu corpus.
+          Costo: una llamada corta (~300–500 ms). No todo paso "avanzado" gana
+          en tu corpus: actívalo, corre el golden set y deja que el número
+          decida — si no sube recall, quítalo.
         </p>
       </section>
 
-      <!-- SLIDE 8: metadata filtering -->
+      <!-- SLIDE 9: metadata filtering -->
       <section class="slide">
         <h2>Metadata filtering: reduce el espacio antes de buscar</h2>
         <div class="columns">
@@ -641,49 +688,15 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
         </div>
-      </section>
-
-      <!-- SLIDE 9: golden set + métricas -->
-      <section class="slide">
-        <h2>Golden set: recall@k y MRR</h2>
-        <blockquote>
-          Una mejora de retrieval sin métrica es una anécdota. Con golden set,
-          es un dato que puedes defender en un PR.
-        </blockquote>
-        <div class="columns">
-          <div>
-            <ul class="clean">
-              <li>
-                <strong>Golden set</strong>: 20–50 queries reales mapeadas al
-                chunk que <em>debería</em> salir. Hazlo a mano: 1 hora bien
-                invertida.
-              </li>
-              <li>
-                <strong>recall@k</strong>: ¿en qué fracción de queries el chunk
-                correcto está en el top-k? Tu métrica principal.
-              </li>
-              <li>
-                <strong>MRR</strong>: promedio de 1/posición del primer acierto.
-                Premia que lo correcto salga arriba, no solo que salga.
-              </li>
-            </ul>
-          </div>
-          <pre><code><span class="k">def</span> <span class="f">recall_at_k</span>(golden, results, k=5):
-    hits = <span class="f">sum</span>(1 <span class="k">for</span> q <span class="k">in</span> golden
-               <span class="k">if</span> golden[q] <span class="k">in</span> results[q][:k])
-    <span class="k">return</span> hits / <span class="f">len</span>(golden)
-
-<span class="k">def</span> <span class="f">mrr</span>(golden, results):
-    total = 0.0
-    <span class="k">for</span> q <span class="k">in</span> golden:
-        <span class="k">if</span> golden[q] <span class="k">in</span> results[q]:
-            total += 1 / (results[q].index(golden[q]) + 1)
-    <span class="k">return</span> total / <span class="f">len</span>(golden)</code></pre>
-        </div>
+        <p class="muted" style="margin-top: 1.4rem">
+          Filtrar cambia qué recuperas, no solo cuánto: actívalo, corre el
+          golden set y deja que el número decida.
+        </p>
       </section>
 
       <!-- SLIDE 10: contextual retrieval -->
       <section class="slide">
+        <div class="kicker">Mejoras de indexación · se pagan una vez</div>
         <h2>Contextual retrieval (Anthropic)</h2>
         <p style="margin-bottom: 1rem">
           Un chunk suelto pierde contexto: "la tasa subió 3%" — ¿de qué, cuándo,
@@ -712,6 +725,7 @@ chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</
 
       <!-- SLIDE 11: parent-document retrieval -->
       <section class="slide">
+        <div class="kicker">Mejoras de indexación · se pagan una vez</div>
         <h2>Parent-document retrieval: busca chico, entrega grande</h2>
         <div class="columns">
           <div class="card">
@@ -782,37 +796,7 @@ chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</
         </p>
       </section>
 
-      <!-- SLIDE 13: reto de la semana -->
-      <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
-        <div class="card">
-          <span class="tag violet">Reto 04</span
-          ><span class="tag green">Entregable: métricas antes/después</span>
-          <h3 style="margin-top: 0.8rem">Tuning de retrieval</h3>
-          <p>
-            Toma el RAG de tu reto 3 y mejóralo de forma medible: (1) construye
-            un golden set de mínimo 20 queries y mide el recall@5 baseline, (2)
-            implementa búsqueda híbrida BM25 + vectores con RRF y suma
-            reranking, (3) entrega una tabla antes/después con recall@5 y MRR
-            por variante, y una nota corta de qué movió la aguja y qué no.
-          </p>
-          <p class="muted" style="margin-top: 0.8rem">
-            Criterio de aceptación: la mejora se demuestra con números
-            reproducibles, no con sensaciones. Un experimento que NO mejoró,
-            bien documentado, también cuenta.
-          </p>
-          <p style="margin-top: 0.8rem">
-            Enunciado completo:
-            <a
-              href="../gym/reto-04-retrieval-tuning/README.md"
-              style="color: var(--accent2)"
-              >gym/reto-04-retrieval-tuning</a
-            >
-          </p>
-        </div>
-      </section>
-
-      <!-- SLIDE 14: videos -->
+      <!-- SLIDE 13: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -927,6 +911,36 @@ chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</
         </div>
       </section>
 
+      <!-- SLIDE 14: reto de la semana -->
+      <section class="slide">
+        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <div class="card">
+          <span class="tag violet">Reto 04</span
+          ><span class="tag green">Entregable: métricas antes/después</span>
+          <h3 style="margin-top: 0.8rem">Tuning de retrieval</h3>
+          <p>
+            Toma el RAG de tu reto 3 y mejóralo de forma medible: (1) construye
+            un golden set de mínimo 20 queries y mide el recall@5 baseline, (2)
+            implementa búsqueda híbrida BM25 + vectores con RRF y suma
+            reranking, (3) entrega una tabla antes/después con recall@5 y MRR
+            por variante, y una nota corta de qué movió la aguja y qué no.
+          </p>
+          <p class="muted" style="margin-top: 0.8rem">
+            Criterio de aceptación: la mejora se demuestra con números
+            reproducibles, no con sensaciones. Un experimento que NO mejoró,
+            bien documentado, también cuenta.
+          </p>
+          <p style="margin-top: 0.8rem">
+            Enunciado completo:
+            <a
+              href="../gym/reto-04-retrieval-tuning/README.md"
+              style="color: var(--accent2)"
+              >gym/reto-04-retrieval-tuning</a
+            >
+          </p>
+        </div>
+      </section>
+
       <!-- SLIDE 15: checklist + próxima sesión -->
       <section class="slide">
         <h2>Checklist de salida</h2>
@@ -961,6 +975,8 @@ chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</
           <strong
             >Sesión 06 — Agentes I — El Loop Agéntico y Herramientas</strong
           >
+          — cerramos RAG y saltamos a agentes: ese retrieval que acabas de medir
+          puede volverse una tool que un agente decide cuándo llamar.
         </p>
       </section>
     </main>
