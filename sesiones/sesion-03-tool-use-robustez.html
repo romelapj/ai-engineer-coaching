@@ -387,6 +387,40 @@
           width: 120px;
         }
       }
+      /* ---------- copiar código ---------- */
+      .code-wrap {
+        position: relative;
+      }
+      .slide .code-wrap {
+        z-index: 45;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+        border: 1px solid var(--border);
+        background: rgba(9, 13, 22, 0.85);
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 0.3em 0.85em;
+        font-size: 0.76rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0.75;
+        transition:
+          opacity 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .copy-btn:hover {
+        opacity: 1;
+        border-color: var(--accent);
+      }
+      .copy-btn.ok {
+        color: var(--green);
+        border-color: var(--green);
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -632,8 +666,17 @@ tools = [{
         <div class="kicker">Acto 1 · Paso 2 de 4</div>
         <h2>El loop: tool_use → tool_result</h2>
         <pre><code><span class="c"># tool_loop.py — paso 2: el loop. Pide, ejecutas, devuelves, responde.</span>
-messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"¿Dónde va mi orden ORD-8841?"</span>}]
+<span class="k">import</span> json
 
+TOOLS = {<span class="s">"get_order_status"</span>: get_order_status}
+
+<span class="k">def</span> <span class="f">run_tool</span>(name: str, args: dict) -> str:  <span class="c"># despacha por nombre</span>
+    fn = TOOLS.<span class="f">get</span>(name)
+    <span class="k">if</span> fn <span class="k">is</span> <span class="k">None</span>:  <span class="c"># tool desconocida: el modelo se entera, no revientas</span>
+        <span class="k">return</span> json.<span class="f">dumps</span>({<span class="s">"error"</span>: <span class="s">f"tool desconocida: {name}"</span>})
+    <span class="k">return</span> json.<span class="f">dumps</span>(<span class="f">fn</span>(**args), ensure_ascii=<span class="k">False</span>)  <span class="c"># string, no dict</span>
+
+messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"¿Dónde va mi orden ORD-8841?"</span>}]
 <span class="k">for</span> _ <span class="k">in</span> <span class="f">range</span>(10):  <span class="c"># presupuesto de pasos — nunca while True</span>
     resp = client.messages.<span class="f">create</span>(
         model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=1024,
@@ -641,19 +684,21 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
     )
     <span class="k">if</span> resp.stop_reason != <span class="s">"tool_use"</span>:
         <span class="k">break</span>  <span class="c"># respuesta final para el usuario</span>
-
     messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content})
     results = [
         {<span class="s">"type"</span>: <span class="s">"tool_result"</span>, <span class="s">"tool_use_id"</span>: b.id,
          <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}
         <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>
     ]
-    messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: results})</code></pre>
+    messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: results})
+
+<span class="f">print</span>(<span class="s">""</span>.<span class="f">join</span>(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"text"</span>))</code></pre>
         <p class="muted" style="margin-top: 0.9rem">
-          Dos errores clásicos: olvidar reinyectar el turno
-          <code>assistant</code> completo, y el loop sin tope — un agente
-          confundido con <code>while True</code> te quema el budget. El
-          presupuesto va en el código, no en un TODO.
+          Tres errores clásicos: olvidar reinyectar el turno
+          <code>assistant</code> completo; pasar el dict crudo en
+          <code>content</code> (va serializado con <code>json.dumps</code>); y
+          el loop sin tope — un agente confundido con <code>while True</code>
+          te quema el budget. El presupuesto va en el código, no en un TODO.
         </p>
       </section>
 
@@ -694,6 +739,8 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
 calls = [b <span class="k">for</span> b <span class="k">in</span> resp.content
          <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
 
+<span class="c"># run_tool_safe = run_tool + try/except que</span>
+<span class="c"># devuelve (content, failed) — la escribes en el Acto 2</span>
 <span class="k">with</span> <span class="f">ThreadPoolExecutor</span>() <span class="k">as</span> ex:
     outs = ex.<span class="f">map</span>(run_tool_safe, calls)
 
@@ -1271,6 +1318,52 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
       });
       const fromHash = parseInt(location.hash.slice(1), 10);
       show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+
+      function initCopyButtons(root) {
+        function fallbackCopy(text, done) {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          done();
+        }
+        (root || document).querySelectorAll("pre").forEach((pre) => {
+          if (pre.parentElement.classList.contains("code-wrap")) return;
+          const wrap = document.createElement("div");
+          wrap.className = "code-wrap";
+          pre.parentNode.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "copy-btn";
+          btn.textContent = "📋 Copiar";
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const code = pre.innerText;
+            const ok = () => {
+              btn.textContent = "✓ Copiado";
+              btn.classList.add("ok");
+              setTimeout(() => {
+                btn.textContent = "📋 Copiar";
+                btn.classList.remove("ok");
+              }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard
+                .writeText(code)
+                .then(ok, () => fallbackCopy(code, ok));
+            } else {
+              fallbackCopy(code, ok);
+            }
+          });
+          wrap.appendChild(btn);
+        });
+      }
+      initCopyButtons();
     </script>
   </body>
 </html>

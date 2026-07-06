@@ -385,6 +385,40 @@
           width: 120px;
         }
       }
+      /* ---------- copiar código ---------- */
+      .code-wrap {
+        position: relative;
+      }
+      .slide .code-wrap {
+        z-index: 45;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+        border: 1px solid var(--border);
+        background: rgba(9, 13, 22, 0.85);
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 0.3em 0.85em;
+        font-size: 0.76rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0.75;
+        transition:
+          opacity 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .copy-btn:hover {
+        opacity: 1;
+        border-color: var(--accent);
+      }
+      .copy-btn.ok {
+        color: var(--green);
+        border-color: var(--green);
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -1039,6 +1073,52 @@ resp = client.messages.<span class="f">create</span>(
       });
       const fromHash = parseInt(location.hash.slice(1), 10);
       show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+
+      function initCopyButtons(root) {
+        function fallbackCopy(text, done) {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          done();
+        }
+        (root || document).querySelectorAll("pre").forEach((pre) => {
+          if (pre.parentElement.classList.contains("code-wrap")) return;
+          const wrap = document.createElement("div");
+          wrap.className = "code-wrap";
+          pre.parentNode.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "copy-btn";
+          btn.textContent = "📋 Copiar";
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const code = pre.innerText;
+            const ok = () => {
+              btn.textContent = "✓ Copiado";
+              btn.classList.add("ok");
+              setTimeout(() => {
+                btn.textContent = "📋 Copiar";
+                btn.classList.remove("ok");
+              }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard
+                .writeText(code)
+                .then(ok, () => fallbackCopy(code, ok));
+            } else {
+              fallbackCopy(code, ok);
+            }
+          });
+          wrap.appendChild(btn);
+        });
+      }
+      initCopyButtons();
     </script>
   </body>
 </html>
