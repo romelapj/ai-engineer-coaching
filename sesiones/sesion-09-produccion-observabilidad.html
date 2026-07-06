@@ -598,9 +598,13 @@
         <h2>Instrumentación mínima viable</h2>
         <pre><code><span class="c"># Mide latencia y costo en CADA llamada — sin esto, vuelas a ciegas</span>
 <span class="k">import</span> time, anthropic
+<span class="k">import</span> structlog  <span class="c"># pip install structlog</span>
 
 client = anthropic.<span class="f">Anthropic</span>()
+log = structlog.<span class="f">get_logger</span>()
 PRECIO_USD_MTOK = {<span class="s">"in"</span>: 3.00, <span class="s">"out"</span>: 15.00}  <span class="c"># claude-sonnet-4-6</span>
+
+pregunta = <span class="s">"¿Cuál es la política de reembolsos?"</span>  <span class="c"># el input de tu usuario</span>
 
 t0 = time.<span class="f">perf_counter</span>()
 resp = client.messages.<span class="f">create</span>(
@@ -616,7 +620,8 @@ costo = (u.input_tokens * PRECIO_USD_MTOK[<span class="s">"in"</span>]
 
 log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp.model, ms=round(latencia_ms),
          tokens_in=u.input_tokens, tokens_out=u.output_tokens,
-         usd=round(costo, 6), request_id=resp._request_id)</code></pre>
+         usd=round(costo, 6), request_id=resp._request_id)
+<span class="c"># request_id: id del request para soporte de Anthropic (lo viste en S03); el SDK lo expone como atributo _privado</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
           Un log estructurado por request. Langfuse o Datadog hacen esto por ti
           con un decorador, pero entiende primero qué se mide y por qué.
@@ -699,6 +704,8 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
       <section class="slide">
         <h2>Prompt caching en código</h2>
         <pre><code><span class="c"># El system prompt grande se escribe al cache una vez y se lee barato</span>
+<span class="k">from</span> pathlib <span class="k">import</span> Path
+SYSTEM_PROMPT_GRANDE = Path(<span class="s">"system.md"</span>).<span class="f">read_text</span>()  <span class="c"># tu prompt, ≥2k tokens</span>
 resp = client.messages.<span class="f">create</span>(
     model=<span class="s">"claude-sonnet-4-6"</span>,
     max_tokens=1024,

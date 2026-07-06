@@ -723,7 +723,10 @@ clase: fraude
           ambigüedad de "¿esto es parte del texto a procesar o una instrucción?"
           — clave cuando el input viene de usuarios.
         </p>
-        <pre><code>prompt = <span class="s">f"""&lt;instrucciones&gt;
+        <pre><code>texto_del_usuario = <span class="s">"me cobraron dos veces y nadie responde"</span>
+
+<span class="c"># en el bloque &lt;formato&gt;: {{ }} = llave literal en una f-string; el modelo recibe { }</span>
+prompt = <span class="s">f"""&lt;instrucciones&gt;
 Extrae los campos del reclamo. Responde SOLO con el JSON,
 sin texto adicional. Si un campo no aparece, usa null.
 &lt;/instrucciones&gt;
@@ -789,6 +792,20 @@ template = Path(
 ).<span class="f">read_text</span>()
 prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code></pre>
         </div>
+        <p class="muted" style="margin-top: 1.2rem">
+          Extracto de <code>prompts/extractor/v3_xml_tags.md</code>:
+          <code>{texto}</code> es el único placeholder que rellena
+          <code>.format(texto=…)</code>; las llaves del JSON van dobladas
+          <code>{{ }}</code> para que <code>.format</code> las deje literales
+          (misma regla que la f-string de la slide anterior).
+        </p>
+        <pre><code>&lt;reclamo&gt;
+{texto}
+&lt;/reclamo&gt;
+
+&lt;formato&gt;
+{{"tipo": "fraude|duplicado|no_recibido|otro", "monto": 0, "urgente": false}}
+&lt;/formato&gt;</code></pre>
       </section>
 
       <!-- SLIDE 11: errores comunes -->

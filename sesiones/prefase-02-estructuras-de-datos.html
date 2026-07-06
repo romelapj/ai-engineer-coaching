@@ -529,6 +529,9 @@ ultima = tareas.<span class="f">pop</span>()          <span class="c"># quita y 
           <code>None</code>; <code>sorted()</code> devuelve una
           <strong>lista nueva</strong>. El <code>in</code> sobre listas es
           lineal: si harás muchas búsquedas, usa un <code>set</code>.
+          <code>key=</code> es un argumento con nombre al que le pasas una
+          función (aquí <code>len</code>) que se aplica a cada elemento para
+          decidir el orden — el detalle de argumentos llega en N03.
         </p>
       </section>
 
@@ -590,7 +593,7 @@ ultima = tareas.<span class="f">pop</span>()          <span class="c"># quita y 
 <span class="c"># Agrupar nombres por inicial, sin if-clave-in-dict:</span>
 nombres = [<span class="s">"Ada"</span>, <span class="s">"Alan"</span>, <span class="s">"Beto"</span>, <span class="s">"Bea"</span>]
 por_inicial = {}
-<span class="k">for</span> n <span class="k">in</span> nombres:
+<span class="k">for</span> n <span class="k">in</span> nombres:                   <span class="c"># for elem in coleccion: itera directo sobre los elementos (detalle en N03)</span>
     por_inicial.<span class="f">setdefault</span>(n[0], []).<span class="f">append</span>(n)
 <span class="f">print</span>(por_inicial)   <span class="c"># {'A': ['Ada', 'Alan'], 'B': ['Beto', 'Bea']}</span></code></pre>
         <p class="muted" style="margin-top: 1.2rem">
@@ -618,8 +621,10 @@ stock = {<span class="s">"manzana"</span>: 12, <span class="s">"pera"</span>: 5}
 <span class="k">for</span> fruta, cant <span class="k">in</span> stock.<span class="f">items</span>():
     <span class="f">print</span>(fruta, cant)</code></pre>
         <p class="muted" style="margin-top: 1.2rem">
-          Señal de "todavía pienso en C": <code>for i in range(len(x))</code>.
-          Lo Pythonic es <code>enumerate(x)</code> cuando necesitas el índice,
+          Señal de "todavía pienso en C":
+          <code>for i in range(len(x))</code> (<code>range(n)</code> genera los
+          índices <code>0..n-1</code>; lo verás en N03). Lo Pythonic es
+          <code>enumerate(x)</code> cuando necesitas el índice,
           <code>zip(a, b)</code> para recorrer en paralelo (se detiene en la más
           corta), y <code>.items()</code> para clave <strong>y</strong> valor a
           la vez, desempaquetando dentro del <code>for</code>.
@@ -662,7 +667,7 @@ b = {3, 4, 5}
           <li>
             Existen en cuatro sabores: list <code>[ ]</code>, set
             <code>{ }</code>, dict <code>{k: v}</code> y generator
-            <code>( )</code>
+            <code>( )</code> — este último lo verás en N05
           </li>
           <li>
             El <code>if</code> al final <strong>filtra</strong>; la expresión al
@@ -698,7 +703,7 @@ iniciales = {p[0] <span class="k">for</span> p <span class="k">in</span> palabra
         <h2>Juntándolo: un mini-análisis de inventario</h2>
         <pre><code>ventas = [(<span class="s">"libro"</span>, 3), (<span class="s">"taza"</span>, 5), (<span class="s">"libro"</span>, 2), (<span class="s">"taza"</span>, 1), (<span class="s">"pin"</span>, 9)]
 
-distintos = {producto <span class="k">for</span> producto, _ <span class="k">in</span> ventas}   <span class="c"># set: productos unicos</span>
+distintos = {producto <span class="k">for</span> producto, _ <span class="k">in</span> ventas}   <span class="c"># set: productos unicos (_ = por convención, "ignoro este valor")</span>
 <span class="f">print</span>(<span class="f">len</span>(distintos), <span class="s">"productos"</span>)              <span class="c"># 3 productos</span>
 
 totales = {}
@@ -707,6 +712,7 @@ totales = {}
 <span class="c"># {'libro': 5, 'taza': 6, 'pin': 9}</span>
 
 ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), key=<span class="k">lambda</span> kv: kv[1], reverse=True)
+<span class="c"># lambda kv: kv[1] = función anónima: recibe kv y devuelve kv[1] (lambda a fondo en N03)</span>
 <span class="k">for</span> producto, total <span class="k">in</span> ranking:
     <span class="f">print</span>(<span class="s">f"&#123;producto:&lt;8&#125;&#123;total:&gt;3&#125;"</span>)   <span class="c"># pin 9 / taza 6 / libro 5</span></code></pre>
         <p class="muted" style="margin-top: 1.2rem">
@@ -834,7 +840,8 @@ ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), 
           <h3>Estructuras y agregación: frecuencia de palabras</h3>
           <p class="muted">
             Cuenta la frecuencia de palabras de un texto con
-            <code>dict</code> (o <code>Counter</code>) y devuelve un ranking
+            <code>dict</code> (o <code>Counter</code>, de
+            <code>collections</code> — lo verás en N05) y devuelve un ranking
             ordenado, con <strong>desempate determinista</strong> (p. ej. por
             frecuencia descendente y luego alfabético).
           </p>

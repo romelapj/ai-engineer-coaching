@@ -441,8 +441,8 @@
       <section class="slide">
         <h2>Tu proyecto no habla solo</h2>
         <p class="lead" style="max-width: 54ch">
-          Terminaste algo que funciona. Pero "funciona" no es lo que te contrata: a
-          los ojos de un entrevistador, un proyecto sin evidencia es
+          Terminaste algo que funciona. Pero "funciona" no es lo que te
+          contrata: a los ojos de un entrevistador, un proyecto sin evidencia es
           indistinguible de un wrapper pegado en un fin de semana.
         </p>
         <blockquote>
@@ -617,8 +617,8 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
                        (traces · p95 · costo)</code></pre>
         <ul class="clean" style="margin-top: 1.2rem">
           <li>
-            Una sola página: si necesitas dos, tu sistema o tu diagrama tienen un
-            problema
+            Una sola página: si necesitas dos, tu sistema o tu diagrama tienen
+            un problema
           </li>
           <li>
             Nombres concretos en cada caja: modelo con versión, base de datos
@@ -744,6 +744,7 @@ client = anthropic.<span class="f">Anthropic</span>()
     resp = client.messages.<span class="f">create</span>(
         model=<span class="s">"claude-sonnet-4-6"</span>,
         max_tokens=1024,
+        <span class="c"># Python une literales de string adyacentes en un solo string</span>
         system=<span class="s">"Eres un juez estricto de faithfulness. Evalúa si la "</span>
                <span class="s">"respuesta se sostiene SOLO en el contexto dado. "</span>
                <span class="s">"Responde únicamente JSON: {\"score\": float, \"razon\": str}"</span>,
@@ -772,7 +773,8 @@ client = anthropic.<span class="f">Anthropic</span>()
           </li>
           <li>
             <strong
-              >¿Cómo sabes que no alucina? ¿Qué mide exactamente tu eval?</strong
+              >¿Cómo sabes que no alucina? ¿Qué mide exactamente tu
+              eval?</strong
             >
             — pregunta de rigor: muestra, juez, casos adversariales
           </li>
@@ -820,8 +822,8 @@ client = anthropic.<span class="f">Anthropic</span>()
               <li>
                 <strong>Min 10–20:</strong> script
                 <code>make evidence</code> que genera <code>EVIDENCE.md</code>:
-                tabla de métricas baseline vs final + 3 fallos que corregiste, con
-                el antes y el después
+                tabla de métricas baseline vs final + 3 fallos que corregiste,
+                con el antes y el después
               </li>
               <li>
                 <strong>Min 20–30:</strong> ensayo cronometrado de la apertura

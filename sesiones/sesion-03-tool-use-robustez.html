@@ -667,6 +667,9 @@ tools = [{
         <h2>El loop: tool_use → tool_result</h2>
         <pre><code><span class="c"># tool_loop.py — paso 2: el loop. Pide, ejecutas, devuelves, responde.</span>
 <span class="k">import</span> json
+<span class="k">import</span> anthropic
+
+client = anthropic.<span class="f">Anthropic</span>()  <span class="c"># en el pilar 3 (slide 13) se reconfigura con timeout y max_retries</span>
 
 TOOLS = {<span class="s">"get_order_status"</span>: get_order_status}
 
@@ -736,11 +739,13 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
             </ul>
           </div>
           <pre><code><span class="c"># tool_loop.py — paso 3: el lote en paralelo</span>
+<span class="k">from</span> concurrent.futures <span class="k">import</span> ThreadPoolExecutor
+
 calls = [b <span class="k">for</span> b <span class="k">in</span> resp.content
          <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
 
-<span class="c"># run_tool_safe = run_tool + try/except que</span>
-<span class="c"># devuelve (content, failed) — la escribes en el Acto 2</span>
+<span class="c"># run_tool_safe = run_tool + try/except que devuelve</span>
+<span class="c"># un NamedTuple con .content y .failed — la escribes en el Acto 2</span>
 <span class="k">with</span> <span class="f">ThreadPoolExecutor</span>() <span class="k">as</span> ex:
     outs = ex.<span class="f">map</span>(run_tool_safe, calls)
 
@@ -770,6 +775,10 @@ results = [
     order_id: str
     status: str
     next_action: str
+
+summary_tool = {<span class="s">"name"</span>: <span class="s">"save_case_summary"</span>,
+                <span class="s">"description"</span>: <span class="s">"Guarda el resumen del caso"</span>,
+                <span class="s">"input_schema"</span>: CaseSummary.<span class="f">model_json_schema</span>()}
 
 <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(3):
     resp = client.messages.<span class="f">create</span>(
@@ -858,7 +867,18 @@ results = [
             time.<span class="f">sleep</span>(<span class="f">min</span>(60, 2 ** attempt) * random.<span class="f">random</span>())
 
 <span class="c"># y en el loop del paso 2, la llamada queda envuelta:</span>
-resp = <span class="f">with_backoff</span>(<span class="k">lambda</span>: client.messages.<span class="f">create</span>(...))</code></pre>
+resp = <span class="f">with_backoff</span>(<span class="k">lambda</span>: client.messages.<span class="f">create</span>(...))
+
+<span class="c"># la promesa del paso 3: run_tool_safe envuelve run_tool sin romper el lote</span>
+<span class="k">from</span> collections <span class="k">import</span> namedtuple
+
+ToolOut = namedtuple(<span class="s">"ToolOut"</span>, [<span class="s">"content"</span>, <span class="s">"failed"</span>])  <span class="c"># campos .content / .failed</span>
+
+<span class="k">def</span> <span class="f">run_tool_safe</span>(block):  <span class="c"># recibe el bloque tool_use completo, no name+args</span>
+    <span class="k">try</span>:
+        <span class="k">return</span> <span class="f">ToolOut</span>(<span class="f">run_tool</span>(block.name, block.input), <span class="k">False</span>)
+    <span class="k">except</span> Exception <span class="k">as</span> e:  <span class="c"># una tool que revienta no tumba el turno</span>
+        <span class="k">return</span> <span class="f">ToolOut</span>(json.<span class="f">dumps</span>({<span class="s">"error"</span>: <span class="f">str</span>(e)}), <span class="k">True</span>)</code></pre>
         <ul class="clean" style="margin-top: 1rem">
           <li>
             ¿Por qué jitter? 100 clientes que fallan juntos y reintentan a los 2
@@ -1014,6 +1034,11 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
             </ul>
           </div>
           <pre><code><span class="c"># tool_loop.py — pilar 4: cada llamada deja rastro</span>
+<span class="k">import</span> logging
+
+logging.<span class="f">basicConfig</span>(level=logging.INFO)
+log = logging.<span class="f">getLogger</span>(<span class="s">"tool_loop"</span>)  <span class="c"># los campos de extra requieren un formatter propio para verse</span>
+
 t0 = time.<span class="f">monotonic</span>()
 resp = <span class="f">with_backoff</span>(<span class="k">lambda</span>: client.messages.<span class="f">create</span>(...))
 

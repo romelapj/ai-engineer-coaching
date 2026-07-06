@@ -714,6 +714,7 @@ PATRON_TARJETA = re.<span class="f">compile</span>(<span class="s">r"\b(?:\d[ -]
     )
     <span class="k">return</span> juez.content[0].text.<span class="f">strip</span>().<span class="f">upper</span>() == <span class="s">"NO"</span>
 
+respuesta = resp.content[0].text  <span class="c"># salida de tu llamada al modelo (no mostrada aquí)</span>
 <span class="k">if not</span> <span class="f">output_seguro</span>(respuesta):
     respuesta = <span class="s">"No puedo mostrar esa respuesta."</span>  <span class="c"># degradar, no crashear</span></code></pre>
         <p class="muted" style="margin-top: 0.8rem">

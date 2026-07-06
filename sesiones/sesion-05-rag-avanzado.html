@@ -598,7 +598,18 @@
             scores[doc_id] = scores.get(doc_id, 0) + 1 / (k + rank + 1)
     <span class="k">return</span> <span class="f">sorted</span>(scores, key=scores.get, reverse=<span class="k">True</span>)
 
-fused = <span class="f">rrf</span>([bm25_top50, vector_top50])[:20]  <span class="c"># top-20 → al reranker</span></code></pre>
+<span class="c"># corpus = textos de tus chunks; ids = sus doc_ids (mismo orden), del índice del reto 3.</span>
+<span class="k">from</span> rank_bm25 <span class="k">import</span> BM25Okapi  <span class="c"># pip install rank_bm25</span>
+bm25 = <span class="f">BM25Okapi</span>([c.<span class="f">split</span>() <span class="k">for</span> c <span class="k">in</span> corpus])
+bm25_scores = bm25.<span class="f">get_scores</span>(query.<span class="f">split</span>())
+bm25_top50 = [ids[i] <span class="k">for</span> i <span class="k">in</span> bm25_scores.<span class="f">argsort</span>()[::-1][:50]]
+
+<span class="c"># el vector search del reto 3, pero pidiendo doc_ids (no textos):</span>
+vector_top50 = collection.<span class="f">query</span>(query_texts=[query], n_results=50)[<span class="s">"ids"</span>][0]
+id_a_chunk = <span class="f">dict</span>(<span class="f">zip</span>(ids, corpus))  <span class="c"># para rehidratar tras la fusión</span>
+
+fused = <span class="f">rrf</span>([bm25_top50, vector_top50])[:20]  <span class="c"># top-20 → al reranker</span>
+rehidratados = [id_a_chunk[i] <span class="k">for</span> i <span class="k">in</span> fused]</code></pre>
         <p class="muted" style="margin-top: 1rem">
           10 líneas, cero modelos nuevos, y suele subir recall@5 entre 5 y 15
           puntos en corpus con jerga técnica. Es la mejora con mejor ROI de toda
@@ -737,18 +748,20 @@ client = anthropic.<span class="f">Anthropic</span>()
           de quién? La idea: antes de indexar, pedirle al modelo 2–3 frases que
           sitúen el chunk dentro de su documento, y embeber chunk + contexto.
         </p>
-        <pre><code><span class="c"># 1 llamada por chunk; usa prompt caching para no repagar el doc completo</span>
-prompt = <span class="s">f"""&lt;document&gt;{doc}&lt;/document&gt;
+        <pre><code><span class="c"># 1 llamada por chunk; en la sesión 09 verás prompt caching para no repagar el doc completo</span>
+<span class="k">for</span> doc, fuente <span class="k">in</span> documentos:  <span class="c"># tus documentos del reto 3: (texto, fuente)</span>
+    <span class="k">for</span> chunk <span class="k">in</span> <span class="f">chunk_markdown</span>(doc, fuente):  <span class="c"># chunks (dict) de la sesión 04</span>
+        prompt = <span class="s">f"""&lt;document&gt;{doc}&lt;/document&gt;
 Sitúa este chunk dentro del documento:
-&lt;chunk&gt;{chunk}&lt;/chunk&gt;
+&lt;chunk&gt;{chunk['texto']}&lt;/chunk&gt;
 Responde SOLO con 2-3 frases de contexto."""</span>
 
-resp = client.messages.<span class="f">create</span>(
-    model=<span class="s">"claude-sonnet-4-6"</span>,
-    max_tokens=150,
-    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
-)
-chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</code></pre>
+        resp = client.messages.<span class="f">create</span>(
+            model=<span class="s">"claude-sonnet-4-6"</span>,
+            max_tokens=150,
+            messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt}],
+        )
+        chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk[<span class="s">"texto"</span>]</code></pre>
         <p class="muted" style="margin-top: 1rem">
           Cifras del paper de Anthropic (tasa de fallo del top-20): embeddings
           contextuales <strong>−35%</strong>; + BM25 contextual
@@ -816,7 +829,7 @@ chunk_indexable = resp.content[0].text + <span class="s">"\n\n"</span> + chunk</
           </li>
           <li>
             <strong>Min 15–25</strong> — Híbrido: agregar BM25 con
-            <code>rank_bm25</code> y fusionar con el RRF de la slide 5
+            <code>rank_bm25</code> y fusionar con el RRF de la slide 6
           </li>
           <li>
             <strong>Min 25–30</strong> — Re-medir y comparar: ¿cuántos puntos

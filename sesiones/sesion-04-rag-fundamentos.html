@@ -540,7 +540,9 @@
               <td>Corpus pequeño y estable (cabe en ~200K tokens)</td>
               <td>
                 Pagas el corpus entero en cada query (150K tokens/pregunta vs
-                ~2K con RAG); prompt caching lo mitiga, no lo elimina
+                ~2K con RAG); prompt caching (reusar el prefijo repetido del
+                prompt entre llamadas, con descuento — lo verás en la sesión 09)
+                lo mitiga, no lo elimina
               </td>
               <td><span class="tag">Parciales</span></td>
             </tr>
@@ -634,7 +636,15 @@
         <pre><code><span class="c"># Markdown técnico: cada sección H2/H3 es un chunk con metadata.</span>
 <span class="k">import</span> re
 
+<span class="k">def</span> <span class="f">split_max_tokens</span>(texto: str, max_tokens=800, overlap=100) -> list[str]:
+    <span class="c"># Aproxima tokens por palabras (~1 palabra ≈ 1.3 tokens) y corta con solape.</span>
+    palabras = texto.<span class="f">split</span>()
+    tam = <span class="f">int</span>(max_tokens / 1.3)
+    paso = <span class="f">max</span>(1, tam - <span class="f">int</span>(overlap / 1.3))
+    <span class="k">return</span> [<span class="s">" "</span>.<span class="f">join</span>(palabras[i : i + tam]) <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(0, <span class="f">len</span>(palabras), paso)] <span class="k">or</span> [texto]
+
 <span class="k">def</span> <span class="f">chunk_markdown</span>(texto: str, fuente: str) -> list[dict]:
+    <span class="c"># (?=...) = lookahead: re.split corta ANTES de cada '## '/'### ' sin borrar el header del chunk.</span>
     secciones = re.<span class="f">split</span>(<span class="s">r"\n(?=#{2,3} )"</span>, texto)
     chunks = []
     <span class="k">for</span> sec <span class="k">in</span> secciones:
@@ -787,56 +797,65 @@
               </li>
             </ul>
           </div>
-          <pre><code>results = collection.<span class="f">query</span>(
-    query_texts=[pregunta],
-    n_results=4,
-)
+          <pre><code><span class="c"># pip install chromadb</span>
+<span class="k">import</span> chromadb
+<span class="k">import</span> anthropic
 
-<span class="c"># Chroma devuelve distancia coseno:</span>
-<span class="c"># similitud = 1 - distancia</span>
-hits = [
-    (doc, meta)
-    <span class="k">for</span> doc, meta, dist <span class="k">in</span> <span class="f">zip</span>(
-        results[<span class="s">"documents"</span>][0],
-        results[<span class="s">"metadatas"</span>][0],
-        results[<span class="s">"distances"</span>][0],
+chroma = chromadb.<span class="f">PersistentClient</span>(<span class="s">"./rag_db"</span>)
+collection = chroma.<span class="f">get_or_create_collection</span>(<span class="s">"docs"</span>)
+client = anthropic.<span class="f">Anthropic</span>()  <span class="c"># el mismo cliente para todo el archivo</span>
+UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 preguntas reales.</span>
+
+<span class="k">def</span> <span class="f">responder</span>(pregunta: str) -> str:
+    results = collection.<span class="f">query</span>(
+        query_texts=[pregunta],
+        n_results=4,
     )
-    <span class="k">if</span> 1 - dist >= UMBRAL  <span class="c"># calibrado, no adivinado</span>
-]
-<span class="k">if</span> <span class="k">not</span> hits:
-    <span class="k">return</span> <span class="s">"No tengo evidencia para responder."</span></code></pre>
+    <span class="c"># [0] = la 1ª (y única) query del batch: Chroma devuelve una lista por query_text.</span>
+    <span class="c"># Chroma devuelve distancia coseno: similitud = 1 - distancia</span>
+    hits = [
+        {**meta, <span class="s">"texto"</span>: doc}
+        <span class="k">for</span> doc, meta, dist <span class="k">in</span> <span class="f">zip</span>(
+            results[<span class="s">"documents"</span>][0],
+            results[<span class="s">"metadatas"</span>][0],
+            results[<span class="s">"distances"</span>][0],
+        )
+        <span class="k">if</span> 1 - dist >= UMBRAL  <span class="c"># calibrado, no adivinado</span>
+    ]
+    <span class="k">if</span> <span class="k">not</span> hits:
+        <span class="k">return</span> <span class="s">"No tengo evidencia para responder."</span>
+    <span class="c"># ...la generación con citas continúa en la slide 11, dentro de responder().</span></code></pre>
         </div>
       </section>
 
       <!-- SLIDE 11: generación con citas -->
       <section class="slide">
         <h2>Generación con citas obligatorias</h2>
-        <pre><code><span class="k">import</span> anthropic
+        <pre><code>    <span class="c"># ...seguimos dentro de responder(pregunta), ya con los hits del retrieval:</span>
+    SYSTEM = (
+        <span class="s">"Responde SOLO con el contexto provisto. "</span>
+        <span class="s">"Cita cada afirmación con su marcador [n]. "</span>
+        <span class="s">"Si el contexto no alcanza, responde exactamente: "</span>
+        <span class="s">"'No tengo evidencia para responder.'"</span>
+    )
 
-client = anthropic.<span class="f">Anthropic</span>()
+    contexto = <span class="s">"\n\n"</span>.<span class="f">join</span>(
+        <span class="s">f"[{i + 1}] ({c['fuente']} § {c['seccion']})\n{c['texto']}"</span>
+        <span class="k">for</span> i, c <span class="k">in</span> <span class="f">enumerate</span>(hits)
+    )
 
-SYSTEM = (
-    <span class="s">"Responde SOLO con el contexto provisto. "</span>
-    <span class="s">"Cita cada afirmación con su marcador [n]. "</span>
-    <span class="s">"Si el contexto no alcanza, responde exactamente: "</span>
-    <span class="s">"'No tengo evidencia para responder.'"</span>
-)
+    resp = client.messages.<span class="f">create</span>(
+        model=<span class="s">"claude-sonnet-4-6"</span>,
+        max_tokens=1024,
+        system=SYSTEM,
+        messages=[{
+            <span class="s">"role"</span>: <span class="s">"user"</span>,
+            <span class="s">"content"</span>: <span class="s">f"Contexto:\n{contexto}\n\nPregunta: {pregunta}"</span>,
+        }],
+    )
+    <span class="k">return</span> resp.content[0].text  <span class="c"># "...el timeout default es 30s [2]."</span>
 
-contexto = <span class="s">"\n\n"</span>.<span class="f">join</span>(
-    <span class="s">f"[{i + 1}] ({c['fuente']} § {c['seccion']})\n{c['texto']}"</span>
-    <span class="k">for</span> i, c <span class="k">in</span> <span class="f">enumerate</span>(hits)
-)
-
-resp = client.messages.<span class="f">create</span>(
-    model=<span class="s">"claude-sonnet-4-6"</span>,
-    max_tokens=1024,
-    system=SYSTEM,
-    messages=[{
-        <span class="s">"role"</span>: <span class="s">"user"</span>,
-        <span class="s">"content"</span>: <span class="s">f"Contexto:\n{contexto}\n\nPregunta: {pregunta}"</span>,
-    }],
-)
-<span class="f">print</span>(resp.content[0].text)  <span class="c"># "...el timeout default es 30s [2]."</span></code></pre>
+<span class="f">print</span>(<span class="f">responder</span>(<span class="s">"¿Cuál es el timeout default?"</span>))  <span class="c"># o input("> ")</span></code></pre>
       </section>
 
       <!-- SLIDE 12: ejercicio en vivo -->

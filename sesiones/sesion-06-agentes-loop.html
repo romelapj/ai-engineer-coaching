@@ -622,13 +622,14 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
 <span class="k">for</span> step <span class="k">in</span> <span class="f">range</span>(MAX_STEPS):          <span class="c"># presupuesto, no while True</span>
     resp = client.messages.<span class="f">create</span>(
         model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=4096,
-        tools=TOOLS, messages=messages,
+        tools=TOOLS,  <span class="c"># ← la lista TOOLS se define en la slide 9 (Tool bien diseñada)</span>
+        messages=messages,
     )
     messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: resp.content})
     <span class="k">if</span> resp.stop_reason != <span class="s">"tool_use"</span>:
         <span class="k">break</span>                            <span class="c"># 1. DECIDE: el modelo terminó</span>
     results = [{<span class="s">"type"</span>: <span class="s">"tool_result"</span>, <span class="s">"tool_use_id"</span>: b.id,
-                <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}   <span class="c"># 2. EJECUTA</span>
+                <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}   <span class="c"># 2. EJECUTA — run_tool también en la slide 9</span>
                <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
     messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: results})  <span class="c"># 3. OBSERVA → 4. REPITE</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
@@ -679,7 +680,10 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
       <!-- SLIDE 9: código de tools -->
       <section class="slide">
         <h2>Tool bien diseñada — descripción y error</h2>
-        <pre><code>TOOLS = [{
+        <pre><code><span class="k">import</span> httpx  <span class="c"># pip install httpx</span>
+<span class="k">from</span> markdownify <span class="k">import</span> markdownify <span class="k">as</span> to_markdown  <span class="c"># pip install markdownify</span>
+
+TOOLS = [{
     <span class="s">"name"</span>: <span class="s">"fetch_page"</span>,
     <span class="s">"description"</span>: (<span class="s">"Descarga una URL y devuelve su texto en markdown "</span>
         <span class="s">"(máx 8.000 chars). Úsala DESPUÉS de search_web, con una URL "</span>
@@ -692,12 +696,18 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
 <span class="k">def</span> <span class="f">fetch_page</span>(url: str) -&gt; str:
     <span class="k">try</span>:
         r = httpx.<span class="f">get</span>(url, timeout=10, follow_redirects=<span class="k">True</span>)
-        r.<span class="f">raise_for_status</span>()
+        r.<span class="f">raise_for_status</span>()  <span class="c"># 4xx/5xx → lanza httpx.HTTPStatusError (cae al except)</span>
         <span class="k">return</span> <span class="f">to_markdown</span>(r.text)[:8000]   <span class="c"># truncar: el contexto es presupuesto</span>
     <span class="k">except</span> httpx.HTTPStatusError <span class="k">as</span> e:
         <span class="c"># error INFORMATIVO: dice qué pasó y qué hacer después</span>
         <span class="k">return</span> (<span class="k">f</span><span class="s">"ERROR {e.response.status_code} al abrir {url}. "</span>
-                <span class="s">"Prueba otra URL de los resultados de búsqueda."</span>)</code></pre>
+                <span class="s">"Prueba otra URL de los resultados de búsqueda."</span>)
+
+<span class="c"># mismo patrón de dispatch que en la S03, con la tool de hoy</span>
+TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
+
+<span class="k">def</span> <span class="f">run_tool</span>(name: str, args: dict) -> str:
+    <span class="k">return</span> TOOLS_MAP[name](**args)</code></pre>
       </section>
 
       <!-- SLIDE 10: stopping conditions -->
@@ -736,7 +746,13 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
             </tr>
             <tr>
               <td>Timeout de reloj</td>
-              <td><code>time.monotonic() - t0 &gt; 120</code></td>
+              <td>
+                <code>import time</code><br />
+                <code>t0 = time.monotonic()</code>
+                <span class="muted">(antes del loop)</span><br />
+                <code>time.monotonic() - t0 &gt; 120</code>
+              </td>
+
               <td>Protege contra tools lentas (red, scraping).</td>
             </tr>
             <tr>

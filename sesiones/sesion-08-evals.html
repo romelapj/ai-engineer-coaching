@@ -633,6 +633,9 @@
 
 client = anthropic.<span class="f">Anthropic</span>()
 
+PROMPT_EXTRACTOR = <span class="s">"Extrae de la factura un JSON con campos total (número) y moneda (código ISO). Responde SOLO el JSON."</span>
+FACTURA_EJEMPLO = <span class="s">"""Factura N° 0042 — Servicios cloud marzo. Total: $1.250,50 COP"""</span>
+
 <span class="k">def</span> <span class="f">test_extrae_factura</span>():
     resp = client.messages.<span class="f">create</span>(
         model=<span class="s">"claude-sonnet-4-6"</span>,
@@ -774,6 +777,12 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
         <span class="k">env</span>:
           <span class="k">ANTHROPIC_API_KEY</span>: ${{ secrets.ANTHROPIC_API_KEY }}</code></pre>
         <ul class="clean" style="margin-top: 1rem">
+          <li>
+            <strong>Primera vez con GitHub Actions</strong>: este YAML va en
+            <code>.github/workflows/</code>, y <code>${{ secrets.X }}</code> lee
+            un secret que configuras una vez en Settings → Secrets and variables
+            → Actions del repo.
+          </li>
           <li>
             Dos niveles: asserts deterministas
             <strong>bloquean siempre</strong>; el score con judge bloquea por

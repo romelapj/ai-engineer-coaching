@@ -758,7 +758,8 @@ resp = client.messages.<span class="f">create</span>(
             <p class="muted">
               Ni <code>temperature=0</code> garantiza salidas idénticas (el
               cómputo en GPU por lotes no es determinista). Diseña tests
-              tolerantes y usa structured outputs cuando el formato importa.
+              tolerantes y usa structured outputs (lo veremos en la Sesión 03)
+              cuando el formato importa.
             </p>
           </div>
         </div>
@@ -796,7 +797,9 @@ resp = client.messages.<span class="f">create</span>(
               </li>
               <li>
                 Similitud coseno = coseno del ángulo entre vectores: 1 ≈ mismo
-                significado, ~0 = sin relación.
+                significado, ~0 = sin relación. En código,
+                <code>dot / (norm·norm)</code> es literalmente ese coseno del
+                ángulo entre <code>a</code> y <code>b</code>.
               </li>
               <li>
                 Es la base de RAG, búsqueda semántica, deduplicación y
@@ -809,17 +812,22 @@ resp = client.messages.<span class="f">create</span>(
               </li>
             </ul>
           </div>
-          <pre><code><span class="k">import</span> numpy <span class="k">as</span> np
+          <pre><code><span class="c"># pip install numpy voyageai</span>
+<span class="k">import</span> numpy <span class="k">as</span> np
+<span class="k">import</span> voyageai
 
 <span class="k">def</span> <span class="f">cos_sim</span>(a, b):
-    <span class="k">return</span> np.<span class="f">dot</span>(a, b) / (
-        np.linalg.<span class="f">norm</span>(a) * np.linalg.<span class="f">norm</span>(b)
+    <span class="k">return</span> np.<span class="f">dot</span>(a, b) / (              <span class="c"># producto punto</span>
+        np.linalg.<span class="f">norm</span>(a) * np.linalg.<span class="f">norm</span>(b)  <span class="c"># longitud del vector</span>
     )
 
-<span class="c"># "pagar con tarjeta" vs "checkout con visa"</span>
-<span class="c"># → ~0.83  (cercanas)</span>
-<span class="c"># "pagar con tarjeta" vs "receta de arepas"</span>
-<span class="c"># → ~0.12  (nada que ver)</span></code></pre>
+<span class="c"># genera embeddings reales (necesita VOYAGE_API_KEY en el entorno)</span>
+vo = voyageai.<span class="f">Client</span>()
+textos = [<span class="s">"pagar con tarjeta"</span>, <span class="s">"checkout con visa"</span>, <span class="s">"receta de arepas"</span>]
+emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"</span>).embeddings
+
+<span class="f">print</span>(<span class="f">cos_sim</span>(emb[0], emb[1]))  <span class="c"># tarjeta vs visa   → ~0.83 (cercanas)</span>
+<span class="f">print</span>(<span class="f">cos_sim</span>(emb[0], emb[2]))  <span class="c"># tarjeta vs arepas → ~0.12 (nada que ver)</span></code></pre>
         </div>
       </section>
 
@@ -853,7 +861,8 @@ resp = client.messages.<span class="f">create</span>(
           </li>
           <li>
             <strong>Paso 5 (bonus):</strong> toma 2 frases del mismo tema y 1 de
-            otro, genera sus embeddings (Voyage o
+            otro, genera sus embeddings (reutiliza el snippet de la slide
+            "Embeddings y similitud coseno": <code>voyageai</code> o
             <code>sentence-transformers</code>) y calcula la
             <code>cos_sim</code>
             entre pares — comprueba que las del mismo tema puntúan más alto. Es
@@ -984,9 +993,13 @@ resp = client.messages.<span class="f">create</span>(
           </p>
           <p style="margin-top: 0.8rem">
             <strong>Parte 2 — Embeddings:</strong> genera embeddings para 20
-            frases (mezcla 3–4 temas distintos), calcula la similitud coseno
-            entre todos los pares y visualiza los más cercanos: heatmap con
-            matplotlib o un top-10 de pares ordenado.
+            frases (mezcla 3–4 temas distintos) reutilizando el snippet de la
+            slide "Embeddings y similitud coseno" (<code>voyage-3.5</code> o
+            <code>sentence-transformers all-MiniLM-L6-v2</code>), calcula la
+            similitud coseno entre todos los pares y visualiza los más cercanos:
+            un top-10 de pares ordenado o, si quieres ir más lejos, un heatmap
+            con matplotlib (<code>pip install matplotlib</code>, no visto en el
+            programa).
           </p>
           <p class="muted" style="margin-top: 0.8rem">
             Criterios: corre con un solo comando, README con 3 hallazgos que te

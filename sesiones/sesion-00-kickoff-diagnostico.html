@@ -777,7 +777,7 @@ resp = client.messages.<span class="f">create</span>(
     ],
 )
 
-<span class="f">print</span>(resp.content[0].text)
+<span class="f">print</span>(resp.content[0].text)  <span class="c"># content es una LISTA de bloques; [0].text = el texto del primero (anatomía completa en Sesión 02)</span>
 <span class="f">print</span>(<span class="s">f"tokens → in: {resp.usage.input_tokens}, out: {resp.usage.output_tokens}"</span>)</code></pre>
         <p class="muted" style="margin-top: 1rem">
           Fíjate en <code>resp.usage</code>: desde el día 1 medimos tokens,
@@ -804,6 +804,10 @@ resp = client.messages.<span class="f">create</span>(
               <li>Llamar a <code>claude-sonnet-4-6</code> con el SDK</li>
               <li>Imprimir la respuesta + tokens de entrada y salida</li>
             </ul>
+            <pre><code><span class="k">import</span> sys
+
+pregunta = sys.argv[1]  <span class="c"># argumentos de la terminal; [0] es el nombre del script</span>
+sys.<span class="f">exit</span>(1)             <span class="c"># exit code ≠ 0 = terminó con error (0 = todo bien)</span></code></pre>
           </div>
           <div class="card">
             <h3>Casos que debe sobrevivir</h3>

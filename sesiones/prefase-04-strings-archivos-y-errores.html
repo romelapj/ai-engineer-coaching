@@ -488,6 +488,7 @@ correo = <span class="s">"Ada@Ejemplo.COM"</span>
         <pre><code><span class="k">from</span> pathlib <span class="k">import</span> Path
 
 base = <span class="f">Path</span>(<span class="s">"datos"</span>)
+base.<span class="f">mkdir</span>(exist_ok=<span class="k">True</span>)          <span class="c"># crea la carpeta datos/ si no existe</span>
 archivo = base / <span class="s">"usuarios.csv"</span>      <span class="c"># datos/usuarios.csv</span>
 <span class="f">print</span>(archivo.<span class="f">exists</span>(), archivo.suffix)   <span class="c"># False .csv</span>
 
@@ -508,6 +509,7 @@ archivo = base / <span class="s">"usuarios.csv"</span>      <span class="c"># da
         <pre><code><span class="k">from</span> pathlib <span class="k">import</span> Path
 
 ruta = <span class="f">Path</span>(<span class="s">"eventos.log"</span>)
+ruta.<span class="f">write_text</span>(<span class="s">"linea 1\n\nlinea 2\n"</span>, encoding=<span class="s">"utf-8"</span>)  <span class="c"># crea el log de ejemplo</span>
 validas = 0
 <span class="k">with</span> ruta.<span class="f">open</span>(encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
     <span class="k">for</span> linea <span class="k">in</span> f:                 <span class="c"># streaming: una linea a la vez</span>
@@ -550,7 +552,7 @@ salida = json.<span class="f">dumps</span>(dato, indent=2, ensure_ascii=<span cl
 <span class="k">from</span> io <span class="k">import</span> StringIO
 
 datos = <span class="s">"nombre,edad\nAda,36\nAlan,41\n"</span>
-lector = csv.<span class="f">DictReader</span>(<span class="f">StringIO</span>(datos))
+lector = csv.<span class="f">DictReader</span>(<span class="f">StringIO</span>(datos))  <span class="c"># StringIO: envuelve el string como objeto tipo archivo; con un archivo real pasas f directamente</span>
 <span class="k">for</span> fila <span class="k">in</span> lector:
     <span class="f">print</span>(fila[<span class="s">"nombre"</span>], <span class="f">int</span>(fila[<span class="s">"edad"</span>]))   <span class="c"># Ada 36 / Alan 41</span>
 <span class="c"># DictReader usa la primera fila como claves; cada fila es un dict</span></code></pre>
@@ -641,7 +643,8 @@ descartadas = 0
             <ul class="clean">
               <li>
                 Puedes definir las tuyas:
-                <code>class DatosInvalidos(Exception): pass</code>.
+                <code>class DatosInvalidos(Exception): pass</code> (la sintaxis
+                <code>class</code> la vemos en la próxima sesión, N05).
               </li>
               <li>
                 Captura lo <strong>más específico</strong> que puedas

@@ -774,8 +774,14 @@
         <h2>La palanca #1 en código: prompt caching</h2>
         <pre><code><span class="c"># Asistente de soporte: RAG + caching del prefijo estable</span>
 <span class="k">import</span> anthropic
+<span class="k">from</span> pathlib <span class="k">import</span> Path
 
 client = anthropic.<span class="f">Anthropic</span>()
+
+pregunta = <span class="s">"¿Cuál es la política de reembolsos?"</span>  <span class="c"># en producción viene del request</span>
+resultados = collection.<span class="f">query</span>(query_texts=[pregunta], n_results=4)  <span class="c"># tu retrieval de la sesión 04</span>
+chunks = <span class="s">"\n\n"</span>.<span class="f">join</span>(resultados[<span class="s">"documents"</span>][0])  <span class="c"># los mismos hits que arma responder() en la S04</span>
+POLITICAS_Y_EJEMPLOS = Path(<span class="s">"politicas.md"</span>).<span class="f">read_text</span>()  <span class="c"># ≥1024 tokens o el cache no se activa</span>
 
 resp = client.messages.<span class="f">create</span>(
     model=<span class="s">"claude-sonnet-4-6"</span>,

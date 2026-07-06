@@ -499,6 +499,8 @@
                 <span class="k">yield</span> linea             <span class="c"># entrega sin acumular</span>
 
 <span class="c"># Memoria constante aunque el archivo sea enorme:</span>
+<span class="k">from</span> pathlib <span class="k">import</span> Path
+<span class="f">Path</span>(<span class="s">"datos.log"</span>).<span class="f">write_text</span>(<span class="s">"linea ok\n# comentario\n\notra linea\n"</span>, encoding=<span class="s">"utf-8"</span>)  <span class="c"># crea el archivo de ejemplo (pathlib de N04)</span>
 total = <span class="f">sum</span>(1 <span class="k">for</span> _ <span class="k">in</span> <span class="f">lineas_validas</span>(<span class="s">"datos.log"</span>))
 
 <span class="c"># generator expression: sin lista intermedia</span>

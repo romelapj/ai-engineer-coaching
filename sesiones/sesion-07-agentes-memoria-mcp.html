@@ -547,7 +547,8 @@
               </li>
             </ul>
             <p class="muted" style="margin-top: 0.8rem">
-              Bonus: prompt caching baja las relecturas a ~0.1× el precio.
+              Bonus: prompt caching baja las relecturas a ~0.1× el precio (cómo
+              activarlo, en la Sesión 09).
             </p>
           </div>
         </div>
@@ -717,6 +718,7 @@ resp = client.messages.<span class="f">create</span>(
     )
     <span class="k">return</span> resp.content[0].text
 
+logs = <span class="f">open</span>(<span class="s">"app.log"</span>).<span class="f">read</span>()  <span class="c"># cualquier texto de logs que quieras analizar</span>
 hallazgos = <span class="f">subagente</span>(
     tarea=<span class="s">f"Analiza estos logs y lista los errores 5xx con su causa probable:\n{logs}"</span>,
     rol=<span class="s">"Eres analista de logs de producción. Devuelve solo hallazgos, sin paja."</span>,
@@ -823,17 +825,18 @@ hallazgos = <span class="f">subagente</span>(
 <span class="k">from</span> mcp.server.fastmcp <span class="k">import</span> FastMCP
 
 mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
+NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el default mutable es un bug"</span>]
 
 <span class="c"># tool: el modelo decide cuándo llamarla</span>
 <span class="k">@mcp.tool</span>()
 <span class="k">def</span> <span class="f">buscar_notas</span>(query: str) -> str:
     <span class="s">"""Busca en las notas técnicas del equipo."""</span>
-    <span class="k">return</span> db.<span class="f">search</span>(query)
+    <span class="k">return</span> <span class="s">"\n"</span>.<span class="f">join</span>(n <span class="k">for</span> n <span class="k">in</span> NOTAS <span class="k">if</span> query <span class="k">in</span> n)
 
 <span class="c"># resource: la app lo adjunta como contexto</span>
 <span class="k">@mcp.resource</span>(<span class="s">"notas://recientes"</span>)
 <span class="k">def</span> <span class="f">notas_recientes</span>() -> str:
-    <span class="k">return</span> db.<span class="f">ultimas</span>(10)
+    <span class="k">return</span> <span class="s">"\n"</span>.<span class="f">join</span>(NOTAS[-10:])
 
 <span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
     mcp.<span class="f">run</span>()  <span class="c"># transporte stdio por defecto</span></code></pre>

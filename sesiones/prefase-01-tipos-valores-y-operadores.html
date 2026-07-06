@@ -520,7 +520,8 @@
         <h2>Conversión SIEMPRE explícita</h2>
         <pre><code><span class="c"># El dato que nos acompaña hoy: una linea de un CSV de precios</span>
 fila = <span class="s">"café,1990,"</span>              <span class="c"># nombre, precio (texto), stock (vacio)</span>
-nombre, precio_str, stock_str = fila.<span class="f">split</span>(<span class="s">","</span>)
+<span class="c"># asignar 3 nombres de una vez = desempaquetado (lo formalizamos en unas slides)</span>
+nombre, precio_str, stock_str = fila.<span class="f">split</span>(<span class="s">","</span>)  <span class="c"># split(",") corta por comas -&gt; ['café','1990',''] (a fondo en N04)</span>
 
 <span class="c"># print(precio_str + 100)       # TypeError: no se mezcla str con int</span>
 precio = <span class="f">int</span>(precio_str)          <span class="c"># conversion explicita: '1990' -&gt; 1990</span>
@@ -551,6 +552,8 @@ activos = [<span class="k">True</span>, <span class="k">False</span>, <span clas
           (como el <code>precio</code> de la fila) usa enteros en centavos o
           <code>decimal.Decimal</code>. Recuerda: <code>/</code> siempre da
           float, <code>//</code> es división entera, <code>%</code> es el resto.
+          Y <code>activos</code> es una lista (colección ordenada — la vemos
+          mañana en N02).
         </p>
       </section>
 
@@ -624,7 +627,7 @@ x = 42
         <pre><code><span class="k">def</span> <span class="f">resumen</span>(nombres):
     <span class="k">if</span> <span class="k">not</span> nombres:                 <span class="c"># None o lista vacia</span>
         <span class="k">return</span> <span class="s">"sin datos"</span>
-    <span class="k">return</span> <span class="s">", "</span>.<span class="f">join</span>(nombres)
+    <span class="k">return</span> <span class="s">", "</span>.<span class="f">join</span>(nombres)  <span class="c"># join es método del SEPARADOR, no de la lista — al revés que en JS (N04)</span>
 
 <span class="f">print</span>(<span class="f">resumen</span>([]))                  <span class="c"># 'sin datos'</span>
 <span class="f">print</span>(<span class="f">resumen</span>([<span class="s">"Ana"</span>, <span class="s">"Beto"</span>]))     <span class="c"># 'Ana, Beto'</span>
@@ -636,7 +639,9 @@ stock = stock_str <span class="k">or</span> <span class="s">"sin stock"</span>  
           Cuidado con la trampa: <code>0</code> es falsy, así que
           <code>stock or 10</code> convierte un <code>0</code> legítimo (un
           stock agotado) en <code>10</code>. Cuando el cero es un valor válido,
-          usa <code>stock if stock is not None else 10</code>.
+          usa <code>stock if stock is not None else 10</code> (se lee: usa
+          <code>stock</code>, salvo que sea <code>None</code>, entonces
+          <code>10</code>).
         </p>
       </section>
 
@@ -654,7 +659,8 @@ stock = stock_str <span class="k">or</span> <span class="s">"sin stock"</span>  
             <ul class="clean">
               <li>
                 <code>int</code>, <code>float</code>, <code>str</code>,
-                <code>bool</code>, <code>tuple</code>, <code>frozenset</code>.
+                <code>bool</code>, <code>tuple</code>,
+                <code>frozenset</code> (un <code>set</code> inmutable).
               </li>
               <li>
                 Una vez creados, <strong>no</strong> cambian. Pasarlos a una
@@ -676,7 +682,9 @@ stock = stock_str <span class="k">or</span> <span class="s">"sin stock"</span>  
         </div>
         <p class="muted" style="margin-top: 1.2rem">
           Es la causa #1 de bugs sutiles para quien viene de lenguajes con otra
-          semántica de copia.
+          semántica de copia. Las estructuras (<code>list</code>,
+          <code>dict</code>, <code>set</code>, <code>tuple</code>) las vemos a
+          fondo mañana en N02; hoy solo importa de qué lado de la línea caen.
         </p>
       </section>
 
@@ -684,10 +692,10 @@ stock = stock_str <span class="k">or</span> <span class="s">"sin stock"</span>  
         <h2>Mutabilidad: el bug del aliasing</h2>
         <pre><code>a = [1, 2, 3]
 b = a                  <span class="c"># b NO es una copia: misma lista</span>
-b.<span class="f">append</span>(4)
+b.<span class="f">append</span>(4)             <span class="c"># .append añade al final (métodos de lista en N02)</span>
 <span class="f">print</span>(a)               <span class="c"># [1, 2, 3, 4]  &lt;- a tambien cambio</span>
 
-c = a[:]               <span class="c"># ahora si, una copia superficial</span>
+c = <span class="f">list</span>(a)            <span class="c"># ahora si, una copia superficial (list() copia)</span>
 c.<span class="f">append</span>(99)
 <span class="f">print</span>(a)               <span class="c"># [1, 2, 3, 4]  &lt;- a intacta</span>
 
@@ -732,7 +740,7 @@ m = 1000
 x, y = y, x                 <span class="c"># swap, sin variable temporal</span>
 <span class="f">print</span>(x, y)                 <span class="c"># 20 10</span>
 
-punto = (4, 7)
+punto = (4, 7)              <span class="c"># (4, 7) = tupla: secuencia inmutable de longitud fija (a fondo en N02)</span>
 col, fila = punto           <span class="c"># nombres con sentido &gt; punto[0], punto[1]</span>
 
 primero, *resto = [1, 2, 3, 4]
@@ -763,7 +771,9 @@ anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span
             <p class="muted">
               Dada una lista de <code>(producto, precio, cantidad)</code>,
               imprime una tabla alineada con f-strings: precios a 2 decimales,
-              totales con separador de miles.
+              totales con separador de miles. Te damos el <code>for</code> hecho
+              — <code>for producto, precio, cantidad in filas:</code> (llega en
+              N03); tú escribes solo la f-string de cada fila.
             </p>
           </div>
         </div>

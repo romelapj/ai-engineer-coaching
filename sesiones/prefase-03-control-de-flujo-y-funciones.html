@@ -485,7 +485,7 @@
 
 <span class="c"># saltar elementos invalidos sin anidar ifs:</span>
 <span class="k">for</span> linea <span class="k">in</span> [<span class="s">"ok"</span>, <span class="s">""</span>, <span class="s">"dato"</span>, <span class="s">"  "</span>]:
-    <span class="k">if</span> <span class="k">not</span> linea.<span class="f">strip</span>():
+    <span class="k">if</span> <span class="k">not</span> linea.<span class="f">strip</span>():   <span class="c"># strip() quita espacios -&gt; "" es falsy (métodos de str a fondo en N04)</span>
         <span class="k">continue</span>              <span class="c"># ignora vacias</span>
     <span class="f">print</span>(linea)</code></pre>
       </section>
@@ -676,6 +676,9 @@ valores = [1, 2, 3]
     <span class="k">return</span> [<span class="f">func</span>(x) <span class="k">for</span> x <span class="k">in</span> datos]
 
 <span class="f">print</span>(<span class="f">aplicar</span>(str.upper, [<span class="s">"a"</span>, <span class="s">"b"</span>]))   <span class="c"># ['A', 'B']</span>
+
+<span class="f">print</span>(<span class="f">list</span>(<span class="f">map</span>(str.upper, [<span class="s">"a"</span>, <span class="s">"b"</span>])))          <span class="c"># ['A', 'B']  (map devuelve un ITERADOR: list() lo materializa)</span>
+<span class="f">print</span>(<span class="f">list</span>(<span class="f">filter</span>(<span class="k">lambda</span> n: n &gt; 0, [3, -1, 5])))   <span class="c"># [3, 5]  (filter tambien devuelve iterador)</span>
 
 productos = [(<span class="s">"taza"</span>, 5), (<span class="s">"libro"</span>, 12), (<span class="s">"pin"</span>, 2)]
 por_precio = <span class="f">sorted</span>(productos, key=<span class="k">lambda</span> p: p[1])

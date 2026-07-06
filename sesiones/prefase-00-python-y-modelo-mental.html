@@ -573,11 +573,13 @@ ValueError: invalid literal for int() with base 10: <span class="s">''</span></c
 &gt;&gt;&gt; <span class="f">type</span>(precio)
 &lt;class <span class="s">'int'</span>&gt;
 &gt;&gt;&gt; texto = <span class="s">"1990"</span>
-&gt;&gt;&gt; <span class="f">type</span>(texto), <span class="f">repr</span>(texto)
-(&lt;class <span class="s">'str'</span>&gt;, <span class="s">"'1990'"</span>)
+&gt;&gt;&gt; <span class="f">type</span>(texto)
+&lt;class <span class="s">'str'</span>&gt;
+&gt;&gt;&gt; <span class="f">repr</span>(texto)
+<span class="s">"'1990'"</span>
 &gt;&gt;&gt; precio == texto         <span class="c"># int vs str: nunca iguales</span>
 <span class="k">False</span>
-&gt;&gt;&gt; <span class="f">dir</span>(texto)[-5:]         <span class="c"># explorar qué sabe hacer un str</span>
+&gt;&gt;&gt; <span class="f">dir</span>(texto)[-5:]         <span class="c"># [-5:] = últimos 5 elementos (slicing, lo vemos en N02)</span>
 [<span class="s">'swapcase'</span>, <span class="s">'title'</span>, <span class="s">'translate'</span>, <span class="s">'upper'</span>, <span class="s">'zfill'</span>]</code></pre>
         <p class="muted" style="margin-top: 1.2rem">
           No escribas 40 líneas y reces: carga <strong>un</strong> dato y
@@ -627,17 +629,22 @@ ValueError: invalid literal for int() with base 10: <span class="s">''</span></c
       <section class="slide">
         <h2>None y la verdad sobre la ausencia</h2>
         <pre><code><span class="k">def</span> <span class="f">saludar</span>(nombre):
-    <span class="f">print</span>(<span class="s">f"Hola, &#123;nombre&#125;"</span>)
+    <span class="f">print</span>(<span class="s">f"Hola, &#123;nombre&#125;"</span>)   <span class="c"># f"..." interpola &#123;nombre&#125; (detalle en N01)</span>
     <span class="c"># sin return explícito</span>
 
 resultado = <span class="f">saludar</span>(<span class="s">"Ada"</span>)
 <span class="f">print</span>(resultado)            <span class="c"># None</span>
 <span class="f">print</span>(resultado <span class="k">is</span> <span class="k">None</span>)    <span class="c"># True  <- la forma idiomática</span>
 
+<span class="c"># dict: pares clave->valor (a fondo en N02)</span>
 config = &#123;<span class="s">"timeout"</span>: 30&#125;
 valor = config.<span class="f">get</span>(<span class="s">"reintentos"</span>)   <span class="c"># clave ausente -> None, no error</span>
 <span class="f">print</span>(valor <span class="k">is</span> <span class="k">None</span>)        <span class="c"># True</span></code></pre>
         <p class="muted" style="margin-top: 1.2rem">
+          <code>def nombre(params):</code> + cuerpo indentado define una
+          función; la sintaxis completa en N03.
+        </p>
+        <p class="muted">
           <code>None</code> es el objeto singleton que representa "ausencia de
           valor" (como <code>null</code>/<code>nil</code>, pero es un objeto).
           Se compara con <code>is None</code>, no con <code>== None</code> — el
@@ -676,7 +683,8 @@ valor = config.<span class="f">get</span>(<span class="s">"reintentos"</span>)  
                 espacios.
               </li>
             </ul>
-            <pre><code><span class="k">if</span> activo:
+            <pre><code>activo = <span class="k">True</span>
+<span class="k">if</span> activo:
     <span class="f">print</span>(<span class="s">"dentro"</span>)
 <span class="f">print</span>(<span class="s">"fuera"</span>)</code></pre>
           </div>
@@ -746,7 +754,8 @@ valor = config.<span class="f">get</span>(<span class="s">"reintentos"</span>)  
               <td><code>KeyError</code></td>
               <td><code>d['nope']</code> en un dict normal</td>
               <td>
-                Usa <code>d.get(k, default)</code> o <code>defaultdict</code>.
+                Usa <code>d.get(k, default)</code> (o <code>defaultdict</code>,
+                que verás en N05).
               </td>
             </tr>
             <tr>
@@ -763,7 +772,8 @@ valor = config.<span class="f">get</span>(<span class="s">"reintentos"</span>)  
               <td><code>FileNotFoundError</code></td>
               <td><code>open()</code> con ruta mala</td>
               <td>
-                Usa <code>pathlib</code> y verifica <code>.exists()</code>.
+                Verifica que la ruta exista antes de abrir (con
+                <code>pathlib</code>, lo verás en N04).
               </td>
             </tr>
           </tbody>
@@ -915,6 +925,21 @@ which python                       <span class="c"># debe apuntar dentro de .ven
             verde y el <code>python -c</code> del import no falla. De-riskea el
             "no me corrió nada" antes de que importe en katas con datos reales.
           </p>
+          <pre><code><span class="c"># test_smoke.py  (pytest a fondo en N05)</span>
+<span class="k">import</span> sys
+
+<span class="k">def</span> <span class="f">suma</span>(a, b):
+    <span class="k">return</span> a + b
+
+<span class="k">def</span> <span class="f">test_version</span>():
+    <span class="k">assert</span> sys.version_info &gt;= (3, 10)
+
+<span class="k">def</span> <span class="f">test_pytest_importable</span>():
+    <span class="k">import</span> pytest
+    <span class="k">assert</span> pytest
+
+<span class="k">def</span> <span class="f">test_suma</span>():
+    <span class="k">assert</span> <span class="f">suma</span>(2, 3) == 5</code></pre>
         </div>
       </section>
 
