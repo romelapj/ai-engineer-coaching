@@ -578,6 +578,13 @@ Modelo:
               <code>description</code> e <code>input_schema</code>. La calidad
               de tu tool calling depende más de la descripción que de tu código.
             </p>
+            <p style="margin-top: 0.8rem">
+              <code>input_schema</code> es <strong>JSON Schema</strong> (el
+              estándar de OpenAPI): la firma de tu función traducida a JSON —
+              qué argumentos existen, de qué tipo y cuáles son obligatorios. El
+              modelo lo lee todo: los <code>description</code> y
+              <code>enum</code> de cada propiedad también son prompt.
+            </p>
             <ul class="clean" style="margin-top: 1rem">
               <li>
                 ❌ <code>"orders"</code> / <code>"Gets orders"</code> — el
@@ -609,10 +616,12 @@ tools = [{
     <span class="s">"que el usuario pregunte por una orden. "</span>
     <span class="s">"ID formato ORD-NNNN, p. ej. ORD-8841."</span>
   ),
-  <span class="s">"input_schema"</span>: {
-    <span class="s">"type"</span>: <span class="s">"object"</span>,
-    <span class="s">"properties"</span>: {<span class="s">"order_id"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>}},
-    <span class="s">"required"</span>: [<span class="s">"order_id"</span>],
+  <span class="s">"input_schema"</span>: {      <span class="c"># JSON Schema: el contrato de los args</span>
+    <span class="s">"type"</span>: <span class="s">"object"</span>,     <span class="c"># siempre object: viajan como kwargs</span>
+    <span class="s">"properties"</span>: {       <span class="c"># cada parámetro y su tipo JSON</span>
+      <span class="s">"order_id"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>},
+    },
+    <span class="s">"required"</span>: [<span class="s">"order_id"</span>],  <span class="c"># si no está aquí, es opcional</span>
   },
 }]</code></pre>
         </div>
