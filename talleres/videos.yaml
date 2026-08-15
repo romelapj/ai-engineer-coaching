@@ -266,6 +266,117 @@ videos:
     autor: "Python Engineer"
     idioma: "Inglés"
     duracion: "~4 min"
+    resumen: |
+      Cuatro minutos, y la frase más útil está en los primeros veinte segundos:
+      las bases de datos vectoriales levantaron cientos de millones y se las
+      llamó "un nuevo tipo de base de datos para la era de la IA", pero **para
+      muchos proyectos son excesivas, y una base de datos tradicional o incluso
+      un simple array de numpy funcionan perfectamente**. Que eso lo diga un
+      video divulgativo sobre bases vectoriales, en la apertura, dice bastante a
+      su favor.
+
+      **El problema.** La mayor parte de los datos no tienen estructura: posts,
+      imágenes, audio, video. No encajan bien en una tabla relacional. Su
+      ejemplo es claro: para buscar imágenes parecidas en una base relacional
+      terminas asignando etiquetas a mano, porque desde los valores de los
+      píxeles no se puede buscar por parecido. O etiquetas a mano, o encuentras
+      **otra representación** del dato. Esa segunda salida es el embedding.
+
+      **La definición, en dos piezas.** Una base vectorial *indexa y almacena*
+      embeddings para búsqueda rápida por similitud. Y esas dos piezas son
+      distintas:
+
+      Primero, el **embedding**: una lista de números que representa el dato de
+      otra forma, calculada por un modelo de machine learning. Puede ser de una
+      palabra, de una frase entera o de una imagen. Una vez el dato es numérico,
+      encontrar elementos parecidos es medir distancias y buscar los vecinos más
+      cercanos. Avisa de que dibuja el ejemplo en dos dimensiones por comodidad,
+      pero que en la práctica son cientos.
+
+      Segundo, el **índice**, que es la parte que casi nadie menciona: guardar
+      los embeddings no basta. Recorrer miles de vectores calculando distancias
+      una por una sería demasiado lento, así que hay que mapear los vectores a
+      una estructura de datos que acelere la búsqueda. Reconoce que es un campo
+      de investigación en sí mismo y que existen varias formas de construir esos
+      índices, y ahí lo deja.
+
+      **Para qué sirve.** Memoria de largo plazo para modelos de lenguaje,
+      búsqueda semántica (por significado, no por coincidencia exacta de
+      cadenas), búsqueda por parecido en imágenes, audio y video, y motores de
+      recomendación: sugerir artículos parecidos a compras anteriores es
+      exactamente buscar los vecinos más cercanos de un artículo.
+
+      Cierra enumerando opciones: Pinecone, Weaviate, Chroma, Redis, Qdrant,
+      Milvus y Vespa.
+    valioso:
+      - |
+        **La advertencia de apertura**: una base vectorial puede ser excesiva, y
+        un array de numpy puede bastar. Con los 23 chunks del taller, ese es
+        literalmente tu caso; usas Chroma para aprender la mecánica, no porque
+        el volumen lo exija.
+      - |
+        **La separación entre embedding e índice.** Mucha gente conoce solo la
+        primera mitad y cree que una base vectorial es "donde guardo los
+        embeddings". El índice es lo que la convierte en una base de datos y no
+        en una lista.
+      - |
+        **Guardar no es buscar.** Comparar contra todos los vectores uno por uno
+        es correcto y demasiado lento; el índice existe para no hacer eso.
+      - |
+        El recordatorio de que **el dibujo en dos dimensiones es una mentira
+        piadosa**: los vectores reales tienen cientos de dimensiones, donde la
+        intuición geométrica deja de servir.
+      - |
+        **Recomendar y buscar son la misma operación.** "Artículos parecidos a
+        tu última compra" y "chunks parecidos a esta pregunta" son la misma
+        consulta de vecinos más cercanos con distinto nombre comercial.
+    conecta: |
+      Las dos piezas que el video separa son las dos decisiones del día de hoy,
+      y en `crear_coleccion()` ocupan una línea cada una.
+
+      La primera es el **embedder**: Chroma trae uno por defecto y por eso no lo
+      ves escrito, pero está ahí calculando el vector de cada chunk. Es el paso
+      que el video llama "un modelo de machine learning calcula la lista de
+      números".
+
+      La segunda es el **índice**, y aquí el taller dice algo que el video se
+      guarda: `metadata={"hnsw:space": "cosine"}`. HNSW es precisamente una de
+      esas "distintas formas de calcular índices" que él menciona sin nombrar, y
+      `cosine` es la métrica de distancia. Esa línea no es decoración: es la que
+      hace que la fórmula `similitud = 1 - distancia` de `rag.py` signifique
+      algo. Sin ella Chroma indexa con L2 y el umbral de 0.40 pasa a ser un
+      número arbitrario.
+
+      Dicho de otro modo: el video te da el mapa conceptual y el taller te
+      enseña dónde caen las dos coordenadas en tu propio código.
+    reparos: |
+      **Se calla el trade-off más importante de los índices: son aproximados.**
+      Dice que los índices hacen falta para buscar de forma eficiente, y ahí lo
+      deja. Lo que no dice es qué se paga a cambio: HNSW y compañía son
+      algoritmos de vecinos cercanos *aproximados*, y pueden no devolverte el
+      vecino verdadero. Cambias exactitud por velocidad. Esa omisión importa
+      porque es justo lo que se mide en la sesión 05 con recall@k.
+
+      **No menciona la metadata ni el filtrado**, que en un sistema real es la
+      mitad del trabajo. Filtrar por año, por tipo de documento o por permisos
+      de usuario antes de buscar suele mover más la aguja que cambiar de
+      embedder, y es la palanca B del día 9 de la sesión 05.
+
+      **Su mejor idea se queda sin desarrollar.** Abre diciendo que una base
+      vectorial puede ser excesiva y que un array de numpy puede bastar, y luego
+      nunca vuelve a eso: no da ningún criterio de cuándo sí y cuándo no. La
+      regla práctica que falta es sencilla: por debajo de unos pocos miles de
+      vectores, la fuerza bruta con numpy es más rápida de escribir, más fácil
+      de depurar y suficientemente veloz.
+
+      **El dato del "más del 80% de los datos no están estructurados"** circula
+      por todas partes sin una fuente sólida detrás. Es plausible y es
+      irrelevante para tu decisión: lo que importa es si *tus* datos lo están.
+
+      **La lista de opciones está fechada** (el video es de 2023). Falta
+      `pgvector`, que hoy es la respuesta por defecto para mucha gente,
+      precisamente porque evita añadir una base de datos nueva a tu
+      infraestructura.
 
   T-D1OfcDW1M:
     titulo: "What is Retrieval-Augmented Generation (RAG)?"
