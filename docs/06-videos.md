@@ -1,6 +1,6 @@
 # 06 · Videos de los talleres
 
-**Estado:** 2 de 24 con resumen escrito · actualizado el 15 de agosto de 2026
+**Estado:** 3 de 24 con resumen escrito · actualizado el 15 de agosto de 2026
 
 Cada día del taller cierra con la tarjeta de un video: miniatura, título y una
 línea de por qué ese video en ese día. Al hacer clic se abre en una pestaña
@@ -71,7 +71,7 @@ mano.
 | 03 | D5 | [Pydantic is STILL all you need · Jason Liu](https://youtu.be/pZ4DIH2BVqg) | AI Engineer | ~20 min | ⧗ pendiente |
 | 04 | D1 | [The 5 Levels Of Text Splitting For Retrieval](https://youtu.be/8OJC21T2SL4) | Greg Kamradt | ~1 h 10 min | ✅ |
 | 04 | D2 | [Vector Databases simply explained! (Embeddings & Ind](https://youtu.be/dN0lsF2cvm4) | Python Engineer | ~4 min | ✅ |
-| 04 | D3 | [What is Retrieval-Augmented Generation (RAG)?](https://youtu.be/T-D1OfcDW1M) | IBM Technology | ~6 min | ⧗ pendiente |
+| 04 | D3 | [What is Retrieval-Augmented Generation (RAG)?](https://youtu.be/T-D1OfcDW1M) | IBM Technology | ~6 min | ✅ |
 | 04 | D4 | [¿Qué es RAG? Clase con código y ejemplo](https://youtu.be/uAsd9pOIcLg) | EvoAcademy | medio | ⧗ pendiente |
 | 04 | D5 | [Learn RAG From Scratch: Python AI Tutorial](https://youtu.be/sVcwVQRHIc8) | freeCodeCamp.org | ~2 h 30 min | ⧗ pendiente |
 | 05 | D6 | [Top 3 RAG Retrieval Strategies: Sparse, Dense & Hybr](https://youtu.be/r0Dciuq0knU) | IBM Technology | corto | ⧗ pendiente |

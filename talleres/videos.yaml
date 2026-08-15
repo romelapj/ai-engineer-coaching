@@ -383,6 +383,112 @@ videos:
     autor: "IBM Technology"
     idioma: "Inglés"
     duracion: "~6 min"
+    resumen: |
+      Marina Danilevsky, investigadora senior de IBM Research, explica RAG en
+      seis minutos partiendo de una anécdota doméstica que funciona mejor que
+      cualquier diagrama. Sus hijos le preguntan qué planeta del sistema solar
+      tiene más lunas, y ella responde con seguridad: Júpiter, 88 lunas, porque
+      leyó un artículo. Hace treinta años de aquello.
+
+      **Su respuesta tiene dos defectos, y son exactamente los dos de un modelo
+      de lenguaje.** El primero es que **no cita ninguna fuente**: dijo con
+      aplomo "leí un artículo", pero respondió de memoria. El segundo es que
+      **está desactualizada**. Si hubiera parado un momento a mirar una fuente
+      fiable como la NASA, habría dicho Saturno con 146 lunas, y de paso, bromea,
+      no habría revelado cuánto hace que le interesa el espacio.
+
+      **Qué añade la parte de "retrieval-augmented".** En vez de depender solo de
+      lo que el modelo aprendió, se añade un *almacén de contenido*, que puede
+      ser abierto como internet o cerrado como una colección de documentos o de
+      políticas internas. Antes de responder, se recupera de ahí lo relevante a
+      la pregunta. La respuesta deja de ser Júpiter y pasa a ser Saturno.
+
+      **El prompt pasa a tener tres partes**: la instrucción de a qué prestar
+      atención, el contenido recuperado y la pregunta del usuario. Con eso el
+      modelo puede además dar evidencia de por qué respondió lo que respondió.
+
+      **Cómo ataca cada defecto.** Contra la desactualización: ya no hay que
+      reentrenar el modelo cuando aparece información nueva, basta con
+      actualizar el almacén. Contra la falta de fuente: el modelo recibe la
+      instrucción de atender a datos primarios antes de responder y de citarlos,
+      lo que lo hace menos propenso a alucinar porque depende menos de lo que
+      memorizó. Y habilita un comportamiento que ella presenta como deseable y
+      no como fallo: **saber decir "no lo sé"** cuando la pregunta no se puede
+      responder de forma fiable con los datos disponibles, en vez de inventar
+      algo creíble que despiste al usuario.
+
+      **Y reconoce el precio**, en una frase que conviene no pasar por alto: si
+      el recuperador no es lo bastante bueno para darle al modelo el mejor
+      material, una pregunta que **sí** era respondible se queda sin respuesta.
+      Por eso, dice, en IBM trabajan el problema por los dos lados, el
+      recuperador y el generador.
+    valioso:
+      - |
+        **La anécdota de las lunas** deja los dos fallos en un ejemplo que
+        entiende cualquiera: respondió sin fuente y respondió desactualizada. Es
+        la mejor forma que conozco de explicarle RAG a alguien que no programa.
+      - |
+        **La respuesta correcta cambia con el tiempo** (Júpiter, luego Saturno, y
+        seguirá cambiando según se descubran lunas). Es el mejor argumento a
+        favor de RAG frente a reentrenar: actualizas el almacén, no el modelo.
+      - |
+        **El prompt de tres partes**: instrucción, contenido recuperado y
+        pregunta. Esa es toda la arquitectura del paso de generación.
+      - |
+        **"No lo sé" es un resultado deseable, no un fallo.** Es una postura, y
+        es la que hace que un sistema RAG sea auditable en vez de simplemente
+        convincente.
+      - |
+        **La frase más valiosa del video, y casi la última**: un recuperador
+        mediocre convierte preguntas respondibles en "no lo sé". Es el reverso
+        exacto de la ventaja, y casi nadie lo menciona en una intro.
+    conecta: |
+      Las dos ventajas que ella nombra son literalmente las dos que hoy
+      programaste. Los datos frescos son tu `docs/` reindexable, y las fuentes
+      citables son el marcador `[n]` con su `(fuente § sección)`.
+
+      Su prompt de tres partes es tu función `generar()` línea por línea:
+      `SYSTEM_GENERACION` es la instrucción, el contexto numerado es el
+      contenido recuperado y la pregunta del usuario va al final. Cuando veas su
+      diagrama, reconócelo, porque es el código que acabas de escribir.
+
+      Y el "saber decir no lo sé" es el día de hoy con nombre y apellido: tu
+      `UMBRAL = 0.40` y el corto-circuito que devuelve *"No tengo evidencia para
+      responder"* sin llegar a llamar al modelo. Ella lo plantea como una virtud
+      del sistema; tú lo tienes implementado en cuatro líneas.
+
+      Ahora la parte que más te va a servir. Guarda esa frase suya sobre el
+      recuperador mediocre, porque **es el punto de partida entero de la sesión
+      05**. Ella lo enuncia como advertencia teórica en una frase; el taller 05
+      lo reproduce con números en su día 3: el chunk correcto para la pregunta
+      de `sk_test_` sí se recuperó, quedó de cuarto con similitud 0.387, y el
+      umbral lo cortó por trece milésimas mientras dejaba pasar dos chunks
+      irrelevantes. Eso es su advertencia, medida.
+    reparos: |
+      **No dice cómo se recupera, y ahí está todo el trabajo.** "El modelo habla
+      con el almacén de contenido y pide lo relevante" es una caja negra del
+      tamaño de dos sesiones del curso: chunking, embeddings, top-k, umbral,
+      búsqueda léxica, reordenamiento. La palabra "relevante" es justamente la
+      que esconde el problema.
+
+      **Difumina quién decide buscar.** Su diagrama sugiere que el modelo va y
+      consulta el almacén por iniciativa propia. En un pipeline RAG como el de
+      esta sesión, quien busca es **tu código**, siempre, antes de llamar al
+      modelo; el modelo solo recibe el contexto ya recuperado. Que el modelo
+      decida si buscar y qué buscar es otra cosa, y es la sesión 06. Vale la
+      pena tener clara esa frontera desde ahora.
+
+      **No hay una sola métrica en todo el video.** Es una introducción de seis
+      minutos y sería injusto exigírselo, pero conviene salir sabiendo que
+      "mejorar el recuperador", que ella menciona de pasada, no tiene sentido
+      hasta que puedas medirlo.
+
+      **Dice que RAG hace menos probable filtrar datos, y eso solo es media
+      verdad.** Es cierto que el modelo depende menos de lo que memorizó en el
+      entrenamiento. Pero el almacén de contenido introduce un riesgo nuevo que
+      el video no menciona: si ahí dentro hay documentos que este usuario no
+      debería ver, tu RAG se los va a servir con una cita bien formateada. El
+      control de acceso en la recuperación es un problema real y no aparece.
 
   uAsd9pOIcLg:
     titulo: "¿Qué es RAG? Clase con código y ejemplo"
