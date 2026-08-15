@@ -872,6 +872,129 @@
         margin-top: 0.6rem;
       }
 
+      /* ---------- tarjeta de video, al cierre del día ----------
+         Va después del checkpoint a propósito: primero cierras el día, y solo
+         entonces se te ofrece ampliar. Antes competiría con el código.
+         La miniatura manda visualmente (es lo que se reconoce de un vistazo),
+         así que el texto va al lado y no debajo. */
+      a.video-tarjeta {
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1fr);
+        gap: 0 1.5rem;
+        align-items: center;
+        margin-left: var(--margen-paso);
+        margin-top: 1.5rem;
+        padding: 1.25rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      a.video-tarjeta:hover {
+        border-color: var(--acento-borde);
+        background: var(--superficie);
+        text-decoration: none;
+      }
+      .vt-cab {
+        grid-column: 1 / -1;
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        margin-bottom: 0.9rem;
+      }
+      .vt-mini {
+        position: relative;
+        display: block;
+        border-radius: 9px;
+        overflow: hidden;
+        background: var(--codigo);
+        aspect-ratio: 16 / 9;
+      }
+      .vt-mini img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* La miniatura de YouTube es del video, no de la interfaz: se atenúa
+           para que no compita con el acento, y sube al pasar por encima. */
+        opacity: 0.82;
+        transition: opacity 0.2s ease;
+      }
+      a.video-tarjeta:hover .vt-mini img {
+        opacity: 1;
+      }
+      .vt-play {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        transition: transform 0.2s ease;
+      }
+      /* El disco no es decoración: sin él el ▶ blanco desaparece sobre las
+         miniaturas claras, que son la mitad de las de YouTube. */
+      .vt-play::before {
+        content: "▶";
+        display: grid;
+        place-items: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        padding-left: 3px;
+        border-radius: 50%;
+        background: rgba(10, 10, 12, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.92rem;
+        backdrop-filter: blur(3px);
+      }
+      a.video-tarjeta:hover .vt-play {
+        transform: scale(1.12);
+      }
+      .vt-texto {
+        display: block;
+        min-width: 0;
+      }
+      .vt-titulo {
+        display: block;
+        font-weight: 700;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+        color: var(--texto);
+        line-height: 1.35;
+      }
+      .vt-meta {
+        display: block;
+        margin-top: 0.3rem;
+        font-size: 0.8rem;
+        color: var(--tenue);
+      }
+      .vt-falta {
+        display: inline-block;
+        margin-left: 0.5rem;
+        padding: 0.05em 0.5em;
+        border: 1px solid rgba(251, 191, 36, 0.4);
+        border-radius: 999px;
+        background: var(--atencion-suave);
+        color: var(--atencion);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .vt-porque {
+        display: block;
+        margin-top: 0.6rem;
+        font-size: 0.92rem;
+        color: var(--texto-2);
+      }
+      @media (max-width: 760px) {
+        a.video-tarjeta {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 1rem;
+        }
+      }
+
       /* ---------- cierre ---------- */
       .cierre {
         padding-top: 3rem;
@@ -1172,6 +1295,7 @@ python -c &quot;import anthropic, chromadb; print(&#x27;entorno listo&#x27;)&quo
     </article>
       
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p><code>python -c &quot;import anthropic, chromadb&quot;</code> no da error y <code>ANTHROPIC_API_KEY</code> está en tu shell.</p></div>
+      
     </section>
     <section class="dia" id="dia-2">
       <header class="dia-cab">
@@ -1427,6 +1551,23 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()"><div class="bloque-cab"><span class="ruta">00_tokens.py · archivo completo (85 líneas)</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1 · El modelo no ve letras: ve tokens</span></span><span class="l"></span><span class="l"><span class="s">Del deck: antes de llegar al modelo, tu texto se parte en TOKENS con un</span></span><span class="l"><span class="s">algoritmo llamado BPE (Byte Pair Encoding). El modelo nunca ve caracteres:</span></span><span class="l"><span class="s">ve una lista de números. Eso explica cosas que parecen bugs (por ejemplo</span></span><span class="l"><span class="s">que se equivoque contando cuántas erres tiene &quot;strawberry&quot;) y explica tu</span></span><span class="l"><span class="s">factura, porque los tokens son la unidad que se cobra.</span></span><span class="l"></span><span class="l"><span class="s">No hay que adivinar cuántos tokens tiene un texto: la API tiene un endpoint</span></span><span class="l"><span class="s">que los cuenta exacto, es GRATIS, y es específico de cada modelo.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo compara tres tipos de texto y mide cuántos caracteres cabe en</span></span><span class="l"><span class="s">un token en cada uno. La diferencia sorprende.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 00_tokens.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l"></span><span class="l"><span class="c"># Tres textos parecidos en longitud pero de naturaleza muy distinta.</span></span><span class="l">TEXTOS = {</span><span class="l">    <span class="s">&quot;español&quot;</span>: (</span><span class="l">        <span class="s">&quot;El cliente reporta que le cobraron dos veces el mismo producto &quot;</span></span><span class="l">        <span class="s">&quot;y solicita la devolución del importe duplicado lo antes posible.&quot;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;JSON&quot;</span>: (</span><span class="l">        <span class="s">&#x27;{&quot;order_id&quot;: &quot;ORD-8841&quot;, &quot;status&quot;: &quot;shipped&quot;, &quot;amount&quot;: 45000, &#x27;</span></span><span class="l">        <span class="s">&#x27;&quot;currency&quot;: &quot;COP&quot;, &quot;items&quot;: [{&quot;sku&quot;: &quot;A-12&quot;, &quot;qty&quot;: 2}]}&#x27;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;código&quot;</span>: (</span><span class="l">        <span class="s">&quot;def cobrar(order_id: str, monto: float) -&gt; dict:\n&quot;</span></span><span class="l">        <span class="s">&quot;    if order_id in procesados:\n&quot;</span></span><span class="l">        <span class="s">&quot;        return {&#x27;status&#x27;: &#x27;duplicado&#x27;}\n&quot;</span></span><span class="l">        <span class="s">&quot;    return {&#x27;status&#x27;: &#x27;ok&#x27;, &#x27;monto&#x27;: monto}&quot;</span></span><span class="l">    ),</span><span class="l">}</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">contar</span>(texto):</span><span class="l">    <span class="c"># count_tokens NO genera respuesta ni consume tokens de salida: solo</span></span><span class="l">    <span class="c"># cuenta. Es gratis y no tiene rate limit agresivo, así que puedes</span></span><span class="l">    <span class="c"># llamarlo antes de cada petición para estimar costo.</span></span><span class="l">    resp = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=MODELO,  <span class="c"># El conteo depende del modelo: cada familia tokeniza distinto.</span></span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: texto}],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.input_tokens</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Contando tokens con {MODELO}\n&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;{&#x27;tipo&#x27;:10} {&#x27;caracteres&#x27;:&gt;11} {&#x27;tokens&#x27;:&gt;8} {&#x27;car/token&#x27;:&gt;10}&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">&quot;-&quot;</span> * 42)</span><span class="l"></span><span class="l">    <span class="k">for</span> nombre, texto <span class="k">in</span> TEXTOS.<span class="f">items</span>():</span><span class="l">        tokens = <span class="f">contar</span>(texto)</span><span class="l">        caracteres = <span class="f">len</span>(texto)</span><span class="l">        <span class="c"># Cuántos caracteres &quot;cabe&quot; en un token. Cuanto más alto, más</span></span><span class="l">        <span class="c"># eficiente es ese tipo de texto y más barato sale procesarlo.</span></span><span class="l">        ratio = caracteres / tokens</span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;{nombre:10} {caracteres:&gt;11} {tokens:&gt;8} {ratio:&gt;10.2f}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;\nEl español corriente es el más eficiente. El JSON y el código gastan\n&quot;</span></span><span class="l">        <span class="s">&quot;más tokens por carácter: las llaves, comillas y sangrías son tokens\n&quot;</span></span><span class="l">        <span class="s">&quot;que pagas igual que las palabras. Por eso pedirle JSON al modelo\n&quot;</span></span><span class="l">        <span class="s">&quot;cuesta más de lo que parece, y por eso importa el formato que eliges.&quot;</span></span><span class="l">    )</span><span class="l"></span><span class="l">    <span class="c"># El caso famoso del deck: el modelo no ve las letras de una palabra.</span></span><span class="l">    <span class="f">print</span>(<span class="s">&quot;\n--- por qué se equivoca contando letras ---&quot;</span>)</span><span class="l">    palabra = <span class="s">&quot;strawberry&quot;</span></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;&#x27;{palabra}&#x27; son {contar(palabra)} token(s) para el modelo,&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;pero {len(palabra)} caracteres para ti. Él no ve las 3 erres:&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">&quot;ve un puñado de números que representan pedazos de la palabra.&quot;</span>)</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">main</span>()</span></code></pre></div></details>
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p>Corres el script y ves que el español rinde ~3.3 caracteres por token mientras el JSON rinde ~2. Puedes explicar por qué pedirle JSON al modelo cuesta más de lo que parece.</p></div>
+      
+      <a class="video-tarjeta" href="videos/wjZofJX0v4M.html"
+         target="_blank" rel="noopener">
+        <span class="vt-cab">Para ampliar</span>
+        <span class="vt-mini">
+          <img src="https://img.youtube.com/vi/wjZofJX0v4M/mqdefault.jpg"
+               alt="" loading="lazy" width="320" height="180" />
+          <span class="vt-play" aria-hidden="true"></span>
+        </span>
+        <span class="vt-texto">
+          <span class="vt-titulo">But what is a GPT? Visual intro to transformers</span>
+          <span class="vt-meta">3Blue1Brown
+            · Inglés
+            · ~27 min<span class="vt-falta">resumen pendiente</span></span>
+          <span class="vt-porque">El video empieza justo donde termina hoy: qué hace el modelo con esos tokens una vez los tiene. Verás la tabla de embeddings de entrada que tu script imprime, dibujada.</span>
+        </span>
+      </a>
     </section>
     <section class="dia" id="dia-3">
       <header class="dia-cab">
@@ -1716,6 +1857,23 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()"><div class="bloque-cab"><span class="ruta">01_tokenometro.py · archivo completo (105 líneas)</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 2 · El Token-ó-metro: ¿cuánto me va a costar esto?</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el ejercicio de la sesión. Un CLI que responde una pregunta que</span></span><span class="l"><span class="s">vas a hacerte en cada proyecto: &quot;¿cuánto cuesta esto, en cada modelo?&quot;.</span></span><span class="l"></span><span class="l"><span class="s">La idea de fondo: elegir modelo no es elegir &quot;el mejor&quot;. Es elegir el más</span></span><span class="l"><span class="s">barato que resuelve TU tarea con la calidad que necesitas. Y eso no se</span></span><span class="l"><span class="s">decide leyendo un blog: se decide midiendo tu propio prompt.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo mide un prompt real contra tres modelos y proyecta el gasto a</span></span><span class="l"><span class="s">100.000 peticiones al mes.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 01_tokenometro.py</span></span><span class="l"><span class="s">    python 01_tokenometro.py &quot;tu propio texto aquí&quot;</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> sys</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l"><span class="c"># Precios en dólares por MILLÓN de tokens, a agosto de 2026.</span></span><span class="l"><span class="c"># OJO: esta tabla caduca. Los precios cambian y salen modelos nuevos, así</span></span><span class="l"><span class="c"># que la lección no es memorizarla, es tenerla en UN solo sitio del código</span></span><span class="l"><span class="c"># y saber dónde verificarla: platform.claude.com/docs/en/about-claude/models</span></span><span class="l">PRECIOS = {</span><span class="l">    <span class="c"># modelo                 entrada  salida   contexto</span></span><span class="l">    <span class="s">&quot;claude-haiku-4-5&quot;</span>:     (  1.00,   5.00,  <span class="s">&quot;200K&quot;</span>),</span><span class="l">    <span class="s">&quot;claude-sonnet-4-6&quot;</span>:    (  3.00,  15.00,  <span class="s">&quot;1M&quot;</span>),</span><span class="l">    <span class="s">&quot;claude-opus-4-8&quot;</span>:      (  5.00,  25.00,  <span class="s">&quot;1M&quot;</span>),</span><span class="l">}</span><span class="l"></span><span class="l"><span class="c"># Cuántas peticiones al mes esperas. Cambia este número por el tuyo: es la</span></span><span class="l"><span class="c"># diferencia entre &quot;da igual el modelo&quot; y &quot;esto no cabe en el presupuesto&quot;.</span></span><span class="l">PETICIONES_MES = 100_000</span><span class="l"></span><span class="l"><span class="c"># Cuántos tokens esperas que responda el modelo. La salida cuesta 5x la</span></span><span class="l"><span class="c"># entrada, así que estimarla mal es el error más caro de la tabla.</span></span><span class="l">TOKENS_SALIDA_ESTIMADOS = 300</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">contar_entrada</span>(texto, modelo):</span><span class="l">    <span class="c"># El conteo es específico del modelo: el mismo texto puede dar números</span></span><span class="l">    <span class="c"># distintos en modelos distintos, así que se cuenta con cada uno.</span></span><span class="l">    resp = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=modelo,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: texto}],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.input_tokens</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">costo</span>(tokens_entrada, tokens_salida, precio_entrada, precio_salida):</span><span class="l">    <span class="c"># Los precios vienen por millón de tokens: dividimos entre 1.000.000</span></span><span class="l">    <span class="c"># para obtener el costo de UNA petición.</span></span><span class="l">    <span class="k">return</span> (</span><span class="l">        tokens_entrada * precio_entrada / 1_000_000</span><span class="l">        + tokens_salida * precio_salida / 1_000_000</span><span class="l">    )</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    <span class="c"># Si pasas un texto por la terminal se usa ese; si no, uno de ejemplo.</span></span><span class="l">    texto = (</span><span class="l">        sys.argv[1]</span><span class="l">        <span class="k">if</span> <span class="f">len</span>(sys.argv) &gt; 1</span><span class="l">        <span class="k">else</span> (</span><span class="l">            <span class="s">&quot;Clasifica este reclamo de un cliente en una de estas categorías: &quot;</span></span><span class="l">            <span class="s">&quot;fraude, cobro duplicado, pedido no recibido, otro. &quot;</span></span><span class="l">            <span class="s">&quot;Reclamo: &#x27;Vi que me habían cobrado dos veces por el mismo producto&#x27;.&quot;</span></span><span class="l">        )</span><span class="l">    )</span><span class="l"></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Prompt de {len(texto)} caracteres&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Proyección: {PETICIONES_MES:,} peticiones/mes, &quot;</span></span><span class="l">          <span class="s">f&quot;{TOKENS_SALIDA_ESTIMADOS} tokens de salida estimados\n&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;{&#x27;modelo&#x27;:22} {&#x27;ctx&#x27;:&gt;5} {&#x27;tok_in&#x27;:&gt;7} {&#x27;$/petición&#x27;:&gt;12} {&#x27;$/mes&#x27;:&gt;10}&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">&quot;-&quot;</span> * 60)</span><span class="l"></span><span class="l">    <span class="k">for</span> modelo, (precio_in, precio_out, contexto) <span class="k">in</span> PRECIOS.<span class="f">items</span>():</span><span class="l">        tokens_in = <span class="f">contar_entrada</span>(texto, modelo)</span><span class="l">        por_peticion = <span class="f">costo</span>(tokens_in, TOKENS_SALIDA_ESTIMADOS, precio_in, precio_out)</span><span class="l">        al_mes = por_peticion * PETICIONES_MES</span><span class="l">        <span class="f">print</span>(</span><span class="l">            <span class="s">f&quot;{modelo:22} {contexto:&gt;5} {tokens_in:&gt;7} &quot;</span></span><span class="l">            <span class="s">f&quot;{por_peticion:&gt;12.6f} {al_mes:&gt;10,.0f}&quot;</span></span><span class="l">        )</span><span class="l"></span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;\nMira la columna de la derecha, no la del medio. Un decimal de\n&quot;</span></span><span class="l">        <span class="s">&quot;diferencia por petición son miles de dólares al mes. Y al revés:\n&quot;</span></span><span class="l">        <span class="s">&quot;para una tarea simple, pagar el modelo más caro es tirar dinero.&quot;</span></span><span class="l">    )</span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;\nLa pregunta correcta no es &#x27;¿cuál es el mejor modelo?&#x27; sino\n&quot;</span></span><span class="l">        <span class="s">&quot;&#x27;¿cuál es el más barato que resuelve MI tarea?&#x27;. Eso se responde\n&quot;</span></span><span class="l">        <span class="s">&quot;midiendo, que es justo lo que vas a hacer en la sesión 02.&quot;</span></span><span class="l">    )</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">main</span>()</span></code></pre></div></details>
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p>Tienes una tabla con el costo mensual proyectado de tu propio prompt en tres modelos. Puedes explicar por qué el mismo texto cuenta 63 tokens en un modelo y 85 en otro.</p></div>
+      
+      <a class="video-tarjeta" href="videos/Sz4qacFBHLk.html"
+         target="_blank" rel="noopener">
+        <span class="vt-cab">Para ampliar</span>
+        <span class="vt-mini">
+          <img src="https://img.youtube.com/vi/Sz4qacFBHLk/mqdefault.jpg"
+               alt="" loading="lazy" width="320" height="180" />
+          <span class="vt-play" aria-hidden="true"></span>
+        </span>
+        <span class="vt-texto">
+          <span class="vt-titulo">¿Qué es un LLM? Enormes Modelos del Lenguaje</span>
+          <span class="vt-meta">Dot CSV
+            · Español
+            · ~15 min<span class="vt-falta">resumen pendiente</span></span>
+          <span class="vt-porque">En español y sin matemáticas: qué es un LLM y de dónde sale su costo. Buen respiro después de una sesión de contar tokens y multiplicar por precios.</span>
+        </span>
+      </a>
     </section>
     <section class="dia" id="dia-4">
       <header class="dia-cab">
@@ -1955,6 +2113,23 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()"><div class="bloque-cab"><span class="ruta">02_muestreo.py · archivo completo (80 líneas)</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 3 · Muestreo: temperature, max_tokens y stop_reason</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el modelo no elige &quot;la&quot; siguiente palabra. Calcula una</span></span><span class="l"><span class="s">probabilidad para cada token posible y luego MUESTREA de esa distribución.</span></span><span class="l"><span class="s">Los parámetros de muestreo controlan ese sorteo:</span></span><span class="l"></span><span class="l"><span class="s">  temperature  escala la distribución antes de sortear. 0 = siempre el token</span></span><span class="l"><span class="s">               más probable (reproducible); 1 = más variedad.</span></span><span class="l"><span class="s">  max_tokens   es un tope DURO de salida. No es un objetivo: el modelo no</span></span><span class="l"><span class="s">               intenta llenarlo. Pero si lo toca, corta a media frase.</span></span><span class="l"></span><span class="l"><span class="s">Y stop_reason es el campo que te dice cuál de las dos cosas pasó.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo corre el mismo prompt tres veces con temperature 0 y tres con</span></span><span class="l"><span class="s">temperature 1, para que veas la diferencia con tus ojos. Después provoca un</span></span><span class="l"><span class="s">corte por max_tokens a propósito.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 02_muestreo.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l">PROMPT = <span class="s">&quot;Dame 3 nombres para una fintech de pagos en Latinoamérica. Solo los nombres.&quot;</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">generar</span>(temperature, max_tokens=200):</span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=max_tokens,</span><span class="l">        temperature=temperature,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: PROMPT}],</span><span class="l">    )</span><span class="l">    texto = <span class="s">&quot;&quot;</span>.<span class="f">join</span>(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">&quot;text&quot;</span>)</span><span class="l">    <span class="k">return</span> texto.<span class="f">strip</span>(), resp.stop_reason, resp.usage.output_tokens</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    <span class="c"># --- temperature 0: la misma entrada tiende a la misma salida ---------</span></span><span class="l">    <span class="f">print</span>(<span class="s">&quot;=== temperature = 0 (conservador) ===&quot;</span>)</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(3):</span><span class="l">        texto, _, _ = <span class="f">generar</span>(temperature=0)</span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;  corrida {i + 1}: {texto.splitlines()[0][:60]}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="c"># --- temperature 1: más variedad --------------------------------------</span></span><span class="l">    <span class="f">print</span>(<span class="s">&quot;\n=== temperature = 1 (creativo) ===&quot;</span>)</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(3):</span><span class="l">        texto, _, _ = <span class="f">generar</span>(temperature=1)</span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;  corrida {i + 1}: {texto.splitlines()[0][:60]}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;\nCon temperature 0 las tres corridas se parecen mucho; con 1 se\n&quot;</span></span><span class="l">        <span class="s">&quot;separan. Para clasificar o extraer datos quieres 0: si cada corrida\n&quot;</span></span><span class="l">        <span class="s">&quot;diera algo distinto no podrías medir si tu prompt mejoró.\n&quot;</span></span><span class="l">        <span class="s">&quot;OJO: ni temperature=0 garantiza salidas idénticas. El cálculo en\n&quot;</span></span><span class="l">        <span class="s">&quot;GPU por lotes no es determinista. Diseña tests tolerantes.&quot;</span></span><span class="l">    )</span><span class="l"></span><span class="l">    <span class="c"># --- max_tokens: el corte silencioso ----------------------------------</span></span><span class="l">    <span class="f">print</span>(<span class="s">&quot;\n=== max_tokens = 10 (a propósito, demasiado bajo) ===&quot;</span>)</span><span class="l">    texto, motivo, salida = <span class="f">generar</span>(temperature=0, max_tokens=10)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;  respuesta   : {texto!r}&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;  stop_reason : {motivo}&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;  output_tokens: {salida}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="k">if</span> motivo == <span class="s">&quot;max_tokens&quot;</span>:</span><span class="l">        <span class="f">print</span>(</span><span class="l">            <span class="s">&quot;\n  ↑ Ahí está el bug silencioso. La respuesta se cortó a media\n&quot;</span></span><span class="l">            <span class="s">&quot;  frase y NADA falló: no hay excepción, no hay error HTTP.\n&quot;</span></span><span class="l">            <span class="s">&quot;  Si no miras stop_reason, procesas una respuesta incompleta\n&quot;</span></span><span class="l">            <span class="s">&quot;  como si estuviera entera. Por eso va en tus logs desde el día 1.&quot;</span></span><span class="l">        )</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">main</span>()</span></code></pre></div></details>
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p>Viste tres corridas casi idénticas con <code>temperature=0</code> y tres distintas con <code>temperature=1</code>. Y provocaste un <code>stop_reason: max_tokens</code>. Puedes explicar por qué ese caso no lanza ninguna excepción.</p></div>
+      
+      <a class="video-tarjeta" href="videos/eMlx5fFNoYc.html"
+         target="_blank" rel="noopener">
+        <span class="vt-cab">Para ampliar</span>
+        <span class="vt-mini">
+          <img src="https://img.youtube.com/vi/eMlx5fFNoYc/mqdefault.jpg"
+               alt="" loading="lazy" width="320" height="180" />
+          <span class="vt-play" aria-hidden="true"></span>
+        </span>
+        <span class="vt-texto">
+          <span class="vt-titulo">Attention in transformers, step-by-step</span>
+          <span class="vt-meta">3Blue1Brown
+            · Inglés
+            · ~26 min<span class="vt-falta">resumen pendiente</span></span>
+          <span class="vt-porque"><code>temperature</code> reparte probabilidad sobre la distribución de salida. Este video muestra de dónde sale esa distribución, que es lo que hoy estuviste moviendo a ciegas.</span>
+        </span>
+      </a>
     </section>
     <section class="dia" id="dia-5">
       <header class="dia-cab">
@@ -2178,6 +2353,23 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()"><div class="bloque-cab"><span class="ruta">03_estimado_vs_real.py · archivo completo (83 líneas)</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 4 · El estimado contra la factura</span></span><span class="l"></span><span class="l"><span class="s">Del deck, paso 4 del Token-ó-metro: haz una llamada real y compara tu</span></span><span class="l"><span class="s">estimación con lo que de verdad reporta la API. ¿Qué tan cerca quedaste?</span></span><span class="l"></span><span class="l"><span class="s">Esto cierra el ciclo del día: contar (gratis) → estimar el costo → llamar →</span></span><span class="l"><span class="s">comparar. Es el mismo ciclo que vas a montar en producción, solo que allí</span></span><span class="l"><span class="s">el &quot;comparar&quot; vive en un dashboard.</span></span><span class="l"></span><span class="l"><span class="s">Aviso importante que se ve aquí: los tokens de ENTRADA son predecibles</span></span><span class="l"><span class="s">(count_tokens acierta casi exacto). Los de SALIDA no: no sabes cuánto va a</span></span><span class="l"><span class="s">escribir el modelo hasta que escribe. Por eso la salida es la parte</span></span><span class="l"><span class="s">peligrosa de un presupuesto.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 03_estimado_vs_real.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l">PRECIO_ENTRADA = 3.00  <span class="c"># USD por millón de tokens (sonnet-4-6, agosto 2026)</span></span><span class="l">PRECIO_SALIDA = 15.00  <span class="c"># USD por millón. Nota que la salida cuesta 5 veces más.</span></span><span class="l"></span><span class="l">PROMPT = (</span><span class="l">    <span class="s">&quot;Explica en un párrafo corto qué es un token en un modelo de lenguaje, &quot;</span></span><span class="l">    <span class="s">&quot;para alguien que nunca ha programado.&quot;</span></span><span class="l">)</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    <span class="c"># --- 1. Estimación previa (gratis) ------------------------------------</span></span><span class="l">    conteo = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=MODELO,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: PROMPT}],</span><span class="l">    )</span><span class="l">    estimado_entrada = conteo.input_tokens</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Estimación previa (count_tokens): {estimado_entrada} tokens de entrada&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Costo de entrada estimado: ${estimado_entrada * PRECIO_ENTRADA / 1_000_000:.6f}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="c"># --- 2. La llamada real -----------------------------------------------</span></span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=1024,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: PROMPT}],</span><span class="l">    )</span><span class="l">    real_entrada = resp.usage.input_tokens</span><span class="l">    real_salida = resp.usage.output_tokens</span><span class="l"></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\nReal (resp.usage): {real_entrada} entrada / {real_salida} salida&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;stop_reason: {resp.stop_reason}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="c"># --- 3. La comparación -------------------------------------------------</span></span><span class="l">    diferencia = real_entrada - estimado_entrada</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\nDiferencia en la entrada: {diferencia:+d} tokens&quot;</span>)</span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;  (una diferencia pequeña es normal: la API agrega unos pocos tokens\n&quot;</span></span><span class="l">        <span class="s">&quot;   de estructura al armar el mensaje)&quot;</span></span><span class="l">    )</span><span class="l"></span><span class="l">    costo_real = (</span><span class="l">        real_entrada * PRECIO_ENTRADA / 1_000_000</span><span class="l">        + real_salida * PRECIO_SALIDA / 1_000_000</span><span class="l">    )</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\nCosto real de esta llamada: ${costo_real:.6f}&quot;</span>)</span><span class="l">    porcentaje_salida = real_salida * PRECIO_SALIDA / (</span><span class="l">        real_entrada * PRECIO_ENTRADA + real_salida * PRECIO_SALIDA</span><span class="l">    )</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;De ese costo, la SALIDA fue el {porcentaje_salida:.0%}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;\nEsa es la lección del día: puedes estimar la entrada con precisión\n&quot;</span></span><span class="l">        <span class="s">&quot;antes de gastar un centavo, pero la salida no la sabes hasta que\n&quot;</span></span><span class="l">        <span class="s">&quot;ocurre, y suele ser la mayor parte de la factura. Controlarla es\n&quot;</span></span><span class="l">        <span class="s">&quot;prompt (pedir respuestas cortas) y max_tokens, no suerte.&quot;</span></span><span class="l">    )</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">main</span>()</span></code></pre></div></details>
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p>Tienes tu estimación y tu número real lado a lado, y sabes qué porcentaje de la factura fue la salida. Puedes decir cuál de las dos mitades se puede predecir y cuál no.</p></div>
+      
+      <a class="video-tarjeta" href="videos/7xTGNNLPyMI.html"
+         target="_blank" rel="noopener">
+        <span class="vt-cab">Para ampliar</span>
+        <span class="vt-mini">
+          <img src="https://img.youtube.com/vi/7xTGNNLPyMI/mqdefault.jpg"
+               alt="" loading="lazy" width="320" height="180" />
+          <span class="vt-play" aria-hidden="true"></span>
+        </span>
+        <span class="vt-texto">
+          <span class="vt-titulo">Deep Dive into LLMs like ChatGPT</span>
+          <span class="vt-meta">Andrej Karpathy
+            · Inglés
+            · 3 h 31 min<span class="vt-falta">resumen pendiente</span></span>
+          <span class="vt-porque">La pieza de fondo, para cuando quieras entender qué estás pagando: tokenización, pretraining y por qué el modelo alucina. Son 3 horas y media, no es para hoy.</span>
+        </span>
+      </a>
     </section>
     <section class="dia" id="dia-6">
       <header class="dia-cab">
@@ -2510,6 +2702,23 @@ def main():
 if __name__ == &quot;__main__&quot;:
     main()"><div class="bloque-cab"><span class="ruta">04_embeddings.py · archivo completo (115 líneas)</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 5 · Embeddings, similitud coseno, y por qué hay que medir</span></span><span class="l"></span><span class="l"><span class="s">Del deck: cambiamos de tema, no de herramienta. Un embedding es un vector</span></span><span class="l"><span class="s">(una lista de números, aquí 384) donde la DIRECCIÓN codifica el significado:</span></span><span class="l"><span class="s">dos frases que quieren decir lo mismo apuntan hacia el mismo lado, aunque no</span></span><span class="l"><span class="s">compartan ni una palabra.</span></span><span class="l"></span><span class="l"><span class="s">Para medir &quot;cuánto apuntan al mismo lado&quot; se usa la similitud coseno: el</span></span><span class="l"><span class="s">coseno del ángulo entre los dos vectores. 1 = misma dirección, 0 = sin</span></span><span class="l"><span class="s">relación. En código son tres operaciones: producto punto dividido entre el</span></span><span class="l"><span class="s">producto de las longitudes.</span></span><span class="l"></span><span class="l"><span class="s">Esto es la base de RAG, de la búsqueda semántica y de la deduplicación.</span></span><span class="l"><span class="s">Y lo vas a construir entero en la sesión 04.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo corre las MISMAS cuatro frases en inglés y en español, con un</span></span><span class="l"><span class="s">modelo de embeddings local, y compara. El resultado es incómodo a propósito:</span></span><span class="l"><span class="s">es la lección del día.</span></span><span class="l"></span><span class="l"><span class="s">La API de Anthropic no expone embeddings. Usamos el modelo local que trae</span></span><span class="l"><span class="s">Chroma (all-MiniLM-L6-v2): no necesita otra API key y corre en tu máquina.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 04_embeddings.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> math</span><span class="l"></span><span class="l"><span class="k">from</span> chromadb.utils <span class="k">import</span> embedding_functions</span><span class="l"></span><span class="l"><span class="c"># La primera vez descarga el modelo (~80 MB); después es instantáneo.</span></span><span class="l">embed = embedding_functions.<span class="f">DefaultEmbeddingFunction</span>()</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">coseno</span>(a, b):</span><span class="l">    <span class="c"># Producto punto: suma de multiplicar los vectores elemento a elemento.</span></span><span class="l">    <span class="c"># Es grande cuando los dos apuntan hacia el mismo lado.</span></span><span class="l">    punto = <span class="f">sum</span>(x * y <span class="k">for</span> x, y <span class="k">in</span> <span class="f">zip</span>(a, b))</span><span class="l">    <span class="c"># La &quot;longitud&quot; (norma) de cada vector: la raíz de la suma de cuadrados.</span></span><span class="l">    norma_a = math.<span class="f">sqrt</span>(<span class="f">sum</span>(x * x <span class="k">for</span> x <span class="k">in</span> a))</span><span class="l">    norma_b = math.<span class="f">sqrt</span>(<span class="f">sum</span>(y * y <span class="k">for</span> y <span class="k">in</span> b))</span><span class="l">    <span class="c"># Dividir entre las longitudes deja solo el ÁNGULO: así una frase larga</span></span><span class="l">    <span class="c"># y una corta se pueden comparar de igual a igual.</span></span><span class="l">    <span class="k">return</span> punto / (norma_a * norma_b)</span><span class="l"></span><span class="l"></span><span class="l"><span class="c"># Las mismas cuatro ideas, en dos idiomas. La primera es la referencia; la</span></span><span class="l"><span class="c"># segunda significa lo mismo sin compartir palabras; la tercera es del mismo</span></span><span class="l"><span class="c"># mundo pero otra intención; la cuarta no tiene nada que ver.</span></span><span class="l">FRASES = {</span><span class="l">    <span class="s">&quot;inglés&quot;</span>: [</span><span class="l">        <span class="s">&quot;pay with a credit card&quot;</span>,</span><span class="l">        <span class="s">&quot;checkout with visa&quot;</span>,</span><span class="l">        <span class="s">&quot;charged twice for the same item&quot;</span>,</span><span class="l">        <span class="s">&quot;recipe for cheese arepas&quot;</span>,</span><span class="l">    ],</span><span class="l">    <span class="s">&quot;español&quot;</span>: [</span><span class="l">        <span class="s">&quot;pagar con tarjeta de crédito&quot;</span>,</span><span class="l">        <span class="s">&quot;checkout con visa&quot;</span>,</span><span class="l">        <span class="s">&quot;me cobraron dos veces&quot;</span>,</span><span class="l">        <span class="s">&quot;receta de arepas de queso&quot;</span>,</span><span class="l">    ],</span><span class="l">}</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">comparar</span>(idioma, frases):</span><span class="l">    vectores = <span class="f">embed</span>(frases)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\n--- {idioma} ---&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&#x27;similitud contra &quot;{frases[0]}&quot;:\n&#x27;</span>)</span><span class="l">    <span class="k">for</span> frase, vector <span class="k">in</span> <span class="f">zip</span>(frases, vectores):</span><span class="l">        sim = <span class="f">coseno</span>(vectores[0], vector)</span><span class="l">        <span class="c"># Barra visual para ver la escala de un vistazo. Se recorta en 0</span></span><span class="l">        <span class="c"># porque el coseno puede salir negativo (vectores en direcciones</span></span><span class="l">        <span class="c"># opuestas) y una barra de largo negativo no existe.</span></span><span class="l">        barra = <span class="s">&quot;█&quot;</span> * <span class="f">max</span>(0, <span class="f">int</span>(sim * 30))</span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;  {sim:+.3f}  {barra:&lt;30}  {frase}&quot;</span>)</span><span class="l">    <span class="k">return</span> vectores</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    vectores_en = <span class="f">comparar</span>(<span class="s">&quot;inglés&quot;</span>, FRASES[<span class="s">&quot;inglés&quot;</span>])</span><span class="l">    <span class="c"># float() porque el modelo devuelve numpy.float32 y se imprime feo.</span></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\n(cada frase es un vector de {len(vectores_en[0])} números; &quot;</span></span><span class="l">          <span class="s">f&quot;los 5 primeros: {[round(float(v), 3) for v in vectores_en[0][:5]]})&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">comparar</span>(<span class="s">&quot;español&quot;</span>, FRASES[<span class="s">&quot;español&quot;</span>])</span><span class="l"></span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">&quot;\n=== la lección ===\n&quot;</span></span><span class="l">        <span class="s">&quot;En inglés funciona: &#x27;checkout with visa&#x27; queda por encima del resto\n&quot;</span></span><span class="l">        <span class="s">&quot;sin compartir una sola palabra con la referencia, y las arepas caen\n&quot;</span></span><span class="l">        <span class="s">&quot;casi a cero. Eso es lo que un buscador por palabras clave no puede\n&quot;</span></span><span class="l">        <span class="s">&quot;hacer, y es el problema que resuelve RAG.\n&quot;</span></span><span class="l">        <span class="s">&quot;\n&quot;</span></span><span class="l">        <span class="s">&quot;En español SE ROMPE: las arepas puntúan MÁS ALTO que &#x27;checkout con\n&quot;</span></span><span class="l">        <span class="s">&quot;visa&#x27;. El orden queda al revés. Y no es un bug de tu código.\n&quot;</span></span><span class="l">        <span class="s">&quot;\n&quot;</span></span><span class="l">        <span class="s">&quot;all-MiniLM-L6-v2 está entrenado en inglés. Con español devuelve\n&quot;</span></span><span class="l">        <span class="s">&quot;números perfectamente válidos y perfectamente inútiles: no falla,\n&quot;</span></span><span class="l">        <span class="s">&quot;no avisa, simplemente miente en silencio. Si montaras un RAG en\n&quot;</span></span><span class="l">        <span class="s">&quot;español sobre este modelo, recuperaría documentos al azar y te\n&quot;</span></span><span class="l">        <span class="s">&quot;costaría días entender por qué.\n&quot;</span></span><span class="l">        <span class="s">&quot;\n&quot;</span></span><span class="l">        <span class="s">&quot;Dos cosas que llevarte:\n&quot;</span></span><span class="l">        <span class="s">&quot;  1. El modelo de embeddings tiene que hablar TU idioma. Para\n&quot;</span></span><span class="l">        <span class="s">&quot;     español: voyage-3.5, multilingual-e5 o bge-m3.\n&quot;</span></span><span class="l">        <span class="s">&quot;  2. Esto no se descubre leyendo la documentación: se descubre\n&quot;</span></span><span class="l">        <span class="s">&quot;     midiendo, con cuatro frases que tú ya sabes cómo deberían\n&quot;</span></span><span class="l">        <span class="s">&quot;     ordenarse. Cinco minutos de esto ahorran una semana después.&quot;</span></span><span class="l">    )</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">main</span>()</span></code></pre></div></details>
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p>Viste el mismo experimento funcionar en inglés y romperse en español. Puedes explicar por qué ese fallo no lanza ningún error, y qué habrías hecho si no lo hubieras medido.</p></div>
+      
+      <a class="video-tarjeta" href="videos/wgfSDrqYMJ4.html"
+         target="_blank" rel="noopener">
+        <span class="vt-cab">Para ampliar</span>
+        <span class="vt-mini">
+          <img src="https://img.youtube.com/vi/wgfSDrqYMJ4/mqdefault.jpg"
+               alt="" loading="lazy" width="320" height="180" />
+          <span class="vt-play" aria-hidden="true"></span>
+        </span>
+        <span class="vt-texto">
+          <span class="vt-titulo">What are Word Embeddings?</span>
+          <span class="vt-meta">IBM Technology
+            · Inglés
+            · corto<span class="vt-falta">resumen pendiente</span></span>
+          <span class="vt-porque">Corto y directo sobre lo que acabas de construir: por qué un texto se vuelve un vector y qué significa que dos vectores estén cerca.</span>
+        </span>
+      </a>
     </section> 
     <section class="cierre" id="cierre">
       <div class="marca-cierre">✓ Taller terminado</div>

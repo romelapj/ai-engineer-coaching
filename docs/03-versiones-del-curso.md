@@ -194,6 +194,38 @@ comprueba código contra página, no salida capturada contra código.
 
 ---
 
+## v4.3 · Los videos entran al taller
+
+**15 de agosto de 2026**
+
+Los 20 decks tenían una slide de "videos para reforzar" con cinco enlaces a
+YouTube cada uno. En el formato taller esa slide no tenía dónde ir, y un enlace
+suelto al final de una página es lo más fácil de ignorar del mundo.
+
+**Cambio:** cada día del taller puede cerrar con la tarjeta de un video
+(miniatura, título, una línea de por qué), que abre en pestaña nueva una página
+propia con el video embebido y el material del curso alrededor: de qué va, lo que
+de verdad vale, cómo se enlaza con ese día y dónde se queda corto.
+
+Los 24 videos de las sesiones 01 a 05 quedaron repartidos **por afinidad con el
+día**, no por sesión: el de chunking de Greg Kamradt cae en el día de chunking,
+el de reranking de Sam Witteveen en el día del reranker. Ocho días se quedaron
+sin video y así se quedan; ver la lista en
+[06 · Videos de los talleres](06-videos.md).
+
+**Los 24 resúmenes están pendientes, y la página lo dice.** Se intentó bajar las
+transcripciones de YouTube para generarlos: no se puede, el endpoint `timedtext`
+exige sesión autenticada desde 2024. El scraping de metadatos tampoco es fiable
+(la página responde con un muro de consentimiento). Así que la página del video
+se genera igual, con el video reproducible y un estado de **resumen pendiente**
+diseñado, y `build.py` lista al final de cada corrida los que faltan.
+
+Es la misma regla del código aplicada al texto: el taller no muestra código que
+no corre, y tampoco resume un video que nadie vio. Un resumen inventado se lee
+perfecto, y es justo lo que un alumno no puede detectar.
+
+---
+
 ## Ideas evaluadas y descartadas
 
 Se registran para no volver a discutirlas desde cero:
@@ -204,3 +236,5 @@ Se registran para no volver a discutirlas desde cero:
 | Reescribir los 20 decks a taller de una     | v4     | Se pilotea primero la sesión 04 y se mide con el alumno real                                             |
 | Eliminar los decks                          | v4     | Resuelven bien el porqué y las comparaciones; se quedan, más cortos                                      |
 | Escribir el código dentro del taller a mano | v4     | Reintroduce las dos fuentes de verdad que causaron los 88 huecos                                         |
+| Generar los resúmenes de los videos         | v4.3   | Sin transcripción no hay resumen fiel; un resumen inventado se lee perfecto y el alumno no lo detecta    |
+| Dejar los videos como enlaces sueltos       | v4.3   | Manda al alumno a un sitio diseñado para retenerlo, y pierde el "por qué este video en este día"         |

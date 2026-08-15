@@ -872,6 +872,129 @@
         margin-top: 0.6rem;
       }
 
+      /* ---------- tarjeta de video, al cierre del día ----------
+         Va después del checkpoint a propósito: primero cierras el día, y solo
+         entonces se te ofrece ampliar. Antes competiría con el código.
+         La miniatura manda visualmente (es lo que se reconoce de un vistazo),
+         así que el texto va al lado y no debajo. */
+      a.video-tarjeta {
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1fr);
+        gap: 0 1.5rem;
+        align-items: center;
+        margin-left: var(--margen-paso);
+        margin-top: 1.5rem;
+        padding: 1.25rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      a.video-tarjeta:hover {
+        border-color: var(--acento-borde);
+        background: var(--superficie);
+        text-decoration: none;
+      }
+      .vt-cab {
+        grid-column: 1 / -1;
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        margin-bottom: 0.9rem;
+      }
+      .vt-mini {
+        position: relative;
+        display: block;
+        border-radius: 9px;
+        overflow: hidden;
+        background: var(--codigo);
+        aspect-ratio: 16 / 9;
+      }
+      .vt-mini img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* La miniatura de YouTube es del video, no de la interfaz: se atenúa
+           para que no compita con el acento, y sube al pasar por encima. */
+        opacity: 0.82;
+        transition: opacity 0.2s ease;
+      }
+      a.video-tarjeta:hover .vt-mini img {
+        opacity: 1;
+      }
+      .vt-play {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        transition: transform 0.2s ease;
+      }
+      /* El disco no es decoración: sin él el ▶ blanco desaparece sobre las
+         miniaturas claras, que son la mitad de las de YouTube. */
+      .vt-play::before {
+        content: "▶";
+        display: grid;
+        place-items: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        padding-left: 3px;
+        border-radius: 50%;
+        background: rgba(10, 10, 12, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.92rem;
+        backdrop-filter: blur(3px);
+      }
+      a.video-tarjeta:hover .vt-play {
+        transform: scale(1.12);
+      }
+      .vt-texto {
+        display: block;
+        min-width: 0;
+      }
+      .vt-titulo {
+        display: block;
+        font-weight: 700;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+        color: var(--texto);
+        line-height: 1.35;
+      }
+      .vt-meta {
+        display: block;
+        margin-top: 0.3rem;
+        font-size: 0.8rem;
+        color: var(--tenue);
+      }
+      .vt-falta {
+        display: inline-block;
+        margin-left: 0.5rem;
+        padding: 0.05em 0.5em;
+        border: 1px solid rgba(251, 191, 36, 0.4);
+        border-radius: 999px;
+        background: var(--atencion-suave);
+        color: var(--atencion);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .vt-porque {
+        display: block;
+        margin-top: 0.6rem;
+        font-size: 0.92rem;
+        color: var(--texto-2);
+      }
+      @media (max-width: 760px) {
+        a.video-tarjeta {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 1rem;
+        }
+      }
+
       /* ---------- cierre ---------- */
       .cierre {
         padding-top: 3rem;

@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <title>Build AI Function Calling with LangChain &amp; Advanced AI Models | AI Engineer Coaching</title>
+    <style>
+      /* =====================================================================
+               Misma paleta y mismas reglas que plantilla.html: un solo acento (cian),
+               verde y ámbar como estado, degradado solo en la marca. Esta página es
+               más corta y más centrada que el taller, así que no lleva barra lateral:
+               el contenido es una columna con el video arriba.
+               ===================================================================== */
+      :root {
+        --fondo: #0a0a0c;
+        --fondo-2: #0f0f12;
+        --superficie: #151518;
+        --superficie-2: #1b1b1f;
+        --linea: #26262c;
+        --linea-suave: #1d1d22;
+        --texto: #ededf0;
+        --texto-2: #a1a1aa;
+        --tenue: #71717a;
+        --acento: #22d3ee;
+        --acento-suave: rgba(34, 211, 238, 0.1);
+        --acento-borde: rgba(34, 211, 238, 0.42);
+        --ok: #34d399;
+        --ok-suave: rgba(52, 211, 153, 0.08);
+        --atencion: #fbbf24;
+        --atencion-suave: rgba(251, 191, 36, 0.07);
+        --marca: linear-gradient(120deg, #8b5cf6, #22d3ee);
+        --radio: 14px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--fondo);
+        color: var(--texto);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.68;
+        font-size: 1rem;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--acento);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      :focus-visible {
+        outline: 2px solid var(--acento);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+        }
+      }
+
+      /* ---------------------------------------------------- barra superior */
+      .barra {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(10, 10, 12, 0.88);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--linea-suave);
+      }
+      .barra-in {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0.9rem clamp(1.2rem, 4vw, 2.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .marca {
+        font-weight: 800;
+        font-size: 0.94rem;
+        letter-spacing: -0.01em;
+        color: var(--texto);
+      }
+      .marca span {
+        background: var(--marca);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .volver {
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--texto-2);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.42rem 0.95rem;
+        transition: all 0.2s ease;
+      }
+      .volver:hover {
+        color: var(--texto);
+        border-color: var(--acento-borde);
+        text-decoration: none;
+      }
+
+      /* ------------------------------------------------------------ layout */
+      .envoltorio {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) clamp(1.2rem, 4vw, 2.5rem)
+          clamp(3rem, 7vw, 5rem);
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.73rem;
+        font-weight: 800;
+        color: var(--acento);
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(1.9rem, 4.2vw, 3.1rem);
+        line-height: 1.08;
+        font-weight: 900;
+        letter-spacing: -0.035em;
+        max-width: 22ch;
+      }
+      .ficha {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.4rem;
+        margin-top: 1.3rem;
+        padding-bottom: 1.6rem;
+        border-bottom: 1px solid var(--linea-suave);
+        font-size: 0.9rem;
+        color: var(--texto-2);
+      }
+      .ficha b {
+        color: var(--texto);
+        font-weight: 600;
+      }
+      .ficha .sep {
+        color: var(--linea);
+      }
+
+      /* ------------------------------------------------------------- video */
+      .marco {
+        margin: 2.2rem 0 0;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        overflow: hidden;
+        background: #000;
+        aspect-ratio: 16 / 9;
+      }
+      .marco iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+      .bajo-video {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.9rem;
+        font-size: 0.85rem;
+        color: var(--tenue);
+      }
+      .en-youtube {
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.35rem 0.9rem;
+        color: var(--texto-2);
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .en-youtube:hover {
+        border-color: var(--acento-borde);
+        color: var(--texto);
+        text-decoration: none;
+      }
+
+      /* ----------------------------------------------------------- cuerpo */
+      .cuerpo {
+        margin-top: clamp(2.4rem, 5vw, 3.4rem);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.6rem;
+      }
+      @media (min-width: 1000px) {
+        .cuerpo {
+          grid-template-columns: minmax(0, 1fr) 300px;
+          gap: 3rem;
+        }
+      }
+      section.bloque {
+        scroll-margin-top: 5rem;
+      }
+      section.bloque + section.bloque {
+        margin-top: 2.6rem;
+        padding-top: 2.6rem;
+        border-top: 1px solid var(--linea-suave);
+      }
+      h2 {
+        font-size: 1.42rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 1rem;
+      }
+      h2 .num {
+        color: var(--tenue);
+        font-weight: 700;
+        font-size: 0.86rem;
+        letter-spacing: 0.14em;
+        display: block;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+      }
+      p {
+        color: var(--texto-2);
+        margin-bottom: 1.05rem;
+      }
+      p:last-child {
+        margin-bottom: 0;
+      }
+      strong {
+        color: var(--texto);
+        font-weight: 700;
+      }
+      code {
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 5px;
+        padding: 0.1em 0.4em;
+        font-size: 0.86em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--texto);
+        overflow-wrap: anywhere;
+      }
+      ul.valioso {
+        list-style: none;
+        display: grid;
+        gap: 0.9rem;
+      }
+      ul.valioso li {
+        position: relative;
+        padding-left: 1.7rem;
+        color: var(--texto-2);
+      }
+      ul.valioso li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.62em;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        background: var(--acento);
+      }
+
+      /* --------------------------------------------- estado: sin contenido */
+      .pendiente {
+        border: 1px dashed rgba(251, 191, 36, 0.42);
+        background: var(--atencion-suave);
+        border-radius: var(--radio);
+        padding: 2rem;
+      }
+      .pendiente .cab {
+        color: var(--atencion);
+        font-weight: 800;
+        font-size: 0.76rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 0.8rem;
+      }
+      .pendiente p {
+        color: var(--texto-2);
+      }
+      .pendiente .esqueleto {
+        display: grid;
+        gap: 0.6rem;
+        margin-top: 1.4rem;
+      }
+      .pendiente .linea {
+        height: 0.72rem;
+        border-radius: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--superficie) 0%,
+          var(--superficie-2) 50%,
+          var(--superficie) 100%
+        );
+      }
+      .pendiente .linea:nth-child(2) {
+        width: 92%;
+      }
+      .pendiente .linea:nth-child(3) {
+        width: 78%;
+      }
+      .pendiente .linea:nth-child(4) {
+        width: 86%;
+      }
+
+      /* ------------------------------------------------------------- aparte */
+      aside .caja {
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        padding: 1.5rem;
+        background: var(--fondo-2);
+      }
+      aside .caja + .caja {
+        margin-top: 1.2rem;
+      }
+      aside .cab {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        margin-bottom: 0.9rem;
+      }
+      aside p {
+        font-size: 0.92rem;
+        margin-bottom: 0.7rem;
+      }
+      .vuelta {
+        display: block;
+        border: 1px solid var(--linea);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        color: var(--texto);
+        font-weight: 600;
+        font-size: 0.92rem;
+        transition: all 0.2s ease;
+      }
+      .vuelta:hover {
+        border-color: var(--acento-borde);
+        background: var(--acento-suave);
+        text-decoration: none;
+      }
+      .vuelta small {
+        display: block;
+        color: var(--tenue);
+        font-weight: 500;
+        font-size: 0.79rem;
+        margin-top: 0.15rem;
+      }
+      footer {
+        margin-top: clamp(3rem, 7vw, 5rem);
+        padding-top: 1.6rem;
+        border-top: 1px solid var(--linea-suave);
+        color: var(--tenue);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="barra">
+      <div class="barra-in">
+        <a class="marca" href="../index.html">AI Engineer <span>Coaching</span></a>
+        <a class="volver" href="../sesion-03.html#dia-2">← Día 1</a>
+      </div>
+    </div>
+
+    <div class="envoltorio">
+      <div class="kicker">AI Engineer Coaching · Fase 1: Fundamentos · Sesión 03 · Día 1</div>
+      <h1>Build AI Function Calling with LangChain &amp; Advanced AI Models</h1>
+      <div class="ficha">
+        <span><b>IBM Technology</b></span>
+        <span class="sep">·</span>
+        <span>Inglés</span>
+        <span class="sep">·</span>
+        <span>corto</span>
+      </div>
+
+      <div class="marco">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/cjCYcTPryw8"
+          title="Build AI Function Calling with LangChain &amp; Advanced AI Models"
+          loading="lazy"
+          allow="
+            accelerometer;
+            autoplay;
+            clipboard-write;
+            encrypted-media;
+            gyroscope;
+            picture-in-picture;
+          "
+          allowfullscreen
+        ></iframe>
+      </div>
+      <div class="bajo-video">
+        <span>Si el reproductor no carga, ábrelo directamente.</span>
+        <a
+          class="en-youtube"
+          href="https://www.youtube.com/watch?v=cjCYcTPryw8"
+          target="_blank"
+          rel="noopener"
+          >Ver en YouTube ↗</a
+        >
+      </div>
+
+      <div class="cuerpo">
+        <main><section class="bloque"><div class="pendiente"><div class="cab">⧗ Resumen pendiente</div><p>El video ya está aquí y se puede ver. Lo que falta es la parte del curso: el resumen de lo que dice, lo que de verdad vale la pena y cómo se enlaza con este día del taller.</p><p>No se rellena a ojo. Se escribe después de verlo, en <code>talleres/videos.yaml</code>, y aparece aquí con el siguiente <code>build.py</code>.</p><div class="esqueleto" aria-hidden="true"><div class="linea"></div><div class="linea"></div><div class="linea"></div><div class="linea"></div></div></div></section></main>
+        <aside>
+          <div class="caja">
+            <div class="cab">Vuelve al taller</div>
+            <a class="vuelta" href="../sesion-03.html#dia-2"
+              >Día 1 <small>La forma del round-trip, y la ficha que ve el modelo</small></a
+            >
+          </div>
+          <div class="caja"><div class="cab">Mientras tanto</div><p>Véelo con el día del taller al lado: lo que reconozcas del código es la señal de que el video te está sirviendo.</p></div>
+        </aside>
+      </div>
+
+      <footer>
+        Página generada por <code>talleres/build.py</code> desde
+        <code>talleres/videos.yaml</code>. El video es de IBM Technology y se ve
+        embebido desde YouTube; el resumen y los comentarios son material del
+        curso.
+      </footer>
+    </div>
+  </body>
+</html>

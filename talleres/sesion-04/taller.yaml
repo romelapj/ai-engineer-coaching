@@ -150,6 +150,12 @@ dias:
       Corres `python 00_chunking.py` y ves 10 chunks, cada uno con su archivo y
       su sección. Puedes explicar por qué cortamos por `##` y no cada 500
       caracteres, y qué pasaría con un chunk que se queda a mitad de una frase.
+    video:
+      id: 8OJC21T2SL4
+      porque: >-
+        EL video de chunking. Tu corte por títulos es uno de sus cinco
+        niveles; el video te muestra los otros cuatro y cuándo cada uno paga
+        su complejidad.
     pasos:
       - titulo: "La base de conocimiento"
         minutos: 6
@@ -264,6 +270,12 @@ dias:
       Existe una carpeta `rag_db/` en tu proyecto y `01_ingesta.py` reporta 10
       chunks en la colección. Puedes explicar por qué la ingesta borra y
       recrea la colección en vez de simplemente agregar.
+    video:
+      id: dN0lsF2cvm4
+      porque: >-
+        Cuatro minutos sobre lo que Chroma acaba de hacer por dentro: cómo se
+        guarda un embedding y cómo se busca el más parecido sin comparar
+        contra todos.
     pasos:
       - titulo: "Reusar el chunking del día 1"
         minutos: 7
@@ -364,6 +376,12 @@ dias:
       (varios chunks pasan), pregunta de otro documento (pasa el correcto), y
       pregunta fuera de tema (**no pasa nadie**). Puedes explicar de dónde
       salió el 0.40 y por qué no lo copiaste de un blog.
+    video:
+      id: T-D1OfcDW1M
+      porque: >-
+        La intro canónica de RAG, en seis minutos y por una investigadora de
+        IBM. Fíjate en que sus dos ventajas son exactamente las dos que hoy
+        programaste: datos frescos y fuentes citables.
     pasos:
       - titulo: "El umbral, y por qué es un número tuyo"
         minutos: 7
@@ -459,6 +477,11 @@ dias:
       `03_rag_completo.py` responde las dos primeras preguntas con marcadores
       `[n]` y responde exactamente *"No tengo evidencia para responder."* a la
       tercera. Con eso ya puedes empezar el reto 03 del AI Gym.
+    video:
+      id: uAsd9pOIcLg
+      porque: >-
+        El flujo completo con código y en español. Buen contraste con el tuyo:
+        mismas piezas, decisiones distintas.
     pasos:
       - titulo: "Configuración y el cliente de Anthropic"
         minutos: 5
@@ -582,6 +605,11 @@ dias:
       En la corrida ves el rerank descartando 5 de 6 candidatos que **sí**
       habían pasado el umbral. Puedes explicar por qué la v0.3 le habría pasado
       los 6 al modelo, y qué parte de CLaRa no se puede imitar vía API.
+    video:
+      id: sVcwVQRHIc8
+      porque: >-
+        Dos horas y media construyendo un RAG a mano. Para cuando quieras ver
+        el pipeline entero otra vez, con otra voz y sin prisa.
     pasos:
       - titulo: "El diagnóstico del paper, aplicado a tu código"
         minutos: 8

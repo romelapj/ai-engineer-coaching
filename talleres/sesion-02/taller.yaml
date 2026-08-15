@@ -132,6 +132,12 @@ dias:
       Puedes decir qué hace `temperature`, dónde va el `system` y por qué la
       lista de mensajes siempre termina en `user`. Y sabes por qué el turno 2
       cuesta más que el turno 1.
+    video:
+      id: _ZvnD73m40o
+      porque: >-
+        La base niveladora: zero-shot, few-shot y por qué el modelo alucina.
+        Si el request de hoy te resultó nuevo, empieza por aquí antes de
+        seguir.
     pasos:
       - titulo: "El cliente"
         minutos: 4
@@ -321,6 +327,12 @@ dias:
     checkpoint: >-
       Corriste las dos versiones sobre el mismo reclamo. Puedes explicar por qué
       un ejemplo de un caso fácil no aporta nada.
+    video:
+      id: ysPbXH0LpIE
+      porque: >-
+        El taller oficial de Anthropic, y mapea casi 1:1 con estos dos días:
+        few-shot hoy, etiquetas XML mañana. Si solo vas a ver un video de la
+        sesión, es este.
     pasos:
       - titulo: "El montaje de la comparación"
         minutos: 4
@@ -403,6 +415,12 @@ dias:
       El script devuelve un diccionario de Python con campos accesibles por
       nombre. Puedes explicar por qué el `try/except` sigue siendo necesario
       aunque el prompt sea perfecto.
+    video:
+      id: 7f5xF-I-S3c
+      porque: >-
+        La misma idea de hoy contada en español: instrucciones claras,
+        contexto y formato explícito. Útil para explicárselo a alguien que no
+        programa.
     pasos:
       - titulo: "Un texto que viene de fuera"
         minutos: 5
@@ -490,6 +508,12 @@ dias:
     checkpoint: >-
       Tienes un número para la v1 y la lista de los casos que falló. Esa lista
       es lo que decide el cambio de mañana.
+    video:
+      id: T9aRN5JkmL8
+      porque: >-
+        Los prompt engineers de Anthropic sobre cuándo el chain-of-thought
+        ayuda y cuándo no. Justo el tipo de pregunta que tu golden set puede
+        responder con números.
     pasos:
       - titulo: "El golden set y la v1 del prompt"
         minutos: 8
@@ -559,6 +583,12 @@ dias:
     checkpoint: >-
       Tienes dos porcentajes y una diferencia. Puedes decir qué casos arregló la
       v2, cuáles siguen fallando, y qué harías después con esa información.
+    video:
+      id: 7zczUN30wSw
+      porque: >-
+        Otra perspectiva sobre cuándo combinar cada técnica. Léelo contra tu
+        tabla de v1 y v2: verás cuántas de sus recomendaciones tu propio eval
+        confirma o desmiente.
     pasos:
       - titulo: "Las dos versiones en el mismo archivo"
         minutos: 4

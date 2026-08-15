@@ -62,6 +62,9 @@ dias:
     meta: "Un párrafo de contexto del día."
     archivo_completo: [00_chunking.py] # panel plegable al cierre, para comparar
     checkpoint: "Cómo sabe el alumno que el día quedó cerrado."
+    video: # opcional; la tarjeta va después del checkpoint
+      id: 8OJC21T2SL4 # tiene que estar en talleres/videos.yaml
+      porque: "Por qué ESTE video en ESTE día." # no el resumen del video
     pasos:
       - titulo: "Nombre del paso"
         minutos: 8
@@ -134,6 +137,20 @@ python talleres/build.py --estricto && python talleres/verificar.py
 Si un archivo se muestra solo como referencia y no se enseña línea por línea
 (por ejemplo un `.md` de datos), va en `archivo_completo` del día, no en
 `codigo` de un paso: no entra en la verificación.
+
+## El video del día
+
+Un día puede cerrar con la tarjeta de un video: miniatura, título y una línea de
+por qué. Al hacer clic abre en pestaña nueva su página propia, con el video
+embebido y el material del curso alrededor. Los metadatos viven una sola vez en
+`talleres/videos.yaml`; el día solo referencia el id y escribe el `porque`.
+
+El `porque` **no es el resumen del video**: es la razón de ponerlo en ese día
+concreto. "Tu corte por títulos es uno de sus cinco niveles" sirve; "buen video
+sobre chunking" no.
+
+Ver [06 · Videos de los talleres](06-videos.md) para el detalle, incluido por
+qué los resúmenes no se generan automáticamente.
 
 ## Diseñar los días
 

@@ -135,6 +135,12 @@ dias:
       Puedes dibujar las cuatro fases de memoria y decir cuál de ellas ejecuta
       el modelo (ninguna). Y puedes explicar por qué la `description` de una
       tool importa más que el código que hay detrás.
+    video:
+      id: cjCYcTPryw8
+      porque: >-
+        Sobre el diseño de la ficha que acabas de escribir: qué nombres y qué
+        descripciones entiende de verdad el modelo. El schema es prompt, y
+        aquí se ve por qué.
     pasos:
       - titulo: "Las tres piezas del intercambio"
         minutos: 8
@@ -244,6 +250,11 @@ dias:
       `02_el_loop.py` imprime `stop_reason: tool_use` en el turno 0, ejecuta tu
       función, y en el turno 1 responde con texto. Puedes explicar por qué el
       turno del modelo se guarda **entero** en el historial.
+    video:
+      id: liV0bfZ5Wu0
+      porque: >-
+        El mismo loop de hoy, escrito por otra persona y en otro orden. Verlo
+        dos veces es lo que hace que deje de parecer magia.
     pasos:
       - titulo: "El cliente y el puente nombre → función"
         minutos: 6
@@ -355,6 +366,12 @@ dias:
       La salida dice "2 tool(s) en un solo turno" y "Tiempo en paralelo: 2.0s
       (en serie habría tardado ~4s)". Puedes explicar qué pasa si respondes solo
       uno de los dos.
+    video:
+      id: "-3-wq_kvc3A"
+      porque: >-
+        Function calling paso a paso en español. Ojo: usa la Assistants API,
+        hoy en deprecación, así que quédate con los conceptos y no con las
+        llamadas.
     pasos:
       - titulo: "Una tool deliberadamente lenta"
         minutos: 6
@@ -453,6 +470,12 @@ dias:
       El script imprime `✓ validación OK` y al final un objeto Python con sus
       campos accesibles por nombre. Puedes explicar qué pasa cuando la
       validación falla.
+    video:
+      id: yj-wSRJwrrc
+      porque: >-
+        La charla canónica sobre structured outputs, y explica por qué lo que
+        hiciste hoy no es un truco de formato sino un cambio en cómo se
+        construye con LLMs.
     pasos:
       - titulo: "El cliente, y una dependencia nueva"
         minutos: 4
@@ -542,6 +565,12 @@ dias:
     checkpoint: >-
       Ves las esperas creciendo (0.5s, 1.9s…) y **nunca dos iguales**. Puedes
       decir de memoria qué códigos se reintentan y cuál jamás.
+    video:
+      id: pZ4DIH2BVqg
+      porque: >-
+        La secuela, con lecciones de producción: qué hacer cuando la
+        validación falla y cómo son los reintentos que de verdad sirven. Es el
+        tema de hoy.
     pasos:
       - titulo: "Un error transitorio y una llamada que falla dos veces"
         minutos: 6

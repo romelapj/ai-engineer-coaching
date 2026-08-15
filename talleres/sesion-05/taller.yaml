@@ -541,6 +541,12 @@ dias:
     checkpoint: >-
       Puedes explicar por qué RRF fusiona usando posiciones y no puntuaciones, y
       por qué el reranker recibe candidatos en vez del corpus entero.
+    video:
+      id: r0Dciuq0knU
+      porque: >-
+        Sparse, dense e híbrido en corto y bien explicado: exactamente las
+        tres funciones que acabas de escribir. Míralo con `retrieval.py` al
+        lado.
     pasos:
       - titulo: "La firma común, otra vez"
         minutos: 5
@@ -650,6 +656,12 @@ dias:
     checkpoint: >-
       Tienes tres filas comparadas. Puedes explicar por qué el híbrido es mejor
       que "solo BM25" aunque empate en recall@1.
+    video:
+      id: 9QJXvNiJIG8
+      porque: >-
+        Una comparativa medida de BM25 contra embeddings, que es lo mismo que
+        acabas de hacer pero en otro corpus. Compara sus números con los
+        tuyos: si difieren, la pregunta interesante es por qué.
     pasos:
       - titulo: "La regla: no asumir que mejora"
         minutos: 8
@@ -710,6 +722,12 @@ dias:
     checkpoint: >-
       Tienes las cuatro variantes con su latencia al lado, y recall@1 = 1.00.
       Puedes explicar por qué ese 1.00 se ve mejor de lo que es.
+    video:
+      id: ZFbaA9eM0uo
+      porque: >-
+        Reranking hands-on con cross-encoders de verdad, no con un modelo
+        generalista como el nuestro. Es el paso natural cuando el reranker
+        deje de ser una demo.
     pasos:
       - titulo: "Por qué hoy y no en el día 6"
         minutos: 8
@@ -770,6 +788,12 @@ dias:
     checkpoint: >-
       Puedes decir, para cada una de las cuatro técnicas, qué síntoma del golden
       set la justificaría.
+    video:
+      id: tmiBae2goJM
+      porque: >-
+        El contextual retrieval de la palanca C, con las cifras de Anthropic
+        (49% y 67% menos fallos). Buen ejemplo de una mejora publicada con su
+        medición al lado.
     pasos:
       - titulo: "La tabla síntoma a palanca"
         minutos: 7

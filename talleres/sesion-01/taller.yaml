@@ -134,6 +134,12 @@ dias:
       Corres el script y ves que el español rinde ~3.3 caracteres por token
       mientras el JSON rinde ~2. Puedes explicar por qué pedirle JSON al modelo
       cuesta más de lo que parece.
+    video:
+      id: wjZofJX0v4M
+      porque: >-
+        El video empieza justo donde termina hoy: qué hace el modelo con esos
+        tokens una vez los tiene. Verás la tabla de embeddings de entrada que
+        tu script imprime, dibujada.
     pasos:
       - titulo: "El contador que es gratis"
         minutos: 6
@@ -218,6 +224,12 @@ dias:
       Tienes una tabla con el costo mensual proyectado de tu propio prompt en
       tres modelos. Puedes explicar por qué el mismo texto cuenta 63 tokens en
       un modelo y 85 en otro.
+    video:
+      id: Sz4qacFBHLk
+      porque: >-
+        En español y sin matemáticas: qué es un LLM y de dónde sale su costo.
+        Buen respiro después de una sesión de contar tokens y multiplicar por
+        precios.
     pasos:
       - titulo: "La tabla de precios, en un solo sitio"
         minutos: 8
@@ -304,6 +316,12 @@ dias:
       Viste tres corridas casi idénticas con `temperature=0` y tres distintas
       con `temperature=1`. Y provocaste un `stop_reason: max_tokens`. Puedes
       explicar por qué ese caso no lanza ninguna excepción.
+    video:
+      id: eMlx5fFNoYc
+      porque: >-
+        `temperature` reparte probabilidad sobre la distribución de salida.
+        Este video muestra de dónde sale esa distribución, que es lo que hoy
+        estuviste moviendo a ciegas.
     pasos:
       - titulo: "Un prompt que da para variar"
         minutos: 6
@@ -377,6 +395,12 @@ dias:
       Tienes tu estimación y tu número real lado a lado, y sabes qué porcentaje
       de la factura fue la salida. Puedes decir cuál de las dos mitades se puede
       predecir y cuál no.
+    video:
+      id: 7xTGNNLPyMI
+      porque: >-
+        La pieza de fondo, para cuando quieras entender qué estás pagando:
+        tokenización, pretraining y por qué el modelo alucina. Son 3 horas y
+        media, no es para hoy.
     pasos:
       - titulo: "Estimar y llamar"
         minutos: 12
@@ -430,6 +454,11 @@ dias:
       Viste el mismo experimento funcionar en inglés y romperse en español.
       Puedes explicar por qué ese fallo no lanza ningún error, y qué habrías
       hecho si no lo hubieras medido.
+    video:
+      id: wgfSDrqYMJ4
+      porque: >-
+        Corto y directo sobre lo que acabas de construir: por qué un texto se
+        vuelve un vector y qué significa que dos vectores estén cerca.
     pasos:
       - titulo: "El modelo de embeddings local"
         minutos: 5

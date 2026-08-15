@@ -1,0 +1,171 @@
+# Catálogo de videos del curso.
+#
+# Un video vive aquí una sola vez y lo referencian los días de los talleres con
+# `video: {id: <id de YouTube>, porque: "..."}`. Los metadatos (título, autor,
+# duración) NO se repiten en el taller: si un video cambia, se corrige aquí.
+#
+# CÓMO SE LLENA EL CONTENIDO DE LA PÁGINA
+#
+# Los campos `resumen`, `valioso`, `conecta` y `reparos` son opcionales. Sin
+# ellos la página del video se genera igual (con el video embebido y su ficha),
+# pero muestra el estado "resumen pendiente" en vez de inventarse el contenido.
+#
+# No se rellenan a ojo: hay que ver el video. El generador lleva la cuenta de
+# cuáles faltan y `build.py --pendientes` los lista.
+#
+#   resumen : qué dice el video, en orden. 2 a 4 párrafos.
+#   valioso : lista de lo que de verdad vale la pena, en frases con contenido
+#             (no "explica bien X": qué dice exactamente sobre X).
+#   conecta : cómo se enlaza con el día del taller. Aquí va el criterio propio.
+#   reparos : dónde se queda corto, qué está desactualizado, en qué discrepas.
+#             Un video sin reparos suele ser un video que no se vio con cuidado.
+
+videos:
+  # ---------------------------------------------------------------- sesión 01
+  wjZofJX0v4M:
+    titulo: "But what is a GPT? Visual intro to transformers"
+    autor: "3Blue1Brown"
+    idioma: "Inglés"
+    duracion: "~27 min"
+
+  Sz4qacFBHLk:
+    titulo: "¿Qué es un LLM? Enormes Modelos del Lenguaje"
+    autor: "Dot CSV"
+    idioma: "Español"
+    duracion: "~15 min"
+
+  eMlx5fFNoYc:
+    titulo: "Attention in transformers, step-by-step"
+    autor: "3Blue1Brown"
+    idioma: "Inglés"
+    duracion: "~26 min"
+
+  7xTGNNLPyMI:
+    titulo: "Deep Dive into LLMs like ChatGPT"
+    autor: "Andrej Karpathy"
+    idioma: "Inglés"
+    duracion: "3 h 31 min"
+
+  wgfSDrqYMJ4:
+    titulo: "What are Word Embeddings?"
+    autor: "IBM Technology"
+    idioma: "Inglés"
+    duracion: "corto"
+
+  # ---------------------------------------------------------------- sesión 02
+  _ZvnD73m40o:
+    titulo: "Prompt Engineering Tutorial: Master ChatGPT and LLM Responses"
+    autor: "freeCodeCamp.org"
+    idioma: "Inglés"
+    duracion: "~1 h"
+
+  ysPbXH0LpIE:
+    titulo: "Prompting 101 | Code w/ Claude"
+    autor: "Anthropic"
+    idioma: "Inglés"
+    duracion: "~24 min"
+
+  7f5xF-I-S3c:
+    titulo: "Cómo usar (BIEN) ChatGPT y cualquier Inteligencia Artificial"
+    autor: "Dot CSV"
+    idioma: "Español"
+    duracion: "~20 min"
+
+  T9aRN5JkmL8:
+    titulo: "AI prompt engineering: A deep dive"
+    autor: "Anthropic"
+    idioma: "Inglés"
+    duracion: "~1 h 30 min"
+
+  7zczUN30wSw:
+    titulo: "IBM AI Experts Reveal Prompt Engineering Secrets"
+    autor: "IBM Technology"
+    idioma: "Inglés"
+    duracion: "corto"
+
+  # ---------------------------------------------------------------- sesión 03
+  cjCYcTPryw8:
+    titulo: "Build AI Function Calling with LangChain & Advanced AI Models"
+    autor: "IBM Technology"
+    idioma: "Inglés"
+    duracion: "corto"
+
+  liV0bfZ5Wu0:
+    titulo: "How to Connect an LLM to Python Functions (Tool Calling Tutorial)"
+    autor: "Dataquest"
+    idioma: "Inglés"
+    duracion: "medio"
+
+  "-3-wq_kvc3A":
+    titulo: "Tutorial Assistants API de OpenAI · Parte 2: Function Calling"
+    autor: "LLM Master"
+    idioma: "Español"
+    duracion: "medio"
+
+  yj-wSRJwrrc:
+    titulo: "Pydantic is all you need · Jason Liu"
+    autor: "AI Engineer"
+    idioma: "Inglés"
+    duracion: "~20 min"
+
+  pZ4DIH2BVqg:
+    titulo: "Pydantic is STILL all you need · Jason Liu"
+    autor: "AI Engineer"
+    idioma: "Inglés"
+    duracion: "~20 min"
+
+  # ---------------------------------------------------------------- sesión 04
+  8OJC21T2SL4:
+    titulo: "The 5 Levels Of Text Splitting For Retrieval"
+    autor: "Greg Kamradt"
+    idioma: "Inglés"
+    duracion: "~1 h 10 min"
+
+  dN0lsF2cvm4:
+    titulo: "Vector Databases simply explained! (Embeddings & Indexes)"
+    autor: "Python Engineer"
+    idioma: "Inglés"
+    duracion: "~4 min"
+
+  T-D1OfcDW1M:
+    titulo: "What is Retrieval-Augmented Generation (RAG)?"
+    autor: "IBM Technology"
+    idioma: "Inglés"
+    duracion: "~6 min"
+
+  uAsd9pOIcLg:
+    titulo: "¿Qué es RAG? Clase con código y ejemplo"
+    autor: "EvoAcademy"
+    idioma: "Español"
+    duracion: "medio"
+
+  sVcwVQRHIc8:
+    titulo: "Learn RAG From Scratch: Python AI Tutorial"
+    autor: "freeCodeCamp.org"
+    idioma: "Inglés"
+    duracion: "~2 h 30 min"
+
+  # ---------------------------------------------------------------- sesión 05
+  r0Dciuq0knU:
+    titulo: "Top 3 RAG Retrieval Strategies: Sparse, Dense & Hybrid Explained"
+    autor: "IBM Technology"
+    idioma: "Inglés"
+    duracion: "corto"
+
+  9QJXvNiJIG8:
+    titulo: "Mastering Retrieval for LLMs: BM25, Fine-tuned Embeddings and Re-Rankers"
+    autor: "Trelis Research"
+    idioma: "Inglés"
+    duracion: "largo"
+
+  ZFbaA9eM0uo:
+    titulo: "Advanced RAG 04: Reranking with Cross Encoders and Cohere API"
+    autor: "Sam Witteveen"
+    idioma: "Inglés"
+    duracion: "medio"
+
+  tmiBae2goJM:
+    titulo: "The Best RAG Technique Yet? Anthropic's Contextual Retrieval Explained"
+    autor: "Prompt Engineering"
+    idioma: "Inglés"
+    duracion: "medio"

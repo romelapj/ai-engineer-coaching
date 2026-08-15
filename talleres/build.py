@@ -242,6 +242,144 @@ def marcado(texto):
     return t
 
 
+# ---------------------------------------------------------------------------
+# Videos
+# ---------------------------------------------------------------------------
+
+# Se carga una vez: el catálogo es del curso entero, no de un taller.
+CATALOGO = {}
+_cat = RAIZ / "videos.yaml"
+if _cat.exists():
+    CATALOGO = (yaml.safe_load(_cat.read_text(encoding="utf-8")) or {}).get("videos", {})
+
+# Qué videos tienen contenido escrito y cuáles no. Lo llena render_video() y lo
+# lee main() para poder listar los pendientes sin volver a recorrer nada.
+PENDIENTES = {}
+USADOS = {}
+
+# Un video se considera escrito cuando tiene resumen. Los demás campos matizan,
+# pero sin resumen la página no tiene nada que contar.
+def tiene_contenido(v):
+    return bool(v.get("resumen"))
+
+
+def render_video(dia, id_taller, num_dia):
+    """La tarjeta del video al cierre del día: miniatura, título y por qué."""
+    ref = dia.get("video")
+    if not ref:
+        return ""
+    vid = ref["id"] if isinstance(ref, dict) else ref
+    v = CATALOGO.get(vid)
+    if not v:
+        raise ErrorTaller(
+            f"día {num_dia}: el video {vid} no está en talleres/videos.yaml"
+        )
+
+    USADOS.setdefault(vid, []).append((id_taller, num_dia))
+    if not tiene_contenido(v):
+        PENDIENTES[vid] = v.get("titulo", vid)
+
+    porque = ref.get("porque", "") if isinstance(ref, dict) else ""
+    falta = (
+        '<span class="vt-falta">resumen pendiente</span>'
+        if not tiene_contenido(v)
+        else ""
+    )
+    return f"""
+      <a class="video-tarjeta" href="videos/{html.escape(vid)}.html"
+         target="_blank" rel="noopener">
+        <span class="vt-cab">Para ampliar</span>
+        <span class="vt-mini">
+          <img src="https://img.youtube.com/vi/{html.escape(vid)}/mqdefault.jpg"
+               alt="" loading="lazy" width="320" height="180" />
+          <span class="vt-play" aria-hidden="true"></span>
+        </span>
+        <span class="vt-texto">
+          <span class="vt-titulo">{html.escape(v.get("titulo", vid))}</span>
+          <span class="vt-meta">{html.escape(v.get("autor", ""))}
+            · {html.escape(v.get("idioma", ""))}
+            · {html.escape(v.get("duracion", ""))}{falta}</span>
+          <span class="vt-porque">{marcado(porque)}</span>
+        </span>
+      </a>"""
+
+
+def render_pagina_video(vid, v, destino_dir, contexto):
+    """La página propia del video: ficha, embebido y el material del curso.
+
+    Si el video todavía no tiene `resumen` en el catálogo, la página se genera
+    igual (el alumno puede verlo) pero con un estado de pendiente explícito.
+    Nunca se inventa el contenido: eso convertiría el material del curso en
+    algo que no se puede citar.
+    """
+    plantilla = (RAIZ / "plantilla-video.html").read_text(encoding="utf-8")
+
+    if tiene_contenido(v):
+        piezas = [
+            '<section class="bloque"><h2><span class="num">01</span>'
+            "De qué va</h2>" + parrafos(v["resumen"]) + "</section>"
+        ]
+        if v.get("valioso"):
+            puntos = "".join(f"<li>{marcado(x)}</li>" for x in v["valioso"])
+            piezas.append(
+                '<section class="bloque"><h2><span class="num">02</span>'
+                f'Lo que de verdad vale</h2><ul class="valioso">{puntos}</ul></section>'
+            )
+        if v.get("conecta"):
+            piezas.append(
+                '<section class="bloque"><h2><span class="num">03</span>'
+                "Cómo se enlaza con el taller</h2>"
+                + parrafos(v["conecta"])
+                + "</section>"
+            )
+        if v.get("reparos"):
+            piezas.append(
+                '<section class="bloque"><h2><span class="num">04</span>'
+                "Dónde se queda corto</h2>" + parrafos(v["reparos"]) + "</section>"
+            )
+        contenido = "".join(piezas)
+    else:
+        contenido = (
+            '<section class="bloque"><div class="pendiente">'
+            '<div class="cab">⧗ Resumen pendiente</div>'
+            "<p>El video ya está aquí y se puede ver. Lo que falta es la parte "
+            "del curso: el resumen de lo que dice, lo que de verdad vale la "
+            "pena y cómo se enlaza con este día del taller.</p>"
+            "<p>No se rellena a ojo. Se escribe después de verlo, en "
+            "<code>talleres/videos.yaml</code>, y aparece aquí con el "
+            "siguiente <code>build.py</code>.</p>"
+            '<div class="esqueleto" aria-hidden="true">'
+            '<div class="linea"></div><div class="linea"></div>'
+            '<div class="linea"></div><div class="linea"></div></div>'
+            "</div></section>"
+        )
+
+    aparte = ""
+    if not tiene_contenido(v):
+        aparte = (
+            '<div class="caja"><div class="cab">Mientras tanto</div>'
+            "<p>Véelo con el día del taller al lado: lo que reconozcas del "
+            "código es la señal de que el video te está sirviendo.</p></div>"
+        )
+
+    salida = (
+        plantilla.replace("{{TITULO}}", html.escape(v.get("titulo", vid)))
+        .replace("{{AUTOR}}", html.escape(v.get("autor", "")))
+        .replace("{{IDIOMA}}", html.escape(v.get("idioma", "")))
+        .replace("{{DURACION}}", html.escape(v.get("duracion", "")))
+        .replace("{{VIDEO_ID}}", html.escape(vid))
+        .replace("{{KICKER}}", html.escape(contexto["kicker"]))
+        .replace("{{VOLVER_URL}}", html.escape(contexto["volver_url"]))
+        .replace("{{VOLVER_TEXTO}}", html.escape(contexto["volver_texto"]))
+        .replace("{{VOLVER_NOTA}}", html.escape(contexto["volver_nota"]))
+        .replace("{{INICIO}}", html.escape(contexto["inicio"]))
+        .replace("{{CONTENIDO}}", contenido)
+        .replace("{{APARTE}}", aparte)
+    )
+    destino_dir.mkdir(parents=True, exist_ok=True)
+    (destino_dir / f"{vid}.html").write_text(salida, encoding="utf-8")
+
+
 def render_paso(paso, num_dia, num_paso, base, salidas, uso):
     pid = f"d{num_dia}p{num_paso}"
     ctx = f"día {num_dia} · paso {num_paso} ({paso.get('titulo', 'sin título')})"
@@ -333,7 +471,7 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
     </article>"""
 
 
-def render_dia(dia, num_dia, base, salidas, uso):
+def render_dia(dia, num_dia, base, salidas, uso, id_taller=""):
     pasos = "".join(
         render_paso(p, num_dia, i, base, salidas, uso)
         for i, p in enumerate(dia.get("pasos", []), start=1)
@@ -376,6 +514,7 @@ def render_dia(dia, num_dia, base, salidas, uso):
       {pasos}
       {completos}
       {cierre}
+      {render_video(dia, id_taller, num_dia)}
     </section>"""
 
 
@@ -518,8 +657,32 @@ def construir(dir_taller, estricto=False):
     uso = {}
     dias = taller["dias"]
     cuerpo = "".join(
-        render_dia(d, i, base, salidas, uso) for i, d in enumerate(dias, start=1)
+        render_dia(d, i, base, salidas, uso, taller["id"])
+        for i, d in enumerate(dias, start=1)
     )
+
+    # Una página por cada video referenciado, en talleres/videos/. Se escribe
+    # aquí y no en un script aparte para que un video nuevo no pueda quedarse
+    # sin su página: si el día lo referencia, la página existe.
+    n_videos = 0
+    for i, d in enumerate(dias, start=1):
+        ref = d.get("video")
+        if not ref:
+            continue
+        vid = ref["id"] if isinstance(ref, dict) else ref
+        render_pagina_video(
+            vid,
+            CATALOGO[vid],
+            dir_taller.parent / "videos",
+            {
+                "kicker": f"{taller.get('kicker', '')} · {d.get('etiqueta', '')}",
+                "volver_url": f"../{taller['id']}.html#dia-{i}",
+                "volver_texto": d.get("etiqueta", f"Día {i}"),
+                "volver_nota": d.get("titulo", ""),
+                "inicio": "../" + taller.get("inicio", "../index.html").lstrip("./"),
+            },
+        )
+        n_videos += 1
 
     problemas = revisar_cobertura(uso, base, taller)
     for archivo, detalle in problemas:
@@ -556,7 +719,9 @@ def construir(dir_taller, estricto=False):
     destino.write_text(salida, encoding="utf-8")
     print(
         f"✓ {destino.relative_to(REPO)}: {len(dias)} días, {total_pasos} pasos, "
-        f"{len(uso)} archivo(s) de código{' · sin huecos' if not problemas else ''}"
+        f"{len(uso)} archivo(s) de código"
+        f"{f', {n_videos} video(s)' if n_videos else ''}"
+        f"{' · sin huecos' if not problemas else ''}"
     )
     return destino
 
@@ -581,6 +746,19 @@ def main():
         except ErrorTaller as e:
             print(f"✗ {d.name}: {e}")
             return 1
+
+    # Los videos sin resumen no rompen el build: la página se genera con su
+    # estado de pendiente. Pero se listan, porque un pendiente que no se ve
+    # deja de ser un pendiente y pasa a ser un hueco.
+    if PENDIENTES:
+        print(
+            f"\n⧗ {len(PENDIENTES)} de {len(USADOS)} videos esperan su resumen "
+            f"(la página se generó igual, con el estado de pendiente):"
+        )
+        for vid, titulo in PENDIENTES.items():
+            donde = ", ".join(f"{t} día {n}" for t, n in USADOS[vid])
+            print(f"    {vid}  {titulo[:56]:56} → {donde}")
+        print("  Se escriben en talleres/videos.yaml (resumen, valioso, conecta, reparos).")
     return 0
 
 
