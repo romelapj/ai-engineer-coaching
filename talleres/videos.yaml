@@ -494,13 +494,278 @@ videos:
     titulo: "¿Qué es RAG? Clase con código y ejemplo"
     autor: "EvoAcademy"
     idioma: "Español"
-    duracion: "medio"
+    duracion: "~38 min"
+    resumen: |
+      Una clase en español que construye un RAG completo en Google Colab, de
+      principio a fin. Arranca con tres preguntas a ChatGPT que fallan **por
+      motivos distintos**, y esa separación es lo mejor de la primera parte:
+      preguntar qué es su propia academia produce una respuesta que empieza bien
+      y se desvía sola hacia biología evolutiva (alucinación); preguntar quién
+      preside Argentina devuelve a Alberto Fernández "según mi última
+      actualización de octubre de 2023" (desactualización); y preguntar dónde se
+      transmitirá la WWE en 2025 devuelve la situación vieja porque la noticia es
+      posterior a su entrenamiento.
+
+      Su argumento contra reentrenar es más completo que el habitual: además de
+      costar una fortuna en cómputo, **el reentrenamiento puede seguir sin
+      incluir tus datos**, porque tus documentos internos no van a estar en el
+      corpus de nadie.
+
+      **Por qué se parte en trozos**, con dos razones separadas. La primera es de
+      relevancia: en una noticia larga que cuenta qué pasó, dónde y por qué,
+      puede que al usuario solo le importe el dónde, y trocear permite quedarse
+      con esa parte. La segunda es técnica: la ventana de contexto es limitada.
+
+      **Embeddings.** Su explicación es la clásica y está bien contada: la
+      palabra "rey" descompuesta en sus letras no dice nada de su significado,
+      pero como vector queda más cerca de "reina" que de "manzana", y las
+      parejas hombre/mujer y rey/reina aparecen paralelas en el espacio. De ahí
+      la aritmética famosa: rey menos hombre más mujer da reina. Avisa varias
+      veces de que es una simplificación.
+
+      **La demo.** Carga dos noticias, la del traslado de la WWE a Netflix y otra
+      completamente distinta sobre un empresario chileno, esta última a propósito
+      para que el sistema tenga que **discriminar** y el ejercicio no sea
+      tramposo. Parte con `RecursiveCharacterTextSplitter` y le salen 14 trozos.
+      Calcula los embeddings con OpenAI y los guarda en un DataFrame de pandas,
+      "como si fuera un Excel", diciendo con todas las letras que eso sirve para
+      14 trozos y no para miles. Para buscar usa el producto punto, recupera **un
+      solo trozo** y se lo pasa al modelo con un prompt de texto de referencia.
+      La respuesta sale correcta y la segunda noticia no aparece por ningún lado.
+
+      Cierra con un mapa de cómo se sofistica cada etapa: otras técnicas de
+      troceo, modelos de embeddings especializados por industria (menciona el
+      caso del tabulador en código, un carácter invisible con significado),
+      intervenir la pregunta del usuario antes de buscar, y un reranker externo
+      que reordene 10 o 20 candidatos "añadiendo complejidad y latencia, pero
+      también precisión".
+    valioso:
+      - |
+        **Tres fallos distintos, no uno.** Alucinar, estar desactualizado y no
+        conocer una noticia reciente se parecen desde fuera y se arreglan
+        distinto. Separarlos desde el minuto uno es didáctica de la buena.
+      - |
+        **Reentrenar no resuelve el problema aunque te sobre el dinero**, porque
+        tus documentos internos no están en el corpus de entrenamiento de nadie.
+        Es el argumento a favor de RAG que menos se escucha y el más definitivo.
+      - |
+        **Nombra el supuesto clave en voz alta**: se asume que lo más parecido es
+        lo más relevante, y dice explícitamente que ese supuesto lo hacen todas
+        las bases vectoriales y todas las implementaciones de retrieval. Casi
+        nadie lo enuncia; es exactamente la premisa que la sesión 05 rompe.
+      - |
+        **El modelo de embeddings puede ser distinto del de generación.** Todo el
+        retrieval se apoya en el primero y puede vivir en otro proveedor. Es una
+        separación de responsabilidades que mucha gente no ve hasta que le toca
+        cambiar uno de los dos.
+      - |
+        **Carga una segunda noticia irrelevante a propósito** para que el sistema
+        tenga que descartarla. Es un reflejo sano: un ejemplo donde solo existe
+        la respuesta correcta no demuestra nada.
+      - |
+        **El mapa final de sofisticaciones** es, sin que él lo sepa, el índice de
+        la sesión 05: reescribir la consulta, embeddings especializados y un
+        reranker externo con su coste en latencia.
+    conecta: |
+      Es el mismo pipeline que acabas de terminar, montado por otra persona y con
+      otras herramientas. Verlo así, completo y de corrido, ayuda a comprobar que
+      ya reconoces cada pieza: sus tres macroprocesos (indexación, recuperación,
+      generación) son tus tres archivos.
+
+      Vale la pena fijarse en **las decisiones donde el taller eligió distinto**,
+      porque ninguna es casual:
+
+      Él guarda los vectores en un DataFrame de pandas y avisa de que con miles
+      de trozos no aguanta; tú usaste Chroma desde el principio para no tener que
+      reescribirlo después. Él compara con producto punto; tú fijaste coseno de
+      forma explícita al crear la colección. Con los embeddings de OpenAI, que
+      vienen normalizados, ambas medidas coinciden, pero el producto punto sin
+      normalizar favorece a los vectores de mayor magnitud, así que la
+      equivalencia depende del modelo y conviene no darla por hecha.
+
+      Y la diferencia que de verdad importa hoy: **él recupera exactamente un
+      trozo, sin umbral, y su prompt no pide citas ni contempla la posibilidad de
+      no saber**. Tu `v0.3` hace las tres cosas que le faltan: recupera cuatro
+      candidatos, corta por `UMBRAL`, y obliga al modelo a citar `[n]` o a
+      responder que no tiene evidencia. Compara su prompt de "texto de
+      referencia" con tu `SYSTEM_GENERACION` y verás que la distancia entre una
+      demo y algo auditable son tres reglas.
+    reparos: |
+      **Su RAG no puede decir que no sabe.** Recupera siempre un trozo, porque
+      siempre existe un "más parecido" aunque sea basura, y el prompt no le da al
+      modelo la opción de responder que la información no está. Si le preguntas
+      algo que no está en las dos noticias, contestará igual, con lo que sepa de
+      su entrenamiento y sin avisar. Es justo el fallo que tu día de hoy cierra
+      con el umbral y la frase de rendición.
+
+      **Tampoco pide citas.** La respuesta final es correcta, pero no hay forma
+      de saber de dónde salió cada afirmación sin ir a leer el trozo a mano. Con
+      dos noticias se puede; con dos mil documentos, no.
+
+      **El ejemplo está diseñado para salir bien.** Las dos noticias que carga no
+      se parecen en nada, así que discriminar entre ellas es fácil. Él lo
+      reconoce a medias al decir que añadió la segunda "para no hacerle tan fácil
+      la vida", pero dos documentos disjuntos no son una prueba: el caso difícil
+      es cuando los documentos hablan de lo mismo y solo uno responde, que es el
+      corpus con el que trabaja este taller.
+
+      **No mide nada.** La validación es leer la respuesta y decir "sí es
+      correcta". Con una pregunta y catorce trozos se puede; es exactamente el
+      método que deja de funcionar en cuanto el corpus crece, y el motivo de que
+      exista la sesión 05.
+
+      **Se le cruzan las dimensiones**: dice 1536 (que es lo correcto para los
+      embeddings de OpenAI que usa) y poco después menciona 100. Es un lapsus, no
+      un error de fondo, pero si estás tomando notas puede despistar.
+
+      **Contiene promoción de su curso corporativo** hacia el final. Es legítimo
+      y conviene saberlo antes de llegar ahí.
 
   sVcwVQRHIc8:
     titulo: "Learn RAG From Scratch: Python AI Tutorial"
-    autor: "freeCodeCamp.org"
+    autor: "freeCodeCamp.org · Lance Martin (LangChain)"
     idioma: "Inglés"
-    duracion: "~2 h 30 min"
+    duracion: "~2 h 33 min"
+    resumen: |
+      Un curso entero, no un video. Lance Martin, ingeniero de LangChain,
+      recorre catorce técnicas de RAG en dos horas y media. No se ve de una
+      sentada: se usa como catálogo al que volver cuando tengas un síntoma
+      concreto. La última media hora, en cambio, sí conviene verla entera y de
+      corrido, porque es lo mejor de todo.
+
+      **La estructura del RAG avanzado, tal como él la ordena.** Traducción de la
+      consulta (reescribirla antes de buscar), enrutamiento (mandarla a la fuente
+      correcta), construcción de la consulta (pasar de lenguaje natural al
+      lenguaje de la base de datos), indexación, y razonamiento sobre lo
+      recuperado y lo generado. Ese índice es, sin exagerar, el temario de las
+      sesiones 05 y 06 de este curso.
+
+      **Traducción de la consulta.** Multi-query reescribe la pregunta en varias
+      versiones desde distintos ángulos y recupera con todas, porque la redacción
+      original puede caer lejos del documento correcto en el espacio de
+      embeddings. RAG Fusion añade **Reciprocal Rank Fusion** para consolidar
+      esas listas. La descomposición parte la pregunta en subpreguntas y las
+      resuelve encadenando respuestas. Step-back hace lo contrario, generar una
+      pregunta **más abstracta** y recuperar con las dos. Y HyDE parte de una
+      observación fina: preguntas y documentos son objetos de texto muy distintos
+      (uno corto y mal redactado, otro largo y denso), así que genera un
+      documento hipotético a partir de la pregunta y busca con él.
+
+      **Indexación.** Distingue los vectores dispersos, estadísticos y basados en
+      frecuencia de palabras, de los embeddings aprendidos. Multi-representation
+      indexing indexa un resumen del documento pero **devuelve el documento
+      entero** al generador. RAPTOR agrupa documentos, resume cada grupo y repite
+      el proceso recursivamente, indexándolo todo junto, para que las preguntas
+      generales encuentren resúmenes y las específicas encuentren hojas. Y
+      ColBERT, en vez de comprimir el documento en un vector, genera uno **por
+      token** y suma las similitudes máximas.
+
+      **Razonamiento sobre el flujo.** CRAG califica cada documento recuperado y,
+      si ninguno sirve, se va a buscar a la web. Adaptive RAG añade
+      comprobaciones de alucinación y de si la respuesta contesta la pregunta.
+      Todo montado como máquina de estados, con una idea que nombra bien: dedicar
+      diez minutos a dibujar el flujo antes de escribir nada, porque después cada
+      nodo es solo una función que modifica el estado.
+
+      **Y la última media hora: ¿está muerto RAG?** Con ventanas de un millón de
+      tokens, la pregunta es legítima. Se asoció con Greg Kamradt (el mismo del
+      video de troceo del día 1) para medirlo en serio: extendió la prueba de la
+      aguja en el pajar a **varias agujas** repartidas por el contexto. Tres
+      resultados, y los tres importan: **el rendimiento cae según aumenta el
+      número de hechos** a recuperar; **razonar sobre lo recuperado es más
+      difícil que recuperarlo**; y **los hechos colocados al principio del
+      contexto se recuperan peor que los del final**, un efecto que empeora
+      cuanto más largo es el contexto y que atribuye al sesgo de cercanía. Su
+      conclusión, con una cita de Frank Zappa: RAG no está muerto, solo huele
+      raro.
+    valioso:
+      - |
+        **El experimento de las varias agujas.** Es la respuesta empírica a "mete
+        todo en el contexto y ya": más hechos empeoran el resultado, razonar
+        cuesta más que recuperar, y lo que está al principio se olvida. Nada de
+        eso se ve con una sola aguja.
+      - |
+        **Su escepticismo con las pruebas de aguja en el pajar que publican los
+        proveedores de modelos**: suelen usar una sola aguja, sin razonamiento, y
+        muy distinta del texto de fondo. Si la aguja se parece más al fondo, la
+        recuperación empeora. Es una lección de cómo leer un benchmark.
+      - |
+        **Los dos argumentos que sobreviven aunque el contexto sea infinito**: con
+        todo metido en el prompt **no puedes auditar** de dónde salió la
+        respuesta, y **no puedes gestionar permisos** cuando distintos usuarios
+        deben ver distintos documentos. Ninguno de los dos es un problema de
+        capacidad, así que ninguno se arregla con más tokens.
+      - |
+        **HyDE y su observación de base**: la pregunta y el documento son objetos
+        de texto distintos, y compararlos directamente es comparar peras con
+        manzanas. Generar un documento hipotético es una forma de llevar la
+        pregunta al espacio donde viven los documentos.
+      - |
+        **Step-back como espejo de la descomposición**: casi todas las técnicas
+        van hacia lo concreto, y esta va hacia lo abstracto. Útil cuando el
+        corpus tiene capítulos conceptuales y capítulos de implementación.
+      - |
+        **"Como poner un agente sobre rieles."** Su comparación entre flujos
+        definidos y agentes: los primeros son menos flexibles y mucho más
+        fiables, y permiten usar modelos más pequeños y rápidos. Es el mejor
+        resumen que conozco de esa decisión.
+      - |
+        **Dibuja el flujo antes de programarlo.** Dice que diez minutos de diseño
+        del grafo se pagan solos, porque después cada nodo es una función que
+        recibe un estado y devuelve otro.
+    conecta: |
+      Este video es el mapa completo del territorio que el curso recorre a pie.
+      Verlo hoy, al cerrar la sesión 04, sirve sobre todo para situarte: casi
+      todo lo que enseña o ya lo hiciste o lo vas a hacer.
+
+      **Lo que acabas de hacer.** Tu `v0.4` expande la consulta antes de buscar;
+      eso es su multi-query, con otro nombre y sin framework.
+
+      **Lo que viene en la sesión 05, técnica por técnica.** Sus vectores
+      dispersos son BM25, el día 6. Su **Reciprocal Rank Fusion** es tu función
+      `rrf()` del día 6, con la misma constante de 60. Su multi-representation
+      indexing y el parent-document que menciona son la palanca D del día 9. Su
+      construcción de consultas hacia filtros de metadata es la palanca B, el
+      self-query. Y toda su sección de traducción de la consulta es la palanca A.
+
+      **Lo que viene en la sesión 06.** CRAG y adaptive RAG son el loop agéntico:
+      el modelo decide si lo recuperado sirve, y si no, vuelve a intentarlo por
+      otra vía.
+
+      Pero lo que de verdad justifica este video hoy es el final. Tu día de hoy
+      trata precisamente de que **parecerse no es lo mismo que servir**, y su
+      experimento de las varias agujas dice lo mismo desde el otro extremo del
+      problema: ni siquiera regalándole al modelo todo el contexto desaparece la
+      necesidad de decidir qué entra y en qué orden. Sus tres hallazgos son, uno
+      por uno, argumentos a favor de medir el retrieval en vez de confiar en él,
+      que es exactamente donde arranca la sesión 05.
+    reparos: |
+      **Enseña catorce técnicas y no mide casi ninguna.** Esta es la crítica
+      importante y tiene su ironía: la última media hora del propio video es un
+      experimento cuantitativo bien hecho, con condiciones controladas y
+      resultados que se sostienen. Sabe medir. Pero las catorce técnicas
+      anteriores se presentan con una demo cualitativa cada una, sin comparar
+      recall antes y después sobre un conjunto de referencia. Te vas con un menú
+      largo y sin forma de saber cuál de esos platos mejora tu caso.
+
+      **Todo el código es LangChain y LangGraph.** Es lógico, trabaja allí, y las
+      abstracciones ocultan justo lo que este curso quiere que veas por dentro.
+      Quédate con las ideas y no con las llamadas.
+
+      **Está fechado, y en un año que cambió mucho.** Es de principios de 2024:
+      habla de GPT-4 con 128k tokens y de Command R como modelo pequeño y rápido.
+      El marco conceptual aguanta perfectamente; los nombres y las cifras, no.
+
+      **Su pregunta de si RAG ha muerto tiene hoy una respuesta más matizada.**
+      Los modelos de 2026 manejan el contexto largo mucho mejor que los que él
+      probó, así que la penalización que midió es menor de lo que era. Pero la
+      dirección de sus tres hallazgos sigue en pie, y sus dos argumentos no
+      técnicos, auditoría y permisos, no han cambiado nada.
+
+      **ColBERT queda a medias.** Lo presenta, reconoce que la latencia es una
+      pregunta abierta y que habría que mirar si está listo para producción, y no
+      resuelve ninguna de las dos cosas. Está bien saber que existe; no lo tomes
+      como una recomendación.
 
   # ---------------------------------------------------------------- sesión 05
   r0Dciuq0knU:

@@ -1,6 +1,6 @@
 # 06 · Videos de los talleres
 
-**Estado:** 3 de 24 con resumen escrito · actualizado el 15 de agosto de 2026
+**Estado:** 5 de 24 con resumen escrito · actualizado el 15 de agosto de 2026
 
 Cada día del taller cierra con la tarjeta de un video: miniatura, título y una
 línea de por qué ese video en ese día. Al hacer clic se abre en una pestaña
@@ -72,8 +72,8 @@ mano.
 | 04 | D1 | [The 5 Levels Of Text Splitting For Retrieval](https://youtu.be/8OJC21T2SL4) | Greg Kamradt | ~1 h 10 min | ✅ |
 | 04 | D2 | [Vector Databases simply explained! (Embeddings & Ind](https://youtu.be/dN0lsF2cvm4) | Python Engineer | ~4 min | ✅ |
 | 04 | D3 | [What is Retrieval-Augmented Generation (RAG)?](https://youtu.be/T-D1OfcDW1M) | IBM Technology | ~6 min | ✅ |
-| 04 | D4 | [¿Qué es RAG? Clase con código y ejemplo](https://youtu.be/uAsd9pOIcLg) | EvoAcademy | medio | ⧗ pendiente |
-| 04 | D5 | [Learn RAG From Scratch: Python AI Tutorial](https://youtu.be/sVcwVQRHIc8) | freeCodeCamp.org | ~2 h 30 min | ⧗ pendiente |
+| 04 | D4 | [¿Qué es RAG? Clase con código y ejemplo](https://youtu.be/uAsd9pOIcLg) | EvoAcademy | ~38 min | ✅ |
+| 04 | D5 | [Learn RAG From Scratch: Python AI Tutorial](https://youtu.be/sVcwVQRHIc8) | freeCodeCamp.org · Lance Martin (L | ~2 h 33 min | ✅ |
 | 05 | D6 | [Top 3 RAG Retrieval Strategies: Sparse, Dense & Hybr](https://youtu.be/r0Dciuq0knU) | IBM Technology | corto | ⧗ pendiente |
 | 05 | D7 | [Mastering Retrieval for LLMs: BM25, Fine-tuned Embed](https://youtu.be/9QJXvNiJIG8) | Trelis Research | largo | ⧗ pendiente |
 | 05 | D8 | [Advanced RAG 04: Reranking with Cross Encoders and C](https://youtu.be/ZFbaA9eM0uo) | Sam Witteveen | medio | ⧗ pendiente |
