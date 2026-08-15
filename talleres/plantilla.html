@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- El taller se regenera seguido durante el curso: que el navegador no
+         sirva una versión vieja y parezca que los arreglos no se aplicaron. -->
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <title>{{TITULO}} | AI Engineer Coaching</title>
+    <style>
+      /* =====================================================================
+         SISTEMA VISUAL
+
+         Paleta: neutra profunda (zinc) + UN acento (cian). El verde y el ámbar
+         NO son acentos: son estado (verde = verificado, ámbar = atención). El
+         degradado violeta→cian aparece solo en la marca y la barra de progreso,
+         porque es la identidad del curso, no un color de interfaz.
+
+         Ritmo: escala de 4px. Contenedores a 2rem (p-8).
+         ===================================================================== */
+      :root {
+        --fondo: #0a0a0c;
+        --fondo-2: #0f0f12;
+        --superficie: #151518;
+        --superficie-2: #1b1b1f;
+        --codigo: #08080a;
+        --linea: #26262c;
+        --linea-suave: #1d1d22;
+        --texto: #ededf0;
+        --texto-2: #a1a1aa;
+        --tenue: #71717a;
+
+        --acento: #22d3ee; /* el único acento */
+        --acento-suave: rgba(34, 211, 238, 0.1);
+        --acento-borde: rgba(34, 211, 238, 0.42);
+
+        --ok: #34d399; /* estado: verificado */
+        --ok-suave: rgba(52, 211, 153, 0.08);
+        --atencion: #fbbf24; /* estado: atención */
+        --atencion-suave: rgba(251, 191, 36, 0.07);
+
+        --marca: linear-gradient(120deg, #8b5cf6, #22d3ee);
+        --nav: clamp(210px, 17vw, 268px);
+        --margen-paso: 4.5rem;
+        --radio: 14px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 2rem;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--fondo);
+        color: var(--texto);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.65;
+        font-synthesis: none;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--acento);
+      }
+      code,
+      kbd {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      }
+
+      /* Foco visible: una sola regla para todo lo enfocable. */
+      a:focus-visible,
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--acento);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+
+      /* ---------- barra de progreso de lectura ---------- */
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 60;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--marca);
+        transition: width 0.2s ease;
+      }
+
+      /* ---------- barra móvil (sticky, en el flujo) ---------- */
+      .hud {
+        display: none;
+        position: sticky;
+        top: 0;
+        z-index: 55;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 1.25rem;
+        background: rgba(10, 10, 12, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--linea-suave);
+      }
+      .hud button {
+        white-space: nowrap;
+        background: var(--superficie);
+        border: 1px solid var(--linea);
+        color: var(--texto-2);
+        border-radius: 999px;
+        padding: 0.4em 0.9em;
+        font: 600 0.78rem/1 inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .hud button:hover {
+        border-color: var(--acento-borde);
+        color: var(--texto);
+      }
+      .hud .barra-titulo {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--tenue);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* ---------- rejilla general ---------- */
+      .envoltura {
+        display: grid;
+        grid-template-columns: var(--nav) minmax(0, 1fr);
+        gap: clamp(1.5rem, 3vw, 3.5rem);
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 2vw, 2rem);
+      }
+
+      /* ---------- navegación ---------- */
+      nav.lateral {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 2.5rem 0 4rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--linea) transparent;
+      }
+      nav.lateral::-webkit-scrollbar,
+      .bloque pre::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      nav.lateral::-webkit-scrollbar-track,
+      .bloque pre::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      nav.lateral::-webkit-scrollbar-thumb,
+      .bloque pre::-webkit-scrollbar-thumb {
+        background: var(--linea);
+        border-radius: 4px;
+      }
+      nav.lateral::-webkit-scrollbar-thumb:hover,
+      .bloque pre::-webkit-scrollbar-thumb:hover {
+        background: #3f3f46;
+      }
+      .marca {
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-weight: 800;
+        background: var(--marca);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+        text-decoration: none;
+      }
+      a.marca {
+        transition: opacity 0.2s ease;
+      }
+      a.marca:hover {
+        opacity: 0.7;
+      }
+      .nav-titulo {
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 0.6rem 0 1.5rem;
+        line-height: 1.35;
+        color: var(--texto);
+      }
+
+      .medidor {
+        border: 1px solid var(--linea-suave);
+        border-radius: var(--radio);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: var(--fondo-2);
+      }
+      .medidor-cifra {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--tenue);
+      }
+      .medidor-cifra strong {
+        color: var(--texto);
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        font-variant-numeric: tabular-nums;
+      }
+      .medidor-barra {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.06);
+        margin-top: 0.7rem;
+        overflow: hidden;
+      }
+      .medidor-barra span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: var(--acento);
+        transition: width 0.2s ease;
+      }
+      .medidor button {
+        margin-top: 0.85rem;
+        width: 100%;
+        background: none;
+        border: 1px solid var(--linea);
+        color: var(--tenue);
+        border-radius: 8px;
+        padding: 0.4em 0;
+        font: 600 0.72rem/1 inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .medidor button:hover {
+        border-color: var(--acento-borde);
+        color: var(--texto);
+      }
+
+      .controles {
+        display: grid;
+        gap: 0.35rem;
+        margin-bottom: 2rem;
+      }
+      .controles button {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        background: none;
+        border: 1px solid var(--linea-suave);
+        color: var(--tenue);
+        border-radius: 9px;
+        padding: 0.5em 0.7em;
+        font: 600 0.76rem/1.2 inherit;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+      }
+      .controles button:hover {
+        border-color: var(--linea);
+        color: var(--texto);
+      }
+      .controles kbd {
+        font-size: 0.66rem;
+        border: 1px solid var(--linea);
+        border-radius: 5px;
+        padding: 0.1em 0.4em;
+        color: var(--tenue);
+        flex-shrink: 0;
+      }
+      body.ajustar .controles .wrap-btn,
+      body.coach .controles .coach-btn {
+        border-color: var(--acento-borde);
+        color: var(--acento);
+      }
+      body.coach .controles .coach-btn {
+        border-color: rgba(251, 191, 36, 0.45);
+        color: var(--atencion);
+      }
+
+      nav.lateral ul {
+        list-style: none;
+      }
+      .nav-dia {
+        margin-bottom: 1.4rem;
+      }
+      .nav-dia > a {
+        display: block;
+        text-decoration: none;
+        margin-bottom: 0.4rem;
+      }
+      .nav-dia-etiqueta {
+        display: block;
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--tenue);
+        font-weight: 800;
+      }
+      .nav-dia-titulo {
+        display: block;
+        font-size: 0.86rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--texto-2);
+        transition: color 0.2s ease;
+      }
+      .nav-dia > a:hover .nav-dia-titulo {
+        color: var(--texto);
+      }
+      .nav-dia ul {
+        border-left: 1px solid var(--linea-suave);
+        margin-left: 0.2rem;
+      }
+      .nav-dia ul a {
+        display: flex;
+        gap: 0.55rem;
+        align-items: baseline;
+        text-decoration: none;
+        color: var(--tenue);
+        font-size: 0.8rem;
+        padding: 0.25rem 0 0.25rem 0.85rem;
+        line-height: 1.4;
+        border-left: 2px solid transparent;
+        margin-left: -1px;
+        transition: all 0.2s ease;
+      }
+      .nav-dia ul a:hover {
+        color: var(--texto);
+      }
+      .nav-dia ul a.activo {
+        color: var(--texto);
+        border-left-color: var(--acento);
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        border: 1px solid var(--linea);
+        flex-shrink: 0;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+      }
+      .nav-dia ul a.hecho .dot {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .nav-dia ul a.hecho {
+        color: #52525b;
+      }
+
+      /* ---------- contenido ---------- */
+      main {
+        padding: 3rem 0 10rem;
+        min-width: 0;
+      }
+
+      /* ---------- portada: contraste tipográfico drástico ---------- */
+      header.portada {
+        margin-bottom: 5rem;
+      }
+      header.portada h1 {
+        font-size: clamp(2.4rem, 5.6vw, 4.2rem);
+        font-weight: 900;
+        letter-spacing: -0.045em;
+        line-height: 1.02;
+        margin: 1rem 0 1.5rem;
+        max-width: 20ch;
+      }
+      .portada .lead {
+        font-size: 1.02rem;
+        font-weight: 400;
+        color: var(--texto-2);
+        line-height: 1.7;
+      }
+      .barra-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--linea-suave);
+      }
+      .cifra-meta {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--tenue);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-right: 1.25rem;
+      }
+      .cifra-meta b {
+        color: var(--texto);
+        font-size: 0.95rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .enlace {
+        text-decoration: none;
+        border: 1px solid var(--linea);
+        color: var(--texto-2);
+        border-radius: 999px;
+        padding: 0.4em 1em;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .enlace:hover {
+        border-color: var(--acento-borde);
+        color: var(--texto);
+      }
+      .como {
+        border-left: 2px solid var(--linea);
+        padding: 0.25rem 0 0.25rem 1.5rem;
+        margin-top: 2.5rem;
+        font-size: 0.94rem;
+        color: var(--texto-2);
+      }
+      .como p + p {
+        margin-top: 0.7rem;
+      }
+      .como strong {
+        color: var(--texto);
+        font-weight: 700;
+      }
+
+      /* ---------- día: cifra grande fuera de la columna de texto ---------- */
+      .dia {
+        margin-bottom: 6rem;
+      }
+      .dia-cab {
+        display: grid;
+        /* minmax(0,...) y no 1fr: el mínimo por defecto de una columna de grid
+           es su contenido, así que un bloque de código ancho la reventaría y
+           sacaría la página de la pantalla en móvil. */
+        grid-template-columns: var(--margen-paso) minmax(0, 1fr);
+        gap: 2rem;
+        align-items: start;
+        margin-bottom: 3.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--linea-suave);
+      }
+      .dia-cifra {
+        font-size: 3.4rem;
+        font-weight: 900;
+        line-height: 0.85;
+        letter-spacing: -0.06em;
+        color: transparent;
+        -webkit-text-stroke: 1px var(--linea);
+        user-select: none;
+      }
+      .dia-etiqueta {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 800;
+        color: var(--acento);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .dia-min {
+        color: var(--tenue);
+        letter-spacing: 0.1em;
+      }
+      .dia-cab h2 {
+        font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin: 0.6rem 0 0.9rem;
+        max-width: 24ch;
+      }
+      .dia-cab p {
+        color: var(--texto-2);
+        font-size: 0.98rem;
+      }
+
+      /* ---------- paso: sin tarjeta, cifra al margen ---------- */
+      .paso {
+        display: grid;
+        grid-template-columns: var(--margen-paso) minmax(0, 1fr);
+        gap: 2rem;
+        padding: 2rem 0 2.5rem;
+        border-top: 1px solid var(--linea-suave);
+        transition: opacity 0.2s ease;
+      }
+      .paso:first-of-type {
+        border-top: none;
+        padding-top: 0;
+      }
+      .paso.hecho {
+        opacity: 0.45;
+      }
+      .paso.hecho:hover,
+      .paso.hecho:focus-within {
+        opacity: 1;
+      }
+      .paso-margen {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.9rem;
+        position: sticky;
+        top: 2rem;
+      }
+      .paso-cifra {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--tenue);
+        font-variant-numeric: tabular-nums;
+      }
+      .paso.hecho .paso-cifra {
+        color: var(--ok);
+      }
+      .tick {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--linea);
+        background: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .tick:hover {
+        border-color: var(--ok);
+        transform: scale(1.08);
+      }
+      .tick::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 0.8rem;
+        font-weight: 900;
+        color: var(--fondo);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .paso.hecho .tick {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick::after {
+        opacity: 1;
+      }
+      .paso-cab {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+      }
+      .paso-cab h3 {
+        font-size: 1.32rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+      }
+      .paso-min {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--tenue);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+        margin-left: auto;
+      }
+      .paso-cuerpo,
+      .dia-texto {
+        min-width: 0;
+      }
+      .paso-cuerpo > p {
+        margin-bottom: 1.4rem;
+        color: var(--texto-2);
+      }
+      .paso-cuerpo p code,
+      .dia-cab p code,
+      .como code,
+      .cierre p code {
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 5px;
+        padding: 0.1em 0.4em;
+        font-size: 0.86em;
+        color: var(--texto);
+        /* Un identificador largo sin espacios (CaseSummary.model_json_schema())
+           no rompe solo y empuja la página entera a scroll horizontal en móvil.
+           anywhere permite el corte sin alterar el reparto del resto del texto. */
+        overflow-wrap: anywhere;
+      }
+      .paso-cuerpo strong,
+      .cierre strong {
+        color: var(--texto);
+        font-weight: 700;
+      }
+
+      /* ---------- bloques de código ---------- */
+      .bloque {
+        border: 1px solid var(--linea-suave);
+        border-radius: var(--radio);
+        overflow: hidden;
+        margin: 1.4rem 0 1.8rem;
+        background: var(--codigo);
+        transition: border-color 0.2s ease;
+      }
+      .bloque:hover {
+        border-color: var(--linea);
+      }
+      .bloque-cab {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem 1rem;
+        padding: 0.6rem 1rem;
+        background: var(--fondo-2);
+        border-bottom: 1px solid var(--linea-suave);
+      }
+      .ruta {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        font-size: 0.74rem;
+        color: var(--tenue);
+      }
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.15em 0.7em;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--texto-2);
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        margin-left: auto;
+      }
+      .pill.nuevo {
+        color: var(--ok);
+        border-color: rgba(52, 211, 153, 0.35);
+        background: var(--ok-suave);
+      }
+      .bloque pre {
+        margin: 0;
+        padding: 1.3rem 1.4rem;
+        overflow-x: auto;
+        font-size: 0.86rem;
+        line-height: 1.65;
+        max-height: 72vh;
+      }
+      .bloque code {
+        color: #d4d4d8;
+        display: block;
+      }
+      .bloque pre .l {
+        display: block;
+      }
+      .bloque pre .l:empty::after {
+        content: "\00a0";
+      }
+      pre .c {
+        color: #6b6b76;
+      }
+      pre .k {
+        color: #c4b5fd;
+      }
+      pre .s {
+        color: #86efac;
+      }
+      pre .f {
+        color: #67e8f9;
+      }
+      .bloque.salida {
+        background: var(--codigo);
+        border-color: rgba(52, 211, 153, 0.18);
+      }
+      .bloque.salida .bloque-cab {
+        background: var(--ok-suave);
+        border-bottom-color: rgba(52, 211, 153, 0.2);
+      }
+      .bloque.salida .ruta {
+        color: var(--ok);
+      }
+      .bloque.salida code {
+        color: #a1a1aa;
+      }
+      /* Las salidas son texto de terminal, no código: una respuesta del modelo
+         puede venir en una sola línea de 385 caracteres. Siempre envuelven. */
+      .bloque.salida pre {
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+      }
+      /* El código no envuelve por defecto (leerlo con la sangría real importa).
+         Al activar "Ajustar líneas", la continuación entra 4 espacios: en Python
+         confundirla con una sentencia nueva sería un error de lectura grave. */
+      body.ajustar .bloque pre {
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+      }
+      body.ajustar .bloque pre .l {
+        padding-left: 4ch;
+        text-indent: -4ch;
+      }
+      .copy-btn {
+        border: 1px solid var(--linea);
+        background: none;
+        color: var(--tenue);
+        border-radius: 999px;
+        padding: 0.25em 0.85em;
+        font: 700 0.7rem/1.4 inherit;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+      }
+      .copy-btn:hover {
+        border-color: var(--acento-borde);
+        color: var(--acento);
+      }
+      .copy-btn.ok {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+
+      /* ---------- notas ---------- */
+      .nota {
+        padding: 0 0 0 1.5rem;
+        margin: 1.4rem 0 1.8rem;
+      }
+      .nota-cab {
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+      }
+      .nota.porque {
+        border-left: 2px solid var(--linea);
+      }
+      .nota.porque .nota-cab {
+        color: var(--tenue);
+      }
+      .nota.porque p {
+        color: var(--texto-2);
+      }
+      .nota.porque p + p {
+        margin-top: 0.8rem;
+      }
+      .nota.coach {
+        border-left: 2px solid var(--atencion);
+        background: var(--atencion-suave);
+        padding: 0.9rem 1.2rem;
+        border-radius: 0 8px 8px 0;
+      }
+      .nota.coach .nota-cab {
+        color: var(--atencion);
+      }
+      body:not(.coach) .nota.coach {
+        display: none;
+      }
+      details.falla {
+        border: 1px solid var(--linea-suave);
+        border-radius: 10px;
+        padding: 0.7rem 1.1rem;
+        margin: 1.4rem 0;
+        transition: border-color 0.2s ease;
+      }
+      details.falla:hover {
+        border-color: var(--linea);
+      }
+      details.falla summary {
+        cursor: pointer;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--atencion);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        list-style: none;
+      }
+      details.falla summary::-webkit-details-marker {
+        display: none;
+      }
+      details.falla summary::before {
+        content: "▸ ";
+      }
+      details.falla[open] summary::before {
+        content: "▾ ";
+      }
+      ul.fallas {
+        list-style: none;
+        margin-top: 0.9rem;
+      }
+      ul.fallas li {
+        display: grid;
+        gap: 0.35rem;
+        padding: 0.7rem 0;
+        border-top: 1px solid var(--linea-suave);
+        font-size: 0.9rem;
+      }
+      ul.fallas li code {
+        color: #fca5a5;
+        font-size: 0.84rem;
+      }
+      ul.fallas li span {
+        color: var(--texto-2);
+      }
+      ul.fallas li span code {
+        color: var(--texto);
+        background: var(--superficie);
+        border-radius: 4px;
+        padding: 0.08em 0.35em;
+      }
+      details.completo {
+        border: 1px dashed var(--linea);
+        border-radius: 12px;
+        padding: 0.9rem 1.3rem;
+        margin: 0 0 1.5rem var(--margen-paso);
+        transition: border-color 0.2s ease;
+      }
+      details.completo:hover {
+        border-color: var(--acento-borde);
+      }
+      details.completo summary {
+        cursor: pointer;
+        font-size: 0.86rem;
+        color: var(--tenue);
+        font-weight: 600;
+      }
+      details.completo summary code {
+        color: var(--texto-2);
+      }
+
+      /* ---------- checkpoint: el estado "verificado" ---------- */
+      .checkpoint {
+        margin-left: var(--margen-paso);
+        border: 1px solid rgba(52, 211, 153, 0.28);
+        background: var(--ok-suave);
+        border-radius: var(--radio);
+        padding: 1.5rem 1.75rem;
+      }
+      .checkpoint .nota-cab {
+        color: var(--ok);
+      }
+      .checkpoint p {
+        color: var(--texto-2);
+      }
+      .checkpoint p + p {
+        margin-top: 0.6rem;
+      }
+
+      /* ---------- cierre ---------- */
+      .cierre {
+        padding-top: 3rem;
+        border-top: 1px solid var(--linea-suave);
+      }
+      .marca-cierre {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 800;
+        color: var(--ok);
+      }
+      .cierre h2 {
+        font-size: clamp(1.8rem, 3.6vw, 2.9rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+        margin: 0.8rem 0 1.4rem;
+        max-width: 20ch;
+      }
+      .cierre > p {
+        color: var(--texto-2);
+        margin-bottom: 1.2rem;
+      }
+      a.siguiente,
+      div.siguiente {
+        display: block;
+        text-decoration: none;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        padding: 2rem;
+        margin: 2.5rem 0 1.5rem;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      a.siguiente:hover {
+        border-color: var(--acento-borde);
+        background: var(--fondo-2);
+        transform: translateY(-2px);
+      }
+      .siguiente.pendiente {
+        border-style: dashed;
+      }
+      .siguiente-etiqueta {
+        display: block;
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 800;
+        color: var(--acento);
+        margin-bottom: 0.6rem;
+      }
+      .siguiente.pendiente .siguiente-etiqueta {
+        color: var(--atencion);
+      }
+      .siguiente-titulo {
+        display: block;
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: var(--texto);
+        line-height: 1.25;
+        max-width: 26ch;
+      }
+      .siguiente-resumen {
+        display: block;
+        color: var(--texto-2);
+        font-size: 0.94rem;
+        margin-top: 0.6rem;
+      }
+      .siguiente-flecha {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        font-size: 1.4rem;
+        color: var(--acento);
+        transition: transform 0.2s ease;
+      }
+      a.siguiente:hover .siguiente-flecha {
+        transform: translateX(5px);
+      }
+      .siguiente-alterno {
+        display: inline-block;
+        margin-top: 1rem;
+        font-size: 0.86rem;
+        font-weight: 600;
+      }
+      .cierre-acciones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .cierre-acciones a {
+        text-decoration: none;
+        border: 1px solid var(--linea);
+        color: var(--texto-2);
+        border-radius: 999px;
+        padding: 0.45em 1.1em;
+        font-size: 0.84rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .cierre-acciones a:hover {
+        border-color: var(--acento-borde);
+        color: var(--texto);
+      }
+
+      /* ---------- adaptativo ---------- */
+      @media (max-width: 1080px) {
+        .envoltura {
+          grid-template-columns: 1fr;
+          gap: 0;
+          padding: 0 1.25rem;
+        }
+        nav.lateral {
+          position: fixed;
+          inset: 0 auto 0 0;
+          width: 86vw;
+          max-width: 330px;
+          background: var(--fondo-2);
+          border-right: 1px solid var(--linea);
+          padding: 2rem 1.4rem 3rem;
+          transform: translateX(-102%);
+          transition: transform 0.25s ease;
+          z-index: 70;
+        }
+        body.nav-abierta nav.lateral {
+          transform: none;
+        }
+        body.nav-abierta::after {
+          content: "";
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.65);
+          z-index: 65;
+        }
+        .hud {
+          display: flex;
+        }
+        main {
+          padding: 2.5rem 0 6rem;
+        }
+      }
+      @media (max-width: 720px) {
+        :root {
+          --margen-paso: 0px;
+        }
+        .paso,
+        .dia-cab {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0.9rem;
+        }
+        .paso-margen {
+          position: static;
+          flex-direction: row;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        .dia-cifra {
+          font-size: 2.4rem;
+        }
+        .checkpoint,
+        details.completo {
+          margin-left: 0;
+        }
+        .checkpoint {
+          padding: 1.25rem;
+        }
+        a.siguiente,
+        div.siguiente {
+          padding: 1.5rem;
+        }
+        .siguiente-flecha {
+          top: 1.5rem;
+          right: 1.5rem;
+        }
+        .bloque pre {
+          font-size: 0.8rem;
+          padding: 1rem;
+        }
+        .paso-cab {
+          flex-wrap: wrap;
+          gap: 0.4rem;
+        }
+        .paso-min {
+          margin-left: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-taller="{{ID}}">
+    <div class="progress"><div class="progress-bar" id="barra"></div></div>
+
+    <!-- Solo aparece por debajo de 1080px. En pantallas anchas los controles
+         viven en la barra lateral, que siempre está a la vista. -->
+    <div class="hud">
+      <button type="button" id="abrirNav">☰ Pasos</button>
+      <span class="barra-titulo">{{TITULO}}</span>
+    </div>
+
+    <div class="envoltura">
+      <nav class="lateral" id="nav">
+        <a class="marca" href="{{INICIO}}">AI Engineer Coaching</a>
+        <div class="nav-titulo">{{TITULO}}</div>
+        <div class="medidor">
+          <div class="medidor-cifra">
+            <span>Progreso</span><strong id="cifra">0/{{TOTAL_PASOS}}</strong>
+          </div>
+          <div class="medidor-barra"><span id="medidor"></span></div>
+          <button type="button" id="reiniciar">Reiniciar progreso</button>
+        </div>
+        <div class="controles">
+          <button type="button" class="wrap-btn" id="btnWrap">
+            <span>↩ Ajustar líneas</span><kbd>w</kbd>
+          </button>
+          <button type="button" class="coach-btn" id="btnCoach">
+            <span>👁 Notas del coach</span><kbd>c</kbd>
+          </button>
+        </div>
+        <ul>
+          {{NAV}}
+        </ul>
+      </nav>
+
+      <main>
+        <header class="portada">
+          <a class="marca" href="{{INICIO}}">{{KICKER}}</a>
+          <h1>{{TITULO}}</h1>
+          <p class="lead">{{SUBTITULO}}</p>
+          <div class="barra-meta">
+            <span class="cifra-meta"><b>{{TOTAL_DIAS}}</b> días</span>
+            <span class="cifra-meta"><b>{{TOTAL_PASOS}}</b> pasos</span>
+            <span class="cifra-meta"><b>{{TOTAL_MIN}}</b> min</span>
+            {{ENLACES}}
+          </div>
+          <div class="como">{{COMO_FUNCIONA}}</div>
+        </header>
+
+        {{CUERPO}} {{CIERRE}}
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        const clave = "taller:" + document.body.dataset.taller;
+        const claveCoach = "taller:coach";
+        const claveWrap = "taller:ajustar";
+        const pasos = Array.from(document.querySelectorAll(".paso"));
+        const enlacesNav = new Map(
+          Array.from(document.querySelectorAll("[data-nav]")).map((a) => [
+            a.dataset.nav,
+            a,
+          ]),
+        );
+
+        // ---------- progreso (persistido en el navegador) ----------
+        let hechos = new Set();
+        try {
+          hechos = new Set(JSON.parse(localStorage.getItem(clave) || "[]"));
+        } catch (e) {}
+
+        function pintar() {
+          pasos.forEach((p) => {
+            const ok = hechos.has(p.id);
+            p.classList.toggle("hecho", ok);
+            const boton = p.querySelector("[data-tick]");
+            if (boton)
+              boton.setAttribute("aria-pressed", ok ? "true" : "false");
+            const a = enlacesNav.get(p.id);
+            if (a) a.classList.toggle("hecho", ok);
+          });
+          const pct = pasos.length ? (hechos.size / pasos.length) * 100 : 0;
+          document.getElementById("medidor").style.width = pct + "%";
+          document.getElementById("cifra").textContent =
+            hechos.size + "/" + pasos.length;
+        }
+
+        function alternar(id) {
+          hechos.has(id) ? hechos.delete(id) : hechos.add(id);
+          localStorage.setItem(clave, JSON.stringify(Array.from(hechos)));
+          pintar();
+        }
+
+        document.querySelectorAll("[data-tick]").forEach((b) => {
+          b.addEventListener("click", () => alternar(b.dataset.tick));
+        });
+        document.getElementById("reiniciar").addEventListener("click", () => {
+          hechos.clear();
+          localStorage.removeItem(clave);
+          pintar();
+        });
+        pintar();
+
+        // ---------- paso activo en la navegación ----------
+        const io = new IntersectionObserver(
+          (entradas) => {
+            entradas.forEach((e) => {
+              const a = enlacesNav.get(e.target.id);
+              if (a) a.classList.toggle("activo", e.isIntersecting);
+            });
+          },
+          { rootMargin: "-12% 0px -70% 0px" },
+        );
+        pasos.forEach((p) => io.observe(p));
+
+        function scroll() {
+          const alto = document.body.scrollHeight - innerHeight;
+          document.getElementById("barra").style.width =
+            (alto > 0 ? (scrollY / alto) * 100 : 0) + "%";
+        }
+        addEventListener("scroll", scroll, { passive: true });
+        scroll();
+
+        // ---------- notas del coach ----------
+        const btnCoach = document.getElementById("btnCoach");
+        function aplicarCoach(on) {
+          document.body.classList.toggle("coach", on);
+          btnCoach.setAttribute("aria-pressed", on ? "true" : "false");
+          localStorage.setItem(claveCoach, on ? "1" : "0");
+        }
+        aplicarCoach(localStorage.getItem(claveCoach) === "1");
+        btnCoach.addEventListener("click", () =>
+          aplicarCoach(!document.body.classList.contains("coach")),
+        );
+
+        // ---------- ajustar líneas ----------
+        // 1400px es el ancho medido a partir del cual la línea más larga del
+        // taller cabe sin recortarse. Por debajo, se ajusta por defecto; en
+        // cuanto el alumno lo toca, manda su elección.
+        const btnWrap = document.getElementById("btnWrap");
+        function aplicarWrap(on, recordar) {
+          document.body.classList.toggle("ajustar", on);
+          btnWrap.setAttribute("aria-pressed", on ? "true" : "false");
+          if (recordar) localStorage.setItem(claveWrap, on ? "1" : "0");
+        }
+        const guardado = localStorage.getItem(claveWrap);
+        aplicarWrap(
+          guardado === null ? window.innerWidth < 1400 : guardado === "1",
+          false,
+        );
+        btnWrap.addEventListener("click", () =>
+          aplicarWrap(!document.body.classList.contains("ajustar"), true),
+        );
+
+        // ---------- cajón de navegación en móvil ----------
+        const abrir = document.getElementById("abrirNav");
+        abrir.addEventListener("click", () =>
+          document.body.classList.toggle("nav-abierta"),
+        );
+        document
+          .querySelectorAll("nav.lateral a")
+          .forEach((a) =>
+            a.addEventListener("click", () =>
+              document.body.classList.remove("nav-abierta"),
+            ),
+          );
+        document.addEventListener("click", (e) => {
+          if (!document.body.classList.contains("nav-abierta")) return;
+          if (e.target.closest("nav.lateral") || e.target.closest("#abrirNav"))
+            return;
+          document.body.classList.remove("nav-abierta");
+        });
+
+        // ---------- teclado ----------
+        addEventListener("keydown", (e) => {
+          if (e.metaKey || e.ctrlKey || e.altKey) return;
+          if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+          if (e.key === "j" || e.key === "k") {
+            const orden = e.key === "j" ? pasos : pasos.slice().reverse();
+            const destino = orden.find((p) =>
+              e.key === "j"
+                ? p.getBoundingClientRect().top > 40
+                : p.getBoundingClientRect().top < -40,
+            );
+            if (destino) destino.scrollIntoView({ behavior: "smooth" });
+          }
+          if (e.key === "c") btnCoach.click();
+          if (e.key === "w") btnWrap.click();
+          if (e.key === "Escape") document.body.classList.remove("nav-abierta");
+        });
+
+        // ---------- copiar código ----------
+        function copiaAlterna(texto, listo) {
+          const ta = document.createElement("textarea");
+          ta.value = texto;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          listo();
+        }
+        document.querySelectorAll(".bloque").forEach((bloque) => {
+          const pre = bloque.querySelector("pre");
+          const cab = bloque.querySelector(".bloque-cab");
+          if (!pre || !cab) return;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "copy-btn";
+          btn.textContent = "Copiar";
+          btn.addEventListener("click", () => {
+            // Del atributo data-codigo, que lleva el fuente exacto. No del DOM:
+            // ahí cada línea es un bloque y no hay saltos de línea reales.
+            const codigo = bloque.dataset.codigo ?? pre.textContent;
+            const ok = () => {
+              btn.textContent = "✓ Copiado";
+              btn.classList.add("ok");
+              setTimeout(() => {
+                btn.textContent = "Copiar";
+                btn.classList.remove("ok");
+              }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard
+                .writeText(codigo)
+                .then(ok, () => copiaAlterna(codigo, ok));
+            } else {
+              copiaAlterna(codigo, ok);
+            }
+          });
+          cab.appendChild(btn);
+        });
+      })();
+    </script>
+  </body>
+</html>

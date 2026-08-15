@@ -1,0 +1,44 @@
+
+======================================================================
+Pregunta: ¿Cuál es el timeout default?
+----------------------------------------------------------------------
+1) Expansión     → + "timeout default segundos configuración valor predeterminado"
+2) Retrieval     → 3 candidato(s) sobre el umbral:
+      sim=0.650  api-pagos.md § Timeouts y reintentos
+      sim=0.450  api-pagos.md § Autenticación
+      sim=0.426  api-pagos.md § Autenticación
+3) Rerank+compr. → 1 chunk(s) útiles de verdad:
+      [api-pagos.md § Timeouts y reintentos] "El timeout default de la API es de 30 segundos por petición...."
+
+Respuesta: El timeout default de la API es de 30 segundos por petición. [1]
+
+======================================================================
+Pregunta: Si mi endpoint de webhooks está caído, ¿cuánto tiempo tengo para arreglarlo antes de perder eventos?
+----------------------------------------------------------------------
+1) Expansión     → + "reintentos webhook cola retención horas días expiración"
+2) Retrieval     → 6 candidato(s) sobre el umbral:
+      sim=0.621  webhooks.md § Reintentos de entrega
+      sim=0.615  webhooks.md § Guía de Webhooks
+      sim=0.600  webhooks.md § Configuración de webhooks
+      sim=0.503  webhooks.md § Verificación de firma
+      sim=0.497  api-pagos.md § Timeouts y reintentos
+      sim=0.495  api-pagos.md § Autenticación
+3) Rerank+compr. → 1 chunk(s) útiles de verdad:
+      [webhooks.md § Reintentos de entrega] "Si el servidor no responde con código 2xx en menos de 10 segundos, Pag..."
+
+Respuesta: Según la documentación [1], tienes un margen amplio de tiempo para recuperar los eventos:
+
+1. **Durante las primeras 24 horas**, PagosYa reintentará la entrega hasta **8 veces** automáticamente, por lo que si restableces tu endpoint en ese período, los eventos podrían entregarse sin intervención manual.
+
+2. Si los 8 intentos fallan, el evento se marca como **"no entregado"**, pero aún puedes **recuperarlo manualmente desde el dashboard durante los siguientes 30 días** [1].
+
+En resumen, técnicamente tienes hasta **30 días** para recuperar un evento fallido, aunque la entrega automática solo ocurre dentro de las primeras 24 horas. Pasados los 30 días desde el octavo intento fallido, el evento se perdería definitivamente [1].
+
+======================================================================
+Pregunta: ¿Cuál es la capital de Francia?
+----------------------------------------------------------------------
+1) Expansión     → + "París capital Francia ciudad gobierno"
+2) Retrieval     → 0 candidato(s) sobre el umbral:
+   → Nada se parece: respondemos sin llamar más al modelo.
+
+Respuesta: No tengo evidencia para responder.

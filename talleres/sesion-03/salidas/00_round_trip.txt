@@ -1,0 +1,6 @@
+Usuario pregunta: ¿Dónde va mi orden ORD-8841?
+
+FASE 1 (pide)     -> get_order_status {'order_id': 'ORD-8841'}
+FASE 2 (ejecutas) -> {'status': 'shipped', 'eta': '2026-07-04'}
+FASE 3 (devuelves) -> {'tool_use_id': 'abc123', 'content': {'status': 'shipped', 'eta': '2026-07-04'}}
+FASE 4 (responde) -> Tu orden está 'shipped' y llega el 2026-07-04.

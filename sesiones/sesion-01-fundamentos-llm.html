@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sesión 01 — Fundamentos de LLMs | AI Engineer Coaching</title>
+    <title>Sesión 01: Fundamentos de LLMs | AI Engineer Coaching</title>
     <style>
       :root {
         --bg: #0b0f1a;
@@ -429,12 +429,12 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 1 — Fundamentos · Semana 2
+          AI Engineer Coaching · Fase 1 · Fundamentos · Semana 2
         </div>
         <h1>Sesión 01<br />Fundamentos de LLMs</h1>
         <p class="lead">
-          Entender qué pasa por dentro de un LLM —tokens, atención, training,
-          embeddings— para dejar de usarlo como caja negra.
+          Entender qué pasa por dentro de un LLM (tokens, atención, training,
+          embeddings) para dejar de usarlo como caja negra.
         </p>
         <blockquote>
           Arrancamos con una pregunta tonta que casi ningún LLM respondía bien:
@@ -445,27 +445,27 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — entregable de la semana 1: entorno listo y
+            <strong>Repaso</strong>, entregable de la semana 1: entorno listo y
             primera llamada al API funcionando (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — tokens y BPE, transformer a alto
+            <strong>Tema central</strong>: tokens y BPE, transformer a alto
             nivel, pretraining vs post-training, embeddings (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: construimos un
+            <strong>Manos al código</strong>, pair programming: construimos un
             "Token-ó-metro" que cuenta tokens y compara costos entre modelos (30
             min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym: tokenización + costos +
+            <strong>Reto de la semana</strong>, AI Gym: tokenización + costos +
             embeddings con similitud coseno (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y dudas abiertas (5
+            <strong>Cierre</strong>: checklist de salida y dudas abiertas (5
             min)
           </li>
         </ul>
@@ -496,7 +496,7 @@
             <h3>Embeddings y similitud coseno</h3>
             <p class="muted">
               Representar texto como vectores y medir qué tan "cerca" están dos
-              frases — la base de RAG.
+              frases: la base de RAG.
             </p>
           </div>
           <div class="card">
@@ -527,7 +527,7 @@
                 por palabra.
               </li>
               <li>
-                Código, JSON y emojis tokenizan distinto al texto plano — mide,
+                Código, JSON y emojis tokenizan distinto al texto plano: mide,
                 no asumas.
               </li>
             </ul>
@@ -541,7 +541,7 @@
               </li>
               <li>
                 Contar las "r" exige razonar sobre caracteres que el modelo
-                literalmente no vio — por eso históricamente respondía "2".
+                literalmente no vio: por eso históricamente respondía "2".
               </li>
               <li>
                 Misma raíz de otros fallos: invertir strings, aritmética con
@@ -559,7 +559,7 @@
       <!-- SLIDE 5: tokens = dinero (count_tokens) -->
       <section class="slide">
         <h2>Tokens = dinero: mide antes de llamar</h2>
-        <pre><code><span class="c"># pip install anthropic — el endpoint count_tokens es gratis</span>
+        <pre><code><span class="c"># pip install anthropic: el endpoint count_tokens es gratis</span>
 <span class="k">import</span> anthropic
 
 client = anthropic.<span class="f">Anthropic</span>()
@@ -625,7 +625,7 @@ count = client.messages.<span class="f">count_tokens</span>(
         <p class="muted" style="margin-top: 1.4rem">
           El context window lo comparte <em>todo</em>: system prompt, historial,
           tools y la respuesta. En un chat, cada turno re-envía la conversación
-          completa como input — el costo crece con el largo del historial, no
+          completa como input: el costo crece con el largo del historial, no
           solo con el último mensaje.
         </p>
       </section>
@@ -648,7 +648,7 @@ resp = client.messages.<span class="f">create</span>(
             <code>temperature</code> escala la distribución antes de muestrear;
             <code>top_p</code> (nucleus) recorta a los tokens que acumulan p.ej.
             el 90% de probabilidad. En Claude 4+ usa
-            <strong>uno u otro, nunca ambos</strong> — el API devuelve 400.
+            <strong>uno u otro, nunca ambos</strong>: el API devuelve 400.
           </li>
           <li>
             Receta: extracción/clasificación → temperature baja; brainstorming y
@@ -675,7 +675,7 @@ resp = client.messages.<span class="f">create</span>(
           <li>
             <strong>Atención:</strong> cada token calcula a qué tokens previos
             "mirar" y con qué peso. Así "banco" significa distinto en "me senté
-            en el banco" vs "fui al banco a pagar" — el contexto reescribe el
+            en el banco" vs "fui al banco a pagar": el contexto reescribe el
             significado en cada capa.
           </li>
           <li>
@@ -748,7 +748,7 @@ resp = client.messages.<span class="f">create</span>(
             <h3>Knowledge cutoff</h3>
             <p class="muted">
               El pretraining congela el conocimiento en una fecha. Todo lo
-              posterior no existe para el modelo — y peor: puede responder con
+              posterior no existe para el modelo, y peor: puede responder con
               datos viejos sin avisar. Mitiga con web search o tools.
             </p>
           </div>
@@ -770,7 +770,7 @@ resp = client.messages.<span class="f">create</span>(
         <h2>Idea fuerza</h2>
         <blockquote>
           Un LLM no consulta hechos: predice el siguiente token. El chat, el
-          "razonamiento", las alucinaciones y la factura — todo es consecuencia
+          "razonamiento", las alucinaciones y la factura: todo es consecuencia
           de eso.
         </blockquote>
         <p class="muted">
@@ -784,7 +784,7 @@ resp = client.messages.<span class="f">create</span>(
         <h2>Embeddings y similitud coseno</h2>
         <p class="muted" style="margin-bottom: 1.2rem">
           Cambiamos de tema, no de herramienta: estos mismos vectores son la
-          base de RAG —lo que construimos en la Fase 2— y los tocas hoy en el
+          base de RAG (lo que construimos en la Fase 2) y los tocas hoy en el
           ejercicio.
         </p>
         <div class="columns">
@@ -833,7 +833,7 @@ emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>🧪 Manos al código — Token-ó-metro (30 min)</h2>
+        <h2>🧪 Manos al código: Token-ó-metro (30 min)</h2>
         <p>
           Construimos juntos un CLI en Python que responde la pregunta:
           <strong>"¿cuánto me va a costar esto, en cada modelo?"</strong>
@@ -865,7 +865,7 @@ emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"
             "Embeddings y similitud coseno": <code>voyageai</code> o
             <code>sentence-transformers</code>) y calcula la
             <code>cos_sim</code>
-            entre pares — comprueba que las del mismo tema puntúan más alto. Es
+            entre pares: comprueba que las del mismo tema puntúan más alto. Es
             la semilla de la Parte 2 del reto.
           </li>
         </ul>
@@ -931,7 +931,7 @@ emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"
               </div>
               <div class="vc-meta">3Blue1Brown · Inglés · ~26 min</div>
               <div class="vc-why">
-                El mecanismo de atención animado paso a paso — la pieza central
+                El mecanismo de atención animado paso a paso: la pieza central
                 del transformer.
               </div>
             </div>
@@ -950,7 +950,7 @@ emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"
               <div class="vc-title">What are Word Embeddings?</div>
               <div class="vc-meta">IBM Technology · Inglés · corto</div>
               <div class="vc-why">
-                Embeddings como vectores en espacio multidimensional — base
+                Embeddings como vectores en espacio multidimensional: base
                 directa de la Parte 2 del reto.
               </div>
             </div>
@@ -980,19 +980,19 @@ emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"
       </section>
 
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 01</span
           ><span class="tag green">Entregable: repo + README</span>
           <h3 style="margin-top: 0.8rem">Tokens, costos y embeddings</h3>
           <p>
-            <strong>Parte 1 — Tokenización y costos:</strong> script que tome 10
+            <strong>Parte 1 · Tokenización y costos:</strong> script que tome 10
             textos variados (español, inglés, código, JSON, emojis), los
             tokenice con <code>count_tokens</code> y compare el costo de input
             entre 3 modelos (Sonnet 4.6, Haiku 4.5, Opus 4.8) en una tabla.
           </p>
           <p style="margin-top: 0.8rem">
-            <strong>Parte 2 — Embeddings:</strong> genera embeddings para 20
+            <strong>Parte 2 · Embeddings:</strong> genera embeddings para 20
             frases (mezcla 3–4 temas distintos) reutilizando el snippet de la
             slide "Embeddings y similitud coseno" (<code>voyage-3.5</code> o
             <code>sentence-transformers all-MiniLM-L6-v2</code>), calcula la
@@ -1034,14 +1034,14 @@ emb = vo.<span class="f">embed</span>(textos, model=<span class="s">"voyage-3.5"
           <li>Calculé una similitud coseno entre dos vectores con numpy</li>
           <li>
             Sé cuándo tocar <code>temperature</code>, <code>top_p</code> y
-            <code>max_tokens</code> — y que temperature y top_p no van juntos
+            <code>max_tokens</code>, y que temperature y top_p no van juntos
           </li>
           <li>Tengo el Challenge 01 del AI Gym agendado para esta semana</li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
-          <strong>Sesión 02 — APIs de LLM y Prompt Engineering</strong> —
-          dejamos de "preguntarle a la IA" y empezamos a diseñar prompts
+          <strong>Sesión 02 · APIs de LLM y Prompt Engineering</strong>.
+          Dejamos de "preguntarle a la IA" y empezamos a diseñar prompts
           medibles contra un golden set.
         </p>
       </section>

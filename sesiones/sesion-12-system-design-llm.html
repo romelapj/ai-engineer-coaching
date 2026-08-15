@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 12 — System Design de Sistemas con LLMs | AI Engineer Coaching
+      Sesión 12: System Design de Sistemas con LLMs | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -431,7 +431,7 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 4 — Entrevistas · Semanas 13-14
+          AI Engineer Coaching · Fase 4: Entrevistas · Semanas 13-14
         </div>
         <h1>Sesión 12<br />System Design de Sistemas con LLMs</h1>
         <p class="lead">
@@ -442,29 +442,29 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 minutos</h2>
+        <h2>Agenda: 90 minutos</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — calentamiento: pasamos tu proyecto del
+            <strong>Repaso</strong> (calentamiento): pasamos tu proyecto del
             Demo Day (S11) por el marco de 6 pasos en 5 min. Ya conoces las
             respuestas; hoy aprendes a darlas en frío. Y antes de dibujar una
             caja: ¿qué le preguntas al entrevistador? (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — el marco de 6 pasos, los 4 casos
+            <strong>Tema central</strong>: el marco de 6 pasos, los 4 casos
             típicos y los 3 trade-offs que siempre caen (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming:
+            <strong>Manos al código</strong> (pair programming):
             <code>estimador.py</code>, tu calculadora de costos para la pizarra
             (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — 2 system designs por escrito,
+            <strong>Reto de la semana</strong>: 2 system designs por escrito,
             45 min cada uno, con timer y rúbrica (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y próxima sesión (5
+            <strong>Cierre</strong>: checklist de salida y próxima sesión (5
             min)
           </li>
         </ul>
@@ -607,13 +607,13 @@
 
       <!-- SLIDE 6: trade-off RAG vs fine-tune -->
       <section class="slide">
-        <h2>Trade-off #1 — RAG vs fine-tuning</h2>
+        <h2>Trade-off #1: RAG vs fine-tuning</h2>
         <div class="columns">
           <div class="card">
             <h3>RAG: conocimiento</h3>
             <ul class="clean">
               <li>Datos que cambian (políticas, catálogo, docs)</li>
-              <li>Citas y verificabilidad — clave en soporte y legal</li>
+              <li>Citas y verificabilidad: clave en soporte y legal</li>
               <li>Aislamiento por tenant: cada cliente, su índice</li>
               <li>Time-to-market: días, no semanas</li>
             </ul>
@@ -633,7 +633,7 @@
         <p class="muted" style="margin-top: 1.5rem">
           Frase para la entrevista:
           <strong
-            >"RAG para conocimiento, fine-tune para comportamiento — y prompt
+            >"RAG para conocimiento, fine-tune para comportamiento. Y prompt
             engineering antes que ambos, porque es gratis."</strong
           >
         </p>
@@ -641,7 +641,7 @@
 
       <!-- SLIDE 7: trade-off sync vs async -->
       <section class="slide">
-        <h2>Trade-off #2 — Sync vs async</h2>
+        <h2>Trade-off #2: Sync vs async</h2>
         <div class="columns">
           <div class="card">
             <h3>Sync: hay un humano esperando</h3>
@@ -669,13 +669,13 @@
         </div>
         <p class="muted" style="margin-top: 1.5rem">
           Regla rápida: ¿hay un humano mirando? Sync con streaming. ¿No lo hay?
-          Async con batch — y te acabas de ahorrar la mitad de la factura.
+          Async con batch, y te acabas de ahorrar la mitad de la factura.
         </p>
       </section>
 
       <!-- SLIDE 8: trade-off modelo grande vs pequeño -->
       <section class="slide">
-        <h2>Trade-off #3 — Modelo grande vs pequeño</h2>
+        <h2>Trade-off #3: Modelo grande vs pequeño</h2>
         <table>
           <thead>
             <tr>
@@ -707,7 +707,7 @@
           </tbody>
         </table>
         <p class="muted" style="margin-top: 1.5rem">
-          Patrón ganador en entrevista: <strong>cascada</strong> — el modelo
+          Patrón ganador en entrevista: <strong>cascada</strong>. El modelo
           pequeño clasifica/filtra el 80% barato y rápido; el grande resuelve el
           20% difícil. Justifica el modelo con el caso y el número, nunca con el
           hype.
@@ -747,7 +747,7 @@
             </tr>
             <tr>
               <td><strong>Total sin optimizar</strong></td>
-              <td>—</td>
+              <td>-</td>
               <td><strong>$1,200/día ≈ $36,000/mes</strong></td>
             </tr>
             <tr>
@@ -757,7 +757,7 @@
             </tr>
             <tr>
               <td><strong>Total optimizado</strong></td>
-              <td>—</td>
+              <td>-</td>
               <td><strong>$660/día ≈ $19,800/mes (−45%)</strong></td>
             </tr>
           </tbody>
@@ -865,12 +865,12 @@ resp = client.messages.<span class="f">create</span>(
         <h2>Errores fatales</h2>
         <ul class="clean">
           <li>
-            <strong>Saltar a la solución sin requisitos</strong> — el error #1.
+            <strong>Saltar a la solución sin requisitos</strong>: el error #1.
             Dibujar antes de preguntar es reprobar en el minuto 2.
           </li>
           <li>Diseñar sin números: ni volumen, ni latencia, ni costo.</li>
           <li>
-            "Le ponemos un agente" como respuesta a todo — complejidad sin
+            "Le ponemos un agente" como respuesta a todo: complejidad sin
             justificación es un red flag, no un plus.
           </li>
           <li>No mencionar evals: diseñaste algo que no sabes si funciona.</li>
@@ -885,26 +885,26 @@ resp = client.messages.<span class="f">create</span>(
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>🛠️ Ejercicio en vivo — pair programming (30 min)</h2>
+        <h2>🛠️ Ejercicio en vivo: pair programming (30 min)</h2>
         <div class="card">
           <span class="tag">Pair programming</span>
           <span class="tag violet">30 min</span>
           <h3 style="margin-top: 0.8rem">
-            <code>estimador.py</code> — tu calculadora de costos para la pizarra
+            <code>estimador.py</code>, tu calculadora de costos para la pizarra
           </h3>
           <p>
             Un CLI en Python que recibe modelo, requests/día, tokens de
-            input/output, % de input cacheado y si va por Batch API — y devuelve
+            input/output, % de input cacheado y si va por Batch API, y devuelve
             $/día, $/mes y costo por request.
           </p>
           <ul class="clean" style="margin-top: 0.8rem">
             <li>
-              <strong>Min 0–10:</strong> función base — tokens × volumen ×
-              precio por modelo
+              <strong>Min 0–10:</strong> función base (tokens × volumen ×
+              precio por modelo)
             </li>
             <li>
-              <strong>Min 10–20:</strong> palancas — cache read a 0.1× del input
-              y batch a −50%
+              <strong>Min 10–20:</strong> palancas (cache read a 0.1× del input
+              y batch a −50%)
             </li>
             <li>
               <strong>Min 20–30:</strong> correr 3 escenarios del caso de
@@ -913,7 +913,7 @@ resp = client.messages.<span class="f">create</span>(
           </ul>
           <p class="muted" style="margin-top: 0.8rem">
             Entregable: el script queda en el repo. Lo vas a reutilizar en el
-            reto de la semana — la aritmética del paso 5 sale de aquí.
+            reto de la semana: la aritmética del paso 5 sale de aquí.
           </p>
         </div>
       </section>
@@ -934,7 +934,7 @@ resp = client.messages.<span class="f">create</span>(
             />
             <div>
               <div class="vc-title">
-                Design ChatGPT — System Design Mock Interview (with eBay EM)
+                Design ChatGPT: System Design Mock Interview (with eBay EM)
               </div>
               <div class="vc-meta">Exponent · Inglés</div>
               <div class="vc-why">
@@ -1032,7 +1032,7 @@ resp = client.messages.<span class="f">create</span>(
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 12</span
           ><span class="tag green">Entregable</span>
@@ -1041,8 +1041,8 @@ resp = client.messages.<span class="f">create</span>(
           </h3>
           <p>
             Resuelve dos casos completos usando el marco de 6 pasos,
-            <strong>45 minutos cada uno con timer real</strong> — cuando suena,
-            sueltas el lápiz: (1) asistente de soporte con RAG para un banco;
+            <strong>45 minutos cada uno con timer real</strong> (cuando suena,
+            sueltas el lápiz): (1) asistente de soporte con RAG para un banco;
             (2) pipeline de extracción masiva de facturas.
           </p>
           <ul class="clean" style="margin-top: 0.8rem">
@@ -1085,7 +1085,7 @@ resp = client.messages.<span class="f">create</span>(
           </li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
-          Próxima sesión —
+          Próxima sesión,
           <strong>Sesión 13: Mock Interviews, Portfolio y Estrategia</strong>:
           el marco que dominaste ES la ronda de system design de la entrevista;
           la próxima arma las otras rondas y tu portfolio para llegar a ellas.

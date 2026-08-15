@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Pre-Fase N04 — Strings, archivos y errores | AI Engineer Coaching
+      Pre-Fase N04: Strings, archivos y errores | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -429,7 +429,7 @@
     </div>
     <main id="deck">
       <section class="slide active">
-        <div class="kicker">Pre-Fase 0.5 — Fundamentos de Python · Día 5</div>
+        <div class="kicker">Pre-Fase 0.5: Fundamentos de Python · Día 5</div>
         <h1>Strings, archivos<br />y errores</h1>
         <p class="lead">
           Texto, archivos, json/csv y el manejo de errores que separa un script
@@ -439,7 +439,7 @@
       </section>
 
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
             <strong>Repaso (5 min):</strong> una función de ayer con type hints,
@@ -571,7 +571,7 @@ lector = csv.<span class="f">DictReader</span>(<span class="f">StringIO</span>(d
         <h2>Errores: try/except/else/finally</h2>
         <blockquote>
           Captura tipos CONCRETOS y reacciona a ESE fallo.
-          <code>except: pass</code> a ciegas se traga todo — incluidos tus
+          <code>except: pass</code> a ciegas se traga todo, incluidos tus
           propios bugs.
         </blockquote>
         <ul class="clean">
@@ -581,7 +581,7 @@ lector = csv.<span class="f">DictReader</span>(<span class="f">StringIO</span>(d
             (<code>ValueError</code>, <code>KeyError</code>...).
           </li>
           <li>
-            <strong>else:</strong> corre si NO hubo excepción — separa lo
+            <strong>else:</strong> corre si NO hubo excepción; separa lo
             arriesgado de lo seguro.
           </li>
           <li>
@@ -633,7 +633,7 @@ descartadas = 0
               </li>
               <li>
                 Capturar una superclase atrapa a sus hijas:
-                <code>except Exception</code> atrapa casi todo — por eso es
+                <code>except Exception</code> atrapa casi todo, por eso es
                 peligroso.
               </li>
             </ul>
@@ -651,7 +651,7 @@ descartadas = 0
                 reaccionar.
               </li>
               <li>
-                Deja <strong>subir</strong> lo que no sabes manejar — un fallo
+                Deja <strong>subir</strong> lo que no sabes manejar: un fallo
                 visible vence a uno silenciado.
               </li>
             </ul>
@@ -662,16 +662,16 @@ descartadas = 0
       <section class="slide">
         <h2>EAFP vs LBYL</h2>
         <blockquote>
-          EAFP — Easier to Ask Forgiveness than Permission: intenta el camino
+          EAFP (Easier to Ask Forgiveness than Permission): intenta el camino
           feliz y captura el caso raro específico.
         </blockquote>
         <ul class="clean">
           <li>
             <strong>LBYL</strong> (Look Before You Leap): comprueba condiciones
-            ANTES de actuar — <code>if clave in dict: ...</code>.
+            ANTES de actuar, como <code>if clave in dict: ...</code>.
           </li>
           <li>
-            <strong>EAFP</strong>: intenta y captura el fallo —
+            <strong>EAFP</strong>: intenta y captura el fallo, como
             <code>try: d[k]</code> / <code>except KeyError</code>.
           </li>
           <li>
@@ -710,7 +710,7 @@ descartadas = 0
       </section>
 
       <section class="slide">
-        <h2>Manos al código — CSV → transformar → JSON (35 min)</h2>
+        <h2>Manos al código: CSV → transformar → JSON (35 min)</h2>
         <div class="columns">
           <div>
             <div class="card">
@@ -793,7 +793,7 @@ descartadas = 0
             />
             <div>
               <div class="vc-title">
-                Exceptions — try, except, else, finally
+                Exceptions: try, except, else, finally
               </div>
               <div class="vc-meta">Corey Schafer · Inglés</div>
               <div class="vc-why">
@@ -810,7 +810,7 @@ descartadas = 0
           >
             <div>
               <div class="vc-title">
-                Python pathlib — Manipulación moderna de rutas y archivos
+                Python pathlib: Manipulación moderna de rutas y archivos
               </div>
               <div class="vc-meta">Tech With Tim · Inglés</div>
               <div class="vc-why">
@@ -823,7 +823,7 @@ descartadas = 0
       </section>
 
       <section class="slide">
-        <h2>Katas del día — kata-04 y kata-05</h2>
+        <h2>Katas del día: kata-04 y kata-05</h2>
         <div class="card">
           <span class="tag violet">Kata kata-04</span>
           <span class="tag violet">Kata kata-05</span>
@@ -870,8 +870,7 @@ descartadas = 0
           Próxima sesión:
           <strong
             >Cierre de la Pre-Fase 0.5 → capstone + checklist de fluidez</strong
-          >
-          — el pipeline de hoy se vuelve idiomático: generadores, dataclasses y
+          >. El pipeline de hoy se vuelve idiomático: generadores, dataclasses y
           pytest para rematar el bloque.
         </p>
       </section>

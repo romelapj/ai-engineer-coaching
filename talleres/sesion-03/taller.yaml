@@ -1,0 +1,732 @@
+# Guion del taller de la sesión 03.
+#
+# REGLA DEL FORMATO: aquí NO se escribe código. Solo se apunta a los archivos
+# de codigo/ con un rango de líneas. El generador los lee y los inyecta en el
+# HTML, y además verifica que entre todos los pasos no quede ni una línea sin
+# explicar. Si el archivo cambia, el taller cambia solo.
+id: sesion-03
+titulo: "Taller 03 · Tool use: haz que funcione, luego que sobreviva"
+kicker: "AI Engineer Coaching · Fase 1: Fundamentos · Sesión 03"
+subtitulo: >-
+  Sin herramientas, el modelo solo puede rendirse o inventarse la respuesta.
+  En 7 sesiones de 30 minutos le das manos, y después las blindas para que
+  no se te caigan a las 3 de la mañana.
+
+codigo: codigo
+salidas: salidas
+
+enlaces:
+  - texto: "📊 Deck de la sesión"
+    url: "../sesiones/sesion-03-tool-use-robustez.html"
+  - texto: "🏋️ Reto 02 del AI Gym"
+    url: "../gym/index.html"
+  - texto: "← Portal"
+    url: "../index.html"
+
+como_funciona: |
+  **Un día = 30 minutos = un archivo que corre.** No leas el taller entero de
+  corrido: haz un día, ciérralo, y vuelve mañana. Cada paso trae el código
+  completo (botón `Copiar`), el comando para correrlo y la salida real que
+  deberías ver: esa salida es tu criterio de "me funcionó", sin tener que
+  preguntarle a nadie.
+
+  El taller tiene **dos actos**. Los días 1 a 4 son *haz que funcione*: el
+  modelo pide, tu código ejecuta. Los días 5 y 6 son *haz que sobreviva*: lo
+  mismo, pero aguantando errores de red, rate limits y timeouts.
+
+  Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en
+  este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
+  líneas, `c` para las notas del coach.
+
+cierre:
+  titulo: "Tu modelo ya tiene manos, y ya no se cae solo"
+  texto: |
+    Lo que construiste no es un chatbot con trucos: es el patrón que va debajo
+    de cualquier agente. El modelo decide, tu código ejecuta, y el resultado
+    vuelve enlazado por un id. Todo lo que viene después (agentes, memoria,
+    MCP) es este loop con más vueltas.
+
+    Y la mitad que casi nadie enseña ya la tienes: reintentos con jitter, la
+    tabla de qué error se reintenta y cuál no, timeouts, idempotencia y logs
+    que sirven a las 3 de la mañana.
+  siguiente:
+    id: sesion-04
+    titulo: "Taller 04 · RAG desde cero, con citas verificables"
+    resumen: >-
+      Tu chatbot inventa respuestas sobre tus propios documentos y no puedes
+      auditar de dónde salieron. Construye el pipeline que las obliga a citar
+      su fuente, o a admitir que no la tiene.
+    deck: "../sesiones/sesion-04-rag-fundamentos.html"
+  acciones:
+    - texto: "🏋️ Entrega el reto 02 del AI Gym"
+      url: "../gym/index.html"
+    - texto: "📊 Repasar el deck de la sesión 03"
+      url: "../sesiones/sesion-03-tool-use-robustez.html"
+    - texto: "← Volver al portal"
+      url: "../index.html"
+
+dias:
+  # =========================================================================
+  - etiqueta: "Día 0 · Antes de empezar"
+    titulo: "Preparar el entorno"
+    minutos: 10
+    meta: >-
+      Diez minutos y una sola vez. Si esto no queda funcionando, el día 1 se te
+      va en instalar cosas en vez de en entender el round-trip.
+    checkpoint: >-
+      `python -c "import anthropic, pydantic"` no da error y
+      `ANTHROPIC_API_KEY` está en tu shell.
+    pasos:
+      - titulo: "Carpeta, entorno virtual y dependencias"
+        minutos: 5
+        objetivo: >-
+          Un entorno virtual aísla las librerías de este taller del resto de tu
+          máquina. Dentro instalas las dos que hacen falta.
+        codigo:
+          archivo: requirements.txt
+        bloques:
+          - lenguaje: bash
+            texto: |
+              mkdir -p ~/talleres/sesion-03
+              cd ~/talleres/sesion-03
+              python3 -m venv .venv
+              source .venv/bin/activate
+              pip install -r requirements.txt
+        porque: >-
+          Cuando el prompt de tu terminal muestre `(.venv)`, estás dentro.
+          Tendrás que repetir `source .venv/bin/activate` cada vez que abras
+          una terminal nueva: es el olvido número uno de la semana.
+        si_falla:
+          - error: "source: no such file or directory: .venv/bin/activate"
+            arreglo: "En Windows el comando es `.venv\\Scripts\\activate`."
+
+      - titulo: "Tu API key"
+        minutos: 5
+        objetivo: >-
+          Cuatro de los nueve ejemplos llaman al modelo de verdad. La llave se
+          lee de una variable de entorno: nunca se escribe dentro del código.
+        bloques:
+          - lenguaje: bash
+            texto: |
+              export ANTHROPIC_API_KEY="sk-ant-..."   # tu llave real
+              python -c "import anthropic, pydantic; print('entorno listo')"
+        salida_texto: |
+          entorno listo
+        porque: >-
+          `export` solo dura lo que dure esa terminal. Si vas a trabajar varios
+          días, mete esa línea en tu `~/.zshrc`. Y nunca la subas a git: una
+          llave filtrada en un repo se explota en minutos.
+        nota_coach: >-
+          Los días 1 y 5 no necesitan llave (todo está simulado). Si el alumno
+          aún no la tiene, puede arrancar igual y conseguirla para el día 2.
+
+  # =========================================================================
+  - etiqueta: "Día 1"
+    titulo: "La forma del round-trip, y la ficha que ve el modelo"
+    minutos: 30
+    meta: >-
+      Antes de tocar la API, dos cosas: la **forma** del intercambio (cuatro
+      fases, siempre las mismas) y la **ficha** de la tool, que es lo único que
+      el modelo llega a ver de tu código. Hoy no se llama a ningún modelo.
+    archivo_completo:
+      - 00_round_trip.py
+      - 01_la_tool.py
+    checkpoint: >-
+      Puedes dibujar las cuatro fases de memoria y decir cuál de ellas ejecuta
+      el modelo (ninguna). Y puedes explicar por qué la `description` de una
+      tool importa más que el código que hay detrás.
+    pasos:
+      - titulo: "Las tres piezas del intercambio"
+        minutos: 8
+        objetivo: >-
+          Archivo nuevo, `00_round_trip.py`. Una simulación sin API para ver la
+          forma antes que los detalles: quién pide, quién ejecuta.
+        codigo:
+          archivo: 00_round_trip.py
+          lineas: "1-45"
+        porque: >-
+          Fíjate en el reparto de papeles. `modelo_decide` **solo devuelve una
+          intención**: el nombre de una tool y unos argumentos. `ejecutar_tool`
+          es tu código, y es el único que hace algo de verdad.
+
+          Esa separación es todo tool use. El modelo nunca ejecuta nada, ni
+          aquí, ni con la API real. Si algo pasa en tu sistema, lo hizo tu
+          código porque tú lo escribiste.
+
+      - titulo: "Las cuatro fases, corriendo"
+        minutos: 7
+        objetivo: >-
+          El `main()` que recorre el ciclo completo: pide → ejecutas →
+          devuelves → responde.
+        codigo:
+          archivo: 00_round_trip.py
+          lineas: "46-74"
+          nuevo: true
+        corre: |
+          python 00_round_trip.py
+        salida:
+          archivo: 00_round_trip.txt
+        porque: >-
+          La fase 3 es la que se olvida. No basta con devolver el resultado:
+          hay que devolverlo **con el id de la petición** (`tool_use_id`). Si el
+          modelo pidió tres tools en un turno, ese id es lo único que le dice
+          qué resultado corresponde a cuál.
+
+          Aquí el id es `"abc123"` inventado. En la API real lo genera el
+          modelo y tú lo copias tal cual. El día 2 lo vas a ver.
+
+      - titulo: "La base de datos y la función real"
+        minutos: 5
+        objetivo: >-
+          Archivo nuevo, `01_la_tool.py`. Una función de Python normal y
+          corriente: esto es lo que el modelo va a poder pedir.
+        codigo:
+          archivo: 01_la_tool.py
+          lineas: "1-33"
+        porque: >-
+          No tiene nada de especial, y ese es el punto: una tool es **una
+          función que ya tenías**. Lo único que se agrega es la ficha del
+          siguiente paso.
+
+      - titulo: "La ficha: la descripción ES el prompt"
+        minutos: 7
+        objetivo: >-
+          El paso que decide la calidad de todo lo demás. El modelo solo ve tres
+          campos: `name`, `description` e `input_schema`.
+        codigo:
+          archivo: 01_la_tool.py
+          lineas: "34-65"
+          nuevo: true
+        porque: >-
+          Lee la `description` como lo que es: **un prompt**. Dice qué hace,
+          *cuándo* usarla ("siempre que el usuario pregunte por una orden") y da
+          un ejemplo del formato ("ORD-NNNN, p. ej. ORD-8841"). Sin ese
+          "cuándo", el modelo la usa a destiempo; sin el ejemplo, se inventa el
+          formato del id.
+
+          El `input_schema` es JSON Schema: la firma de tu función traducida a
+          algo que el modelo entiende. `required` no es decorativo: es lo que
+          impide que llame la tool sin el `order_id`.
+
+      - titulo: "Ver la ficha exacta que viaja"
+        minutos: 3
+        objetivo: >-
+          Imprimir la ficha como JSON y comprobar que la función real responde.
+        codigo:
+          archivo: 01_la_tool.py
+          lineas: "66-78"
+          nuevo: true
+        corre: |
+          python 01_la_tool.py
+        salida:
+          archivo: 01_la_tool.txt
+          lineas: "1-22"
+        porque: >-
+          Eso, literalmente, es todo lo que el modelo sabe de tu sistema.
+          Ni el cuerpo de la función, ni la base de datos, ni tus nombres de
+          variables. Cuando una tool se usa mal, el problema casi siempre está
+          en estas líneas y no en el código de abajo.
+        nota_coach: >-
+          Buen ejercicio en vivo: borrar la frase "Úsala siempre que el usuario
+          pregunte por una orden" y correr el día 2. El cambio de comportamiento
+          se nota de inmediato.
+
+  # =========================================================================
+  - etiqueta: "Día 2"
+    titulo: "El loop de verdad: tool_use → tool_result"
+    minutos: 30
+    meta: >-
+      Hoy sí llamas al modelo. Vas a ver el ciclo real, turno por turno, con los
+      dos errores clásicos señalados en el sitio exacto donde se cometen.
+    archivo_completo:
+      - 02_el_loop.py
+    checkpoint: >-
+      `02_el_loop.py` imprime `stop_reason: tool_use` en el turno 0, ejecuta tu
+      función, y en el turno 1 responde con texto. Puedes explicar por qué el
+      turno del modelo se guarda **entero** en el historial.
+    pasos:
+      - titulo: "El cliente y el puente nombre → función"
+        minutos: 6
+        objetivo: >-
+          Archivo nuevo, `02_el_loop.py`. El cliente de Anthropic y un
+          diccionario que traduce lo que el modelo pide a lo que tú ejecutas.
+        codigo:
+          archivo: 02_el_loop.py
+          lineas: "1-36"
+        porque: >-
+          `TOOLS` es la pieza que muchos improvisan con un `if/elif` gigante. Un
+          diccionario `nombre → función` escala, se testea solo y hace obvio qué
+          está expuesto al modelo y qué no.
+
+          `anthropic.Anthropic()` sin argumentos lee `ANTHROPIC_API_KEY` del
+          entorno.
+
+      - titulo: "La misma ficha del día 1"
+        minutos: 3
+        objetivo: >-
+          La declaración de la tool, idéntica a la de ayer. Cópiala y sigue.
+        codigo:
+          archivo: 02_el_loop.py
+          lineas: "37-53"
+          nuevo: true
+        porque: >-
+          Aparece repetida a propósito: cada archivo del taller corre solo. En
+          un proyecto de verdad esto vive en un módulo aparte y se importa.
+
+      - titulo: "run_tool: ejecutar sin confiar"
+        minutos: 5
+        objetivo: >-
+          La función que corre lo que el modelo pidió, asumiendo que puede
+          pedir cualquier cosa.
+        codigo:
+          archivo: 02_el_loop.py
+          lineas: "54-67"
+          nuevo: true
+        porque: >-
+          El `if fn is None` no es paranoia: el modelo puede inventarse el
+          nombre de una tool que no existe. Si eso tumba tu programa, un error
+          del modelo se convierte en una caída tuya. Devolver el error **como
+          texto JSON** deja que el modelo lo lea y se corrija en el turno
+          siguiente.
+
+          Y `json.dumps` al final: el `content` de un `tool_result` viaja como
+          texto, nunca como diccionario de Python.
+
+      - titulo: "El loop: llamar, mirar stop_reason, decidir"
+        minutos: 9
+        objetivo: >-
+          El corazón de la sesión. Un bucle acotado que llama al modelo y mira
+          por qué paró.
+        codigo:
+          archivo: 02_el_loop.py
+          lineas: "68-94"
+          nuevo: true
+        porque: >-
+          Tres decisiones en 27 líneas. **`range(10)`**: el presupuesto va en el
+          código, no en un TODO: sin tope, un modelo confundido te deja un
+          bucle infinito facturando tokens.
+
+          **`stop_reason`** es el semáforo: si no es `tool_use`, el modelo
+          terminó y sales.
+
+          Y el error clásico número uno está en la última línea: guardar el
+          turno del modelo **entero y tal cual vino** (`resp.content`) antes de
+          responderle. Si lo reconstruyes a mano o te lo saltas, el siguiente
+          turno da 400.
+
+      - titulo: "Devolver los resultados y cerrar"
+        minutos: 7
+        objetivo: >-
+          Empaquetar cada resultado con su `tool_use_id` y devolverlos como un
+          mensaje `user`.
+        codigo:
+          archivo: 02_el_loop.py
+          lineas: "95-121"
+          nuevo: true
+        corre: |
+          python 02_el_loop.py
+        salida:
+          archivo: 02_el_loop.txt
+          lineas: "1-8"
+        porque: >-
+          Que los resultados de las tools vayan con `role: "user"` desconcierta
+          a todo el mundo la primera vez. La API modela la conversación como
+          "quien no es el modelo, es el usuario", y tu código está de ese lado.
+
+          Mira la salida: turno 0 `stop_reason: tool_use`, turno 1
+          `end_turn`. Ese es el ciclo completo, y es el mismo que vas a ver en
+          cualquier agente por complicado que parezca.
+        si_falla:
+          - error: "anthropic.AuthenticationError: invalid x-api-key"
+            arreglo: "Revisa la variable con `echo $ANTHROPIC_API_KEY`."
+          - error: "BadRequestError: messages: unexpected role"
+            arreglo: 'Los `tool_result` van en un mensaje con `role: "user"`, no `assistant`.'
+
+  # =========================================================================
+  - etiqueta: "Día 3"
+    titulo: "Dos tools en un turno: la regla de oro y el paralelismo"
+    minutos: 30
+    meta: >-
+      Una pregunta que toca dos órdenes trae dos `tool_use` en el mismo turno.
+      Hoy los respondes bien, y de paso conviertes 4 segundos en 2.
+    archivo_completo:
+      - 03_paralelo.py
+    checkpoint: >-
+      La salida dice "2 tool(s) en un solo turno" y "Tiempo en paralelo: 2.0s
+      (en serie habría tardado ~4s)". Puedes explicar qué pasa si respondes solo
+      uno de los dos.
+    pasos:
+      - titulo: "Una tool deliberadamente lenta"
+        minutos: 6
+        objetivo: >-
+          Archivo nuevo, `03_paralelo.py`. Igual que ayer, pero la consulta
+          tarda 2 segundos a propósito.
+        codigo:
+          archivo: 03_paralelo.py
+          lineas: "1-39"
+        porque: >-
+          El `time.sleep(2)` está para que el ahorro se **vea**. Con tools
+          instantáneas el paralelismo es invisible y parece una optimización
+          teórica; con dos segundos cada una, la diferencia entre 4s y 2s la
+          nota cualquiera.
+
+      - titulo: "ToolOut: el resultado que sabe si falló"
+        minutos: 5
+        objetivo: >-
+          La ficha de la tool más una estructura mínima para llevar el resultado
+          junto a si hubo error.
+        codigo:
+          archivo: 03_paralelo.py
+          lineas: "40-60"
+          nuevo: true
+        porque: >-
+          Un `namedtuple` en vez de una tupla suelta: `out.content` y
+          `out.failed` se leen, `out[0]` y `out[1]` no. Ese `failed` es lo que
+          en un momento se convierte en `is_error`.
+
+      - titulo: "Ejecutar sin tumbar el lote"
+        minutos: 5
+        objetivo: >-
+          Si una de las dos tools revienta, la otra tiene que llegar igual.
+        codigo:
+          archivo: 03_paralelo.py
+          lineas: "61-71"
+          nuevo: true
+        porque: >-
+          `except Exception` es agresivo, y aquí es correcto: estás en la
+          frontera entre tu código y una petición del modelo. Un fallo de una
+          tool debe volverse **un dato** que el modelo pueda leer y no una
+          excepción que tumbe el turno entero.
+
+      - titulo: "Las dos tools, a la vez"
+        minutos: 8
+        objetivo: >-
+          Filtrar los bloques `tool_use` y ejecutarlos concurrentemente con un
+          `ThreadPoolExecutor`.
+        codigo:
+          archivo: 03_paralelo.py
+          lineas: "72-103"
+          nuevo: true
+        porque: >-
+          `ex.map` mantiene el orden de entrada, y de eso depende el `zip` del
+          paso siguiente: cada resultado tiene que volver emparejado con **su**
+          petición.
+
+          Hilos y no `asyncio` porque la espera es de entrada/salida: mientras
+          una consulta duerme, la otra avanza. Tres tools de 2 segundos son ~2
+          segundos, no 6.
+
+      - titulo: "La regla de oro: responder todos"
+        minutos: 6
+        objetivo: >-
+          Armar los `tool_result` y cerrar con la segunda llamada al modelo.
+        codigo:
+          archivo: 03_paralelo.py
+          lineas: "104-132"
+          nuevo: true
+        corre: |
+          python 03_paralelo.py
+        salida:
+          archivo: 03_paralelo.txt
+          lineas: "1-7"
+        porque: >-
+          **TODOS los `tool_use` de un turno se responden en UN solo mensaje
+          `user`.** No uno por mensaje, y no dejando ninguno sin responder: si
+          falta uno, la siguiente llamada da 400 y el error no dice claramente
+          por qué.
+
+          Fíjate también en `is_error`. Marcar un fallo así permite que el
+          modelo lo lea y decida: pedir de nuevo, avisar al usuario, seguir con
+          lo que sí tiene. Un fallo silencioso le hace creer que todo salió bien.
+
+  # =========================================================================
+  - etiqueta: "Día 4"
+    titulo: "JSON garantizado: tool_choice + Pydantic"
+    minutos: 30
+    meta: >-
+      Extraer datos estructurados de un LLM solía ser prompt, parsing tolerante
+      y fe. Hoy se hace obligando al modelo a llamar una tool: su input **es**
+      tu JSON, y Pydantic verifica que cumple.
+    archivo_completo:
+      - 04_json_garantizado.py
+    checkpoint: >-
+      El script imprime `✓ validación OK` y al final un objeto Python con sus
+      campos accesibles por nombre. Puedes explicar qué pasa cuando la
+      validación falla.
+    pasos:
+      - titulo: "El cliente, y una dependencia nueva"
+        minutos: 4
+        objetivo: >-
+          Archivo nuevo, `04_json_garantizado.py`. Entra Pydantic.
+        codigo:
+          archivo: 04_json_garantizado.py
+          lineas: "1-22"
+        porque: >-
+          Pydantic hace algo que un `json.loads` no: comprobar que los datos
+          **significan** lo que esperas. Que exista el campo, que sea del tipo
+          correcto, que cumpla tus reglas.
+
+      - titulo: "La forma declarada, y la tool que sale de ella"
+        minutos: 8
+        objetivo: >-
+          Declarar el resultado como una clase, y generar el `input_schema`
+          desde esa clase en vez de escribirlo a mano.
+        codigo:
+          archivo: 04_json_garantizado.py
+          lineas: "23-40"
+          nuevo: true
+        porque: >-
+          `CaseSummary.model_json_schema()` es el detalle que ahorra los bugs
+          más tontos. Escribir el JSON Schema a mano significa mantener dos
+          verdades: la clase y el esquema. Se separan en el primer cambio de
+          campo, y el síntoma aparece lejos, cuando el modelo manda algo que tu
+          código no espera.
+
+      - titulo: "Obligar al modelo con tool_choice"
+        minutos: 9
+        objetivo: >-
+          El bucle de intentos y la llamada que no le deja al modelo la opción
+          de responder con texto libre.
+        codigo:
+          archivo: 04_json_garantizado.py
+          lineas: "41-73"
+          nuevo: true
+        porque: >-
+          `tool_choice={"type": "tool", "name": ...}` cambia el juego: el modelo
+          **tiene** que llamar esa tool. Ya no hay que rogarle "responde solo
+          JSON, sin explicaciones", ni recortar los ```json que a veces envuelve
+          la respuesta. El transporte ya es estructurado.
+
+          Por eso el `next(...)` puede asumir sin miedo que hay un bloque
+          `tool_use`: el `tool_choice` lo garantiza.
+
+      - titulo: "Validar, y devolverle el error al modelo"
+        minutos: 9
+        objetivo: >-
+          Si Pydantic rechaza los datos, reinyectar el error exacto para que el
+          modelo se corrija solo.
+        codigo:
+          archivo: 04_json_garantizado.py
+          lineas: "74-109"
+          nuevo: true
+        corre: |
+          python 04_json_garantizado.py
+        salida:
+          archivo: 04_json_garantizado.txt
+        porque: >-
+          Este es el patrón que hay que llevarse: **el mensaje de error de
+          Pydantic es un prompt de corrección gratis**. Dice qué campo falla y
+          por qué, en un lenguaje que el modelo entiende. Devolverlo con
+          `is_error: True` arregla la mayoría de los casos en el segundo intento.
+
+          En esta corrida validó a la primera. Para ver el reintento en acción,
+          agrega un campo imposible de adivinar a `CaseSummary` y vuelve a
+          correrlo.
+        nota_coach: >-
+          Aquí conviene romperlo en vivo: añadir `eta: int` a `CaseSummary`. El
+          modelo mandará una fecha en texto, Pydantic protestará, y se verá el
+          ciclo de corrección completo.
+
+  # =========================================================================
+  - etiqueta: "Día 5 · Acto 2"
+    titulo: "Que sobreviva: reintentos y rate limits"
+    minutos: 40
+    meta: >-
+      Ya funciona. Ahora rómpelo. Toda llamada de red falla tarde o temprano, y
+      la diferencia entre un demo y algo que aguanta está en estas dos páginas
+      de código. Hoy no se llama al modelo: los fallos están simulados a
+      propósito para poder provocarlos.
+    archivo_completo:
+      - 05_retries.py
+      - 06_rate_limits.py
+    checkpoint: >-
+      Ves las esperas creciendo (0.5s, 1.9s…) y **nunca dos iguales**. Puedes
+      decir de memoria qué códigos se reintentan y cuál jamás.
+    pasos:
+      - titulo: "Un error transitorio y una llamada que falla dos veces"
+        minutos: 6
+        objetivo: >-
+          Archivo nuevo, `05_retries.py`. Montamos un fallo reproducible para
+          poder estudiarlo.
+        codigo:
+          archivo: 05_retries.py
+          lineas: "1-45"
+        porque: >-
+          `ErrorTransitorio` hace de `RateLimitError`, `InternalServerError` y
+          `APITimeoutError` sin depender de la red. La palabra clave es
+          **transitorio**: un error que se arregla solo con esperar. Los otros
+          no se reintentan nunca, y eso es el paso siguiente.
+
+      - titulo: "Backoff exponencial + jitter"
+        minutos: 12
+        objetivo: >-
+          El envoltorio que reintenta con esperas crecientes y aleatorias.
+        codigo:
+          archivo: 05_retries.py
+          lineas: "46-70"
+          nuevo: true
+        porque: >-
+          Una sola línea contiene las tres ideas:
+          `min(60, 2**attempt) * random.random()`.
+
+          **`2**attempt`** duplica la espera cada vuelta (1, 2, 4, 8…): darle
+          tiempo real a que el servicio se recupere. **`min(60, …)`** pone techo,
+          o el sexto intento espera un minuto largo. Y **`random.random()`** es
+          el jitter: si cien clientes fallan a la vez y todos reintentan
+          exactamente a los 2 segundos, vuelven a tumbar el servicio juntos.
+          La aleatoriedad los dispersa.
+
+          Lo que **no** hace también importa: solo atrapa `ErrorTransitorio`. Un
+          400 o un 401 se propagan. Reintentar un bug propio solo lo hace más caro.
+
+      - titulo: "El bonus, y verlo correr"
+        minutos: 7
+        objetivo: >-
+          La versión segura de ejecutar una tool, y la corrida completa.
+        codigo:
+          archivo: 05_retries.py
+          lineas: "71-102"
+          nuevo: true
+        corre: |
+          python 05_retries.py
+        salida:
+          archivo: 05_retries.txt
+        porque: >-
+          Mira los dos tiempos de espera de la salida: no son 1.00s y 2.00s
+          exactos. Eso es el jitter trabajando. Corre el script otra vez y van a
+          ser distintos: esa es precisamente la propiedad que necesitas.
+
+      - titulo: "La tabla de decisión, en código"
+        minutos: 7
+        objetivo: >-
+          Archivo nuevo, `06_rate_limits.py`. La pregunta de siempre: ¿es culpa
+          tuya o del servicio?
+        codigo:
+          archivo: 06_rate_limits.py
+          lineas: "1-43"
+        porque: >-
+          Cuatro códigos, dos categorías. **429** (superaste tu cuota), **529**
+          (la API está sobrecargada) y **500** (fallo interno) son transitorios:
+          se reintentan. **400** significa que tu petición está mal armada:
+          reintentarla la va a rechazar exactamente igual, mil veces.
+
+          Y el default es `return False`. Ante un código que no conoces, no
+          reintentar es la opción segura: peor que fallar es fallar en bucle.
+
+      - titulo: "Frenar antes de que te frenen"
+        minutos: 8
+        objetivo: >-
+          Leer el header de cuota que devuelve el servidor y reducir el ritmo
+          **antes** del 429.
+        codigo:
+          archivo: 06_rate_limits.py
+          lineas: "44-80"
+          nuevo: true
+        corre: |
+          python 06_rate_limits.py
+        salida:
+          archivo: 06_rate_limits.txt
+        porque: >-
+          `anthropic-ratelimit-requests-remaining` viene en cada respuesta y
+          casi nadie lo mira. El throttling **proactivo** (frenar cuando quedan
+          pocas) gana siempre al reactivo: esperar el 429 significa que ya
+          perdiste esa petición y que arrancas el backoff desde cero.
+
+  # =========================================================================
+  - etiqueta: "Día 6 · Acto 2"
+    titulo: "Timeouts, idempotencia y logs que sirven a las 3 a.m."
+    minutos: 35
+    meta: >-
+      Los dos últimos pilares. El primero evita que un reintento cobre dos
+      veces. El segundo hace que, cuando algo se rompa en producción, puedas
+      averiguar qué pasó en vez de adivinar.
+    archivo_completo:
+      - 07_timeouts_idempotencia.py
+      - 08_logging.py
+    checkpoint: >-
+      El segundo cobro con el mismo id devuelve "ya procesado" y monto 0. Y el
+      log de `08_logging.py` trae `request_id`, tokens, `stop_reason` y
+      latencia en una sola línea.
+    pasos:
+      - titulo: "Un cliente con timeout de verdad"
+        minutos: 6
+        objetivo: >-
+          Archivo nuevo, `07_timeouts_idempotencia.py`. El default del SDK no
+          sirve para un chat.
+        codigo:
+          archivo: 07_timeouts_idempotencia.py
+          lineas: "1-32"
+        porque: >-
+          El default es **10 minutos**. Para un usuario esperando en una
+          pantalla, eso no es un timeout: es un cuelgue. 30 segundos es un punto
+          de partida razonable.
+
+          `max_retries=4` los hace el propio SDK, por debajo de cualquier
+          `with_backoff` que le pongas encima. Vale la pena saberlo: si pones
+          los dos, los reintentos se multiplican, no se suman.
+
+      - titulo: "La guarda que evita cobrar dos veces"
+        minutos: 10
+        objetivo: >-
+          Un timeout no significa que la petición falló. Pudo completarse igual.
+        codigo:
+          archivo: 07_timeouts_idempotencia.py
+          lineas: "33-69"
+          nuevo: true
+        corre: |
+          python 07_timeouts_idempotencia.py
+        salida:
+          archivo: 07_timeouts_idempotencia.txt
+        porque: >-
+          Esta es la idea incómoda de la sesión: **tu código no sabe si la
+          operación se ejecutó**. Se agotó la espera, nada más. Si esa tool
+          cobra dinero o manda un correo, el reintento duplica el efecto.
+
+          La guarda son cinco líneas, pero la decisión importante es de diseño:
+          tools de solo lectura siempre que se pueda, y cuando haya efectos,
+          separar *proponer* de *confirmar*.
+
+      - titulo: "Qué hay que loguear, y qué no"
+        minutos: 7
+        objetivo: >-
+          Archivo nuevo, `08_logging.py`. La configuración de logs y el
+          `with_backoff` del día 5, ahora con los errores reales del SDK.
+        codigo:
+          archivo: 08_logging.py
+          lineas: "1-48"
+        porque: >-
+          Fíjate en el `except`: `RateLimitError`, `InternalServerError`,
+          `APITimeoutError`. Esos son los transitorios de verdad. `BadRequestError`
+          no está en la lista, y esa ausencia es deliberada.
+
+      - titulo: "La línea de log que te salva la guardia"
+        minutos: 12
+        objetivo: >-
+          Una llamada real, medida, con todo lo necesario para investigarla
+          después.
+        codigo:
+          archivo: 08_logging.py
+          lineas: "49-87"
+          nuevo: true
+        corre: |
+          python 08_logging.py
+        salida:
+          archivo: 08_logging.txt
+        porque: >-
+          Campo por campo: **`request_id`** es lo primero que pide soporte de
+          Anthropic para investigar: sin él no hay conversación.
+          **`input_tokens`/`output_tokens`** es donde vive la factura.
+          **`latency_s`** es lo que te deja detectar una degradación antes de
+          que la reporte un usuario.
+
+          Y **`stop_reason`** es el que se pasa por alto: si vale `max_tokens`,
+          la respuesta se cortó a media frase y nadie se enteró. Por eso hay un
+          `log.warning` explícito para ese caso.
+
+          El texto de la respuesta va a `print`, no al log de INFO. En producción
+          eso sería DEBUG: los logs de INFO son métricas, no contenido, y ahí es
+          donde se filtra la información personal de tus usuarios.
+        nota_coach: >-
+          Cierre de la sesión: preguntar cuál de los cuatro pilares quitarían si
+          tuvieran que entregar mañana. La respuesta correcta es ninguno, pero
+          el debate saca a la luz qué entendieron de cada uno.

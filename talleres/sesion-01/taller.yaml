@@ -1,0 +1,532 @@
+# Guion del taller de la sesión 01.
+#
+# REGLA DEL FORMATO: aquí NO se escribe código. Solo se apunta a los archivos
+# de codigo/ con un rango de líneas. El generador los lee y los inyecta en el
+# HTML, y además verifica que entre todos los pasos no quede ni una línea sin
+# explicar. Si el archivo cambia, el taller cambia solo.
+id: sesion-01
+titulo: "Taller 01 · Tokens, dinero y vectores: lo que hay debajo del modelo"
+kicker: "AI Engineer Coaching · Fase 1: Fundamentos · Sesión 01"
+subtitulo: >-
+  El modelo no lee letras, lee tokens. Y esos tokens son tu factura. En 6
+  sesiones de 30 minutos construyes el Token-ó-metro, ves los parámetros de
+  muestreo trabajando, y tocas los vectores que sostienen todo lo que viene.
+
+codigo: codigo
+salidas: salidas
+
+enlaces:
+  - texto: "📊 Deck de la sesión"
+    url: "../sesiones/sesion-01-fundamentos-llm.html"
+  - texto: "🏋️ AI Gym"
+    url: "../gym/index.html"
+  - texto: "← Portal"
+    url: "../index.html"
+
+como_funciona: |
+  **Un día = 30 minutos = un archivo que corre.** No leas el taller entero de
+  corrido: haz un día, ciérralo, y vuelve mañana. Cada paso trae el código
+  completo (botón `Copiar`), el comando para correrlo y la salida real que
+  deberías ver: esa salida es tu criterio de "me funcionó", sin tener que
+  preguntarle a nadie.
+
+  Este es el taller más barato del curso: casi todo usa `count_tokens`, que
+  es **gratis**. Solo los días 3 y 4 gastan unos centavos.
+
+  Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en
+  este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
+  líneas, `c` para las notas del coach.
+
+cierre:
+  titulo: "Ya sabes qué estás pagando y por qué se comporta así"
+  texto: |
+    Puedes contar los tokens de cualquier texto antes de gastar un centavo,
+    comparar el costo real entre modelos con tus propios números, y explicar
+    por qué `temperature` va en 0 cuando extraes datos y por qué `stop_reason`
+    va en tus logs desde el primer día.
+
+    Y tocaste los vectores. Lo que viste el último día (que un modelo de
+    embeddings en el idioma equivocado devuelve números válidos y falsos) es
+    exactamente el tipo de fallo silencioso que vas a aprender a cazar durante
+    todo el programa.
+  siguiente:
+    id: sesion-02
+    titulo: "Taller 02 · La API por dentro, y prompts que puedes defender"
+    resumen: >-
+      "Mejoré el prompt" no significa nada si no puedes decir cuánto. Aprende
+      cómo funciona la API de verdad y termina con dos versiones de un prompt
+      medidas contra los mismos casos.
+    deck: "../sesiones/sesion-02-apis-prompt-engineering.html"
+  acciones:
+    - texto: "📊 Repasar el deck de la sesión 01"
+      url: "../sesiones/sesion-01-fundamentos-llm.html"
+    - texto: "🏋️ Ir al AI Gym"
+      url: "../gym/index.html"
+    - texto: "← Volver al portal"
+      url: "../index.html"
+
+dias:
+  # =========================================================================
+  - etiqueta: "Día 0 · Antes de empezar"
+    titulo: "Preparar el entorno"
+    minutos: 10
+    meta: >-
+      Diez minutos y una sola vez. Dos librerías: el SDK de Anthropic, y
+      Chroma, que aquí usamos solo por su modelo de embeddings local del
+      día 5, y que volverá en serio en la sesión 04.
+    checkpoint: >-
+      `python -c "import anthropic, chromadb"` no da error y
+      `ANTHROPIC_API_KEY` está en tu shell.
+    pasos:
+      - titulo: "Carpeta, entorno virtual y dependencias"
+        minutos: 5
+        objetivo: >-
+          Un entorno virtual aísla las librerías de este taller del resto de tu
+          máquina.
+        codigo:
+          archivo: requirements.txt
+        bloques:
+          - lenguaje: bash
+            texto: |
+              mkdir -p ~/talleres/sesion-01
+              cd ~/talleres/sesion-01
+              python3 -m venv .venv
+              source .venv/bin/activate
+              pip install -r requirements.txt
+        porque: >-
+          Cuando el prompt de tu terminal muestre `(.venv)`, estás dentro.
+          Tendrás que repetir `source .venv/bin/activate` cada vez que abras
+          una terminal nueva: es el olvido número uno de la semana.
+        si_falla:
+          - error: "source: no such file or directory: .venv/bin/activate"
+            arreglo: "En Windows el comando es `.venv\\Scripts\\activate`."
+
+      - titulo: "Tu API key"
+        minutos: 5
+        objetivo: >-
+          Cuatro de los cinco días llaman a la API. La llave se lee de una
+          variable de entorno: nunca se escribe dentro del código.
+        bloques:
+          - lenguaje: bash
+            texto: |
+              export ANTHROPIC_API_KEY="sk-ant-..."   # tu llave real
+              python -c "import anthropic, chromadb; print('entorno listo')"
+        salida_texto: |
+          entorno listo
+        porque: >-
+          `export` solo dura lo que dure esa terminal. Si vas a trabajar varios
+          días, mete esa línea en tu `~/.zshrc`. Y nunca la subas a git.
+        nota_coach: >-
+          El gasto total de este taller es de menos de un centavo: los días 1 y
+          2 usan `count_tokens`, que no cuesta nada, y el día 5 corre en local.
+
+  # =========================================================================
+  - etiqueta: "Día 1"
+    titulo: "El modelo no ve letras: ve tokens"
+    minutos: 30
+    meta: >-
+      Antes de llegar al modelo, tu texto se parte en pedazos llamados tokens.
+      Esa unidad explica dos cosas a la vez: por qué se equivoca contando las
+      erres de "strawberry", y cuánto vas a pagar.
+    archivo_completo:
+      - 00_tokens.py
+    checkpoint: >-
+      Corres el script y ves que el español rinde ~3.3 caracteres por token
+      mientras el JSON rinde ~2. Puedes explicar por qué pedirle JSON al modelo
+      cuesta más de lo que parece.
+    pasos:
+      - titulo: "El contador que es gratis"
+        minutos: 6
+        objetivo: >-
+          Archivo nuevo, `00_tokens.py`. El SDK y el modelo con el que vamos a
+          contar.
+        codigo:
+          archivo: 00_tokens.py
+          lineas: "1-25"
+        porque: >-
+          `count_tokens` es un endpoint aparte: **no genera respuesta y no
+          cuesta nada**. Puedes llamarlo antes de cada petición para saber qué
+          vas a gastar. Es la herramienta más subestimada de la API.
+
+      - titulo: "Tres textos que parecen equivalentes"
+        minutos: 6
+        objetivo: >-
+          Un párrafo en español, un JSON y un fragmento de código, de longitud
+          parecida a propósito.
+        codigo:
+          archivo: 00_tokens.py
+          lineas: "26-44"
+          nuevo: true
+        porque: >-
+          Están elegidos para que tengan un número de caracteres similar. Si la
+          tokenización fuera proporcional al texto, deberían costar casi lo
+          mismo. Apuesta ahora cuál crees que gana, antes de correrlo.
+
+      - titulo: "La función de conteo"
+        minutos: 5
+        objetivo: >-
+          Una llamada, un número.
+        codigo:
+          archivo: 00_tokens.py
+          lineas: "45-55"
+          nuevo: true
+        porque: >-
+          El conteo es **específico del modelo**: cada familia tokeniza
+          distinto, así que el mismo texto puede dar números diferentes. Por eso
+          `model` es obligatorio aquí y no un detalle.
+
+      - titulo: "La tabla, y la palabra strawberry"
+        minutos: 13
+        objetivo: >-
+          Imprimir caracteres, tokens y la razón entre ambos. Y de paso el caso
+          famoso.
+        codigo:
+          archivo: 00_tokens.py
+          lineas: "56-85"
+          nuevo: true
+        corre: |
+          python 00_tokens.py
+        salida:
+          archivo: 00_tokens.txt
+        porque: >-
+          El español rinde **3.26 caracteres por token**; el JSON, **1.98**. Las
+          llaves, las comillas y las sangrías son tokens que pagas igual que las
+          palabras. Ese dato debería cambiar cómo diseñas tus prompts: pedir
+          JSON tiene un costo, y a veces no compensa.
+
+          Y abajo, `strawberry`: 9 tokens para 10 caracteres. El modelo no ve
+          las tres erres porque **no ve letras**: ve un puñado de números que
+          representan pedazos de palabra. Todos los fallos de "cuenta las
+          letras de esta palabra" salen de ahí, y ninguno se arregla con un
+          prompt mejor.
+        nota_coach: >-
+          Buen momento para preguntar: "¿entonces cómo le pedirías que cuente
+          letras?". La respuesta es una tool que lo cuente en Python, y eso es
+          justo la sesión 03.
+
+  # =========================================================================
+  - etiqueta: "Día 2"
+    titulo: "El Token-ó-metro: ¿cuánto me va a costar esto?"
+    minutos: 30
+    meta: >-
+      El ejercicio central de la sesión. Un CLI que responde la pregunta que te
+      vas a hacer en cada proyecto: *¿cuánto cuesta esto, en cada modelo?* Sin
+      gastar un centavo en averiguarlo.
+    archivo_completo:
+      - 01_tokenometro.py
+    checkpoint: >-
+      Tienes una tabla con el costo mensual proyectado de tu propio prompt en
+      tres modelos. Puedes explicar por qué el mismo texto cuenta 63 tokens en
+      un modelo y 85 en otro.
+    pasos:
+      - titulo: "La tabla de precios, en un solo sitio"
+        minutos: 8
+        objetivo: >-
+          Archivo nuevo, `01_tokenometro.py`. Los precios de los tres modelos y
+          los dos supuestos del cálculo.
+        codigo:
+          archivo: 01_tokenometro.py
+          lineas: "1-25"
+        porque: >-
+          Fíjate en la advertencia del comentario: **esta tabla caduca**. Los
+          precios cambian y salen modelos nuevos cada pocos meses. La lección no
+          es memorizarla, es tenerla en **un solo lugar** del código y saber
+          dónde verificarla. Un precio hardcodeado en cinco archivos es una
+          factura equivocada esperando su turno.
+
+      - titulo: "Los dos supuestos que deciden el número"
+        minutos: 6
+        objetivo: >-
+          Cuántas peticiones al mes, y cuántos tokens crees que va a responder.
+        codigo:
+          archivo: 01_tokenometro.py
+          lineas: "26-44"
+          nuevo: true
+        porque: >-
+          `TOKENS_SALIDA_ESTIMADOS` es el que más se equivoca y el que más
+          duele: **la salida cuesta 5 veces la entrada**. Subestimarla es la
+          forma más común de que un presupuesto se quede corto por un factor de
+          tres. El día 4 lo vas a medir de verdad.
+
+      - titulo: "Contar y multiplicar"
+        minutos: 6
+        objetivo: >-
+          Dos funciones cortas: una cuenta, la otra convierte tokens en dólares.
+        codigo:
+          archivo: 01_tokenometro.py
+          lineas: "45-63"
+          nuevo: true
+        porque: >-
+          Los precios vienen "por millón de tokens" porque los números por
+          token serían ilegibles. Dividir entre 1.000.000 es todo el misterio,
+          pero es donde se cuelan los errores de tres ceros.
+
+      - titulo: "La tabla comparativa"
+        minutos: 10
+        objetivo: >-
+          Correrlo contra los tres modelos y proyectar a 100.000 peticiones.
+        codigo:
+          archivo: 01_tokenometro.py
+          lineas: "64-105"
+          nuevo: true
+        corre: |
+          python 01_tokenometro.py
+          python 01_tokenometro.py "tu propio prompt aquí"
+        salida:
+          archivo: 01_tokenometro.txt
+          lineas: "1-9"
+        porque: >-
+          Mira la última columna: **$156 contra $792 al mes** por la misma
+          tarea. Para clasificar un reclamo en cuatro categorías, el modelo caro
+          no clasifica mejor, solo cuesta cinco veces más.
+
+          Y mira la columna `tok_in`: el mismo texto son **63 tokens en Haiku y
+          Sonnet, pero 85 en Opus**. No es un error del script: los modelos usan
+          tokenizadores distintos. Por eso el conteo se hace con cada modelo y
+          no se extrapola: un 35% de diferencia en la entrada es un 35% de
+          diferencia en esa parte de la factura.
+        nota_coach: >-
+          Aquí conviene que cada uno corra el script con un prompt de su propio
+          trabajo. El número deja de ser un ejercicio en el momento en que sale
+          de su propio proyecto.
+
+  # =========================================================================
+  - etiqueta: "Día 3"
+    titulo: "Muestreo: temperature, max_tokens y el corte silencioso"
+    minutos: 30
+    meta: >-
+      El modelo no elige la siguiente palabra: calcula una probabilidad para
+      cada token posible y **sortea**. Hoy ves ese sorteo con tus ojos, y
+      provocas a propósito el bug más silencioso de la API.
+    archivo_completo:
+      - 02_muestreo.py
+    checkpoint: >-
+      Viste tres corridas casi idénticas con `temperature=0` y tres distintas
+      con `temperature=1`. Y provocaste un `stop_reason: max_tokens`. Puedes
+      explicar por qué ese caso no lanza ninguna excepción.
+    pasos:
+      - titulo: "Un prompt que da para variar"
+        minutos: 6
+        objetivo: >-
+          Archivo nuevo, `02_muestreo.py`. Una tarea creativa a propósito: si
+          pidiéramos "¿cuánto es 2+2?" no se vería nada.
+        codigo:
+          archivo: 02_muestreo.py
+          lineas: "1-30"
+        porque: >-
+          Para ver el efecto de `temperature` hace falta una pregunta con
+          muchas respuestas buenas. En una tarea determinista, temperature 0 y 1
+          se parecen, y de ahí sale la falsa impresión de que el parámetro "no
+          hace nada".
+
+      - titulo: "Una función con los dos parámetros a la vista"
+        minutos: 6
+        objetivo: >-
+          Devuelve el texto, el `stop_reason` y los tokens de salida.
+        codigo:
+          archivo: 02_muestreo.py
+          lineas: "31-41"
+          nuevo: true
+        porque: >-
+          Devolver `stop_reason` junto al texto no es un detalle de estilo: es
+          lo que hace que el paso final de este día sea posible. Un cliente de
+          API que solo devuelve el texto te está escondiendo información que
+          vas a necesitar.
+
+      - titulo: "Las dos temperaturas, y el corte"
+        minutos: 18
+        objetivo: >-
+          Tres corridas con 0, tres con 1, y una llamada con `max_tokens=10`
+          para provocar el corte.
+        codigo:
+          archivo: 02_muestreo.py
+          lineas: "42-80"
+          nuevo: true
+        corre: |
+          python 02_muestreo.py
+        salida:
+          archivo: 02_muestreo.txt
+        porque: >-
+          Con `temperature=0` salió **Fluxa las tres veces**; con `1`, Velo,
+          Fluxa y Pagora. Ahí está el sorteo. Para clasificar o extraer datos
+          quieres 0: si cada corrida diera algo distinto, no podrías medir si tu
+          prompt mejoró, y medir es todo lo que hacemos a partir de la
+          sesión 02.
+
+          Ojo con el matiz: **ni `temperature=0` garantiza salidas idénticas**.
+          El cálculo en GPU por lotes no es determinista. Diseña tests
+          tolerantes, no tests de igualdad exacta.
+
+          Y abajo está el bug de la sesión: la respuesta se cortó en
+          `'1. **Fluxa**\n2'` y **nada falló**. Sin excepción, sin error HTTP,
+          con un HTTP 200 perfectamente normal. Solo `stop_reason: max_tokens`
+          te lo dice. Si no lo miras, procesas media respuesta como si estuviera
+          entera. Y ese bug aparece en producción tres semanas después, en el
+          caso raro que genera una respuesta más larga.
+
+  # =========================================================================
+  - etiqueta: "Día 4"
+    titulo: "El estimado contra la factura"
+    minutos: 25
+    meta: >-
+      Cierras el ciclo del Token-ó-metro: contar (gratis) → estimar → llamar →
+      comparar. El mismo ciclo que en producción vive en un dashboard.
+    archivo_completo:
+      - 03_estimado_vs_real.py
+    checkpoint: >-
+      Tienes tu estimación y tu número real lado a lado, y sabes qué porcentaje
+      de la factura fue la salida. Puedes decir cuál de las dos mitades se puede
+      predecir y cuál no.
+    pasos:
+      - titulo: "Estimar y llamar"
+        minutos: 12
+        objetivo: >-
+          Archivo nuevo, `03_estimado_vs_real.py`. Primero `count_tokens`
+          (gratis), después la llamada de verdad.
+        codigo:
+          archivo: 03_estimado_vs_real.py
+          lineas: "1-55"
+        porque: >-
+          Ese orden importa: **estimas antes de gastar**. En un pipeline real
+          este es el punto donde rechazas una petición demasiado cara, o eliges
+          un modelo más barato para ese caso concreto, antes de haber pagado
+          nada.
+
+      - titulo: "La comparación"
+        minutos: 13
+        objetivo: >-
+          Restar, calcular el costo real y ver de dónde salió.
+        codigo:
+          archivo: 03_estimado_vs_real.py
+          lineas: "56-83"
+          nuevo: true
+        corre: |
+          python 03_estimado_vs_real.py
+        salida:
+          archivo: 03_estimado_vs_real.txt
+        porque: >-
+          **La entrada se estimó exacta: +0 tokens de diferencia.** Puedes
+          confiar en `count_tokens` para presupuestar la mitad de tu factura sin
+          gastar nada.
+
+          La otra mitad es el problema: **la salida fue el 97% del costo** de
+          esta llamada. Y no la sabes hasta que ocurre: no hay forma de contar
+          por adelantado algo que aún no se ha escrito. Controlarla tiene solo
+          dos palancas: pedir respuestas cortas en el prompt, y poner un
+          `max_tokens` sensato. Adivinar no es una de ellas.
+
+  # =========================================================================
+  - etiqueta: "Día 5"
+    titulo: "Embeddings: significado convertido en dirección"
+    minutos: 35
+    meta: >-
+      Cambiamos de tema, no de herramienta. Un embedding es un vector donde la
+      **dirección** codifica el significado. Es la base de RAG, de la búsqueda
+      semántica y de la deduplicación, y hoy la tocas con las manos. Este día
+      corre entero en tu máquina, sin API.
+    archivo_completo:
+      - 04_embeddings.py
+    checkpoint: >-
+      Viste el mismo experimento funcionar en inglés y romperse en español.
+      Puedes explicar por qué ese fallo no lanza ningún error, y qué habrías
+      hecho si no lo hubieras medido.
+    pasos:
+      - titulo: "El modelo de embeddings local"
+        minutos: 5
+        objetivo: >-
+          Archivo nuevo, `04_embeddings.py`. Sin API key: el modelo corre en tu
+          máquina.
+        codigo:
+          archivo: 04_embeddings.py
+          lineas: "1-35"
+        porque: >-
+          La API de Anthropic no expone embeddings. El deck recomienda Voyage AI
+          (su partner) o un modelo open source; aquí usamos el que trae Chroma
+          para no pedirte otra llave. La primera corrida descarga ~80 MB.
+
+      - titulo: "La similitud coseno, en tres operaciones"
+        minutos: 9
+        objetivo: >-
+          Producto punto dividido entre el producto de las longitudes. Eso es
+          todo.
+        codigo:
+          archivo: 04_embeddings.py
+          lineas: "36-47"
+          nuevo: true
+        porque: >-
+          La división entre las normas es lo que hace útil la fórmula: elimina
+          la **magnitud** y deja solo el **ángulo**. Por eso una frase de tres
+          palabras y un párrafo de cien se pueden comparar de igual a igual.
+
+          `1.0` es la misma dirección, `0.0` es sin relación, y sí, puede salir
+          **negativo**: direcciones opuestas.
+
+      - titulo: "Las mismas cuatro ideas, en dos idiomas"
+        minutos: 6
+        objetivo: >-
+          Referencia, sinónimo sin palabras en común, tema relacionado, y algo
+          sin ninguna relación.
+        codigo:
+          archivo: 04_embeddings.py
+          lineas: "48-66"
+          nuevo: true
+        porque: >-
+          El caso interesante es el segundo: *"checkout con visa"* no comparte
+          **ninguna palabra** con *"pagar con tarjeta de crédito"*. Un buscador
+          por palabras clave no encontraría nada. Si los embeddings sirven para
+          algo, esa pareja tiene que puntuar alto.
+
+      - titulo: "La función de comparación"
+        minutos: 5
+        objetivo: >-
+          Vectorizar, comparar contra la primera frase, y pintar una barra.
+        codigo:
+          archivo: 04_embeddings.py
+          lineas: "67-80"
+          nuevo: true
+        porque: >-
+          La barra no es decoración: los números sueltos se leen mal y las
+          diferencias importantes se pierden entre decimales. Ver la escala
+          hace que el resultado del paso siguiente salte a la vista.
+
+      - titulo: "Correrlo, y encontrarse con el fallo"
+        minutos: 10
+        objetivo: >-
+          Las dos tandas, una debajo de la otra.
+        codigo:
+          archivo: 04_embeddings.py
+          lineas: "81-115"
+          nuevo: true
+        corre: |
+          python 04_embeddings.py
+        salida:
+          archivo: 04_embeddings.txt
+          lineas: "1-19"
+        porque: >-
+          **En inglés funciona.** `checkout with visa` saca 0.353 sin compartir
+          una palabra con la referencia, y las arepas caen a **−0.028**: casi
+          perpendicular, sin relación. Justo lo que esperabas.
+
+          **En español se rompe.** Las arepas sacan **0.449**, *más alto* que
+          `checkout con visa` con 0.229. El orden queda al revés. Y no es un bug
+          de tu código: `all-MiniLM-L6-v2` está entrenado en inglés, y con
+          español devuelve números perfectamente válidos y perfectamente
+          inútiles.
+
+          Piensa en lo que eso significa. **No falla, no avisa, no lanza
+          ninguna excepción**: miente en silencio. Si montaras un RAG en español
+          sobre este modelo, recuperaría documentos casi al azar, el modelo
+          respondería con esos documentos, y te costaría días entender por qué
+          las respuestas son raras.
+
+          Dos cosas que llevarte. La primera: **el modelo de embeddings tiene
+          que hablar tu idioma**: para español, voyage-3.5, multilingual-e5 o
+          bge-m3. La segunda, más importante: esto **no se descubre leyendo la
+          documentación**. Se descubre midiendo, con cuatro frases que tú ya
+          sabes cómo deberían ordenarse. Cinco minutos de esto ahorran una
+          semana de depuración después.
+        nota_coach: >-
+          Este es el momento del taller que más rinde. Vale la pena parar y
+          preguntar: "si no hubiéramos corrido la versión en inglés, ¿cómo
+          habrías sabido que estaba roto?". La respuesta (no lo habrías
+          sabido) es la razón por la que el curso entero es evals-first.

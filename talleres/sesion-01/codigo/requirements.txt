@@ -1,0 +1,5 @@
+# Dependencias del taller de la sesión 01 (fundamentos de LLM).
+# Estas son las versiones con las que se probaron los 5 ejemplos y con las
+# que se capturaron las salidas que ves en el taller.
+anthropic==0.116.0   # SDK oficial: count_tokens, messages.create y usage.
+chromadb==1.5.9      # Solo por su modelo de embeddings local (día 5).

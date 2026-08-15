@@ -1,0 +1,16 @@
+--- lo que respondió el modelo ---
+```json
+{
+  "reclamo": "Me cobraron doble",
+  "categoria": "Cobro duplicado",
+  "subcategoria": "Cargo duplicado en transacción",
+  "prioridad": "Alta",
+  "tipo": "Financiero",
+  "accion_sugerida": "Verificar historial de transacciones y proceder con reembolso si se confirma el doble cobro"
+}
+```
+
+--- los datos que casi nadie mira ---
+stop_reason  : end_turn
+input_tokens : 69
+output_tokens: 113

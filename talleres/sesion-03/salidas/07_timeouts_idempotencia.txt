@@ -1,0 +1,13 @@
+Cliente configurado:
+  timeout     = 30.0
+  max_retries = 4
+
+Simulando: la llamada al modelo tardó y tu código reintentó,
+pero la tool 'cobrar' ya se había ejecutado en el intento anterior.
+
+intento 1 (llamada original):
+  {'status': 'cobro realizado', 'monto': 49.9}
+intento 2 (reintento por timeout, MISMO operacion_id):
+  {'status': 'ya procesado, no se repite el cobro', 'monto': 0}
+
+Sin esta guarda, el segundo intento habría cobrado 49.90 de nuevo.

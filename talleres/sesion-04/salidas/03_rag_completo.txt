@@ -1,0 +1,15 @@
+
+============================================================
+Pregunta: ¿Cuál es el timeout default?
+------------------------------------------------------------
+El timeout default de la API es de **30 segundos** por petición. [1]
+
+============================================================
+Pregunta: ¿Cuántas veces se reintenta un webhook si mi servidor no responde?
+------------------------------------------------------------
+Según la documentación, si tu servidor no responde con un código 2xx en menos de 10 segundos, PagosYa reintenta la entrega del webhook hasta **8 veces** durante las siguientes 24 horas, con esperas crecientes entre intentos. Después del octavo intento fallido, el evento se marca como no entregado y puedes recuperarlo manualmente desde el dashboard durante los siguientes 30 días. [1]
+
+============================================================
+Pregunta: ¿Cuál es la capital de Francia?
+------------------------------------------------------------
+No tengo evidencia para responder.

@@ -1,0 +1,21 @@
+El modelo pidió 2 tool(s) en un solo turno:
+  -> get_order_status({'order_id': 'ORD-8841'})  [id=toolu_01YKEifPBK9Xvvsam4Ge3EGL]
+  -> get_order_status({'order_id': 'ORD-9200'})  [id=toolu_01SibxaHiLoTgNpHro6qiXom]
+
+Ejecutando en PARALELO con ThreadPoolExecutor...
+Tiempo en paralelo: 2.0s (en serie habría tardado ~4s)
+
+=== RESPUESTA FINAL DEL MODELO ===
+Aquí tienes el resumen comparativo de tus dos órdenes:
+
+| Orden | Estado | Fecha estimada de entrega |
+|-----------|-------------|---------------------------|
+| ORD-8841 | 📦 Enviada | 4 de julio de 2026 |
+| ORD-9200 | ⚙️ En proceso | 12 de julio de 2026 |
+
+🏆 **ORD-8841 llegará primero**, con una ventaja de **8 días** sobre ORD-9200.
+
+- **ORD-8841** ya está en camino (*shipped*), por lo que está más avanzada en el proceso.
+- **ORD-9200** aún está siendo procesada (*processing*), así que tardará un poco más.
+
+¿Necesitas más información sobre alguna de las dos órdenes? 😊

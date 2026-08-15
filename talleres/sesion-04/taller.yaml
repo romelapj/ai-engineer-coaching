@@ -1,0 +1,697 @@
+# Guion del taller de la sesión 04.
+#
+# REGLA DEL FORMATO: aquí NO se escribe código. Solo se apunta a los archivos
+# de codigo/ con un rango de líneas. El generador los lee y los inyecta en el
+# HTML, y además verifica que entre todos los pasos no quede ni una línea sin
+# explicar. Si el archivo cambia, el taller cambia solo.
+id: sesion-04
+titulo: "Taller 04: RAG desde cero, con citas verificables"
+kicker: "AI Engineer Coaching · Fase 2 · Patrones · Sesión 04"
+subtitulo: >-
+  Tu chatbot inventa respuestas sobre tus propios documentos y no puedes
+  auditar de dónde salieron. En 6 sesiones de 30 minutos construyes el
+  pipeline RAG que las obliga a citar su fuente, o a admitir que no la tiene.
+
+codigo: codigo
+salidas: salidas
+
+enlaces:
+  - texto: "📊 Deck de la sesión"
+    url: "../sesiones/sesion-04-rag-fundamentos.html"
+  - texto: "🏋️ Reto 03 del AI Gym"
+    url: "../gym/index.html"
+  - texto: "← Portal"
+    url: "../index.html"
+
+como_funciona: |
+  **Un día = 30 minutos = un archivo que corre.** No leas el taller entero de
+  corrido: haz un día, ciérralo, y vuelve mañana. Cada paso trae el código
+  completo (botón `📋 Copiar`), el comando para correrlo y la salida real que
+  deberías ver: esa salida es tu criterio de "me funcionó", sin tener que
+  preguntarle a nadie.
+
+  Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en
+  este navegador. Si una línea de código se sale de la pantalla, usa
+  **↩ Ajustar líneas** en la barra de la izquierda. Atajos: `j` / `k` para
+  saltar entre pasos, `w` para ajustar líneas, `c` para las notas del coach.
+
+cierre:
+  titulo: "Ya tienes un RAG que cita sus fuentes, y que sabe callarse"
+  texto: |
+    Lo que construiste en estas seis sesiones no es un demo: es el patrón que
+    vas a repetir en producción. Ingesta que se paga una vez, un umbral que
+    calibraste con tus propios números, y un generador que no puede afirmar
+    nada sin señalar de dónde lo sacó.
+
+    Lo siguiente es dejar de confiar en que funciona y **medirlo**. Ese es el
+    salto de la sesión 05: cuando tengas métricas de retrieval vas a poder
+    decir si tu v0.4 es mejor que tu v0.3, en vez de suponerlo.
+  siguiente:
+    id: sesion-05
+    titulo: "Taller 05: RAG II, retrieval híbrido, reranking y evaluación"
+    resumen: >-
+      Deja de adivinar por qué tu RAG responde mal: mide el retrieval,
+      mejóralo con híbrido + reranking y demuestra la ganancia con números.
+    deck: "../sesiones/sesion-05-rag-avanzado.html"
+  acciones:
+    - texto: "🏋️ Entrega el reto 03 del AI Gym"
+      url: "../gym/index.html"
+    - texto: "📊 Repasar el deck de la sesión 04"
+      url: "../sesiones/sesion-04-rag-fundamentos.html"
+    - texto: "← Volver al portal"
+      url: "../index.html"
+
+dias:
+  # =========================================================================
+  - etiqueta: "Día 0 · Antes de empezar"
+    titulo: "Preparar el entorno"
+    minutos: 15
+    meta: >-
+      Sin esto, el día 1 se te va en instalar cosas. Hazlo antes de la primera
+      sesión: son 15 minutos y una sola vez.
+    archivo_completo: []
+    checkpoint: >-
+      Tienes un entorno virtual activo donde `import chromadb, anthropic`
+      funciona, y `ANTHROPIC_API_KEY` está en tu shell. Si algo de esto falla,
+      no sigas al día 1: arréglalo primero.
+    pasos:
+      - titulo: "Crear la carpeta y el entorno virtual"
+        minutos: 5
+        objetivo: >-
+          Un entorno virtual es una carpeta con su propio Python y sus propias
+          librerías. Sirve para que lo que instales en este taller no choque
+          con nada más de tu máquina.
+        bloques:
+          - lenguaje: bash
+            texto: |
+              mkdir -p ~/talleres/sesion-04
+              cd ~/talleres/sesion-04
+              python3 -m venv .venv
+              source .venv/bin/activate
+        porque: >-
+          Cuando el prompt de tu terminal empieza a mostrar `(.venv)`, estás
+          dentro. Vas a tener que correr `source .venv/bin/activate` cada vez
+          que abras una terminal nueva: es el olvido número uno de la semana.
+        si_falla:
+          - error: "command not found: python3"
+            arreglo: "No tienes Python instalado. En Mac: `brew install python`. En Windows, descárgalo de python.org y marca *Add to PATH*."
+          - error: "source: no such file or directory: .venv/bin/activate"
+            arreglo: "En Windows el comando es `.venv\\Scripts\\activate`."
+
+      - titulo: "Instalar las dos dependencias"
+        minutos: 5
+        objetivo: >-
+          Todo el taller corre con dos librerías. Nada de frameworks de RAG:
+          la idea es que veas cada pieza del pipeline con las manos.
+        codigo:
+          archivo: requirements.txt
+        bloques:
+          - lenguaje: bash
+            texto: |
+              pip install -r requirements.txt
+        porque: >-
+          `chromadb` es el vector store; trae además un modelo de embeddings
+          local que se descarga solo la primera vez (~80 MB). `anthropic` es el
+          SDK que usaremos recién en el día 4; hasta entonces, todo corre sin
+          internet y sin gastar un solo token.
+
+      - titulo: "Configurar tu API key"
+        minutos: 5
+        objetivo: >-
+          Los días 4 y 5 llaman al modelo. La llave se lee de una variable de
+          entorno: nunca se escribe dentro del código.
+        bloques:
+          - lenguaje: bash
+            texto: |
+              export ANTHROPIC_API_KEY="sk-ant-..."   # tu llave real, sin comillas raras
+              python -c "import chromadb, anthropic; print('entorno listo')"
+        salida_texto: |
+          entorno listo
+        porque: >-
+          `export` solo dura lo que dure esa terminal. Si vas a trabajar varios
+          días, mete esa línea en tu `~/.zshrc` (o `~/.bashrc`) para no repetirla.
+          Y nunca la subas a git.
+        nota_coach: >-
+          Si el alumno no tiene llave todavía, los días 1 al 3 se pueden hacer
+          igual: no llaman al modelo. Solo los días 4 y 5 la necesitan.
+
+  # =========================================================================
+  - etiqueta: "Día 1"
+    titulo: "Chunking: partir el documento sin romper el sentido"
+    minutos: 30
+    meta: >-
+      Antes de poder buscar en tus documentos hay que partirlos en pedazos
+      (*chunks*). Hoy construyes el partidor y ves con tus ojos los pedazos que
+      produce. Cero modelos, cero internet.
+    archivo_completo:
+      - 00_chunking.py
+      - docs/webhooks.md
+    checkpoint: >-
+      Corres `python 00_chunking.py` y ves 10 chunks, cada uno con su archivo y
+      su sección. Puedes explicar por qué cortamos por `##` y no cada 500
+      caracteres, y qué pasaría con un chunk que se queda a mitad de una frase.
+    pasos:
+      - titulo: "La base de conocimiento"
+        minutos: 6
+        objetivo: >-
+          Todo RAG empieza con documentos. Estos son los nuestros: la
+          documentación de una API de pagos ficticia, en Markdown. Créalos en
+          `docs/` dentro de tu carpeta del taller.
+        codigo:
+          archivo: docs/api-pagos.md
+        porque: >-
+          Fíjate en la forma, no en el contenido: **títulos `##` que separan
+          temas** (autenticación, timeouts, errores). Esa estructura ya es una
+          decisión de chunking tomada por quien escribió el documento, y en un
+          momento la vamos a aprovechar en vez de inventar la nuestra.
+
+          El segundo archivo, `docs/webhooks.md`, tiene la misma forma y está
+          completo al final de este día.
+
+      - titulo: "El cortador de respaldo: partir por tamaño"
+        minutos: 8
+        objetivo: >-
+          Empieza el archivo `00_chunking.py`. Esta primera función es el plan
+          B: parte cualquier texto largo en pedazos de tamaño máximo, con un
+          solape entre ellos.
+        codigo:
+          archivo: 00_chunking.py
+          lineas: "1-20"
+        porque: >-
+          El *docstring* de arriba no es decoración: cada archivo del taller
+          empieza diciendo qué explica y cómo se corre. Cuando vuelvas en tres
+          meses, eso es lo que te salva.
+
+      - titulo: "split_max_tokens: tamaño máximo con solape"
+        minutos: 8
+        objetivo: >-
+          Pega esta función debajo de los imports. Parte por palabras
+          aproximando tokens, y deja un solape para no cortar una idea justo
+          en la frontera.
+        codigo:
+          archivo: 00_chunking.py
+          lineas: "21-48"
+          nuevo: true
+        porque: >-
+          Dos detalles que valen la sesión entera. **El solape**: si cortas
+          seco, la idea que quedaba a caballo entre dos chunks se pierde en los
+          dos. **El `break`**: sin él, el último pedazo es una cola de pocas
+          palabras que ya estaba dentro del chunk anterior. Esos fragmentos
+          huérfanos se convierten en vectores con mucho ruido y luego aparecen
+          como falsos positivos en las búsquedas. Un bug de chunking se paga
+          en el retrieval, dos días después, y no se ve venir.
+
+      - titulo: "chunk_markdown: cortar por estructura, y correrlo"
+        minutos: 8
+        objetivo: >-
+          La función principal: cortar por los títulos `##` y `###`, y guardar
+          de qué archivo y de qué sección salió cada chunk. Después agrega el
+          `main()` y córrelo.
+        codigo:
+          archivo: 00_chunking.py
+          lineas: "49-74"
+          nuevo: true
+        porque: >-
+          El `(?=...)` de la expresión regular es un *lookahead*: mira que
+          viene un título pero no lo consume, así el título queda **dentro** de
+          su sección en vez de perderse en el corte.
+
+          Y lo más importante de todo el día: `fuente` y `seccion`. Esa
+          metadata no se usa para buscar: se usa para **citar**. Sin ella, el
+          día 4 no existe: tendrías respuestas sin manera de verificarlas.
+
+      - titulo: "El main y la primera corrida"
+        minutos: 5
+        objetivo: >-
+          Cierra el archivo con el `main()` que recorre `docs/` y te muestra
+          los chunks. Córrelo.
+        codigo:
+          archivo: 00_chunking.py
+          lineas: "75-105"
+          nuevo: true
+        corre: |
+          python 00_chunking.py
+        salida:
+          archivo: 00_chunking.txt
+          lineas: "1-12"
+        porque: >-
+          Mira el chunk `[3]`: dice *"filtra, puedes rotarla desde el
+          dashboard..."*, o sea empieza a mitad de una frase, y tiene 134
+          caracteres contra los 474 del chunk `[2]`. Ese es `split_max_tokens`
+          partiendo una sección larga: el solape hace que el pedazo de arriba
+          se repita abajo. Es correcto, pero **anótalo**: en el día 3 vas a
+          ver a ese mismo chunk aparecer en los resultados con una similitud
+          más baja que su hermano.
+        si_falla:
+          - error: "FileNotFoundError: docs"
+            arreglo: "Estás corriendo el script desde otra carpeta. Haz `cd` a la carpeta donde está `00_chunking.py`."
+        nota_coach: >-
+          Aquí es donde vale la pena parar y preguntar: *¿qué pasaría si el
+          documento no tuviera títulos?* Es el puente natural al chunking
+          semántico, que es tema de la sesión 05.
+
+  # =========================================================================
+  - etiqueta: "Día 2"
+    titulo: "Ingesta: de texto a vectores guardados en disco"
+    minutos: 30
+    meta: >-
+      Hoy conviertes esos chunks en *embeddings* (listas de números que
+      capturan el significado) y los guardas en una base vectorial. Es la mitad
+      cara del pipeline, y se paga una sola vez por documento.
+    archivo_completo:
+      - 01_ingesta.py
+    checkpoint: >-
+      Existe una carpeta `rag_db/` en tu proyecto y `01_ingesta.py` reporta 10
+      chunks en la colección. Puedes explicar por qué la ingesta borra y
+      recrea la colección en vez de simplemente agregar.
+    pasos:
+      - titulo: "Reusar el chunking del día 1"
+        minutos: 7
+        objetivo: >-
+          Archivo nuevo, `01_ingesta.py`. Lo primero: importar la función de
+          ayer en vez de copiarla.
+        codigo:
+          archivo: 01_ingesta.py
+          lineas: "1-31"
+        porque: >-
+          `importlib` aparece por una razón boba: un módulo de Python no puede
+          llamarse `00_chunking` para el `import` normal, porque empieza con un
+          número. Se resuelve pasando el nombre como texto.
+
+          La regla de fondo sí importa: **el chunking se define en un solo
+          lugar**. Si mañana cambias el tamaño de los chunks, no quieres
+          buscarlo en cinco archivos.
+
+      - titulo: "Abrir la base vectorial persistente"
+        minutos: 7
+        objetivo: >-
+          Chunkeamos los documentos y abrimos Chroma en modo persistente:
+          escribe a disco, en `rag_db/`.
+        codigo:
+          archivo: 01_ingesta.py
+          lineas: "32-49"
+          nuevo: true
+        porque: >-
+          `PersistentClient` es lo que separa la **indexación** (offline, se
+          paga una vez) de la **consulta** (online, cada pregunta). Los scripts
+          de los días 3, 4 y 5 no van a volver a ingestar: solo abren esta
+          carpeta.
+
+      - titulo: "Idempotencia y la métrica de distancia"
+        minutos: 8
+        objetivo: >-
+          Los diez renglones donde se rompen los pipelines de RAG en
+          producción. Léelos despacio.
+        codigo:
+          archivo: 01_ingesta.py
+          lineas: "50-70"
+          nuevo: true
+        porque: >-
+          **Idempotencia**: `collection.add` no sobrescribe ids que ya existen,
+          los salta en silencio. Si cambias el chunking y re-corres sin borrar,
+          la base queda con una mezcla de chunks viejos y nuevos, y tú viendo
+          resultados raros sin entender por qué. Por eso borramos y recreamos.
+
+          **La métrica**: el default de Chroma es distancia L2. Nosotros pedimos
+          coseno, porque solo con coseno vale la cuenta
+          `similitud = 1 - distancia` que usaremos mañana para el umbral. Con
+          L2 el número que verías no significaría lo que crees.
+        nota_coach: >-
+          Estas dos son las que más rendimiento dan en una entrevista: "cuéntame
+          un bug de RAG que hayas tenido". Vale la pena que el alumno rompa la
+          base a propósito y vea los duplicados.
+
+      - titulo: "Embeddings, guardado y primera ingesta"
+        minutos: 8
+        objetivo: >-
+          El `collection.add` hace las dos cosas de una vez: calcula el
+          embedding de cada texto y lo guarda junto a su metadata. Córrelo.
+        codigo:
+          archivo: 01_ingesta.py
+          lineas: "71-98"
+          nuevo: true
+        corre: |
+          python 01_ingesta.py
+        salida:
+          archivo: 01_ingesta.txt
+        porque: >-
+          Fíjate en la separación: `documents` es lo que se convierte en vector
+          y contra lo que se busca; `metadatas` es lo que viaja al lado sin
+          vectorizarse: la fuente y la sección que servirán para citar.
+
+          La primera corrida tarda: Chroma descarga su modelo de embeddings
+          local. De la segunda en adelante es instantánea. En producción
+          cambiarías ese modelo por uno de pago (voyage-3.5-lite,
+          text-embedding-3-small) por calidad, no por velocidad.
+        si_falla:
+          - error: "ModuleNotFoundError: No module named 'chromadb'"
+            arreglo: "El entorno virtual no está activo. `source .venv/bin/activate` y vuelve a intentar."
+          - error: "La corrida se queda colgada varios minutos"
+            arreglo: "Es la descarga del modelo de embeddings (~80 MB), solo la primera vez. Déjala terminar."
+
+  # =========================================================================
+  - etiqueta: "Día 3"
+    titulo: "Retrieval: buscar con criterio y saber decir que no"
+    minutos: 30
+    meta: >-
+      Recuperar es preguntarle al vector store y quedarte con los k chunks más
+      parecidos. Pero *los más parecidos* no significa *parecidos de verdad*, y
+      esa diferencia es la que separa un RAG serio de uno que alucina.
+    archivo_completo:
+      - 02_retrieval.py
+    checkpoint: >-
+      Corres `02_retrieval.py` y ves los tres casos: pregunta que sí está
+      (varios chunks pasan), pregunta de otro documento (pasa el correcto), y
+      pregunta fuera de tema (**no pasa nadie**). Puedes explicar de dónde
+      salió el 0.40 y por qué no lo copiaste de un blog.
+    pasos:
+      - titulo: "El umbral, y por qué es un número tuyo"
+        minutos: 7
+        objetivo: >-
+          Archivo nuevo, `02_retrieval.py`. Arranca con la constante más
+          importante del pipeline.
+        codigo:
+          archivo: 02_retrieval.py
+          lineas: "1-30"
+        porque: >-
+          El deck usa `0.7` pensando en embeddings comerciales. Aquí es `0.40`
+          y **no es una errata**: con el modelo local (MiniLM) las similitudes
+          salen más bajas. Midiendo con estos documentos, las preguntas
+          legítimas puntúan entre 0.42 y 0.66, y la pregunta fuera de tema
+          llega máximo a 0.36. Por eso 0.40 separa limpio.
+
+          La lección es esa, no el número: **el umbral se calibra mirando los
+          números de tu propio modelo**. Si cambias de modelo de embeddings, el
+          umbral que tenías deja de servir el mismo día.
+
+      - titulo: "recuperar(): top-k y el filtro"
+        minutos: 8
+        objetivo: >-
+          La función de búsqueda: convierte la pregunta en vector, trae los k
+          vecinos más cercanos y descarta los que no llegan al umbral.
+        codigo:
+          archivo: 02_retrieval.py
+          lineas: "31-55"
+          nuevo: true
+        porque: >-
+          `k = 3–5` es el punto de partida sano. Más k es más tokens, más
+          latencia y más ruido que confunde al modelo; subirlo casi nunca es
+          la solución que parece.
+
+          Chroma devuelve listas paralelas (documento *i* ↔ metadata *i* ↔
+          distancia *i*); `zip()` las recorre juntas. Y el `[0]` de
+          `results["documents"][0]` es porque la API acepta varias preguntas a
+          la vez y nosotros mandamos una.
+
+      - titulo: "demo(): poner los números a la vista"
+        minutos: 7
+        objetivo: >-
+          Una función que imprime el top-k **completo**, marcando cuáles pasan
+          y cuáles no. Esta función no va a producción: es tu instrumento de
+          calibración.
+        codigo:
+          archivo: 02_retrieval.py
+          lineas: "56-70"
+          nuevo: true
+        porque: >-
+          Sin esto estarías eligiendo el umbral a ciegas. La razón por la que
+          imprimimos también los que quedan **fuera** es que el umbral correcto
+          es el que deja un hueco claro entre el peor "sí" y el mejor "no".
+          Si no hay hueco, tu problema no es el umbral: es el chunking o el
+          modelo de embeddings.
+
+      - titulo: "Los tres casos, corriendo"
+        minutos: 8
+        objetivo: >-
+          Cierra el archivo con tres preguntas elegidas a propósito y córrelo.
+        codigo:
+          archivo: 02_retrieval.py
+          lineas: "71-96"
+          nuevo: true
+        corre: |
+          python 02_retrieval.py
+        salida:
+          archivo: 02_retrieval.txt
+        porque: >-
+          Este es **el momento de la sesión**. La capital de Francia no la
+          responde nadie con 0.355 de similitud: el pipeline se queda sin
+          evidencia y eso es exactamente lo que queremos. Un RAG que siempre
+          encuentra algo es un RAG que siempre alucina.
+
+          Mira también las dos entradas de *Autenticación* con similitudes
+          distintas: es el chunk partido del día 1 volviendo a aparecer. El
+          fragmento huérfano puntúa más bajo que la sección completa.
+        si_falla:
+          - error: "La base está vacía. Corre primero: python ejemplos/01_ingesta.py"
+            arreglo: "Te saltaste el día 2, o borraste `rag_db/`. Corre `python 01_ingesta.py`."
+
+  # =========================================================================
+  - etiqueta: "Día 4"
+    titulo: "Generación con citas: el RAG completo (v0.3)"
+    minutos: 30
+    meta: >-
+      Hoy conectas el modelo y cierras el pipeline. Al final de estos 30
+      minutos tienes un RAG funcionando de punta a punta, y es el entregable
+      del reto de la semana.
+    archivo_completo:
+      - 03_rag_completo.py
+    checkpoint: >-
+      `03_rag_completo.py` responde las dos primeras preguntas con marcadores
+      `[n]` y responde exactamente *"No tengo evidencia para responder."* a la
+      tercera. Con eso ya puedes empezar el reto 03 del AI Gym.
+    pasos:
+      - titulo: "Configuración y el cliente de Anthropic"
+        minutos: 5
+        objetivo: >-
+          Archivo nuevo, `03_rag_completo.py`. Todo lo de los días anteriores,
+          más el SDK.
+        codigo:
+          archivo: 03_rag_completo.py
+          lineas: "1-31"
+        porque: >-
+          `anthropic.Anthropic()` sin argumentos lee `ANTHROPIC_API_KEY` de tu
+          entorno. Nunca escribas la llave en el código: termina en git y de
+          ahí no sale nunca más.
+
+      - titulo: "El system prompt: las tres reglas del grounding"
+        minutos: 6
+        objetivo: >-
+          Cuatro líneas de texto. Son las que convierten *un chat* en *un
+          sistema con evidencia*.
+        codigo:
+          archivo: 03_rag_completo.py
+          lineas: "32-40"
+          nuevo: true
+        porque: >-
+          Cada línea hace un trabajo distinto. **"Solo con el contexto"**
+          prohíbe usar la memoria del modelo. **"Cita cada afirmación con [n]"**
+          hace la respuesta rastreable: puedes ir al chunk y comprobarlo.
+          **"Si no alcanza, responde exactamente..."** le da una salida honesta:
+          sin una frase literal de escape, un modelo casi siempre prefiere
+          inventar algo antes que quedarse callado.
+
+          Pedir la frase *exacta* además te deja detectarla con una comparación
+          de texto y contarla como métrica. Eso es lo que se evalúa en la
+          sesión 08.
+        nota_coach: >-
+          Buen ejercicio en vivo: quítale la regla 3 y vuelve a correr la
+          pregunta de Francia. El cambio de comportamiento se ve al instante.
+
+      - titulo: "Retrieval y el corto-circuito"
+        minutos: 7
+        objetivo: >-
+          Dentro de `responder()`, lo mismo del día 3, con una decisión nueva
+          al final.
+        codigo:
+          archivo: 03_rag_completo.py
+          lineas: "41-61"
+          nuevo: true
+        porque: >-
+          Ese `if not hits: return` es la pieza más barata del sistema: cuando
+          nada supera el umbral, **ni siquiera llamamos al modelo**. La
+          respuesta honesta sale gratis, sin latencia y sin riesgo de
+          alucinación. Muchos pipelines de producción no tienen esta línea y
+          pagan tokens para que el modelo les diga que no sabe.
+
+      - titulo: "Armar el contexto numerado"
+        minutos: 4
+        objetivo: >-
+          Convertir los chunks recuperados en un bloque de texto donde cada uno
+          lleva su número y su origen.
+        codigo:
+          archivo: 03_rag_completo.py
+          lineas: "62-69"
+          nuevo: true
+        porque: >-
+          El `[1]`, `[2]`... que arma este bloque es exactamente lo que el
+          modelo va a citar. Aquí se cierra el círculo que abriste el día 1 al
+          guardar `fuente` y `seccion`: de la metadata del chunk sale la cita
+          verificable de la respuesta.
+
+      - titulo: "La llamada al modelo"
+        minutos: 4
+        objetivo: >-
+          Un solo mensaje con las dos partes: primero el contexto recuperado,
+          después la pregunta.
+        codigo:
+          archivo: 03_rag_completo.py
+          lineas: "70-84"
+          nuevo: true
+        porque: >-
+          El orden importa: contexto primero, pregunta después. Y fíjate que
+          las reglas van en `system` y los datos en `messages`; separar
+          instrucciones de contenido es lo que hace difícil que un documento
+          malicioso reescriba tus reglas. De eso se trata la sesión 10.
+
+      - titulo: "Correr el pipeline completo"
+        minutos: 4
+        objetivo: >-
+          Tres preguntas: una directa, una que cruza al otro documento, y una
+          fuera del corpus.
+        codigo:
+          archivo: 03_rag_completo.py
+          lineas: "85-102"
+          nuevo: true
+        corre: |
+          python 03_rag_completo.py
+        salida:
+          archivo: 03_rag_completo.txt
+        porque: >-
+          Tienes un RAG. Verifica la cita de la segunda respuesta: dice 8
+          reintentos en 24 horas y recuperación manual por 30 días. Ve a
+          `docs/webhooks.md` y compruébalo. Eso es lo que ningún chatbot
+          genérico te deja hacer.
+        si_falla:
+          - error: "anthropic.AuthenticationError: invalid x-api-key"
+            arreglo: "La variable `ANTHROPIC_API_KEY` está vacía o mal copiada. Revísala con `echo $ANTHROPIC_API_KEY`."
+          - error: "El modelo responde sin los marcadores [n]"
+            arreglo: "Casi siempre es que el `system` se pasó dentro de `messages`. Debe ir en el parámetro `system=`."
+
+  # =========================================================================
+  - etiqueta: "Día 5 · Extra"
+    titulo: "v0.4: cuando parecerse no es lo mismo que servir"
+    minutos: 40
+    meta: >-
+      La v0.3 ya funciona. Hoy la mejoras con tres ideas del paper **CLaRa**
+      (Apple + U. de Edimburgo, arXiv:2511.18659) traducidas a algo que se
+      puede hacer con una API. Es el día más denso: si se te va de los 30
+      minutos, pártelo en dos.
+    archivo_completo:
+      - 04_rag_v04.py
+    checkpoint: >-
+      En la corrida ves el rerank descartando 5 de 6 candidatos que **sí**
+      habían pasado el umbral. Puedes explicar por qué la v0.3 le habría pasado
+      los 6 al modelo, y qué parte de CLaRa no se puede imitar vía API.
+    pasos:
+      - titulo: "El diagnóstico del paper, aplicado a tu código"
+        minutos: 8
+        objetivo: >-
+          Archivo nuevo, `04_rag_v04.py`. El docstring es la clase de hoy:
+          léelo antes de escribir nada.
+        codigo:
+          archivo: 04_rag_v04.py
+          lineas: "1-60"
+        porque: >-
+          El diagnóstico de CLaRa cae exacto sobre tu v0.3: *el retriever elige
+          por similitud superficial, pero el generador necesita chunks útiles
+          para razonar la respuesta*, y esas dos cosas no son la misma.
+
+          Lo que el paper hace y **nosotros no podemos**: entrenar todo junto,
+          con gradientes fluyendo del generador al retriever. Vía API no hay
+          gradientes. Imitamos el *comportamiento* con prompts, no la
+          optimización. Decirlo claro es parte de saber leer un paper.
+
+      - titulo: "Expansión de consulta (el query reasoner)"
+        minutos: 7
+        objetivo: >-
+          Una llamada previa que agrega a la pregunta las palabras que
+          esperamos encontrar en el documento que la responde.
+        codigo:
+          archivo: 04_rag_v04.py
+          lineas: "61-87"
+          nuevo: true
+        porque: >-
+          El problema que ataca: *"¿cuánto tiempo tengo antes de perder
+          eventos?"* no contiene la palabra **reintentos**, que es justo donde
+          vive la respuesta. Los embeddings ayudan, pero no hacen milagros
+          cuando el vocabulario no se toca en ningún punto.
+
+          Buscamos con pregunta **+** keywords: la pregunta aporta la intención,
+          las keywords acercan el embedding al vocabulario del documento.
+
+      - titulo: "Retrieval amplio: traer más para filtrar mejor"
+        minutos: 5
+        objetivo: >-
+          Subimos de k=4 a k=6, porque ahora hay un paso que sabe descartar
+          con criterio.
+        codigo:
+          archivo: 04_rag_v04.py
+          lineas: "88-107"
+          nuevo: true
+        porque: >-
+          Ojo con la secuencia: subir k **solo** tiene sentido porque agregamos
+          un filtro inteligente después. Subir k a secas es la receta clásica
+          para empeorar un RAG: más contexto, más ruido, peor respuesta.
+
+      - titulo: "Rerank + compresión, en una sola llamada"
+        minutos: 10
+        objetivo: >-
+          El corazón de la v0.4. Le mostramos al modelo todos los candidatos y
+          le pedimos dos cosas: cuáles sirven de verdad, y qué frases exactas
+          responden.
+        codigo:
+          archivo: 04_rag_v04.py
+          lineas: "108-160"
+          nuevo: true
+        porque: >-
+          Son las ideas 2 y 3 de CLaRa juntas. **Rerank**: decidir por utilidad,
+          no por similitud. **Compresión**: quedarse solo con las frases que
+          responden (el paper comprime 16x sin perder calidad).
+
+          El parseo del `[n]` no es un detalle de programación: es lo que
+          mantiene la trazabilidad. Cada extracto comprimido sigue apuntando a
+          su chunk original, así que la cita se puede verificar aunque el texto
+          que ve el generador ya no sea literal.
+
+      - titulo: "Generar sobre el contexto comprimido"
+        minutos: 4
+        objetivo: >-
+          Igual que la v0.3, pero recibiendo extractos en vez de chunks
+          completos.
+        codigo:
+          archivo: 04_rag_v04.py
+          lineas: "161-188"
+          nuevo: true
+        porque: >-
+          El system prompt no cambió ni una palabra respecto al día 4. Todo lo
+          que mejoró pasó **antes** de la generación. Ese es el mensaje de la
+          sesión: la calidad de un RAG se decide antes de llamar al modelo.
+
+      - titulo: "El pipeline v0.4 completo, etapa por etapa"
+        minutos: 6
+        objetivo: >-
+          La función que imprime cada etapa para que puedas estudiarla, y las
+          tres preguntas de prueba.
+        codigo:
+          archivo: 04_rag_v04.py
+          lineas: "189-242"
+          nuevo: true
+        corre: |
+          python 04_rag_v04.py
+        salida:
+          archivo: 04_rag_v04.txt
+          lineas: "13-30"
+        porque: >-
+          Ahí está todo el día en una pantalla. La expansión agregó *"reintentos
+          webhook cola retención horas días expiración"*; el retrieval encontró
+          6 candidatos sobre el umbral; y el rerank se quedó con **uno**. Los
+          otros 5 se parecían pero no respondían, y la v0.3 se los habría
+          pasado enteros al modelo.
+
+          Compara el costo: la v0.4 gasta 3 llamadas por pregunta en vez de 1.
+          Eso es una decisión de producto, no de ingeniería. En la sesión 08 vas
+          a medir si esa plata compra algo.
+        nota_coach: >-
+          Cierre de la sesión: preguntar cuál de las dos versiones llevarían a
+          producción y por qué. No hay respuesta correcta: hay respuesta
+          argumentada con números, que es lo que se evalúa.

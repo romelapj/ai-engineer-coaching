@@ -1,8 +1,8 @@
-# 🏋️ Kata 05 — Entradas malas, errores específicos
+# 🏋️ Kata 05: Entradas malas, errores específicos
 
 | Metadato                | Valor                                                                                                  |
 | ----------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Fase**                | Pre-Fase 0.5 — Fundamentos de Python                                                                   |
+| **Fase**                | Pre-Fase 0.5: Fundamentos de Python                                                                   |
 | **Sesión en que se asigna** | Sesión N04                                                                                          |
 | **Tiempo estimado**     | 45–60 min                                                                                               |
 | **Skill que entrena**   | `try`/`except`/`else`/`finally`, capturar tipos concretos, `raise` con excepción propia, EAFP, jerarquía de excepciones |
@@ -12,9 +12,9 @@
 
 ## Contexto
 
-El manejo de errores es donde se nota, en cinco líneas de código, si quien lo escribió entiende Python o solo lo tolera. El anti-patrón clásico —el que cualquier reviewer marca de inmediato— es el "manejo por superstición": un `try/except Exception: pass` envolviendo media función "por si acaso". Ese bloque se traga el error real, oculta la línea que falló, y convierte un bug de cinco minutos en una sesión de depuración a ciegas. Si vienes de un lenguaje con `checked exceptions` (Java) o con un patrón de `error como valor de retorno` (Go), tu instinto te va a empujar a comprobar todo antes de actuar o a capturar de más; en Python idiomático eso casi siempre es ruido.
+El manejo de errores es donde se nota, en cinco líneas de código, si quien lo escribió entiende Python o solo lo tolera. El anti-patrón clásico, el que cualquier reviewer marca de inmediato, es el "manejo por superstición": un `try/except Exception: pass` envolviendo media función "por si acaso". Ese bloque se traga el error real, oculta la línea que falló, y convierte un bug de cinco minutos en una sesión de depuración a ciegas. Si vienes de un lenguaje con `checked exceptions` (Java) o con un patrón de `error como valor de retorno` (Go), tu instinto te va a empujar a comprobar todo antes de actuar o a capturar de más; en Python idiomático eso casi siempre es ruido.
 
-Python tiene una filosofía propia que esta kata te obliga a internalizar: **EAFP** — _Easier to Ask Forgiveness than Permission_. En lugar de `if not es_entero(x): ...` (LBYL, _Look Before You Leap_), intentas `int(x)` y capturas el `ValueError` concreto cuando no lo es. Es más limpio, evita condiciones de carrera, y captura exactamente el caso que sabes manejar — ni más, ni menos. La regla de oro es **scope mínimo y tipo concreto**: el `try` envuelve la línea que puede fallar, no el bloque entero; el `except` nombra `ValueError`, no `Exception`.
+Python tiene una filosofía propia que esta kata te obliga a internalizar: **EAFP**, _Easier to Ask Forgiveness than Permission_. En lugar de `if not es_entero(x): ...` (LBYL, _Look Before You Leap_), intentas `int(x)` y capturas el `ValueError` concreto cuando no lo es. Es más limpio, evita condiciones de carrera, y captura exactamente el caso que sabes manejar, ni más, ni menos. La regla de oro es **scope mínimo y tipo concreto**: el `try` envuelve la línea que puede fallar, no el bloque entero; el `except` nombra `ValueError`, no `Exception`.
 
 Lo otro que entrena esta kata es **construir tu propio vocabulario de errores**. Una función de producción no relanza el `ValueError` crudo de `int()` hacia arriba: lo traduce a una excepción de tu dominio (`ValidacionError`) que el código que llama puede capturar con intención, **preservando la causa original** con `raise ... from e` para no perder el rastro. Vas a hacer las tres cosas: capturar tipos concretos, definir y lanzar una excepción propia con causa encadenada, y acumular fallos sin que el primero tumbe el lote.
 
@@ -66,7 +66,7 @@ Las que parsean bien van a `"validas"`; por cada una que falle, acumula su mensa
 
 ### 3. `dividir_seguro(a, b) -> float`
 
-Divide `a / b`, pero **captura el `ZeroDivisionError`** y lo traduce a `ValidacionError("no se puede dividir por cero")`. EAFP en su forma más pura: no compruebes `if b == 0` — intenta la división y captura el tipo concreto cuando falla.
+Divide `a / b`, pero **captura el `ZeroDivisionError`** y lo traduce a `ValidacionError("no se puede dividir por cero")`. EAFP en su forma más pura: no compruebes `if b == 0`, intenta la división y captura el tipo concreto cuando falla.
 
 ```python
 >>> dividir_seguro(10, 2)
@@ -81,7 +81,7 @@ ValidacionError: no se puede dividir por cero
 2. **Tipos concretos en cada `except`**: captura `ValueError` y `ZeroDivisionError` por nombre. Prohibido `except Exception` (o `except:` pelado) en cualquiera de las tres funciones.
 3. **Causa encadenada**: la `ValidacionError` que nace de un `int()` fallido debe usar `raise ValidacionError(...) from e`, de modo que su `__cause__` sea el `ValueError` original.
 4. **Scope mínimo**: el `try` envuelve solo la operación que puede fallar (la conversión, la división), no toda la función.
-5. **EAFP, no LBYL**: en `parsear_edad` y `dividir_seguro`, intenta y captura; no uses `str.isdigit()` ni `if b == 0` como guardia preventiva para el caso que el `except` ya cubre. (La regla de negocio de "edad negativa" sí es un `if` legítimo — esa no la cubre ningún `except`.)
+5. **EAFP, no LBYL**: en `parsear_edad` y `dividir_seguro`, intenta y captura; no uses `str.isdigit()` ni `if b == 0` como guardia preventiva para el caso que el `except` ya cubre. (La regla de negocio de "edad negativa" sí es un `if` legítimo: esa no la cubre ningún `except`.)
 6. **Acumulación sin reventar**: `procesar_lote` recorre toda la lista; un fallo va a `"errores"` y el loop continúa. No uses `except` fuera del loop que aborte el resto.
 7. **Sin I/O ni librerías externas**: solo stdlib y `pytest` para los tests.
 
@@ -153,11 +153,11 @@ def test_division_por_cero_lanza_validacion_error():
         dividir_seguro(10, 0)
 ```
 
-En la revisión, el coach va a abrir tu `solution.py` y leer los `except`. Si encuentra un `except Exception` o un `try` que envuelve toda la función en vez de solo la línea que puede fallar, cuenta como hallazgo aunque los tests pasen en verde — el objetivo de la kata es el _scope_ y el _tipo_, no solo el resultado.
+En la revisión, el coach va a abrir tu `solution.py` y leer los `except`. Si encuentra un `except Exception` o un `try` que envuelve toda la función en vez de solo la línea que puede fallar, cuenta como hallazgo aunque los tests pasen en verde: el objetivo de la kata es el _scope_ y el _tipo_, no solo el resultado.
 
 ## Pistas
 
-<details><summary>Pista 1 — Definir tu excepción y lanzarla con causa</summary>
+<details><summary>Pista 1: Definir tu excepción y lanzarla con causa</summary>
 
 Una excepción propia es literalmente una clase vacía que hereda de `Exception`:
 
@@ -179,18 +179,18 @@ El `from e` es lo que hace que `nueva_excepcion.__cause__` apunte al `ValueError
 
 </details>
 
-<details><summary>Pista 2 — EAFP vs. la regla de dominio (cuándo SÍ va un if)</summary>
+<details><summary>Pista 2: EAFP vs. la regla de dominio (cuándo SÍ va un if)</summary>
 
 Distingue dos cosas que parecen iguales pero no lo son:
 
-- **"¿es un entero?"** → no lo compruebes con `isdigit()`; deja que `int()` lo intente y captura el `ValueError`. EAFP. (Bonus: `"-5".isdigit()` es `False`, así que `isdigit` ni siquiera te serviría para negativos — otra razón para no usarlo.)
+- **"¿es un entero?"** → no lo compruebes con `isdigit()`; deja que `int()` lo intente y captura el `ValueError`. EAFP. (Bonus: `"-5".isdigit()` es `False`, así que `isdigit` ni siquiera te serviría para negativos, otra razón para no usarlo.)
 - **"¿es negativo?"** → aquí no hay ninguna excepción que capturar; el `int()` ya tuvo éxito. La regla "edad ≥ 0" es lógica de tu dominio, así que un `if n < 0: raise ValidacionError(...)` es lo correcto y lo idiomático. No todo se resuelve con `try`.
 
 El patrón completo: primero el `try/except` para la conversión, y _después_ (en el camino feliz, ya con el `int` en mano) el `if` de la regla de negocio.
 
 </details>
 
-<details><summary>Pista 3 — `procesar_lote` acumulando sin reventar (casi-spoiler)</summary>
+<details><summary>Pista 3: `procesar_lote` acumulando sin reventar (casi-spoiler)</summary>
 
 El truco es poner el `try/except` **dentro** del loop, capturando tu propia `ValidacionError` (la que ya lanza `parsear_edad`), no el `ValueError` crudo. Así cada elemento se procesa de forma aislada:
 
@@ -211,13 +211,13 @@ Fíjate: reutilizas `parsear_edad` (no repites la lógica de parseo), capturas `
 
 ## Bonus
 
-1. **`finally` con un contador**: agrega un cuarto helper que use `try/except/else/finally` completo —por ejemplo, un `parsear_edad_con_log(valor, log: list)` que en `else` agregue `"ok"` al log, en `except` agregue `"fail"`, y en `finally` incremente un contador de intentos— para sentir las cuatro ramas. ¿Cuándo corre `else` y cuándo no? (Pista: `else` corre solo si el `try` no lanzó.)
+1. **`finally` con un contador**: agrega un cuarto helper que use `try/except/else/finally` completo (por ejemplo, un `parsear_edad_con_log(valor, log: list)` que en `else` agregue `"ok"` al log, en `except` agregue `"fail"`, y en `finally` incremente un contador de intentos) para sentir las cuatro ramas. ¿Cuándo corre `else` y cuándo no? (Pista: `else` corre solo si el `try` no lanzó.)
 2. **Mensajes accionables**: haz que cada `ValidacionError` incluya el índice del elemento en `procesar_lote` (`"[idx 1] edad inválida: 'x' no es un entero"`) usando `enumerate`. En producción, un mensaje que dice _dónde_ falló vale el doble.
-3. **Jerarquía de excepciones**: divide `ValidacionError` en dos subclases (`TipoInvalidoError`, `RangoInvalidoError`) que heredan de ella, y lánzalas según el caso. El llamador puede capturar la base `ValidacionError` para atrapar ambas, o una específica para distinguir — demuestra para qué sirve una jerarquía.
+3. **Jerarquía de excepciones**: divide `ValidacionError` en dos subclases (`TipoInvalidoError`, `RangoInvalidoError`) que heredan de ella, y lánzalas según el caso. El llamador puede capturar la base `ValidacionError` para atrapar ambas, o una específica para distinguir: demuestra para qué sirve una jerarquía.
 
 ## Qué demuestra
 
-Que manejas errores **por diseño, no por superstición**: capturas el tipo concreto que sabes manejar y nada más, con el `try` ceñido a la línea que falla. Que sabes construir tu propio vocabulario de errores —una excepción de dominio— y relanzarla **preservando la causa** con `raise ... from`, en vez de filtrar errores crudos de la stdlib hacia el código que te llama. Que distingues cuándo EAFP gana (probar y capturar la conversión) de cuándo una regla de negocio pide un `if` explícito (la edad negativa). Y que sabes **acumular fallos** procesando un lote entero sin que el primer error tumbe el resto — el patrón exacto que usarás en cualquier pipeline que procese registros en producción. Es fluidez en el modelo de excepciones de Python, no memorización de sintaxis.
+Que manejas errores **por diseño, no por superstición**: capturas el tipo concreto que sabes manejar y nada más, con el `try` ceñido a la línea que falla. Que sabes construir tu propio vocabulario de errores (una excepción de dominio) y relanzarla **preservando la causa** con `raise ... from`, en vez de filtrar errores crudos de la stdlib hacia el código que te llama. Que distingues cuándo EAFP gana (probar y capturar la conversión) de cuándo una regla de negocio pide un `if` explícito (la edad negativa). Y que sabes **acumular fallos** procesando un lote entero sin que el primer error tumbe el resto: el patrón exacto que usarás en cualquier pipeline que procese registros en producción. Es fluidez en el modelo de excepciones de Python, no memorización de sintaxis.
 
 ## Entregable
 

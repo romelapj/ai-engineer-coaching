@@ -1,8 +1,8 @@
-# 🏋️ Kata 02 — Frecuencia de palabras con ranking
+# 🏋️ Kata 02: Frecuencia de palabras con ranking
 
 | Metadato                  | Valor                                                                                                            |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Fase**                  | Pre-Fase 0.5 — Fundamentos de Python                                                                             |
+| **Fase**                  | Pre-Fase 0.5: Fundamentos de Python                                                                             |
 | **Sesión en que se asigna** | Sesión N02                                                                                                      |
 | **Tiempo estimado**       | 45–60 min                                                                                                        |
 | **Skill que entrena**     | Agrupar/contar con `dict` y `Counter`, comprehensions, `sorted` con key de tupla y desempate, slicing para top-N |
@@ -12,7 +12,7 @@
 
 ## Contexto
 
-Agrupar por clave es la operación más repetida de cualquier procesamiento de datos. Contar cuántas veces aparece cada cosa, sumar montos por categoría, juntar registros por usuario — todo es la misma mecánica: recorrer una colección y acumular en un diccionario indexado por una clave.
+Agrupar por clave es la operación más repetida de cualquier procesamiento de datos. Contar cuántas veces aparece cada cosa, sumar montos por categoría, juntar registros por usuario. Todo es la misma mecánica: recorrer una colección y acumular en un diccionario indexado por una clave.
 
 Si vienes de otro lenguaje, la primera vez la vas a escribir a mano:
 
@@ -26,7 +26,7 @@ for palabra in texto.split():
 
 Eso **funciona**, pero es exactamente el código que un entrevistador marca como no idiomático. Python tiene `collections.Counter` y `collections.defaultdict` precisamente para que ese patrón desaparezca. La diferencia entre escribir `Counter(palabras)` y el bloque de arriba es la diferencia entre un dev que conoce la stdlib y uno que la reimplementa sin saberlo.
 
-La segunda mitad de la kata es el **ranking**. Contar es fácil; ordenar por dos criterios a la vez (conteo descendente, y ante empate alfabético ascendente) es donde se separa quien sabe usar `sorted(key=...)` con una tupla de quien hace tres pasadas y un `if` anidado. `Counter.most_common()` te tienta porque ordena por conteo — pero su desempate **no** es alfabético ni determinista, así que cae en la trampa. Esta kata aísla esa mecánica del ruido del parseo: el texto llega limpio (ya sin puntuación pegada) y solo evalúas si **cuentas con la colección correcta** y **ordenas con la clave compuesta correcta**.
+La segunda mitad de la kata es el **ranking**. Contar es fácil; ordenar por dos criterios a la vez (conteo descendente, y ante empate alfabético ascendente) es donde se separa quien sabe usar `sorted(key=...)` con una tupla de quien hace tres pasadas y un `if` anidado. `Counter.most_common()` te tienta porque ordena por conteo, pero su desempate **no** es alfabético ni determinista, así que cae en la trampa. Esta kata aísla esa mecánica del ruido del parseo: el texto llega limpio (ya sin puntuación pegada) y solo evalúas si **cuentas con la colección correcta** y **ordenas con la clave compuesta correcta**.
 
 El dominio es texto plano: cuentas palabras de un párrafo y sacas un ranking de frecuencias. Nada de logs.
 
@@ -42,7 +42,7 @@ def frecuencias(texto: str, top: int | None = None) -> list[tuple[str, int]]:
 que:
 
 1. **Normalice** el texto a minúsculas.
-2. **Parta** en palabras por espacios en blanco (asume que el texto ya viene sin puntuación pegada a las palabras — no es trabajo de esta kata limpiar comas ni puntos).
+2. **Parta** en palabras por espacios en blanco (asume que el texto ya viene sin puntuación pegada a las palabras: no es trabajo de esta kata limpiar comas ni puntos).
 3. **Cuente** cuántas veces aparece cada palabra.
 4. **Devuelva** una lista de tuplas `(palabra, conteo)` ordenada por **conteo DESCENDENTE** y, ante empate, por **palabra ASCENDENTE** (alfabético).
 5. Si `top` no es `None`, **recorte** la lista a las `top` palabras más frecuentes _después_ de ordenar.
@@ -61,7 +61,7 @@ frecuencias("el gato y el perro y el pez")
 [("el", 3), ("y", 2), ("gato", 1), ("perro", 1), ("pez", 1)]
 ```
 
-Lee el resultado con cuidado: `el` (3) va antes que `y` (2) por conteo. Pero `gato`, `perro` y `pez` empatan en 1, así que salen en orden **alfabético** — no en el orden en que aparecieron en el texto, no en el orden en que un `dict` los insertó. Ese desempate es el corazón de la kata.
+Lee el resultado con cuidado: `el` (3) va antes que `y` (2) por conteo. Pero `gato`, `perro` y `pez` empatan en 1, así que salen en orden **alfabético**, no en el orden en que aparecieron en el texto, no en el orden en que un `dict` los insertó. Ese desempate es el corazón de la kata.
 
 **Con recorte:**
 
@@ -80,8 +80,8 @@ frecuencias("el gato y el perro y el pez", top=2) == [("el", 3), ("y", 2)]
 
 ## Criterios de aceptación
 
-- [ ] `frecuencias("el gato y el perro y el pez") == [("el", 3), ("y", 2), ("gato", 1), ("perro", 1), ("pez", 1)]` — orden exacto, incluyendo el desempate alfabético de las tres palabras empatadas en 1.
-- [ ] `frecuencias("el gato y el perro y el pez", top=2) == [("el", 3), ("y", 2)]` — devuelve solo las 2 primeras tras ordenar.
+- [ ] `frecuencias("el gato y el perro y el pez") == [("el", 3), ("y", 2), ("gato", 1), ("perro", 1), ("pez", 1)]`: orden exacto, incluyendo el desempate alfabético de las tres palabras empatadas en 1.
+- [ ] `frecuencias("el gato y el perro y el pez", top=2) == [("el", 3), ("y", 2)]`: devuelve solo las 2 primeras tras ordenar.
 - [ ] `frecuencias("")` == `[]` (texto vacío).
 - [ ] `frecuencias("hola")` == `[("hola", 1)]` (palabra única).
 - [ ] El desempate alfabético es determinista y está verificado comparando la **lista completa** contra el golden, no solo el primer elemento.
@@ -137,19 +137,19 @@ Fíjate en el último test: `zebra` aparece **antes** que `alfa` en el texto. Si
 
 ## Pistas
 
-<details><summary>Pista 1 — Contar sin reinventar la rueda</summary>
+<details><summary>Pista 1: Contar sin reinventar la rueda</summary>
 
 `collections.Counter` cuenta de un solo golpe: `Counter("el gato y el".split())` te da `Counter({'el': 2, 'gato': 1, 'y': 1})`. Si no quieres `Counter`, `defaultdict(int)` también te deja escribir `conteo[palabra] += 1` sin el `if clave not in d`. Cualquiera de los dos elimina el patrón que la kata prohíbe. Recuerda normalizar a minúsculas **antes** de contar (`texto.lower().split()`), no después.
 
 </details>
 
-<details><summary>Pista 2 — Por qué <code>most_common()</code> no alcanza</summary>
+<details><summary>Pista 2: Por qué <code>most_common()</code> no alcanza</summary>
 
-`Counter(...).most_common()` ordena por conteo descendente — y por eso es tentador — pero ante empate **conserva el orden de inserción** (en CPython moderno), que no es alfabético. Para `"el gato y el perro y el pez"` te puede dar `gato, perro, pez` solo por suerte del orden del texto; cambia el texto a `"pez gato"` y verás que el desempate se rompe. Necesitas ordenar tú con un criterio explícito, no delegar el desempate al `Counter`.
+`Counter(...).most_common()` ordena por conteo descendente (y por eso es tentador), pero ante empate **conserva el orden de inserción** (en CPython moderno), que no es alfabético. Para `"el gato y el perro y el pez"` te puede dar `gato, perro, pez` solo por suerte del orden del texto; cambia el texto a `"pez gato"` y verás que el desempate se rompe. Necesitas ordenar tú con un criterio explícito, no delegar el desempate al `Counter`.
 
 </details>
 
-<details><summary>Pista 3 — La key de tupla que resuelve todo en una pasada (casi-spoiler)</summary>
+<details><summary>Pista 3: La key de tupla que resuelve todo en una pasada (casi-spoiler)</summary>
 
 `sorted` ordena por la tupla que devuelve la `key`, campo por campo, en orden ascendente. El truco para mezclar "descendente por conteo" con "ascendente por palabra" es **negar** el conteo:
 

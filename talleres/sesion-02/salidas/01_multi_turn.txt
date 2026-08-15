@@ -1,0 +1,18 @@
+Turno 1
+  respuesta     : ```json
+{
+  "monto": 45000,
+  "moneda": "COP"
+}
+```
+  input_tokens  : 63
+
+Turno 2 (mandando los 3 mensajes anteriores otra vez)
+  respuesta     : ```json
+{
+  "monto": 20,
+  "moneda": "USD"
+}
+```
+  input_tokens  : 113
+  → la entrada creció 50 tokens respecto al turno 1

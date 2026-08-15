@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 06 — Agentes I — El Loop Agéntico y Herramientas | AI Engineer
+      Sesión 06 · Agentes I: El Loop Agéntico y Herramientas | AI Engineer
       Coaching
     </title>
     <style>
@@ -432,38 +432,38 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 2 — Patrones · Semana 7
+          AI Engineer Coaching · Fase 2: Patrones · Semana 7
         </div>
-        <h1>Sesión 06<br />Agentes I — El Loop Agéntico y Herramientas</h1>
+        <h1>Sesión 06<br />Agentes I: El Loop Agéntico y Herramientas</h1>
         <p class="lead">
-          ¿Cuándo necesitas un agente… y cuándo NO? Hoy lo decides con criterio
-          — y construyes uno real en ~30 líneas de Python, sin frameworks.
+          ¿Cuándo necesitas un agente… y cuándo NO? Hoy lo decides con criterio,
+          y construyes uno real en ~30 líneas de Python, sin frameworks.
         </p>
       </section>
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda · 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso (15 min)</strong> — reto 04: dos demos rápidas,
+            <strong>Repaso (15 min)</strong>: reto 04, dos demos rápidas,
             bloqueos y qué haríamos distinto. Cerramos la mitad de RAG: ese
             retrieval que mediste puede volverse una tool más de un agente.
           </li>
           <li>
-            <strong>Tema central (30 min)</strong> — workflows vs agentes, el
+            <strong>Tema central (30 min)</strong>: workflows vs agentes, el
             loop agéntico paso a paso, diseño de tools y stopping conditions.
           </li>
           <li>
-            <strong>Manos al código (30 min)</strong> — pair programming: agente
+            <strong>Manos al código (30 min)</strong>: pair programming, agente
             investigador mínimo con la API de Claude, cero frameworks.
           </li>
           <li>
-            <strong>Reto de la semana (10 min)</strong> — AI Gym reto 05: agente
+            <strong>Reto de la semana (10 min)</strong>: AI Gym reto 05, agente
             desde cero con presupuesto de pasos.
           </li>
           <li>
-            <strong>Cierre (5 min)</strong> — checklist de salida y preview de
+            <strong>Cierre (5 min)</strong>: checklist de salida y preview de
             la Sesión 07.
           </li>
         </ul>
@@ -477,7 +477,7 @@
             <span class="icon">🧭</span>
             <h3>Workflow vs agente</h3>
             <p class="muted">
-              Entender la diferencia y saber elegir cuál usar — la pregunta que
+              Entender la diferencia y saber elegir cuál usar: la pregunta que
               decide la arquitectura (y la factura).
             </p>
           </div>
@@ -502,7 +502,7 @@
 
       <!-- SLIDE 4: workflows vs agentes -->
       <section class="slide">
-        <h2>Workflows vs agentes — "Building Effective Agents"</h2>
+        <h2>Workflows vs agentes · "Building Effective Agents"</h2>
         <div class="columns">
           <div class="card">
             <h3>Workflow</h3>
@@ -544,7 +544,7 @@
         <p class="muted" style="margin-top: 1.4rem">
           Regla de Anthropic: busca la solución más simple posible y sube de
           complejidad <em>solo</em> si la tarea lo exige. La mayoría de
-          "agentes" en producción son workflows — y está bien.
+          "agentes" en producción son workflows, y está bien.
         </p>
       </section>
 
@@ -562,7 +562,7 @@
         <p class="muted" style="margin-top: 1rem">
           Memoria, planning, multi-agente, MCP… todo lo que verás después son
           extensiones de este loop de ~30 líneas. Si entiendes el loop, ningún
-          framework te va a intimidar — porque sabrás exactamente qué esconden
+          framework te va a intimidar, porque sabrás exactamente qué esconden
           debajo.
         </p>
       </section>
@@ -611,8 +611,8 @@
 
       <!-- SLIDE 7: código del loop -->
       <section class="slide">
-        <h2>El loop completo — sin frameworks</h2>
-        <pre><code><span class="c"># agent.py — esto ES el agente. Todo lo demás es decoración.</span>
+        <h2>El loop completo, sin frameworks</h2>
+        <pre><code><span class="c"># agent.py: esto ES el agente. Todo lo demás es decoración.</span>
 <span class="k">import</span> anthropic
 
 client = anthropic.<span class="f">Anthropic</span>()
@@ -629,19 +629,19 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
     <span class="k">if</span> resp.stop_reason != <span class="s">"tool_use"</span>:
         <span class="k">break</span>                            <span class="c"># 1. DECIDE: el modelo terminó</span>
     results = [{<span class="s">"type"</span>: <span class="s">"tool_result"</span>, <span class="s">"tool_use_id"</span>: b.id,
-                <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}   <span class="c"># 2. EJECUTA — run_tool también en la slide 9</span>
+                <span class="s">"content"</span>: <span class="f">run_tool</span>(b.name, b.input)}   <span class="c"># 2. EJECUTA: run_tool también en la slide 9</span>
                <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
     messages.<span class="f">append</span>({<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: results})  <span class="c"># 3. OBSERVA → 4. REPITE</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
           Fíjate: el historial <code>messages</code> crece en cada paso y se
-          reenvía completo. Esa es la memoria de trabajo del agente — y también
+          reenvía completo. Esa es la memoria de trabajo del agente, y también
           su costo.
         </p>
       </section>
 
       <!-- SLIDE 8: diseño de tools -->
       <section class="slide">
-        <h2>Diseño de tools — 3 reglas que separan junior de senior</h2>
+        <h2>Diseño de tools: 3 reglas que separan junior de senior</h2>
         <div class="columns-3">
           <div class="card">
             <span class="icon">📝</span>
@@ -658,7 +658,7 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
             <p class="muted">
               Nunca lances excepciones al loop ni devuelvas
               <code>"error"</code> a secas. Devuelve qué falló y qué probar
-              después — el modelo se autocorrige si le das con qué.
+              después: el modelo se autocorrige si le das con qué.
             </p>
           </div>
           <div class="card">
@@ -679,7 +679,7 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
 
       <!-- SLIDE 9: código de tools -->
       <section class="slide">
-        <h2>Tool bien diseñada — descripción y error</h2>
+        <h2>Tool bien diseñada: descripción y error</h2>
         <pre><code><span class="k">import</span> httpx  <span class="c"># pip install httpx</span>
 <span class="k">from</span> markdownify <span class="k">import</span> markdownify <span class="k">as</span> to_markdown  <span class="c"># pip install markdownify</span>
 
@@ -779,24 +779,24 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
         </p>
         <ul class="clean">
           <li>
-            <strong>El camino es predecible</strong> — puedes mapear los pasos
+            <strong>El camino es predecible</strong>: puedes mapear los pasos
             de antemano → workflow encadenado, determinista y testeable.
           </li>
           <li>
-            <strong>No hay señal de verificación</strong> — nada (tests,
+            <strong>No hay señal de verificación</strong>: nada (tests,
             errores, resultados) le dice al modelo si un paso salió bien; el
             loop deriva sin rumbo.
           </li>
           <li>
-            <strong>La latencia es dura</strong> — un SLA de p95 &lt; 2 s no
+            <strong>La latencia es dura</strong>: un SLA de p95 &lt; 2 s no
             aguanta 10 round-trips al modelo.
           </li>
           <li>
-            <strong>Los errores son caros e irreversibles</strong> — pagos o
-            borrados sin checkpoint humano: incidente esperando fecha.
+            <strong>Los errores son caros e irreversibles</strong>: pagos o
+            borrados sin checkpoint humano, incidente esperando fecha.
           </li>
           <li>
-            <strong>Una sola llamada con buen prompt ya resuelve</strong> — el
+            <strong>Una sola llamada con buen prompt ya resuelve</strong>: el
             caso más común y el más ignorado.
           </li>
         </ul>
@@ -810,7 +810,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
 
       <!-- SLIDE 12: frameworks vs from-scratch -->
       <section class="slide">
-        <h2>Frameworks vs from-scratch — y qué decir en entrevista</h2>
+        <h2>Frameworks vs from-scratch, y qué decir en entrevista</h2>
         <div class="columns">
           <div class="card">
             <h3>From-scratch (API directa)</h3>
@@ -845,17 +845,17 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
         <p style="margin-top: 1.4rem">
           <strong>En entrevista:</strong> "empiezo con la API directa porque
           necesito ver cada prompt; adopto un framework cuando el proyecto pide
-          persistencia o human-in-the-loop en producción" —
+          persistencia o human-in-the-loop en producción".
           <span class="muted"
-            >eso te contrata. "Uso LangChain porque es el estándar" sin poder
-            explicar el loop — eso te descarta.</span
+            >Eso te contrata. "Uso LangChain porque es el estándar" sin poder
+            explicar el loop. Eso te descarta.</span
           >
         </p>
       </section>
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>🧪 Manos al código — agente "wiki-researcher" (30 min)</h2>
+        <h2>🧪 Manos al código · agente "wiki-researcher" (30 min)</h2>
         <p>
           Construimos juntos, en un solo <code>agent.py</code>, un agente que
           responde preguntas factuales con fuentes usando la API de Wikipedia.
@@ -863,23 +863,23 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
         </p>
         <ul class="clean" style="margin-top: 1rem">
           <li>
-            <strong>Min 0–5</strong> — definir <code>TOOLS</code>:
+            <strong>Min 0–5</strong> · definir <code>TOOLS</code>:
             <code>search_wikipedia(query)</code> y
             <code>get_article(title)</code>, con descripciones estilo
             onboarding.
           </li>
           <li>
-            <strong>Min 5–15</strong> — escribir el loop con
+            <strong>Min 5–15</strong> · escribir el loop con
             <code>MAX_STEPS = 8</code> y una traza por consola: paso, tool
             llamada y argumentos.
           </li>
           <li>
-            <strong>Min 15–25</strong> — correrlo con "¿qué países han ganado
+            <strong>Min 15–25</strong> · correrlo con "¿qué países han ganado
             más de 3 mundiales y en qué años?" y leer la trayectoria completa
             paso a paso.
           </li>
           <li>
-            <strong>Min 25–30</strong> — romperlo a propósito: devolver un error
+            <strong>Min 25–30</strong> · romperlo a propósito: devolver un error
             genérico vs uno informativo y comparar cómo se recupera el modelo.
           </li>
         </ul>
@@ -949,7 +949,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
               </div>
               <div class="vc-meta">VinciBits · Inglés</div>
               <div class="vc-why">
-                Construye el loop completo en Python puro con la API de Claude —
+                Construye el loop completo en Python puro con la API de Claude,
                 el mismo ejercicio del lab de hoy.
               </div>
             </div>
@@ -1001,7 +1001,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 05</span
           ><span class="tag green">Entregable</span>
@@ -1043,7 +1043,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
         <ul class="checklist">
           <li>
             Puedo explicar workflow vs agente con un ejemplo concreto de cada
-            uno — y por qué el workflow gana casi siempre.
+            uno, y por qué el workflow gana casi siempre.
           </li>
           <li>
             Tengo el loop de ~30 líneas corriendo en mi máquina, sin frameworks.
@@ -1064,8 +1064,8 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
-          <strong>Sesión 07 — Agentes II — Memoria, Multi-agente y MCP</strong>
-          — tu agente hoy se olvida de todo al terminar; la 07 le da memoria que
+          <strong>Sesión 07 · Agentes II: Memoria, Multi-agente y MCP</strong>
+          Tu agente hoy se olvida de todo al terminar; la 07 le da memoria que
           sobrevive al proceso, subagentes que delegan y MCP para conectarlo a
           cualquier herramienta.
         </p>

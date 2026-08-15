@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pre-Fase N02 — Estructuras de datos | AI Engineer Coaching</title>
+    <title>Pre-Fase N02: Estructuras de datos | AI Engineer Coaching</title>
     <style>
       :root {
         --bg: #0b0f1a;
@@ -428,7 +428,7 @@
     <main id="deck">
       <section class="slide active">
         <div class="kicker">
-          Pre-Fase 0.5 — Fundamentos de Python · Día 3 de 6
+          Pre-Fase 0.5: Fundamentos de Python · Día 3 de 6
         </div>
         <h1>Estructuras<br />de datos</h1>
         <p class="lead">
@@ -439,7 +439,7 @@
       </section>
 
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
             <strong>Repaso (5 min):</strong> truthiness y mutabilidad de ayer,
@@ -454,8 +454,8 @@
             un agregador con comprehensions
           </li>
           <li>
-            <strong>Kata del día (10 min):</strong> kata-02 — estructuras y
-            agregación
+            <strong>Kata del día (10 min):</strong> kata-02 (estructuras y
+            agregación)
           </li>
           <li><strong>Cierre (5 min):</strong> checklist de salida</li>
         </ul>
@@ -531,7 +531,7 @@ ultima = tareas.<span class="f">pop</span>()          <span class="c"># quita y 
           lineal: si harás muchas búsquedas, usa un <code>set</code>.
           <code>key=</code> es un argumento con nombre al que le pasas una
           función (aquí <code>len</code>) que se aplica a cada elemento para
-          decidir el orden — el detalle de argumentos llega en N03.
+          decidir el orden; el detalle de argumentos llega en N03.
         </p>
       </section>
 
@@ -601,7 +601,7 @@ por_inicial = {}
           <code>if clave in dict</code> de cada vez;
           <code>setdefault</code> construye listas por clave sin inicializarlas
           a mano. Las claves deben ser <strong>inmutables</strong> (str, int,
-          tuple) — por eso una <code>list</code> no puede ser clave, pero una
+          tuple): por eso una <code>list</code> no puede ser clave, pero una
           <code>tuple</code> sí.
         </p>
       </section>
@@ -648,7 +648,7 @@ b = {3, 4, 5}
           El <code>in</code> sobre un set es O(1): ideal para "¿ya lo vi?" o
           listas de exclusión. <code>set(lista)</code> deduplica de un golpe
           (pero pierde el orden). Operadores: <code>|</code> unión,
-          <code>&amp;</code> intersección, <code>-</code> diferencia — perfectos
+          <code>&amp;</code> intersección, <code>-</code> diferencia. Perfectos
           para comparar dos colecciones.
         </p>
       </section>
@@ -667,7 +667,7 @@ b = {3, 4, 5}
           <li>
             Existen en cuatro sabores: list <code>[ ]</code>, set
             <code>{ }</code>, dict <code>{k: v}</code> y generator
-            <code>( )</code> — este último lo verás en N05
+            <code>( )</code>; este último lo verás en N05
           </li>
           <li>
             El <code>if</code> al final <strong>filtra</strong>; la expresión al
@@ -728,7 +728,7 @@ ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), 
       </section>
 
       <section class="slide">
-        <h2>Manos al código — Inventario + agregador (35 min)</h2>
+        <h2>Manos al código: Inventario + agregador (35 min)</h2>
         <div class="columns">
           <div class="card">
             <span class="icon">📦</span>
@@ -754,7 +754,7 @@ ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), 
             <h3>3) Slicing drill · 5 min</h3>
             <p class="muted">
               Dada una fecha en str y una lista, extrae partes con
-              <strong>slices</strong> — sin <code>split</code> donde un slice
+              <strong>slices</strong>, sin <code>split</code> donde un slice
               basta.
             </p>
           </div>
@@ -833,7 +833,7 @@ ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), 
       </section>
 
       <section class="slide">
-        <h2>Kata del día — kata-02</h2>
+        <h2>Kata del día: kata-02</h2>
         <div class="card">
           <span class="tag violet">Kata kata-02</span>
           <span class="tag green">Entregable</span>
@@ -841,7 +841,7 @@ ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), 
           <p class="muted">
             Cuenta la frecuencia de palabras de un texto con
             <code>dict</code> (o <code>Counter</code>, de
-            <code>collections</code> — lo verás en N05) y devuelve un ranking
+            <code>collections</code>; lo verás en N05) y devuelve un ranking
             ordenado, con <strong>desempate determinista</strong> (p. ej. por
             frecuencia descendente y luego alfabético).
           </p>
@@ -875,7 +875,7 @@ ranking = <span class="f">sorted</span>(totales.<span class="f">items</span>(), 
         <p class="muted" style="margin-top: 1.2rem">
           Próxima sesión:
           <strong
-            >Funciones y módulos — argumentos, *args/**kwargs, retorno múltiple
+            >Funciones y módulos · argumentos, *args/**kwargs, retorno múltiple
             y organización del código</strong
           >
         </p>

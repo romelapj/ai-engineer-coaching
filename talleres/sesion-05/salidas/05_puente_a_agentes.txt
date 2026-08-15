@@ -1,0 +1,86 @@
+========================================================================
+1) EL MISMO RAG DE LA SESIÓN 04, con el retrieval de la sesión 05
+========================================================================
+
+Pregunta: ¿Cómo evito cobros duplicados cuando reintento un pago?
+
+  con retrieval de la sesión 04:
+    No tengo evidencia para responder.
+
+  con retrieval de la sesión 05 (híbrido + rerank):
+    ## Cómo evitar cobros duplicados al reintentar un pago
+
+Para evitar cobros duplicados al reintentar una operación de pago, debes incluir el header **`Idempotency-Key`** en tu petición [1]. Este header es aceptado por todas las operaciones de escritura y garantiza que reintentos de una misma petición no generen cobros duplicados [1].
+
+### Recomendaciones adicionales para reintentos
+
+Al reintentar operaciones de creación de pago, también se recomienda [1]:
+
+- Usar **backoff exponencial**
+- Configurar un **máximo de 3 reintentos**
+- Comenzar con una espera de **2 segundos** entre intentos
+
+> ⚠️ **Importante:** Si recibes un error `E-7777` (rechazo por riesgo antifraude), **no debes reintentar** la operación bajo ninguna circunstancia, ya que reintentos repetidos pueden llevar a la suspensión temporal de tu cuenta de comercio [3].
+
+    evidencia usada:
+      - api-pagos.md § Timeouts y reintentos
+      - api-pagos.md § Guía de la API de Pagos
+      - errores.md § Error E-7777: rechazo por riesgo
+      - webhooks.md § Guía de Webhooks
+
+  Lo único que cambió entre las dos respuestas es la función de
+  recuperación. Mismo generador, mismo prompt, mismas citas. Por eso
+  medir retrieval por separado vale la pena: es la pieza que manda.
+
+========================================================================
+2) EL MISMO RAG, EXPUESTO COMO HERRAMIENTA (preview de la sesión 06)
+========================================================================
+
+Pregunta del usuario: Un pago me devolvió E-4012. ¿Qué pasó y puedo reintentarlo?
+
+  → el modelo decidió llamar a buscar_documentacion({"pregunta": "Qué significa el error E-4012"})
+      recuperado: errores.md § Error E-4012: fondos insuficientes
+      recuperado: errores.md § Error E-3010: monto excede el límite
+      recuperado: errores.md § Error E-4019: tarjeta vencida
+      recuperado: errores.md § Error E-5001: timeout del emisor
+  → el modelo decidió llamar a buscar_documentacion({"pregunta": "¿Se puede reintentar un pago con error E-4012?"})
+      recuperado: errores.md § Error E-4012: fondos insuficientes
+      recuperado: errores.md § Catálogo de errores de PagosYa
+      recuperado: errores.md § Error E-5001: timeout del emisor
+      recuperado: errores.md § Error E-7777: rechazo por riesgo
+
+  Respuesta final:
+    Aquí te explico todo lo que necesitas saber sobre el **error E-4012**:
+
+---
+
+### 🔴 E-4012 — Fondos insuficientes
+
+**¿Qué pasó?**
+El banco emisor rechazó el pago porque el pagador **no tenía saldo suficiente** en su cuenta o tarjeta. Es importante destacar que **no es un error de tu integración**, todo funcionó correctamente de tu lado.
+
+---
+
+### ♻️ ¿Puedo reintentarlo?
+
+**No se recomienda reintentar con el mismo método de pago.** Reintentar de inmediato casi siempre vuelve a fallar, ya que el problema está del lado del pagador (falta de fondos).
+
+---
+
+### ✅ ¿Qué hacer?
+
+1. **Muéstrale al usuario un mensaje claro** informando que su pago fue rechazado por fondos insuficientes.
+2. **Ofrécele pagar con otro método** (otra tarjeta, cuenta, billetera digital, etc.).
+3. Evita reintentar automáticamente con el mismo instrumento de pago.
+
+---
+
+¿Necesitas ayuda para implementar el mensaje de error en tu flujo o manejar el cambio de método de pago? 😊
+
+  Nota la diferencia con el RAG: el pipeline de la sesión 04 SIEMPRE
+  busca, aunque la pregunta no lo necesite. Aquí el modelo decidió
+  buscar, con qué query, y cuándo ya tenía suficiente para responder.
+  Esa decisión (qué herramienta, con qué argumentos, en qué orden) es
+  la sesión 06. Y llega apoyada en un retrieval que ya sabemos medir:
+  una herramienta cuya calidad no puedes medir es una herramienta en
+  la que un agente no debería confiar.

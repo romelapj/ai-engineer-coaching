@@ -1,0 +1,11 @@
+Simulando una llamada que falla 2 veces y responde bien a la 3ra:
+
+  intento 0: falló (servidor sobrecargado (intento 1))
+    esperando 0.50s antes de reintentar...
+  intento 1: falló (servidor sobrecargado (intento 2))
+    esperando 1.91s antes de reintentar...
+
+Resultado final: {'texto': '¡respuesta exitosa del modelo!'}
+
+--- Bonus: run_tool_safe no tumba el programa ante un error ---
+salida: ToolOut(content={'error': 'algo salió mal dentro de la tool'}, failed=True)

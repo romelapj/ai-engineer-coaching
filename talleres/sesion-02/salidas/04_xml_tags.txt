@@ -1,0 +1,17 @@
+Reclamo: 'Vi que me habían cobrado dos veces por el mismo producto'
+
+JSON válido, ya como diccionario de Python:
+{
+  "type": "duplicated",
+  "amount": null,
+  "currency": null,
+  "urgency": false
+}
+
+Acceso por campo:
+  type    : duplicated
+  amount  : None
+  currency: None
+
+Esto funciona casi siempre, y 'casi' es el problema. En la sesión 03
+vas a ver cómo tool_choice convierte este 'casi' en una garantía.

@@ -1,0 +1,23 @@
+Esto es exactamente lo que el modelo 've' de la tool:
+
+[
+  {
+    "name": "get_order_status",
+    "description": "Consulta el estado de una orden y su fecha estimada de entrega. Úsala siempre que el usuario pregunte por una orden. ID formato ORD-NNNN, p. ej. ORD-8841.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "order_id"
+      ]
+    }
+  }
+]
+
+Probemos que la función real funciona, sin ningún modelo de por medio:
+get_order_status('ORD-8841') -> {'status': 'shipped', 'eta': '2026-07-04'}
+get_order_status('ORD-0000') -> {'error': 'orden no existe'}

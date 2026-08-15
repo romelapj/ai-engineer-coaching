@@ -1,0 +1,17 @@
+Pidiendo una respuesta larga en streaming...
+
+## Por qué el Streaming Mejora la Experiencia de Usuario
+
+El streaming mejora la UX principalmente porque **elimina la espera total** antes de que el usuario pueda ver o interactuar con el contenido. En lugar de esperar a que toda la respuesta o recurso esté listo para ser enviado de una sola vez, el contenido se entrega de forma progresiva, lo que genera una **percepción de velocidad mucho mayor**. Esto es especialmente relevante en aplicaciones de IA conversacional, donde el usuario comienza a leer la respuesta casi de inmediato, aunque el modelo todavía esté generando el texto final.
+
+Desde el punto de vista psicológico, el streaming aprovecha el principio de que **la percepción del tiempo importa más que el tiempo real**. Ver que algo está ocurriendo —letras apareciendo, contenido cargando progresivamente— reduce la ansiedad de espera y mantiene al usuario enganchado. Una pantalla en blanco durante tres segundos se siente más larga que cinco segundos de contenido apareciendo gradualmente. Esto se traduce directamente en menor tasa de abandono y mayor satisfacción percibida.
+
+Finalmente, el streaming también **permite una interacción más natural y fluida**, ya que imita la forma en que los humanos nos comunicamos: de manera continua y progresiva, no en bloques monolíticos. En interfaces de chat con IA, por ejemplo, este efecto hace que la conversación se sienta más humana y dinámica. En conjunto, el streaming reduce la fricción, aumenta el engagement y mejora métricas clave como el tiempo de permanencia y la confianza del usuario en el sistema.
+
+--- las dos latencias ---
+TTFT (primera palabra) : 1.18s
+Total (respuesta entera): 9.53s
+Trozos recibidos        : 15
+Tokens de salida        : 408
+
+El usuario esperó 1.18s para ver algo, no 9.53s. La respuesta tardó lo mismo: solo cambió la espera percibida.

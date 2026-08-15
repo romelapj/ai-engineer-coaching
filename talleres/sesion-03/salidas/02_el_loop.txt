@@ -1,0 +1,16 @@
+
+--- turno 0: llamando al modelo real ---
+stop_reason: tool_use
+  el modelo PIDE -> get_order_status({'order_id': 'ORD-8841'})
+  tu código EJECUTA y responde -> {"status": "shipped", "eta": "2026-07-04"}
+
+--- turno 1: llamando al modelo real ---
+stop_reason: end_turn
+
+=== RESPUESTA FINAL DEL MODELO ===
+¡Buenas noticias! Aquí está la información de tu orden **ORD-8841**:
+
+- 📦 **Estado:** Enviada (*Shipped*)
+- 🗓️ **Fecha estimada de entrega:** 4 de julio de 2026
+
+Tu pedido ya está en camino. Si tienes alguna otra pregunta, ¡con gusto te ayudo! 😊

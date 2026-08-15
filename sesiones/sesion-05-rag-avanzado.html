@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 05 — RAG II — Retrieval Híbrido, Reranking y Evaluación | AI
+      Sesión 05 · RAG II: Retrieval Híbrido, Reranking y Evaluación | AI
       Engineer Coaching
     </title>
     <style>
@@ -432,10 +432,10 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 2 — Patrones · Semana 6
+          AI Engineer Coaching · Fase 2: Patrones · Semana 6
         </div>
         <h1>
-          Sesión 05<br />RAG II — Retrieval Híbrido, Reranking y Evaluación
+          Sesión 05<br />RAG II: Retrieval Híbrido, Reranking y Evaluación
         </h1>
         <p class="lead">
           Deja de adivinar por qué tu RAG responde mal: mide el retrieval,
@@ -445,26 +445,26 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda · 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — demo del reto 3 (RAG básico): ¿dónde falla
+            <strong>Repaso</strong>: demo del reto 3 (RAG básico), ¿dónde falla
             tu retrieval hoy? (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — golden set y métricas primero, luego
+            <strong>Tema central</strong>: golden set y métricas primero, luego
             híbrido BM25 + vectores, reranking, query rewriting y contextual
             retrieval (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: golden set,
+            <strong>Manos al código</strong>: pair programming con golden set,
             recall@5 baseline y fusión híbrida con RRF (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym 04: tuning de retrieval
+            <strong>Reto de la semana</strong>: AI Gym 04, tuning de retrieval
             con mejora medida (10 min)
           </li>
-          <li><strong>Cierre</strong> — checklist de salida y dudas (5 min)</li>
+          <li><strong>Cierre</strong>: checklist de salida y dudas (5 min)</li>
         </ul>
       </section>
 
@@ -540,7 +540,7 @@
 
       <!-- SLIDE 5: golden set + métricas (el instrumento primero) -->
       <section class="slide">
-        <h2>Golden set: recall@k y MRR — el instrumento primero</h2>
+        <h2>Golden set: recall@k y MRR, el instrumento primero</h2>
         <blockquote>
           Una mejora de retrieval sin métrica es una anécdota. Con golden set,
           es un dato que puedes defender en un PR.
@@ -590,7 +590,7 @@
           <strong>Reciprocal Rank Fusion</strong> mezcla ambos rankings sin
           calibrar scores: solo usa posiciones.
         </p>
-        <pre><code><span class="c"># RRF: score(doc) = Σ 1 / (k + rank)  — k=60 es el estándar</span>
+        <pre><code><span class="c"># RRF: score(doc) = Σ 1 / (k + rank)  (k=60 es el estándar)</span>
 <span class="k">def</span> <span class="f">rrf</span>(rankings, k=60):
     scores = {}
     <span class="k">for</span> ranking <span class="k">in</span> rankings:
@@ -623,7 +623,7 @@ rehidratados = [id_a_chunk[i] <span class="k">for</span> i <span class="k">in</s
         <h2>Rerankers: precisión cara, úsala al final</h2>
         <p style="margin-bottom: 1rem">
           Un <strong>cross-encoder</strong> lee query y documento juntos y
-          produce un score de relevancia real — mucho más preciso que comparar
+          produce un score de relevancia real, mucho más preciso que comparar
           dos vectores precalculados, pero imposible de usar sobre todo el
           corpus.
         </p>
@@ -661,7 +661,7 @@ rehidratados = [id_a_chunk[i] <span class="k">for</span> i <span class="k">in</s
         <p class="muted" style="margin-top: 1.2rem">
           Regla de decisión: si tu recall@50 es alto pero tu recall@5 es bajo,
           el reranker paga su latencia. Si recall@50 ya es malo, el problema
-          está antes — arregla el retrieval, no el orden. Como siempre:
+          está antes: arregla el retrieval, no el orden. Como siempre:
           actívalo, corre el golden set y deja que el número decida.
         </p>
       </section>
@@ -694,7 +694,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         <p class="muted" style="margin-top: 1rem">
           Costo: una llamada corta (~300–500 ms). No todo paso "avanzado" gana
           en tu corpus: actívalo, corre el golden set y deja que el número
-          decida — si no sube recall, quítalo.
+          decida: si no sube recall, quítalo.
         </p>
       </section>
 
@@ -744,7 +744,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         <div class="kicker">Mejoras de indexación · se pagan una vez</div>
         <h2>Contextual retrieval (Anthropic)</h2>
         <p style="margin-bottom: 1rem">
-          Un chunk suelto pierde contexto: "la tasa subió 3%" — ¿de qué, cuándo,
+          Un chunk suelto pierde contexto: "la tasa subió 3%". ¿De qué, cuándo,
           de quién? La idea: antes de indexar, pedirle al modelo 2–3 frases que
           sitúen el chunk dentro de su documento, y embeber chunk + contexto.
         </p>
@@ -813,26 +813,26 @@ Responde SOLO con 2-3 frases de contexto."""</span>
 
       <!-- SLIDE 12: ejercicio en vivo -->
       <section class="slide">
-        <h2>Manos al código — 30 min en pareja</h2>
+        <h2>Manos al código · 30 min en pareja</h2>
         <p style="margin-bottom: 1rem">
           Sobre el índice de tu reto 3 (RAG básico), vamos a montar el loop de
           medición completo y la primera mejora:
         </p>
         <ul class="clean">
           <li>
-            <strong>Min 0–10</strong> — Golden set: 15 queries reales de tu
+            <strong>Min 0–10</strong> · Golden set: 15 queries reales de tu
             corpus con su chunk esperado, en un <code>golden.json</code>
           </li>
           <li>
-            <strong>Min 10–15</strong> — Baseline: medir recall@5 y MRR del
+            <strong>Min 10–15</strong> · Baseline: medir recall@5 y MRR del
             vector search actual. Anota el número.
           </li>
           <li>
-            <strong>Min 15–25</strong> — Híbrido: agregar BM25 con
+            <strong>Min 15–25</strong> · Híbrido: agregar BM25 con
             <code>rank_bm25</code> y fusionar con el RRF de la slide 6
           </li>
           <li>
-            <strong>Min 25–30</strong> — Re-medir y comparar: ¿cuántos puntos
+            <strong>Min 25–30</strong> · Re-medir y comparar: ¿cuántos puntos
             subió recall@5? ¿Qué queries siguen fallando y por qué?
           </li>
         </ul>
@@ -881,7 +881,7 @@ Responde SOLO con 2-3 frases de contexto."""</span>
             />
             <div>
               <div class="vc-title">
-                Mastering Retrieval for LLMs — BM25, Fine-tuned Embeddings, and
+                Mastering Retrieval for LLMs: BM25, Fine-tuned Embeddings, and
                 Re-Rankers
               </div>
               <div class="vc-meta">Trelis Research · Inglés</div>
@@ -903,7 +903,7 @@ Responde SOLO con 2-3 frases de contexto."""</span>
             />
             <div>
               <div class="vc-title">
-                Advanced RAG 04 — Reranking with Cross Encoders, and Cohere API
+                Advanced RAG 04: Reranking with Cross Encoders, and Cohere API
               </div>
               <div class="vc-meta">Sam Witteveen · Inglés</div>
               <div class="vc-why">
@@ -960,7 +960,7 @@ Responde SOLO con 2-3 frases de contexto."""</span>
 
       <!-- SLIDE 14: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 04</span
           ><span class="tag green">Entregable: métricas antes/después</span>
@@ -1020,9 +1020,9 @@ Responde SOLO con 2-3 frases de contexto."""</span>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
           <strong
-            >Sesión 06 — Agentes I — El Loop Agéntico y Herramientas</strong
+            >Sesión 06 · Agentes I: El Loop Agéntico y Herramientas</strong
           >
-          — cerramos RAG y saltamos a agentes: ese retrieval que acabas de medir
+          Cerramos RAG y saltamos a agentes: ese retrieval que acabas de medir
           puede volverse una tool que un agente decide cuándo llamar.
         </p>
       </section>

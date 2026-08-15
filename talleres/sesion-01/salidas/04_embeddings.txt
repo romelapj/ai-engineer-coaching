@@ -1,0 +1,40 @@
+
+--- inglés ---
+similitud contra "pay with a credit card":
+
+  +1.000  ██████████████████████████████  pay with a credit card
+  +0.353  ██████████                      checkout with visa
+  +0.230  ██████                          charged twice for the same item
+  -0.028                                  recipe for cheese arepas
+
+(cada frase es un vector de 384 números; los 5 primeros: [-0.001, 0.033, -0.027, 0.043, -0.02])
+
+--- español ---
+similitud contra "pagar con tarjeta de crédito":
+
+  +1.000  ██████████████████████████████  pagar con tarjeta de crédito
+  +0.229  ██████                          checkout con visa
+  +0.199  █████                           me cobraron dos veces
+  +0.449  █████████████                   receta de arepas de queso
+
+=== la lección ===
+En inglés funciona: 'checkout with visa' queda por encima del resto
+sin compartir una sola palabra con la referencia, y las arepas caen
+casi a cero. Eso es lo que un buscador por palabras clave no puede
+hacer, y es el problema que resuelve RAG.
+
+En español SE ROMPE: las arepas puntúan MÁS ALTO que 'checkout con
+visa'. El orden queda al revés. Y no es un bug de tu código.
+
+all-MiniLM-L6-v2 está entrenado en inglés. Con español devuelve
+números perfectamente válidos y perfectamente inútiles: no falla,
+no avisa, simplemente miente en silencio. Si montaras un RAG en
+español sobre este modelo, recuperaría documentos al azar y te
+costaría días entender por qué.
+
+Dos cosas que llevarte:
+  1. El modelo de embeddings tiene que hablar TU idioma. Para
+     español: voyage-3.5, multilingual-e5 o bge-m3.
+  2. Esto no se descubre leyendo la documentación: se descubre
+     midiendo, con cuatro frases que tú ya sabes cómo deberían
+     ordenarse. Cinco minutos de esto ahorran una semana después.

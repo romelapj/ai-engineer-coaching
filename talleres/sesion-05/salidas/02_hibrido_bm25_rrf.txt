@@ -1,0 +1,53 @@
+Golden set: 15 queries · 3 variantes
+
+variante                   recall@1 recall@5 recall@10    MRR
+-------------------------------------------------------------
+vectorial (sesión 04)          0.60     0.87      0.93   0.71
+solo BM25                      0.73     0.93      0.93   0.81
+híbrido RRF                    0.73     0.87      1.00   0.82
+
+=== Queries que el baseline no le entregaba al modelo ===
+  vec pos=- → híbrido pos=7  [sigue sin llegar]  ¿Cómo evito cobros duplicados cuando reintento un pago?
+  vec pos=6 → híbrido pos=2  [AHORA LLEGA]  ¿Cómo verifico que un webhook realmente viene de PagosYa?
+  vec pos=5 → híbrido pos=8  [sigue sin llegar]  ¿cómo firmo mis webhooks?
+  → Donde entra BM25, entra porque la query comparte términos
+    LITERALES con el chunk correcto. Lo exacto es su especialidad.
+
+=== Queries que BM25 pierde del todo y el vector sí encuentra ===
+  BM25: fuera del top-10 · vectorial: pos=5   ¿cómo firmo mis webhooks?
+  → El documento dice 'firma' y la query dice 'firmo'. Para BM25 son
+    dos tokens distintos; para el embedding, la misma idea.
+    Esto es lo que decide la sesión: NO se trata de reemplazar el
+    vector por BM25, sino de sumarlos. Cada uno cubre el punto ciego
+    del otro.
+
+=== Diagnóstico después del híbrido ===
+  vectorial (sesión 04)    ok=9   orden=3   recuperación=3
+  solo BM25                ok=11  orden=3   recuperación=1
+  híbrido RRF              ok=11  orden=2   recuperación=2
+
+Lee la tabla completa, no solo la fila que te gusta:
+
+  · Contra el baseline, ganamos: recall@1 sube de 0.60 a 0.73 y el MRR
+    de 0.71 a 0.82. El diagnóstico acertó y la palanca funcionó.
+
+  · Pero 'solo BM25' EMPATA al híbrido en recall@1, y en este corpus
+    cargado de jerga hasta le gana en recall@5. Si te quedaras en esa
+    fila concluirías que el vector search sobra. Sería un error, y la
+    columna que lo delata es recall@10: BM25 pierde una query POR
+    COMPLETO ('¿cómo firmo mis webhooks?'), y lo que no está entre los
+    candidatos ya no lo rescata nadie. El híbrido es la única variante
+    con recall@10 = 1.00: siempre trae el chunk correcto a la mesa.
+
+  · Ese es su verdadero valor, y es una decisión de ingeniería, no de
+    métrica: prefiero la variante que nunca pierde la evidencia, aunque
+    hoy empate en recall@1, porque es la única sobre la que un paso de
+    reordenamiento puede llegar a 1.00.
+
+  · Y una honestidad más: el híbrido dejó 2 queries fuera del top-4,
+    una más que BM25 solo. RRF con k=60 amortigua mucho un #1 fuerte de
+    un solo ranker. Ese k es una perilla: cámbiala y vuelve a medir.
+
+Con el chunk correcto ya siempre entre los candidatos, el problema que
+queda es de ORDEN. Esa es la condición exacta que el deck pone para el
+reranker → script 03.

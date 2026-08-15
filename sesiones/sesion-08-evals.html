@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 08 — Evals — Medir Sistemas con LLMs | AI Engineer Coaching
+      Sesión 08 · Evals · Medir Sistemas con LLMs | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -431,9 +431,9 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 2 — Patrones · Semana 9
+          AI Engineer Coaching · Fase 2 · Patrones · Semana 9
         </div>
-        <h1>Sesión 08<br />Evals — Medir Sistemas con LLMs</h1>
+        <h1>Sesión 08<br />Evals: Medir Sistemas con LLMs</h1>
         <p class="lead">
           Deja de evaluar con vibes: hoy construyes una suite de evals que te
           dice, con un número, si tu sistema mejoró o empeoró.
@@ -442,25 +442,25 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda · 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — tu RAG/agente de la semana pasada: ¿cómo
+            <strong>Repaso</strong>: tu RAG/agente de la semana pasada, ¿cómo
             sabes que funciona? (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — tipos de eval, golden datasets,
+            <strong>Tema central</strong>: tipos de eval, golden datasets,
             LLM-as-judge y sus sesgos, evals en CI (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: mini-suite de
+            <strong>Manos al código</strong>: pair programming, mini-suite de
             evals sobre tu RAG, con score base (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym reto 07: suite de 30+
+            <strong>Reto de la semana</strong>: AI Gym reto 07, suite de 30+
             casos integrada a CI (10 min)
           </li>
-          <li><strong>Cierre</strong> — checklist de salida y dudas (5 min)</li>
+          <li><strong>Cierre</strong>: checklist de salida y dudas (5 min)</li>
         </ul>
       </section>
 
@@ -566,7 +566,7 @@
         </table>
         <p class="muted" style="margin-top: 1.2rem">
           Regla del coach: maximiza lo programático. El judge es el último
-          recurso, no el primero — es el más caro, el más lento y el único que
+          recurso, no el primero: es el más caro, el más lento y el único que
           puede mentirte.
         </p>
       </section>
@@ -588,8 +588,8 @@
               </li>
               <li>
                 Formato JSONL:
-                <code>{input, expected, criterios, categoria}</code>
-                — versionado en git junto al código
+                <code>{input, expected, criterios, categoria}</code>,
+                versionado en git junto al código
               </li>
               <li>
                 Vivo:
@@ -628,13 +628,13 @@
       <!-- SLIDE 7: asserts programáticos -->
       <section class="slide">
         <h2>Asserts programáticos: pytest es tu primer eval</h2>
-        <pre><code><span class="c"># evals/test_extractor.py — corre con `pytest evals/`</span>
+        <pre><code><span class="c"># evals/test_extractor.py: corre con `pytest evals/`</span>
 <span class="k">import</span> json, anthropic
 
 client = anthropic.<span class="f">Anthropic</span>()
 
 PROMPT_EXTRACTOR = <span class="s">"Extrae de la factura un JSON con campos total (número) y moneda (código ISO). Responde SOLO el JSON."</span>
-FACTURA_EJEMPLO = <span class="s">"""Factura N° 0042 — Servicios cloud marzo. Total: $1.250,50 COP"""</span>
+FACTURA_EJEMPLO = <span class="s">"""Factura N° 0042: Servicios cloud marzo. Total: $1.250,50 COP"""</span>
 
 <span class="k">def</span> <span class="f">test_extrae_factura</span>():
     resp = client.messages.<span class="f">create</span>(
@@ -687,15 +687,15 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
             <h3>⚠️ Sesgos documentados</h3>
             <ul class="clean">
               <li>
-                <strong>Posición</strong> — en comparaciones A/B, el judge
+                <strong>Posición</strong>: en comparaciones A/B, el judge
                 prefiere la primera opción aunque sean equivalentes
               </li>
               <li>
-                <strong>Verbosidad</strong> — respuestas más largas reciben
+                <strong>Verbosidad</strong>: respuestas más largas reciben
                 mejor score, aunque digan lo mismo (o menos)
               </li>
               <li>
-                <strong>Auto-preferencia</strong> — los modelos puntúan mejor el
+                <strong>Auto-preferencia</strong>: los modelos puntúan mejor el
                 estilo de su propia familia
               </li>
               <li>
@@ -708,11 +708,11 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
             <h3>🛡️ Mitigaciones</h3>
             <ul class="clean">
               <li>
-                <strong>Rúbricas binarias</strong> — "¿cita la fuente? sí/no" en
+                <strong>Rúbricas binarias</strong>: "¿cita la fuente? sí/no" en
                 lugar de escalas vagas
               </li>
               <li>
-                <strong>Pairwise con swap</strong> — evalúa (A,B) y (B,A); solo
+                <strong>Pairwise con swap</strong>: evalúa (A,B) y (B,A); solo
                 cuenta el voto si es consistente en ambos órdenes
               </li>
               <li>
@@ -720,7 +720,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
                 justificar, reduce scores arbitrarios
               </li>
               <li>
-                <strong>Calibra contra humanos</strong> — etiqueta 30 casos a
+                <strong>Calibra contra humanos</strong>: etiqueta 30 casos a
                 mano; si el agreement con el judge es &lt; 80%, arregla la
                 rúbrica antes de confiar en él
               </li>
@@ -734,26 +734,26 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
         <h2>Métricas agregadas y regression suites</h2>
         <ul class="clean">
           <li>
-            <strong>Pass rate</strong> — % de casos que pasan todos sus asserts.
+            <strong>Pass rate</strong>: % de casos que pasan todos sus asserts.
             Tu métrica de cabecera: un solo número por commit.
           </li>
           <li>
-            <strong>Score por categoría</strong> — agrupa por tipo de caso
+            <strong>Score por categoría</strong>: agrupa por tipo de caso
             (extracción, fuera de dominio, multi-idioma). Un 85% global puede
             esconder un 40% en la categoría que más le importa a tu usuario.
           </li>
           <li>
-            <strong>Baseline + delta</strong> — antes de tocar el prompt, corre
+            <strong>Baseline + delta</strong>: antes de tocar el prompt, corre
             la suite y guarda el score. Después del cambio, reporta el delta:
             "pass rate 78% → 86%, fidelidad 4.1 → 4.4".
           </li>
           <li>
-            <strong>Ruido</strong> — los LLMs no son deterministas: corre la
+            <strong>Ruido</strong>: los LLMs no son deterministas. Corre la
             suite 3 veces o define un umbral (un delta de ±2% en 30 casos es
             ruido, no mejora).
           </li>
           <li>
-            <strong>Regresión</strong> — los casos que ya pasaban deben seguir
+            <strong>Regresión</strong>: los casos que ya pasaban deben seguir
             pasando. Un caso que se rompe es más grave que uno nuevo que falla.
           </li>
         </ul>
@@ -800,7 +800,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
         <h2>Herramientas: y cuándo basta pytest</h2>
         <p class="muted" style="margin-bottom: 1.4rem">
           Ya sabes escribir evals a mano y meterlos en CI. La pregunta ahora es
-          cuándo graduarte a una herramienta dedicada — y la respuesta depende
+          cuándo graduarte a una herramienta dedicada, y la respuesta depende
           de cuántos casos manejas, cuántas variantes comparas y cuánta gente
           toca el pipeline.
         </p>
@@ -858,26 +858,26 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>🧑‍💻 Manos al código — 30 min en pareja</h2>
+        <h2>🧑‍💻 Manos al código · 30 min en pareja</h2>
         <p>
           Vamos a construir una mini-suite de evals sobre el RAG que hiciste en
           el reto anterior:
         </p>
         <ul class="clean" style="margin-top: 1rem">
           <li>
-            <strong>Min 0-10</strong> — escribir <code>golden.jsonl</code> con
-            10 casos reales: 7 preguntas típicas, 3 difíciles (fuera de dominio,
+            <strong>Min 0-10</strong>: escribir <code>golden.jsonl</code> con
+            10 casos reales. 7 preguntas típicas, 3 difíciles (fuera de dominio,
             ambigua, multi-documento). Cada caso con criterio de éxito
             explícito.
           </li>
           <li>
-            <strong>Min 10-20</strong> — escribir <code>run_suite.py</code>:
+            <strong>Min 10-20</strong>: escribir <code>run_suite.py</code>, que
             corre el RAG sobre cada caso, aplica 3 asserts programáticos (JSON
             válido, contiene la cita, no se disculpa) + 1 judge de fidelidad con
             la rúbrica de la slide 8.
           </li>
           <li>
-            <strong>Min 20-30</strong> — correr la suite, anotar el
+            <strong>Min 20-30</strong>: correr la suite, anotar el
             <strong>score base</strong>, cambiar una línea del prompt del RAG y
             volver a correr. Leer el delta juntos: ¿mejoró, empeoró o es ruido?
           </li>
@@ -948,7 +948,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
             />
             <div>
               <div class="vc-title">
-                Rapidly Improve AI Products with Evals — Hamel Husain (TDE
+                Rapidly Improve AI Products with Evals · Hamel Husain (TDE
                 Podcast #23)
               </div>
               <div class="vc-meta">The Data Entrepreneurs · Inglés</div>
@@ -969,7 +969,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
               alt=""
             />
             <div>
-              <div class="vc-title">Evals 101 — Doug Guthrie, Braintrust</div>
+              <div class="vc-title">Evals 101 · Doug Guthrie, Braintrust</div>
               <div class="vc-meta">AI Engineer · Inglés</div>
               <div class="vc-why">
                 Workshop hands-on del ciclo completo con Braintrust: datasets,
@@ -989,7 +989,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
             />
             <div>
               <div class="vc-title">
-                Curso evaluación LLM con Promptfoo — episodio 1
+                Curso evaluación LLM con Promptfoo · episodio 1
               </div>
               <div class="vc-meta">La Hora Maker · Español</div>
               <div class="vc-why">
@@ -1003,7 +1003,7 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 07</span
           ><span class="tag green">Entregable: repo + CI verde</span>
@@ -1059,11 +1059,10 @@ Responde SOLO JSON: {"score": &lt;int 1-5&gt;, "razon": "&lt;una frase&gt;"}"""<
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
           <strong
-            >Sesión 09 — Producción I — Observabilidad, Costos y
+            >Sesión 09 · Producción I · Observabilidad, Costos y
             Latencia</strong
-          >
-          — tu suite de evals pasa a ser el guardrail que te deja recortar costo
-          y latencia sin degradar la calidad en silencio.
+          >. Tu suite de evals pasa a ser el guardrail que te deja recortar
+          costo y latencia sin degradar la calidad en silencio.
         </p>
       </section>
     </main>

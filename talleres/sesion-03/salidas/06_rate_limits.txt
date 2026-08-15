@@ -1,0 +1,15 @@
+Tabla de decisión (código HTTP -> ¿reintentar?):
+
+  429 -> SÍ reintentar
+  529 -> SÍ reintentar
+  500 -> SÍ reintentar
+  400 -> NO reintentar
+  404 -> NO reintentar
+
+Throttling proactivo con headers simulados:
+caso A: quedan 20 peticiones
+  peticiones restantes según el servidor: 20
+  -> hay margen de sobra, seguimos sin frenar
+caso B: quedan 3 peticiones
+  peticiones restantes según el servidor: 3
+  -> quedan pocas: frenamos 1s de forma preventiva (throttling proactivo)

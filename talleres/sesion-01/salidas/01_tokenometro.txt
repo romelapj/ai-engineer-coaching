@@ -1,0 +1,16 @@
+Prompt de 184 caracteres
+Proyección: 100,000 peticiones/mes, 300 tokens de salida estimados
+
+modelo                   ctx  tok_in   $/petición      $/mes
+------------------------------------------------------------
+claude-haiku-4-5        200K      63     0.001563        156
+claude-sonnet-4-6         1M      63     0.004689        469
+claude-opus-4-8           1M      85     0.007925        792
+
+Mira la columna de la derecha, no la del medio. Un decimal de
+diferencia por petición son miles de dólares al mes. Y al revés:
+para una tarea simple, pagar el modelo más caro es tirar dinero.
+
+La pregunta correcta no es '¿cuál es el mejor modelo?' sino
+'¿cuál es el más barato que resuelve MI tarea?'. Eso se responde
+midiendo, que es justo lo que vas a hacer en la sesión 02.

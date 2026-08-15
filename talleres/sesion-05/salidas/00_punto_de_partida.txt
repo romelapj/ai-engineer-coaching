@@ -1,0 +1,80 @@
+Corpus: 23 chunks de 5 documentos
+Pipeline: pregunta → top-4 vectorial → umbral 0.40 → generación con citas
+
+========================================================================
+Pregunta: ¿Cuál es el timeout default de la API?
+------------------------------------------------------------------------
+Top-4 por similitud de coseno:
+  [1] sim=0.655 pasa  api-pagos.md § Timeouts y reintentos
+  [2] sim=0.584 pasa  api-pagos.md § Límites de tasa
+  [3] sim=0.559 pasa  api-pagos.md § Autenticación
+  [4] sim=0.465 pasa  changelog-2025.md § Cambios de seguridad 2025
+
+Respuesta del RAG v0.3:
+  El timeout default de la API es de **30 segundos** por petición [1].
+
+========================================================================
+Pregunta: ¿Qué significa el error E-4012?
+------------------------------------------------------------------------
+Top-4 por similitud de coseno:
+  [1] sim=0.738 pasa  errores.md § Error E-4012: fondos insuficientes
+  [2] sim=0.699 pasa  errores.md § Error E-4019: tarjeta vencida
+  [3] sim=0.617 pasa  errores.md § Error E-1001: petición malformada
+  [4] sim=0.584 pasa  errores.md § Error E-5001: timeout del emisor
+
+Respuesta del RAG v0.3:
+  ## Error E-4012: Fondos Insuficientes
+
+El error **E-4012** significa que el banco emisor rechazó la transacción porque la cuenta del pagador no tiene fondos suficientes [1].
+
+Puntos clave a tener en cuenta:
+
+- **No es un error de tu integración**, sino un rechazo directo del banco emisor [1].
+- **No se recomienda reintentar de inmediato**, ya que casi siempre volverá a fallar [1].
+- La práctica recomendada es **mostrarle al usuario un mensaje claro** y ofrecerle la opción de pagar con otro método de pago [1].
+
+========================================================================
+Pregunta: ¿Cómo evito cobros duplicados cuando reintento un pago?
+------------------------------------------------------------------------
+Top-4 por similitud de coseno:
+  [1] sim=0.462 pasa  webhooks.md § Guía de Webhooks
+  [2] sim=0.459 pasa  webhooks.md § Reintentos de entrega
+  [3] sim=0.446 pasa  api-pagos.md § Guía de la API de Pagos
+  [4] sim=0.424 pasa  changelog-2026.md § Changelog 2026
+
+Respuesta del RAG v0.3:
+  No tengo evidencia para responder.
+
+  ↑ Pero la respuesta SÍ está en el corpus:
+     api-pagos.md § Timeouts y reintentos: el header Idempotency-Key.
+     El chunk correcto no apareció ni entre los cuatro candidatos.
+
+========================================================================
+Pregunta: ¿puedo usar sk_test_ en producción?
+------------------------------------------------------------------------
+Top-4 por similitud de coseno:
+  [1] sim=0.424 pasa  errores.md § Catálogo de errores de PagosYa
+  [2] sim=0.421 pasa  changelog-2026.md § Changelog 2026
+  [3] sim=0.389 CORTA errores.md § Error E-4019: tarjeta vencida
+  [4] sim=0.387 CORTA api-pagos.md § Autenticación
+
+Respuesta del RAG v0.3:
+  No tengo evidencia para responder.
+
+  ↑ Pero la respuesta SÍ está en el corpus:
+     api-pagos.md § Autenticación: llaves sk_test_ vs. sk_live_.
+     Peor aún: el chunk correcto SÍ se recuperó, de cuarto, y el
+     umbral lo cortó (0.387 < 0.40) mientras dejaba pasar dos
+     chunks irrelevantes con similitud más alta.
+
+========================================================================
+Diagnóstico honesto:
+  · El umbral y las citas hicieron su trabajo: el modelo no inventó.
+  · El retrieval no hizo el suyo: la evidencia correcta no llegó.
+  · Un 'No tengo evidencia' cuando la evidencia existe es un fallo
+    de recuperación DISFRAZADO de buen comportamiento.
+
+Aquí fallaron dos de cuatro preguntas, pero ese 50% no significa nada:
+yo elegí las cuatro. Con ejemplos escogidos a mano puedes demostrar lo
+que quieras, en cualquier dirección. Eso es una anécdota, no una
+medición. Antes de arreglar nada, hay que medir → script 01.

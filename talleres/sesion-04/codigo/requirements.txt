@@ -1,0 +1,5 @@
+# Dependencias del taller de la sesión 04 (RAG I).
+# Estas son las versiones con las que se probaron los 5 ejemplos y con las que
+# se capturaron las salidas que ves en el taller.
+chromadb==1.5.9      # Vector store embebido: guarda los embeddings en disco.
+anthropic==0.120.2   # SDK oficial de Anthropic, para el paso de generación.

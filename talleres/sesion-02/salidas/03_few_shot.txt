@@ -1,0 +1,11 @@
+Reclamo: 'Vi que me habían cobrado dos veces por el mismo producto'
+
+A) Solo instrucciones
+   → duplicated
+
+B) Instrucciones + 4 ejemplos
+   → duplicated
+
+En un caso fácil las dos aciertan y parece que los ejemplos sobran.
+El día 6 vas a medir las dos versiones contra 10 casos reales, y ahí
+es donde la diferencia deja de ser una opinión.

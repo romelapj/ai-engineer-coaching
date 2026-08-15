@@ -1,9 +1,9 @@
 ```markdown
-# 🏋️ Kata 03 — Transformar una colección con funciones puras
+# 🏋️ Kata 03: Transformar una colección con funciones puras
 
 | Metadato                | Valor                                                                                              |
 | ----------------------- | -------------------------------------------------------------------------------------------------- |
-| **Fase**                | Pre-Fase 0.5 — Fundamentos de Python                                                                |
+| **Fase**                | Pre-Fase 0.5: Fundamentos de Python                                                                |
 | **Sesión en que se asigna** | Sesión N03                                                                                      |
 | **Tiempo estimado**     | 45–60 min                                                                                           |
 | **Skill que entrena**   | Descomposición en funciones puras, type hints, comprehensions, funciones como argumento (predicados), defaults seguros |
@@ -13,13 +13,13 @@
 
 ## Contexto
 
-El dev que viene de un backend imperativo (Java, C#, Go viejo) tiende a caer en uno de dos extremos cuando le toca transformar datos: o escribe un bloque de 60 líneas con tres `for` anidados y cero funciones, o se va al otro lado y modela una clase `ContactoManager` con estado mutable para algo que es, en el fondo, `entrada → salida`. El punto medio Pythonic — el que casi nunca enseñan en otros lenguajes — son **funciones puras pequeñas que se componen**: cada una recibe datos, devuelve datos nuevos, no toca nada de afuera y no muta lo que le pasaste.
+El dev que viene de un backend imperativo (Java, C#, Go viejo) tiende a caer en uno de dos extremos cuando le toca transformar datos: o escribe un bloque de 60 líneas con tres `for` anidados y cero funciones, o se va al otro lado y modela una clase `ContactoManager` con estado mutable para algo que es, en el fondo, `entrada → salida`. El punto medio Pythonic, el que casi nunca enseñan en otros lenguajes, son **funciones puras pequeñas que se componen**: cada una recibe datos, devuelve datos nuevos, no toca nada de afuera y no muta lo que le pasaste.
 
 Esta kata entrena exactamente eso sobre un dominio chico y real: una agenda de contactos. Vas a **filtrar, agrupar, transformar y resumir** una lista de registros con funciones que se prueban trivialmente porque su único contrato es entrada → salida. No hay `self`, no hay variable global, no hay "y de paso actualizo este otro estado". Esa disciplina es la que hace que tu código sea testeable sin montar mocks ni fixtures elaborados.
 
 De paso practicas algo que en muchos lenguajes se siente ceremonioso y en Python es natural: **pasar una función como argumento**. La función `filtrar` recibe un predicado (otra función que devuelve `bool`) y lo aplica. Esa es la semilla de los callbacks, los `key=` de `sorted`, los handlers y los hooks que vas a ver en todo el programa. Si te suena a "funciones de orden superior", sí: es eso, pero sin la palabra grandilocuente.
 
-La trampa típica del que viene de imperativo es **mutar la entrada sin darse cuenta** — hacer `lista.sort()` en vez de `sorted(lista)`, o `contactos.append(...)` dentro de una función que "solo lee". En Python las listas y dicts se pasan por referencia, así que mutar el argumento le explota en la cara a quien te llamó. Esta kata tiene un test de pureza explícito para que eso te duela aquí, en 45 minutos, y no en producción.
+La trampa típica del que viene de imperativo es **mutar la entrada sin darse cuenta**: hacer `lista.sort()` en vez de `sorted(lista)`, o `contactos.append(...)` dentro de una función que "solo lee". En Python las listas y dicts se pasan por referencia, así que mutar el argumento le explota en la cara a quien te llamó. Esta kata tiene un test de pureza explícito para que eso te duela aquí, en 45 minutos, y no en producción.
 
 ## Enunciado
 
@@ -77,7 +77,7 @@ resumen(contactos)
 # {"total": 4, "edad_promedio": 28.8, "ciudades": {"Bogota", "Medellin"}}
 ```
 
-Fíjate en las decisiones que el ejemplo te obliga a tomar: `mayores_de(contactos, 26)` **incluye a Ana (30) y Carla (41)** pero la frontera es `>=`, no `>`; el promedio `(30+25+41+19)/4 = 28.75` se redondea a `28.8` (no truncar, **redondear**); y `ciudades` es un `set`, no una lista — el orden no importa y los duplicados se colapsan solos.
+Fíjate en las decisiones que el ejemplo te obliga a tomar: `mayores_de(contactos, 26)` **incluye a Ana (30) y Carla (41)** pero la frontera es `>=`, no `>`; el promedio `(30+25+41+19)/4 = 28.75` se redondea a `28.8` (no truncar, **redondear**); y `ciudades` es un `set`, no una lista: el orden no importa y los duplicados se colapsan solos.
 
 ## Requisitos
 
@@ -172,7 +172,7 @@ def test_pureza_no_muta_la_entrada():
 
 ## Pistas
 
-<details><summary>Pista 1 — Filtrar y transformar con comprehensions</summary>
+<details><summary>Pista 1: Filtrar y transformar con comprehensions</summary>
 
 Para `mayores_de`, una comprehension con `if` es todo lo que necesitas:
 
@@ -185,7 +185,7 @@ No hace falta `filter()` ni un `for` con `append`. La comprehension ya crea una 
 
 </details>
 
-<details><summary>Pista 2 — Agrupar por ciudad y ordenar dentro de cada grupo</summary>
+<details><summary>Pista 2: Agrupar por ciudad y ordenar dentro de cada grupo</summary>
 
 Para `nombres_por_ciudad`, agrupa primero y ordena al final. `defaultdict(list)` te evita el `if ciudad not in dict` repetitivo:
 
@@ -199,11 +199,11 @@ def nombres_por_ciudad(contactos: list[dict]) -> dict[str, list[str]]:
     return {ciudad: sorted(nombres) for ciudad, nombres in grupos.items()}
 ```
 
-`sorted(nombres)` devuelve una lista **nueva** ordenada — usa eso, no `nombres.sort()`. (Aquí `append` es sobre tu acumulador local `grupos`, no sobre la entrada: eso es perfectamente puro.)
+`sorted(nombres)` devuelve una lista **nueva** ordenada: usa eso, no `nombres.sort()`. (Aquí `append` es sobre tu acumulador local `grupos`, no sobre la entrada: eso es perfectamente puro.)
 
 </details>
 
-<details><summary>Pista 3 — Predicado como argumento y resumen (casi-spoiler)</summary>
+<details><summary>Pista 3: Predicado como argumento y resumen (casi-spoiler)</summary>
 
 `filtrar` es `mayores_de` pero genérica: en vez de comparar contra una edad fija, llama al predicado que te pasaron. Una función es un valor más; la recibes y la invocas con `()`:
 
@@ -214,7 +214,7 @@ def filtrar(contactos: list[dict], predicado: Callable[[dict], bool]) -> list[di
     return [c for c in contactos if predicado(c)]
 ```
 
-Y `resumen` combina las tres operaciones — contar, promediar, deduplicar — sin mutar nada:
+Y `resumen` combina las tres operaciones (contar, promediar, deduplicar) sin mutar nada:
 
 ```python
 def resumen(contactos: list[dict]) -> dict:
@@ -224,19 +224,19 @@ def resumen(contactos: list[dict]) -> dict:
     return {"total": total, "edad_promedio": promedio, "ciudades": ciudades}
 ```
 
-`sum(... ) / total` con `round(_, 1)` te da el float a 1 decimal; el set comprehension `{...}` deduplica las ciudades gratis. (Si quieres blindar contra lista vacía, decide tú: `round(sum/total, 1) if total else 0.0` — pero el golden no lo exige.)
+`sum(... ) / total` con `round(_, 1)` te da el float a 1 decimal; el set comprehension `{...}` deduplica las ciudades gratis. (Si quieres blindar contra lista vacía, decide tú: `round(sum/total, 1) if total else 0.0`, pero el golden no lo exige.)
 
 </details>
 
 ## Bonus
 
-1. **Compón en vez de duplicar**: reescribe `mayores_de` en términos de `filtrar`, pasándole un predicado (`lambda c: c["edad"] >= edad`). Ahora `mayores_de` es un caso particular de `filtrar` — eso es composición de funciones, y demuestra que entendiste que el predicado es solo un argumento más.
+1. **Compón en vez de duplicar**: reescribe `mayores_de` en términos de `filtrar`, pasándole un predicado (`lambda c: c["edad"] >= edad`). Ahora `mayores_de` es un caso particular de `filtrar`: eso es composición de funciones, y demuestra que entendiste que el predicado es solo un argumento más.
 2. **Agrupador genérico**: generaliza `nombres_por_ciudad` a `agrupar_por(contactos, clave, valor)` donde `clave` y `valor` son funciones (`clave=lambda c: c["ciudad"]`, `valor=lambda c: c["nombre"]`). Mismo resultado, pero ahora sirve para agrupar por cualquier campo. Es el patrón `key=` de `sorted`/`groupby` aplicado a tu dominio.
-3. **Property test ligero**: agrega un test que genere listas aleatorias de contactos y verifique invariantes que deben cumplirse siempre — p. ej. `len(mayores_de(xs, 0)) == len(xs)`, o que la suma de los tamaños de los grupos de `nombres_por_ciudad` es igual a `len(xs)`. Verificar propiedades en vez de casos puntuales es una técnica que escala.
+3. **Property test ligero**: agrega un test que genere listas aleatorias de contactos y verifique invariantes que deben cumplirse siempre: p. ej. `len(mayores_de(xs, 0)) == len(xs)`, o que la suma de los tamaños de los grupos de `nombres_por_ciudad` es igual a `len(xs)`. Verificar propiedades en vez de casos puntuales es una técnica que escala.
 
 ## Qué demuestra
 
-Que sabes **descomponer una transformación de datos en funciones puras pequeñas** con type hints, en vez de un bloque monolítico o una clase con estado innecesario. Que transformas con **comprehensions** (de lista, de dict y de set) en lugar de bucles con `append` manual. Que entiendes que una **función es un valor** que se puede pasar como argumento (predicados), la base de todo el estilo de orden superior que verás después. Y, sobre todo, que respetas la **inmutabilidad de la entrada**: no mutas lo que te pasaron, devuelves cosas nuevas — la disciplina que hace que tu código sea testeable, paralelizable y predecible. En una palabra: Python idiomático sin sobre-ingeniería.
+Que sabes **descomponer una transformación de datos en funciones puras pequeñas** con type hints, en vez de un bloque monolítico o una clase con estado innecesario. Que transformas con **comprehensions** (de lista, de dict y de set) en lugar de bucles con `append` manual. Que entiendes que una **función es un valor** que se puede pasar como argumento (predicados), la base de todo el estilo de orden superior que verás después. Y, sobre todo, que respetas la **inmutabilidad de la entrada**: no mutas lo que te pasaron, devuelves cosas nuevas: la disciplina que hace que tu código sea testeable, paralelizable y predecible. En una palabra: Python idiomático sin sobre-ingeniería.
 
 ## Entregable
 
@@ -249,6 +249,6 @@ Que sabes **descomponer una transformación de datos en funciones puras pequeña
 **En la sesión de revisión** (5–10 min):
 
 1. Corre `pytest -q` en vivo y muestra el verde.
-2. El coach va a abrir `solution.py` y preguntar: _"¿alguna de estas funciones puede mutar lo que recibe?"_ — defiende por qué cada una es pura.
+2. El coach va a abrir `solution.py` y preguntar: _"¿alguna de estas funciones puede mutar lo que recibe?"_. Defiende por qué cada una es pura.
 3. Explica en una frase por qué `filtrar` no necesita saber cuál es el criterio, y dónde más has visto ese patrón (callbacks, `key=`, handlers).
 ```

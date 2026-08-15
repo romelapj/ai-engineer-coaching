@@ -1,0 +1,22 @@
+
+Pregunta: "¿Cuál es el timeout default de la API?"
+  PASA   sim=0.655  api-pagos.md § Timeouts y reintentos
+  PASA   sim=0.573  api-pagos.md § Autenticación
+  PASA   sim=0.528  api-pagos.md § Códigos de error
+  PASA   sim=0.434  api-pagos.md § Autenticación
+  → 4 chunk(s) superan el umbral de 0.4
+
+Pregunta: "¿Cómo verifico la firma de un webhook?"
+  PASA   sim=0.585  webhooks.md § Guía de Webhooks
+  PASA   sim=0.566  webhooks.md § Configuración de webhooks
+  PASA   sim=0.540  webhooks.md § Verificación de firma
+  PASA   sim=0.523  webhooks.md § Reintentos de entrega
+  → 4 chunk(s) superan el umbral de 0.4
+
+Pregunta: "¿Cuál es la capital de Francia?"
+  FUERA  sim=0.355  webhooks.md § Reintentos de entrega
+  FUERA  sim=0.351  api-pagos.md § Guía de la API de Pagos
+  FUERA  sim=0.350  api-pagos.md § Autenticación
+  FUERA  sim=0.305  api-pagos.md § Códigos de error
+  → 0 chunk(s) superan el umbral de 0.4
+  → Sin evidencia: el pipeline debería negarse a responder.

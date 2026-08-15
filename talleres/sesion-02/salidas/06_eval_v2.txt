@@ -1,0 +1,21 @@
+Comparando dos versiones del prompt sobre 16 casos.
+
+v1 (solo instrucciones)     : 13/16 = 81%
+v2 (ejemplos + XML + JSON)  : 14/16 = 88%
+
+Diferencia: +1 casos
+La v2 gana. Ese '+' es lo que justifica el cambio en el PR.
+
+Fallos de v1:
+  [11] esperaba fraud → 'duplicated'
+       Aparecen dos cargos: uno mío y otro que no reconozco
+  [12] esperaba other → 'not_received'
+       El pedido llegó incompleto, faltaron dos de los cuatro artículos
+  [16] esperaba not_received → 'fraud'
+       La app dice entregado y firmado, pero yo no firmé nada ni recibí el paquete
+
+Fallos de v2:
+  [12] esperaba other → 'not_received'
+       El pedido llegó incompleto, faltaron dos de los cuatro artículos
+  [15] esperaba other → 'fraud'
+       Me cobraron de más: no dos veces, sino un monto mayor al del producto

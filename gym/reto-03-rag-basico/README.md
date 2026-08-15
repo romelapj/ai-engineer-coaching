@@ -1,4 +1,4 @@
-# 🏋️ Reto 03 — RAG básico con citas
+# 🏋️ Reto 03: RAG básico con citas
 
 | Metadato                            | Valor                                                                                                      |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -14,7 +14,7 @@
 
 RAG (Retrieval-Augmented Generation) es, junto con tool use, el patrón más demandado en posiciones de AI Engineer. Casi cualquier empresa que contrata para este rol tiene el mismo problema de fondo: "tenemos documentación/tickets/contratos y queremos que un LLM responda preguntas sobre eso sin alucinar". La diferencia entre un dev que "ha jugado con LangChain" y un AI engineer contratable es que el segundo puede explicar **por qué** eligió cada pieza del pipeline y **cómo sabe** que funciona.
 
-Este reto te obliga a tomar todas las decisiones que en un tutorial vienen dadas: cómo partir los documentos (chunking), qué modelo de embeddings usar, cuántos chunks recuperar, cómo forzar al modelo a citar sus fuentes, y —lo más importante— cómo medir si el sistema responde bien. La exigencia de **citas verificables** es deliberada: una respuesta correcta sin cita correcta es un fallo, porque en producción la cita es lo que permite a un humano auditar al sistema.
+Este reto te obliga a tomar todas las decisiones que en un tutorial vienen dadas: cómo partir los documentos (chunking), qué modelo de embeddings usar, cuántos chunks recuperar, cómo forzar al modelo a citar sus fuentes, y, lo más importante, cómo medir si el sistema responde bien. La exigencia de **citas verificables** es deliberada: una respuesta correcta sin cita correcta es un fallo, porque en producción la cita es lo que permite a un humano auditar al sistema.
 
 La pregunta de entrevista que dominar esto te permite responder con autoridad es: _"Cuéntame cómo construirías un sistema de Q&A sobre nuestra documentación interna. ¿Cómo decides el tamaño de chunk? ¿Cómo evalúas que funciona antes de ponerlo frente a usuarios?"_. Si tu única respuesta es "usaría LangChain con los defaults", la entrevista se acabó ahí. Después de este reto, tu respuesta incluye números: tu tamaño de chunk, tu top-k, tu accuracy sobre un set de evaluación, y los trade-offs que descartaste.
 
@@ -22,11 +22,11 @@ La pregunta de entrevista que dominar esto te permite responder con autoridad es
 
 Construye un pipeline RAG completo, en Python, sobre **documentación técnica real** que tú elijas. Corpus sugeridos (elige UNO):
 
-- **Docs de FastAPI** (https://github.com/fastapi/fastapi — carpeta `docs/en/docs/`, ~150 archivos markdown).
-- **Docs de la API de Anthropic** (https://docs.anthropic.com — descargables como markdown agregando `.md` a las URLs, o vía el archivo `llms.txt`).
+- **Docs de FastAPI** (https://github.com/fastapi/fastapi, carpeta `docs/en/docs/`, ~150 archivos markdown).
+- **Docs de la API de Anthropic** (https://docs.anthropic.com, descargables como markdown agregando `.md` a las URLs, o vía el archivo `llms.txt`).
 - Otro corpus técnico de tu interés, **siempre que** tenga ≥ 40 documentos/páginas y ≥ 100 KB de texto total. Valídalo con el coach por Slack antes de empezar.
 
-El pipeline tiene cinco etapas, todas escritas por ti (puedes usar librerías para embeddings y vector store, pero NO frameworks que encadenen el pipeline entero por ti — nada de `RetrievalQA.from_chain_type()` ni equivalentes):
+El pipeline tiene cinco etapas, todas escritas por ti (puedes usar librerías para embeddings y vector store, pero NO frameworks que encadenen el pipeline entero por ti: nada de `RetrievalQA.from_chain_type()` ni equivalentes):
 
 1. **Ingesta**: script que descarga/lee el corpus y lo normaliza a una lista de documentos con metadata (`source_id`, `title`, `url_o_ruta`).
 2. **Chunking**: parte cada documento en chunks. La estrategia (tamaño, overlap, respeto de headers/bloques de código) debe estar **justificada por escrito** en una sección `## Decisiones de chunking` de tu propio README, con al menos una alternativa considerada y descartada.
@@ -106,7 +106,7 @@ Además del pipeline, escribes el **set de evaluación**: 15 preguntas con su re
 El harness corre las 15 preguntas contra tu pipeline y evalúa dos cosas por separado: (a) corrección de la respuesta con **LLM-as-judge** comparando contra `expected_answer`, y (b) corrección de la cita con **comparación exacta de conjuntos** contra `expected_sources` (esto NO se lo preguntas a un LLM: es determinista). El coach correrá tu `eval/run_eval.py` tal cual; estructura sugerida:
 
 ```python
-# eval/run_eval.py — estructura del harness (no la solución)
+# eval/run_eval.py: estructura del harness (no la solución)
 import json
 from pipeline import answer_question  # tu función: pregunta -> dict validado
 
@@ -143,19 +143,19 @@ En la sesión de revisión, el coach además hará 2–3 preguntas **fuera de tu
 
 <details><summary>Pista 1 (empujón suave)</summary>
 
-Empieza por el final: escribe primero las 15 preguntas del eval, leyendo el corpus a mano. Esto te obliga a conocer tus documentos y te da un objetivo medible desde el día 1. Un pipeline RAG sin eval es un tutorial; con eval es ingeniería. Para el corpus, los docs de FastAPI ya están en markdown limpio dentro del repo de GitHub — un `git clone --depth 1` y tienes la ingesta casi resuelta.
+Empieza por el final: escribe primero las 15 preguntas del eval, leyendo el corpus a mano. Esto te obliga a conocer tus documentos y te da un objetivo medible desde el día 1. Un pipeline RAG sin eval es un tutorial; con eval es ingeniería. Para el corpus, los docs de FastAPI ya están en markdown limpio dentro del repo de GitHub: un `git clone --depth 1` y tienes la ingesta casi resuelta.
 
 </details>
 
 <details><summary>Pista 2 (dirección concreta)</summary>
 
-Para markdown técnico, el chunking que mejor suele funcionar es **por estructura, no por caracteres**: parte por headers (H2/H3) y solo subdivide si una sección supera ~1.000–1.500 tokens, manteniendo los bloques de código intactos (un chunk que corta un `code fence` por la mitad envenena el retrieval). Guarda el título del header en la metadata del chunk y antepónlo al texto antes de calcular el embedding — el embedding de "Query Parameters > valores por defecto" recupera mucho mejor que el del párrafo suelto. Para el store, Chroma en modo persistente (`PersistentClient`) es lo que menos fricción te dará; para embeddings, `text-embedding-3-small` o un sentence-transformers local tipo `all-MiniLM-L6-v2` están bien a este nivel.
+Para markdown técnico, el chunking que mejor suele funcionar es **por estructura, no por caracteres**: parte por headers (H2/H3) y solo subdivide si una sección supera ~1.000–1.500 tokens, manteniendo los bloques de código intactos (un chunk que corta un `code fence` por la mitad envenena el retrieval). Guarda el título del header en la metadata del chunk y antepónlo al texto antes de calcular el embedding; el embedding de "Query Parameters > valores por defecto" recupera mucho mejor que el del párrafo suelto. Para el store, Chroma en modo persistente (`PersistentClient`) es lo que menos fricción te dará; para embeddings, `text-embedding-3-small` o un sentence-transformers local tipo `all-MiniLM-L6-v2` están bien a este nivel.
 
 </details>
 
 <details><summary>Pista 3 (casi spoiler)</summary>
 
-Para que las citas sean fiables, no le pidas al modelo que "cite sus fuentes" en abstracto: numera los chunks en el prompt (`[1] source: tutorial/query-params.md\n<texto>`) y pídele que devuelva los números que usó; luego TÚ mapeas números → `source_id` en código. Así es imposible una cita fantasma (criterio de las 0 citas inventadas). Para la abstención, añade al prompt una instrucción explícita con el formato exacto del caso "no encontrado" y un umbral en código: si la similaridad del mejor chunk recuperado queda por debajo de un valor que calibras con tus preguntas trampa, ni siquiera llames al LLM y devuelve la abstención directamente. Para elegir k: corre tu eval con k=3 y k=6, mete ambas filas en la tabla de resultados, y quédate con el que gane — esa tabla ES la justificación que pide el requisito 10.
+Para que las citas sean fiables, no le pidas al modelo que "cite sus fuentes" en abstracto: numera los chunks en el prompt (`[1] source: tutorial/query-params.md\n<texto>`) y pídele que devuelva los números que usó; luego TÚ mapeas números → `source_id` en código. Así es imposible una cita fantasma (criterio de las 0 citas inventadas). Para la abstención, añade al prompt una instrucción explícita con el formato exacto del caso "no encontrado" y un umbral en código: si la similaridad del mejor chunk recuperado queda por debajo de un valor que calibras con tus preguntas trampa, ni siquiera llames al LLM y devuelve la abstención directamente. Para elegir k: corre tu eval con k=3 y k=6, mete ambas filas en la tabla de resultados, y quédate con el que gane: esa tabla ES la justificación que pide el requisito 10.
 
 </details>
 
@@ -166,9 +166,9 @@ Para que las citas sean fiables, no le pidas al modelo que "cite sus fuentes" en
 
 ## Qué demuestra en entrevista
 
-- _"Construí un pipeline RAG desde cero, sin frameworks de orquestación, sobre los docs de FastAPI: chunking estructural por headers respetando bloques de código, Chroma local, y generación con citas verificadas en código — el modelo devuelve índices de chunks y yo resuelvo las fuentes, así que las citas fantasma son imposibles por construcción."_
+- _"Construí un pipeline RAG desde cero, sin frameworks de orquestación, sobre los docs de FastAPI: chunking estructural por headers respetando bloques de código, Chroma local, y generación con citas verificadas en código: el modelo devuelve índices de chunks y yo resuelvo las fuentes, así que las citas fantasma son imposibles por construcción."_
 - _"Lo evalué con un harness de 15 preguntas con ground truth: LLM-as-judge para la corrección de la respuesta y matching determinista para las citas. Cerré con 13/15 correctas y bien citadas, y las preguntas trampa con 0 alucinaciones gracias a un umbral de similaridad calibrado."_
-- _"Puedo defender cada decisión con datos: probé k=3 contra k=6 con el mismo eval y elegí con la tabla delante, no por intuición — y sé separar fallos de retrieval de fallos de generación porque medí recall@k del retriever aislado."_
+- _"Puedo defender cada decisión con datos: probé k=3 contra k=6 con el mismo eval y elegí con la tabla delante, no por intuición, y sé separar fallos de retrieval de fallos de generación porque medí recall@k del retriever aislado."_
 
 ## Entregable
 

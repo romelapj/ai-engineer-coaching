@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 07 — Agentes II — Memoria, Multi-agente y MCP | AI Engineer
+      Sesión 07 · Agentes II: Memoria, Multi-agente y MCP | AI Engineer
       Coaching
     </title>
     <style>
@@ -432,9 +432,9 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 2 — Patrones · Semana 8
+          AI Engineer Coaching · Fase 2: Patrones · Semana 8
         </div>
-        <h1>Sesión 07<br />Agentes II — Memoria, Multi-agente y MCP</h1>
+        <h1>Sesión 07<br />Agentes II: Memoria, Multi-agente y MCP</h1>
         <p class="lead">
           De un agente que se olvida de todo a un sistema que recuerda, delega y
           se conecta a cualquier herramienta vía un protocolo estándar.
@@ -443,26 +443,26 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 minutos</h2>
+        <h2>Agenda · 90 minutos</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — reto 05: el agente con tool use que
+            <strong>Repaso</strong>: reto 05, el agente con tool use que
             construiste la semana pasada, ¿qué se le olvidó entre ejecuciones?
             (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — context management y memoria, patrón
+            <strong>Tema central</strong>: context management y memoria, patrón
             orquestador-trabajadores, MCP por dentro (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: agente CLI con
+            <strong>Manos al código</strong>: pair programming, agente CLI con
             memoria persistente en JSON (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — 🏋️ AI Gym 06: agente con
+            <strong>Reto de la semana</strong>: 🏋️ AI Gym 06, agente con
             memoria + subagente especializado (10 min)
           </li>
-          <li><strong>Cierre</strong> — checklist y próxima sesión (5 min)</li>
+          <li><strong>Cierre</strong>: checklist y próxima sesión (5 min)</li>
         </ul>
       </section>
 
@@ -491,7 +491,7 @@
             <span class="tag violet">extensión</span>
             <p class="muted" style="margin-top: 0.5rem">
               Cuándo el patrón orquestador-trabajadores paga el 15× de tokens
-              que cuesta — y cuándo es overengineering.
+              que cuesta, y cuándo es overengineering.
             </p>
           </div>
           <div class="card">
@@ -515,7 +515,7 @@
             <ul class="clean">
               <li>
                 <code>claude-sonnet-4-6</code> tiene ventana de 1M tokens, pero
-                la calidad degrada antes de llenarla: <em>context rot</em> — el
+                la calidad degrada antes de llenarla: <em>context rot</em>, el
                 modelo pierde precisión con contexto saturado de tool results
                 viejos.
               </li>
@@ -534,15 +534,15 @@
             <h3>Las 3 palancas</h3>
             <ul class="clean">
               <li>
-                <strong>Recortar</strong> — descarta tool results viejos que ya
+                <strong>Recortar</strong>: descarta tool results viejos que ya
                 no aportan (context editing).
               </li>
               <li>
-                <strong>Comprimir</strong> — resume lo viejo en un párrafo
+                <strong>Comprimir</strong>: resume lo viejo en un párrafo
                 (compaction). Pierdes detalle, conservas decisiones.
               </li>
               <li>
-                <strong>Externalizar</strong> — saca el estado del contexto a
+                <strong>Externalizar</strong>: saca el estado del contexto a
                 archivos o DB y recupéralo solo cuando haga falta.
               </li>
             </ul>
@@ -750,7 +750,7 @@ hallazgos = <span class="f">subagente</span>(
             <h3>❌ No</h3>
             <ul class="clean">
               <li>
-                Pasos secuenciales con estado compartido — los agentes no
+                Pasos secuenciales con estado compartido: los agentes no
                 comparten contexto y se descoordinan
               </li>
               <li>Workflows latency-sensitive: cada subagente suma llamadas</li>
@@ -771,7 +771,7 @@ hallazgos = <span class="f">subagente</span>(
         <p style="margin-bottom: 1.2rem">
           Memoria y subagentes resuelven <em>cómo piensa</em> tu agente. Falta
           <em>con qué actúa</em>: sus herramientas. Cablear cada agente a cada
-          herramienta a mano no escala — y justo eso es lo que MCP estandariza.
+          herramienta a mano no escala, y justo eso es lo que MCP estandariza.
         </p>
         <p>
           Antes: cada app de IA × cada integración = un adaptador ad-hoc (5 apps
@@ -821,7 +821,7 @@ hallazgos = <span class="f">subagente</span>(
       <!-- SLIDE 12: MCP server en código -->
       <section class="slide">
         <h2>Un MCP server mínimo en Python</h2>
-        <pre><code><span class="c"># server.py — pip install "mcp[cli]"</span>
+        <pre><code><span class="c"># server.py: pip install "mcp[cli]"</span>
 <span class="k">from</span> mcp.server.fastmcp <span class="k">import</span> FastMCP
 
 mcp = <span class="f">FastMCP</span>(<span class="s">"notas-equipo"</span>)
@@ -841,7 +841,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
 <span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
     mcp.<span class="f">run</span>()  <span class="c"># transporte stdio por defecto</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
-          El docstring ES la descripción que ve el modelo — escríbelo como
+          El docstring ES la descripción que ve el modelo: escríbelo como
           instrucción de cuándo usarla. Del lado cliente, el SDK de
           <code>anthropic</code> trae helpers (<code>anthropic[mcp]</code>) para
           convertir tools MCP y pasarlas al tool runner.
@@ -850,7 +850,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>👩‍💻 Manos al código — 30 min en pareja</h2>
+        <h2>👩‍💻 Manos al código · 30 min en pareja</h2>
         <p>
           Construimos juntos un
           <strong>agente CLI con memoria persistente</strong>: un asistente que
@@ -858,21 +858,21 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
         </p>
         <ul class="clean" style="margin-top: 1.2rem">
           <li>
-            <strong>Min 0–10</strong> — tools <code>memory_write</code> y
+            <strong>Min 0–10</strong> · tools <code>memory_write</code> y
             <code>memory_read</code> respaldadas por <code>memoria.json</code>
             (el código de la slide 7 es tu punto de partida)
           </li>
           <li>
-            <strong>Min 10–20</strong> — loop de tool use: mientras
+            <strong>Min 10–20</strong> · loop de tool use: mientras
             <code>stop_reason == "tool_use"</code>, ejecuta la tool y devuelve
             el <code>tool_result</code> con su <code>tool_use_id</code>
           </li>
           <li>
-            <strong>Min 20–25</strong> — la prueba de fuego: cuéntale tu stack,
+            <strong>Min 20–25</strong> · la prueba de fuego: cuéntale tu stack,
             <strong>mata el proceso</strong>, relanza y pregúntale qué recuerda
           </li>
           <li>
-            <strong>Min 25–30</strong> — inyecta la memoria al system prompt en
+            <strong>Min 25–30</strong> · inyecta la memoria al system prompt en
             el arranque y compara: ¿cuándo conviene tool de lectura vs system
             prompt?
           </li>
@@ -957,7 +957,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
             />
             <div>
               <div class="vc-title">
-                Building Agents with Model Context Protocol — Full Workshop
+                Building Agents with Model Context Protocol: Full Workshop
                 (Mahesh Murag, Anthropic)
               </div>
               <div class="vc-meta">AI Engineer · Inglés</div>
@@ -984,7 +984,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
               </div>
               <div class="vc-meta">midudev · Español</div>
               <div class="vc-why">
-                Construye un MCP server desde cero, en español — ideal para
+                Construye un MCP server desde cero, en español: ideal para
                 arrancar el bonus del reto.
               </div>
             </div>
@@ -994,7 +994,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 06</span
           ><span class="tag green">Entregable</span>
@@ -1030,7 +1030,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
           <strong>memoria</strong> externa puede envenenarse, cada
           <strong>subagente</strong> amplía el set de tools, y un
           <strong>MCP server</strong> trae herramientas de terceros. Una sola
-          disciplina las cruza — trata todo lo que entra al contexto como no
+          disciplina las cruza: trata todo lo que entra al contexto como no
           confiable.
         </p>
         <div class="columns">
@@ -1085,7 +1085,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
         <ul class="checklist">
           <li>
             Sé explicar las 3 palancas de context management: recortar,
-            comprimir (compaction), externalizar — y cuándo usar cada una
+            comprimir (compaction), externalizar, y cuándo usar cada una
           </li>
           <li>
             Distingo memoria de corto plazo (context window) de largo plazo
@@ -1111,8 +1111,8 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
-          <strong>Sesión 08 — Evals — Medir Sistemas con LLMs</strong>
-          — ya construiste RAG y agentes; ahora aprendes a medir si de verdad
+          <strong>Sesión 08 · Evals: Medir Sistemas con LLMs</strong>
+          Ya construiste RAG y agentes; ahora aprendes a medir si de verdad
           funcionan, con evals que reemplazan el "a mí me funciona".
         </p>
       </section>

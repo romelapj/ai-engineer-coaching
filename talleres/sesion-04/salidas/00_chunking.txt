@@ -1,0 +1,32 @@
+Se generaron 10 chunks a partir de 2 documentos:
+
+[1] api-pagos.md § Guía de la API de Pagos
+    "# Guía de la API de Pagos Documentación interna de la API de pagos de la empresa..."  (177 caracteres)
+
+[2] api-pagos.md § Autenticación
+    "## Autenticación Todas las peticiones a la API de PagosYa requieren una API key ..."  (474 caracteres)
+
+[3] api-pagos.md § Autenticación
+    "filtra, puedes rotarla desde el dashboard sin downtime: la llave anterior sigue ..."  (134 caracteres)
+
+[4] api-pagos.md § Timeouts y reintentos
+    "## Timeouts y reintentos El timeout default de la API es de 30 segundos por peti..."  (505 caracteres)
+
+[5] api-pagos.md § Códigos de error
+    "## Códigos de error La API usa códigos HTTP estándar. Un `400` indica que la pet..."  (430 caracteres)
+
+[6] api-pagos.md § Códigos de error
+    "los segundos a esperar. Los errores `5xx` son fallas del lado de PagosYa y es se..."  (130 caracteres)
+
+[7] webhooks.md § Guía de Webhooks
+    "# Guía de Webhooks Segunda parte de la base de conocimiento de "PagosYa": cómo f..."  (168 caracteres)
+
+[8] webhooks.md § Configuración de webhooks
+    "## Configuración de webhooks Los webhooks se configuran en el dashboard, en la s..."  (382 caracteres)
+
+[9] webhooks.md § Verificación de firma
+    "## Verificación de firma Cada webhook incluye el header `X-Signature` con un HMA..."  (395 caracteres)
+
+[10] webhooks.md § Reintentos de entrega
+    "## Reintentos de entrega Si tu servidor no responde con un código 2xx en menos d..."  (377 caracteres)
+

@@ -1,8 +1,8 @@
-# 🏋️ Kata 00 — Smoke test de entorno
+# 🏋️ Kata 00: Smoke test de entorno
 
 | Metadato                  | Valor                                                                                                                                  |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Fase**                  | Pre-Fase 0.5 — Fundamentos de Python                                                                                                  |
+| **Fase**                  | Pre-Fase 0.5: Fundamentos de Python                                                                                                  |
 | **Sesión en que se asigna** | Sesión N00                                                                                                                          |
 | **Tiempo estimado**       | 30–45 min                                                                                                                             |
 | **Skill que entrena**     | venv/pip reproducible, verificar contra ground truth con un test, leer la versión del intérprete                                       |
@@ -14,7 +14,7 @@
 
 El fallo más caro de las primeras horas de cualquier programa no es conceptual: es _"no me corrió nada"_, _"me explotó el import"_, _"el venv quedó mezclado con el del sistema"_. Cero líneas de lógica y media tarde perdida en plumbing. Si vienes de otro lenguaje, esto te va a sonar familiar pero distinto: Python no tiene un `node_modules` local por defecto ni un `cargo`/`go.mod` que aísle el proyecto solo. El aislamiento es **explícito y opt-in**: si no creas y activas un entorno virtual, `pip install` te ensucia el Python del sistema (o el del SO, que en macOS/Linux es sagrado y no debes tocar). Entender esto el día 0 te ahorra el clásico _"a mí me funciona"_ que en realidad significa _"tengo tres paquetes globales que olvidé que instalé"_.
 
-Esta kata de-riskea exactamente eso: construyes un repo que **se prueba a sí mismo** que está bien montado. De paso interiorizas el hábito que recorre todo el curso — **verificar contra ground truth en vez de confiar en que "debería funcionar"**. Un test que asevera `suma(2, 3) == 5` no es trivial por ingenuo: es la versión mínima de la disciplina que vas a aplicar en las 7 katas siguientes, donde "parece que corre" no cuenta y solo el verde de `pytest` cuenta.
+Esta kata de-riskea exactamente eso: construyes un repo que **se prueba a sí mismo** que está bien montado. De paso interiorizas el hábito que recorre todo el curso: **verificar contra ground truth en vez de confiar en que "debería funcionar"**. Un test que asevera `suma(2, 3) == 5` no es trivial por ingenuo: es la versión mínima de la disciplina que vas a aplicar en las 7 katas siguientes, donde "parece que corre" no cuenta y solo el verde de `pytest` cuenta.
 
 Es la kata **más corta a propósito**. Su valor no es lo que aprendes de Python (casi nada de lógica), sino garantizar que nadie arrastra un entorno roto a las katas siguientes. Un entorno sano hoy = cero horas perdidas en plumbing mañana.
 
@@ -26,7 +26,7 @@ El test (`test_smoke.py`) debe verificar **tres cosas que SIEMPRE pasan en verde
 
 1. Que `pytest` **importa** sin `ImportError` (el entorno tiene la dependencia instalada).
 2. Que la versión de Python es **3.10 o superior**, leída de `sys.version_info`.
-3. Que una **función propia trivial** (`suma(a, b)` en `solution.py`) devuelve el valor esperado — demostrando que tu código se importa y corre desde el test.
+3. Que una **función propia trivial** (`suma(a, b)` en `solution.py`) devuelve el valor esperado, demostrando que tu código se importa y corre desde el test.
 
 ### Forma del entorno
 
@@ -34,7 +34,7 @@ El repo de esta kata debe tener esta estructura mínima:
 
 ```
 nivelacion-python/
-├── .venv/              # entorno virtual — NO se versiona
+├── .venv/              # entorno virtual: NO se versiona
 ├── requirements.txt    # curado, con pytest pineado
 ├── solution.py         # tu función suma(a, b)
 ├── test_smoke.py       # los 3 tests de humo
@@ -62,7 +62,7 @@ El detalle que importa: tras `source .venv/bin/activate`, `which python` debe ap
 ## Requisitos
 
 1. **Entorno virtual aislado**: el proyecto usa un `.venv/` creado con `python -m venv .venv`. No se instala nada con `sudo pip` ni en el Python del sistema.
-2. **`requirements.txt` curado**: existe, no está vacío y pinea **al menos** `pytest` (formato `pytest==X.Y.Z`, no `pytest` a secas — reproducibilidad significa misma versión en cualquier máquina).
+2. **`requirements.txt` curado**: existe, no está vacío y pinea **al menos** `pytest` (formato `pytest==X.Y.Z`, no `pytest` a secas: reproducibilidad significa misma versión en cualquier máquina).
 3. **`solution.py`** con una función `suma(a, b)` que devuelve `a + b`. Usa type hints (`def suma(a: int, b: int) -> int:`).
 4. **`test_smoke.py`** con **exactamente 3 tests**, uno por cada verificación del enunciado (import de `pytest`, versión del intérprete, función propia).
 5. **Test de versión explícito**: asevera `sys.version_info >= (3, 10)` (comparación de tuplas, no parseo de strings).
@@ -74,11 +74,11 @@ El detalle que importa: tras `source .venv/bin/activate`, `which python` debe ap
 
 - [ ] `python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt` deja el entorno listo **sin errores en una máquina limpia** (probado en un clon nuevo, no en tu máquina con paquetes globales).
 - [ ] `python -c "import pytest"` no lanza `ImportError` y termina con **exit code 0** (verificable con `echo $?`).
-- [ ] `pytest -q` corre **exactamente 3 tests** y termina en `3 passed` — verde total, sin depender de red ni secretos.
+- [ ] `pytest -q` corre **exactamente 3 tests** y termina en `3 passed`: verde total, sin depender de red ni secretos.
 - [ ] El test de versión verifica explícitamente que `sys.version_info >= (3, 10)` es `True` (no `assert True`, no lectura de string).
 - [ ] El test de la función propia **importa `suma` desde `solution.py`** y asevera `suma(2, 3) == 5`.
 - [ ] `requirements.txt` existe, no está vacío y pinea al menos `pytest` con `==`.
-- [ ] El repo **NO versiona** `.venv/` ni `__pycache__/` — verificable con `git status` limpio tras correr los tests (cubierto por `.gitignore`).
+- [ ] El repo **NO versiona** `.venv/` ni `__pycache__/`, verificable con `git status` limpio tras correr los tests (cubierto por `.gitignore`).
 - [ ] El `README.md` documenta el comando de setup copiable tal cual, y al pegarlo en una terminal limpia funciona sin editar nada.
 
 ## Cómo se evalúa
@@ -128,18 +128,18 @@ Si ve `2 passed, 1 error` por un import roto, o `collected 4 items` porque hay u
 
 ## Pistas
 
-<details><summary>Pista 1 — venv: crearlo no basta, hay que activarlo</summary>
+<details><summary>Pista 1 (venv): crearlo no basta, hay que activarlo</summary>
 
 `python -m venv .venv` solo **crea** la carpeta del entorno; no lo activa. Activar es un paso aparte y depende del shell:
 
 - macOS / Linux (bash/zsh): `source .venv/bin/activate`
 - Windows (PowerShell): `.venv\Scripts\Activate.ps1`
 
-Cómo confirmar que quedó activado: tras activar, tu prompt muestra `(.venv)` al inicio, y `which python` (o `where python` en Windows) apunta **dentro** de `.venv/`. Si `which python` te devuelve `/usr/bin/python` o un path de Homebrew, no está activado — y cualquier `pip install` que hagas va al Python global, no al del proyecto. Regla mental: si no ves `(.venv)` en el prompt, asume que estás en el entorno equivocado.
+Cómo confirmar que quedó activado: tras activar, tu prompt muestra `(.venv)` al inicio, y `which python` (o `where python` en Windows) apunta **dentro** de `.venv/`. Si `which python` te devuelve `/usr/bin/python` o un path de Homebrew, no está activado, y cualquier `pip install` que hagas va al Python global, no al del proyecto. Regla mental: si no ves `(.venv)` en el prompt, asume que estás en el entorno equivocado.
 
 </details>
 
-<details><summary>Pista 2 — `sys.version_info` es una tupla comparable, no un string</summary>
+<details><summary>Pista 2: `sys.version_info` es una tupla comparable, no un string</summary>
 
 La tentación de quien viene de otro lenguaje es parsear `sys.version` (que es un string tipo `"3.11.4 (main, ...)"`) con split y casteos. No lo hagas. Python expone `sys.version_info`, que es una tupla con orden natural, así que puedes compararla directo:
 
@@ -152,9 +152,9 @@ La comparación es **lexicográfica por componentes**: `(3, 9) < (3, 10) < (3, 1
 
 </details>
 
-<details><summary>Pista 3 — import de tu propio módulo y `.gitignore` mínimo (casi-spoiler)</summary>
+<details><summary>Pista 3: import de tu propio módulo y `.gitignore` mínimo (casi-spoiler)</summary>
 
-**Import del módulo propio:** como `pytest` se corre desde la raíz del repo (donde viven `solution.py` y `test_smoke.py`), `from solution import suma` funciona sin tocar `PYTHONPATH` ni crear `__init__.py` — pytest agrega la raíz al `sys.path` automáticamente (modo rootdir). Si te falla el import, casi seguro estás corriendo `pytest` desde otra carpeta; corre `pytest -q` parado en la raíz del repo.
+**Import del módulo propio:** como `pytest` se corre desde la raíz del repo (donde viven `solution.py` y `test_smoke.py`), `from solution import suma` funciona sin tocar `PYTHONPATH` ni crear `__init__.py`: pytest agrega la raíz al `sys.path` automáticamente (modo rootdir). Si te falla el import, casi seguro estás corriendo `pytest` desde otra carpeta; corre `pytest -q` parado en la raíz del repo.
 
 **`.gitignore` mínimo** que cubre el criterio de "no versionar entorno ni bytecodes":
 
@@ -181,7 +181,7 @@ Con eso, un clon limpio + las 4 líneas del README dan `3 passed` sin sorpresas.
 
 ## Qué demuestra
 
-Que montas un **entorno reproducible** y escribes un **test que verifica el setup antes de escribir lógica** — el reflejo de "no confío, verifico" aplicado al plumbing. Demuestra que distingues un entorno **sano** de uno que _"parece que funciona"_: sabes que `pip install` sin venv activo es una bomba de tiempo, que reproducibilidad significa **versión pineada** y no "la que tenga a mano", y que `sys.version_info` se compara como tupla en vez de parsear strings a lo bruto. No es fluidez de algoritmos; es la fluidez de plumbing sin la cual ninguna de las otras 7 katas arranca limpia.
+Que montas un **entorno reproducible** y escribes un **test que verifica el setup antes de escribir lógica**: el reflejo de "no confío, verifico" aplicado al plumbing. Demuestra que distingues un entorno **sano** de uno que _"parece que funciona"_: sabes que `pip install` sin venv activo es una bomba de tiempo, que reproducibilidad significa **versión pineada** y no "la que tenga a mano", y que `sys.version_info` se compara como tupla en vez de parsear strings a lo bruto. No es fluidez de algoritmos; es la fluidez de plumbing sin la cual ninguna de las otras 7 katas arranca limpia.
 
 ## Entregable
 

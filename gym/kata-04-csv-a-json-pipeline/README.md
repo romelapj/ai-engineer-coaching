@@ -1,8 +1,8 @@
-# 🏋️ Kata 04 — De CSV a JSON: leer, transformar, escribir
+# 🏋️ Kata 04: De CSV a JSON (leer, transformar, escribir)
 
 | Metadato                | Valor                                                                                                                        |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Fase**                | Pre-Fase 0.5 — Fundamentos de Python                                                                                       |
+| **Fase**                | Pre-Fase 0.5: Fundamentos de Python                                                                                       |
 | **Sesión en que se asigna** | Sesión N04                                                                                                             |
 | **Tiempo estimado**     | 60–75 min                                                                                                                  |
 | **Skill que entrena**   | `pathlib`, `with` / context managers, `csv.DictReader`, `json.dump`, conversión de tipos por columna, manejo de filas malformadas |
@@ -12,11 +12,11 @@
 
 ## Contexto
 
-Leer un archivo, transformarlo y escribir otro es el 80% del trabajo de datos antes de que entre cualquier modelo. Parece trivial — y por eso casi nadie lo hace bien. El dev que viene de otro lenguaje suele caer en los mismos cuatro vicios: concatena rutas con strings (`ruta + "/" + nombre`) en vez de usar `pathlib`; abre archivos sin `with` y los deja colgando; parsea CSV con `linea.split(",")` (que se rompe en cuanto un campo trae una coma dentro de comillas); y deja que una sola fila basura tumbe todo el proceso con una excepción no controlada.
+Leer un archivo, transformarlo y escribir otro es el 80% del trabajo de datos antes de que entre cualquier modelo. Parece trivial, y por eso casi nadie lo hace bien. El dev que viene de otro lenguaje suele caer en los mismos cuatro vicios: concatena rutas con strings (`ruta + "/" + nombre`) en vez de usar `pathlib`; abre archivos sin `with` y los deja colgando; parsea CSV con `linea.split(",")` (que se rompe en cuanto un campo trae una coma dentro de comillas); y deja que una sola fila basura tumbe todo el proceso con una excepción no controlada.
 
-Python tiene en su **biblioteca estándar** la respuesta idiomática a las cuatro cosas: `pathlib.Path` para rutas que funcionan en cualquier SO, `with` para que los archivos se cierren solos pase lo que pase, `csv.DictReader` para parsear CSV de verdad (respeta comillas, te da cada fila como `dict`), y `json.dump` para serializar. La habilidad real no es conocer estos módulos — es combinarlos en un pipeline que **convierte tipos por columna** y que, ante una fila malformada, la **descarta y la cuenta** en vez de reventar. Contar lo que descartas es lo que separa un script de juguete de un pipeline de producción: si no sabes cuántas filas perdiste, no sabes si tu dataset es confiable.
+Python tiene en su **biblioteca estándar** la respuesta idiomática a las cuatro cosas: `pathlib.Path` para rutas que funcionan en cualquier SO, `with` para que los archivos se cierren solos pase lo que pase, `csv.DictReader` para parsear CSV de verdad (respeta comillas, te da cada fila como `dict`), y `json.dump` para serializar. La habilidad real no es conocer estos módulos, es combinarlos en un pipeline que **convierte tipos por columna** y que, ante una fila malformada, la **descarta y la cuenta** en vez de reventar. Contar lo que descartas es lo que separa un script de juguete de un pipeline de producción: si no sabes cuántas filas perdiste, no sabes si tu dataset es confiable.
 
-Esta kata te da un dataset pequeño y variado —un catálogo de productos— y te pide el pipeline completo de punta a punta, con su invariante de conteo. Sin `pandas`: aquí entrenas los cimientos que `pandas` te esconde.
+Esta kata te da un dataset pequeño y variado (un catálogo de productos) y te pide el pipeline completo de punta a punta, con su invariante de conteo. Sin `pandas`: aquí entrenas los cimientos que `pandas` te esconde.
 
 ## Enunciado
 
@@ -36,7 +36,7 @@ Monitor 27",899.00,3
 Por cada fila debes:
 
 1. Convertir `precio` a `float` y `stock` a `int`.
-2. Si una fila tiene un campo no numérico (p. ej. `precio = "abc"`) **o le falta una columna**, descártala y cuéntala — **no revientes**.
+2. Si una fila tiene un campo no numérico (p. ej. `precio = "abc"`) **o le falta una columna**, descártala y cuéntala: **no revientes**.
 3. Enriquecer cada producto válido con un campo derivado `agotado = (stock == 0)`.
 
 Escribe la lista de productos válidos como **JSON indentado** (`indent=2`, `ensure_ascii=False`) en `ruta_json`, y devuelve un `dict` resumen:
@@ -58,7 +58,7 @@ Cable HDMI,12.00
 Monitor 27",899.00,3
 ```
 
-**Salida** — JSON escrito en `ruta_json` (solo las 3 filas válidas, enriquecidas):
+**Salida**, JSON escrito en `ruta_json` (solo las 3 filas válidas, enriquecidas):
 
 ```json
 [
@@ -83,7 +83,7 @@ Monitor 27",899.00,3
 ]
 ```
 
-**Salida** — `dict` devuelto por `procesar`:
+**Salida**, `dict` devuelto por `procesar`:
 
 ```python
 {"validos": 3, "descartados": 2, "total": 5}
@@ -96,7 +96,7 @@ Nota las dos filas que se descartan y por qué: `Cámara web` tiene `precio = "a
 1. **Firma exacta**: `procesar(ruta_csv, ruta_json) -> dict`. Acepta tanto `str` como `pathlib.Path` para ambas rutas (convierte internamente con `Path(...)`).
 2. **Lectura con `pathlib` + `with`**: abre el CSV con `Path(ruta_csv).open(encoding="utf-8", newline="")` dentro de un `with`. Prohibido concatenar rutas con `+` o abrir sin `with`.
 3. **Parsing con `csv.DictReader`**: cada fila llega como `dict`. Prohibido `linea.split(",")`.
-4. **Conversión de tipos por columna**: `precio → float`, `stock → int`. La conversión va en un `try/except` que captura **solo** los errores esperados (`ValueError`, `TypeError`, `KeyError`) — no un `except:` desnudo que se trague todo.
+4. **Conversión de tipos por columna**: `precio → float`, `stock → int`. La conversión va en un `try/except` que captura **solo** los errores esperados (`ValueError`, `TypeError`, `KeyError`), no un `except:` desnudo que se trague todo.
 5. **Filas malformadas**: una fila con un campo no numérico, con una columna faltante (`None`/`KeyError`) o con campo vacío se **descarta y se cuenta**; el run continúa.
 6. **Enriquecimiento**: cada producto válido es un `dict` con `nombre` (str), `precio` (float), `stock` (int) y `agotado` (bool, `= stock == 0`).
 7. **Escritura JSON**: `json.dump(productos, f, indent=2, ensure_ascii=False)` sobre `ruta_json` abierto con `pathlib` + `with` en modo escritura. El archivo resultante debe ser parseable con `json.load`.
@@ -212,7 +212,7 @@ El coach correrá tu `pytest -q` en vivo y luego abrirá tu `solution.py` para r
 
 ## Pistas
 
-<details><summary>Pista 1 — Leer el CSV y recorrer filas como dicts</summary>
+<details><summary>Pista 1: Leer el CSV y recorrer filas como dicts</summary>
 
 `csv.DictReader` usa la primera línea como cabecera y te entrega cada fila siguiente como un `dict` con esas claves. El patrón base:
 
@@ -230,11 +230,11 @@ with ruta.open(encoding="utf-8", newline="") as f:
         ...  # fila == {"nombre": "...", "precio": "...", "stock": "..."}
 ```
 
-El `newline=""` no es opcional: es lo que el módulo `csv` recomienda para que las comillas y los saltos de línea internos se manejen bien en todos los SO. Si a una fila le falta una columna, `DictReader` pone `None` en esa clave — eso te servirá para detectarla en la conversión.
+El `newline=""` no es opcional: es lo que el módulo `csv` recomienda para que las comillas y los saltos de línea internos se manejen bien en todos los SO. Si a una fila le falta una columna, `DictReader` pone `None` en esa clave: eso te servirá para detectarla en la conversión.
 
 </details>
 
-<details><summary>Pista 2 — Convertir tipos sin reventar y contar lo descartado</summary>
+<details><summary>Pista 2: Convertir tipos sin reventar y contar lo descartado</summary>
 
 La conversión y el filtrado son la misma operación: intenta convertir; si falla, esa fila es descartada. Captura **solo** las excepciones que un dato malo produce (`ValueError` por `float("abc")`, `TypeError` por `int(None)`, `KeyError` por una clave ausente):
 
@@ -260,9 +260,9 @@ El `continue` tras contar es lo que hace que el run no se caiga. Nunca uses `exc
 
 </details>
 
-<details><summary>Pista 3 — Escribir el JSON y devolver el resumen (casi-spoiler)</summary>
+<details><summary>Pista 3: Escribir el JSON y devolver el resumen (casi-spoiler)</summary>
 
-`int(None)` lanza `TypeError`, y un campo vacío (`""`) lanza `ValueError` — ambos caen en tu `except`, así que las columnas faltantes y los campos vacíos se descartan solos sin código extra. Para escribir y cerrar el pipeline:
+`int(None)` lanza `TypeError`, y un campo vacío (`""`) lanza `ValueError`: ambos caen en tu `except`, así que las columnas faltantes y los campos vacíos se descartan solos sin código extra. Para escribir y cerrar el pipeline:
 
 ```python
 ruta_salida = Path(ruta_json)
@@ -276,7 +276,7 @@ return {
 }
 ```
 
-`ensure_ascii=False` preserva los acentos (`Cámara`, no `C\u00e1mara`) y `indent=2` lo hace legible. El `total` se calcula como `validos + descartados` **a propósito** — así la invariante se cumple por construcción, sin contar líneas del archivo por separado.
+`ensure_ascii=False` preserva los acentos (`Cámara`, no `C\u00e1mara`) y `indent=2` lo hace legible. El `total` se calcula como `validos + descartados` **a propósito**, así la invariante se cumple por construcción, sin contar líneas del archivo por separado.
 
 </details>
 
@@ -289,7 +289,7 @@ return {
 ## Qué demuestra
 
 - Que combinas `pathlib`, `with`, `csv` y `json` de la stdlib en un pipeline leer-transformar-escribir **idiomático**, sin alcanzar `pandas` para algo que la biblioteca estándar resuelve con cuatro módulos.
-- Que conviertes tipos por columna dentro de un `try/except` **específico** y manejas filas malas **contándolas en vez de reventar** — el reflejo de robustez que distingue código de producción de un script de una sola pasada.
+- Que conviertes tipos por columna dentro de un `try/except` **específico** y manejas filas malas **contándolas en vez de reventar**: el reflejo de robustez que distingue código de producción de un script de una sola pasada.
 - Que razonas con una **invariante** (`validos + descartados == total`) en vez de confiar en que "los números cuadran": el hábito de verificar tu propio procesamiento, que es exactamente el trabajo de datos del mundo real antes de que entre cualquier modelo.
 
 ## Entregable
@@ -304,4 +304,4 @@ return {
 
 1. Corre `pytest -q` en vivo y muestra todo verde (1 min).
 2. Abre `solution.py` y explica por qué tu `except` captura esas excepciones y no otras (2 min).
-3. El coach añadirá una fila malformada nueva al CSV golden (p. ej. un `stock` vacío) y te pedirá predecir el nuevo resumen antes de correr — defiende tu invariante (2 min).
+3. El coach añadirá una fila malformada nueva al CSV golden (p. ej. un `stock` vacío) y te pedirá predecir el nuevo resumen antes de correr: defiende tu invariante (2 min).

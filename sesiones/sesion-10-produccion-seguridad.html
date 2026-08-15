@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 10 — Producción II — Guardrails, Seguridad y Fallbacks | AI
+      Sesión 10 · Producción II · Guardrails, Seguridad y Fallbacks | AI
       Engineer Coaching
     </title>
     <style>
@@ -432,10 +432,10 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 3 — Producción · Semana 11
+          AI Engineer Coaching · Fase 3 · Producción · Semana 11
         </div>
         <h1>
-          Sesión 10<br />Producción II — Guardrails, Seguridad y Fallbacks
+          Sesión 10<br />Producción II: Guardrails, Seguridad y Fallbacks
         </h1>
         <p class="lead">
           Tu app con LLM ya funciona. Hoy aprendes a que sobreviva a usuarios
@@ -445,26 +445,26 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda · 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — observabilidad de la semana pasada: ¿qué
+            <strong>Repaso</strong>: observabilidad de la semana pasada, ¿qué
             loguea ya tu proyecto y qué alertas disparó? (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — amenazas (OWASP LLM Top 10, prompt
+            <strong>Tema central</strong>: amenazas (OWASP LLM Top 10, prompt
             injection) y defensa en profundidad (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: middleware de
+            <strong>Manos al código</strong>: pair programming, middleware de
             guardrails con fallback sobre tu proyecto (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym 08 parte 2: red-team de
+            <strong>Reto de la semana</strong>: AI Gym 08 parte 2, red-team de
             tu propio proyecto (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y antesala del Demo
+            <strong>Cierre</strong>: checklist de salida y antesala del Demo
             Day (5 min)
           </li>
         </ul>
@@ -520,7 +520,7 @@
             <tr>
               <td><span class="tag violet">LLM01</span></td>
               <td>Prompt Injection</td>
-              <td>"Ignora tus instrucciones y…" — directo o vía RAG/tools</td>
+              <td>"Ignora tus instrucciones y…" (directo o vía RAG/tools)</td>
             </tr>
             <tr>
               <td><span class="tag violet">LLM02</span></td>
@@ -585,7 +585,7 @@
         </div>
         <p class="muted" style="margin-top: 1.4rem">
           Regla: todo texto que entra al contexto y no escribiste tú es
-          <strong>input no confiable</strong> — incluyendo lo que devuelven tus
+          <strong>input no confiable</strong>, incluyendo lo que devuelven tus
           propias tools.
         </p>
       </section>
@@ -600,7 +600,7 @@
         </blockquote>
         <p class="muted">
           Es el argumento de Simon Willison: en seguridad clásica, 99% de
-          efectividad es un fracaso — el atacante solo necesita el 1%. Por eso
+          efectividad es un fracaso: el atacante solo necesita el 1%. Por eso
           la pregunta correcta no es "¿cómo evito que engañen al modelo?" sino
           "¿qué puede hacer el sistema cuando lo engañen?". Cuidado con la
           tríada letal: datos privados + contenido no confiable + capacidad de
@@ -614,25 +614,25 @@
         <h2>Defensa en profundidad: 5 capas</h2>
         <ul class="clean">
           <li>
-            <strong>1. Validación de entrada</strong> — longitud máxima,
+            <strong>1. Validación de entrada</strong>: longitud máxima,
             heurísticas de injection, separar datos de instrucciones con
             delimitadores explícitos.
           </li>
           <li>
-            <strong>2. System prompt endurecido</strong> — define qué NO hace el
+            <strong>2. System prompt endurecido</strong>: define qué NO hace el
             bot. Útil, pero es la capa más débil: asume que se rompe.
           </li>
           <li>
-            <strong>3. Permisos mínimos en tools</strong> — read-only por
+            <strong>3. Permisos mínimos en tools</strong>: read-only por
             defecto, allowlist de acciones, scoping por usuario (el agente del
             usuario A no puede leer datos del usuario B).
           </li>
           <li>
-            <strong>4. Validación de salida</strong> — moderación, schema
+            <strong>4. Validación de salida</strong>: moderación, schema
             validation, escape de HTML/SQL antes de renderizar o ejecutar.
           </li>
           <li>
-            <strong>5. Humano en el loop</strong> — toda acción irreversible
+            <strong>5. Humano en el loop</strong>: toda acción irreversible
             (borrar, pagar, enviar email) requiere confirmación explícita.
           </li>
         </ul>
@@ -681,7 +681,7 @@ PATRONES = {
               </li>
               <li>
                 Regex cubre lo obvio; para producción seria suma NER (Presidio u
-                otro) — los nombres propios no tienen patrón.
+                otro): los nombres propios no tienen patrón.
               </li>
               <li>
                 Bonus: logs y traces también son destino de fuga. Redacta antes
@@ -758,7 +758,7 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
         <h2>Rate limiting por usuario: dos presupuestos</h2>
         <p class="muted" style="margin-bottom: 1.2rem">
           Piénsalo como la <strong>capa 0</strong>: el presupuesto de
-          disponibilidad que envuelve a las otras cinco. No filtra contenido —
+          disponibilidad que envuelve a las otras cinco. No filtra contenido:
           acota cuánto puede consumir cada usuario y ataca directo a LLM10
           (Unbounded Consumption).
         </p>
@@ -775,7 +775,7 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
                 para los demás.
               </li>
               <li>
-                Responde <code>429</code> con <code>Retry-After</code> — el
+                Responde <code>429</code> con <code>Retry-After</code>: el
                 cliente sabe cuándo volver.
               </li>
             </ul>
@@ -802,13 +802,13 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
         <p class="muted" style="margin-top: 1.4rem">
           Sin límite por usuario, tu límite es la tarjeta de crédito de la
           empresa. Implementación: Redis con <code>INCR</code> + TTL alcanza
-          para empezar — no necesitas un gateway el día uno.
+          para empezar; no necesitas un gateway el día uno.
         </p>
       </section>
 
       <!-- SLIDE 12: ejercicio en vivo -->
       <section class="slide">
-        <h2>🧑‍💻 Manos al código — 30 min</h2>
+        <h2>🧑‍💻 Manos al código · 30 min</h2>
         <p style="margin-bottom: 1rem">
           Construimos juntos un <strong>middleware de guardrails</strong> sobre
           tu proyecto de la Fase 3 (el mismo que ya instrumentaste la semana
@@ -816,17 +816,17 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
         </p>
         <ul class="clean">
           <li>
-            <strong>Min 0–10</strong> — capa de entrada: función
+            <strong>Min 0–10</strong>. Capa de entrada: función
             <code>redactar()</code> de PII + límite de longitud de input, ambas
             ANTES de la llamada al modelo.
           </li>
           <li>
-            <strong>Min 10–20</strong> — capa de salida:
+            <strong>Min 10–20</strong>. Capa de salida:
             <code>output_seguro()</code>
             con regex + modelo juez. La conectamos al endpoint principal.
           </li>
           <li>
-            <strong>Min 20–30</strong> — resiliencia: cadena de fallback con
+            <strong>Min 20–30</strong>. Resiliencia: cadena de fallback con
             timeout y la probamos en vivo simulando un 529 (apuntando a un
             modelo inexistente).
           </li>
@@ -955,7 +955,7 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
 
       <!-- SLIDE 14: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 08 · Parte 2</span
           ><span class="tag green">Entregable</span>
@@ -1001,7 +1001,7 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
             antes de mostrarlo.
           </li>
           <li>
-            Tengo una cadena de fallback con timeout funcionando — la probé
+            Tengo una cadena de fallback con timeout funcionando y la probé
             simulando una caída en vivo.
           </li>
           <li>
@@ -1015,7 +1015,7 @@ CADENA = [<span class="s">"claude-sonnet-4-6"</span>, <span class="s">"claude-ha
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
-          <strong>Sesión 11 — Hardening Final y Demo Day</strong> — llegas con
+          <strong>Sesión 11 · Hardening Final y Demo Day</strong>. Llegas con
           tu informe de red-team y las mitigaciones aplicadas.
         </p>
       </section>

@@ -1,0 +1,5 @@
+httpx | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+tool_loop | llm_call request_id=req_011Ce4gnq6RtAkQmfZVMzGBT model=claude-sonnet-4-6 stop_reason=end_turn in_tok=26 out_tok=63 latency_s=2.41
+
+Texto de la respuesta (esto sí iría en DEBUG, no en INFO):
+**Tool use** es la capacidad de un modelo de IA para invocar funciones o herramientas externas (como búsquedas web, calculadoras o APIs) para obtener información o ejecutar acciones y así responder mejor a una solicitud.

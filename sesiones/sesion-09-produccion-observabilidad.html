@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 09 — Producción I — Observabilidad, Costos y Latencia | AI Engineer
+      Sesión 09 · Producción I · Observabilidad, Costos y Latencia | AI Engineer
       Coaching
     </title>
     <style>
@@ -432,40 +432,40 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 3 — Producción · Semana 10
+          AI Engineer Coaching · Fase 3 · Producción · Semana 10
         </div>
-        <h1>Sesión 09<br />Producción I — Observabilidad, Costos y Latencia</h1>
+        <h1>Sesión 09<br />Producción I: Observabilidad, Costos y Latencia</h1>
         <p class="lead">
           Ahora mismo no sabes cuánto te cuesta cada request ni por qué el p95
-          se dispara. Hoy instrumentas tu sistema para verlo todo — y usas esos
+          se dispara. Hoy instrumentas tu sistema para verlo todo, y usas esos
           datos para recortar costo y latencia sin sacrificar calidad.
         </p>
       </section>
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda · 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — la suite de evals de la S08 es el
-            guardrail de hoy: nos deja recortar costo y latencia sabiendo que la
+            <strong>Repaso</strong>: la suite de evals de la S08 es el
+            guardrail de hoy. Nos deja recortar costo y latencia sabiendo que la
             calidad no se degrada en silencio (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — observabilidad LLM, métricas que
+            <strong>Tema central</strong>: observabilidad LLM, métricas que
             importan y las palancas por eje: costo (caching, routing, batch) y
             latencia percibida (streaming) (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — instrumentamos juntos un servicio
+            <strong>Manos al código</strong>: instrumentamos juntos un servicio
             real y calculamos su p95 y costo por request (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym reto 08 (parte 1):
+            <strong>Reto de la semana</strong>: AI Gym reto 08 (parte 1),
             Hardening de tu proyecto (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y próxima sesión (5
+            <strong>Cierre</strong>: checklist de salida y próxima sesión (5
             min)
           </li>
         </ul>
@@ -479,7 +479,7 @@
             <span class="icon">🔍</span>
             <h3>Instrumentar</h3>
             <p class="muted">
-              Trazas, tokens, costos y latencia en cada llamada al LLM —
+              Trazas, tokens, costos y latencia en cada llamada al LLM,
               visibles en un dashboard, no en tu imaginación.
             </p>
           </div>
@@ -507,7 +507,7 @@
         <h2>Observabilidad LLM: trazas y spans</h2>
         <blockquote>
           No puedes optimizar lo que no mides. Primero instrumenta, después
-          optimiza — nunca al revés.
+          optimiza, nunca al revés.
         </blockquote>
         <div class="columns">
           <div class="card">
@@ -530,11 +530,11 @@
             <h3>Herramientas</h3>
             <ul class="clean">
               <li>
-                <strong>Langfuse</strong> — open source, self-host o cloud;
+                <strong>Langfuse</strong>: open source, self-host o cloud;
                 decorador <code>@observe</code> en Python
               </li>
               <li>
-                <strong>Datadog LLM Observability</strong> — si tu empresa ya
+                <strong>Datadog LLM Observability</strong>: si tu empresa ya
                 vive en Datadog, se integra al APM existente
               </li>
               <li>Cualquiera sirve; lo que no sirve es no tener ninguna</li>
@@ -596,7 +596,7 @@
       <!-- SLIDE 6: código instrumentación -->
       <section class="slide">
         <h2>Instrumentación mínima viable</h2>
-        <pre><code><span class="c"># Mide latencia y costo en CADA llamada — sin esto, vuelas a ciegas</span>
+        <pre><code><span class="c"># Mide latencia y costo en CADA llamada: sin esto, vuelas a ciegas</span>
 <span class="k">import</span> time, anthropic
 <span class="k">import</span> structlog  <span class="c"># pip install structlog</span>
 
@@ -633,7 +633,7 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
         <h2>Ya mides. Ahora, ¿qué palanca mueves?</h2>
         <blockquote>
           Ya tienes los números en la mesa: costo por request, p95, TTFT.
-          Optimizar no es probar todo — es elegir la palanca que mueve TU
+          Optimizar no es probar todo: es elegir la palanca que mueve TU
           número.
         </blockquote>
         <div class="columns">
@@ -692,7 +692,7 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
                 cambian
               </li>
               <li>
-                Orden: estable primero, volátil al final — un byte distinto
+                Orden: estable primero, volátil al final. Un byte distinto
                 invalida todo lo que sigue
               </li>
             </ul>
@@ -717,7 +717,7 @@ resp = client.messages.<span class="f">create</span>(
     messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: pregunta}],
 )
 
-<span class="c"># Verifica que el cache de verdad pega — esto va a tu dashboard</span>
+<span class="c"># Verifica que el cache de verdad pega: esto va a tu dashboard</span>
 <span class="f">print</span>(resp.usage.cache_creation_input_tokens)  <span class="c"># escrito (1.25x)</span>
 <span class="f">print</span>(resp.usage.cache_read_input_tokens)      <span class="c"># leído (0.1x)</span>
 <span class="f">print</span>(resp.usage.input_tokens)                 <span class="c"># sin cache (1x)</span></code></pre>
@@ -731,7 +731,7 @@ resp = client.messages.<span class="f">create</span>(
       <!-- SLIDE 10: model routing -->
       <section class="slide">
         <h2>Model routing: el modelo correcto por tarea</h2>
-        <pre><code><span class="c"># Haiku 4.5: $1 / $5 por MTok — Sonnet 4.6: $3 / $15 por MTok (3x)</span>
+        <pre><code><span class="c"># Haiku 4.5: $1 / $5 por MTok; Sonnet 4.6: $3 / $15 por MTok (3x)</span>
 MODELOS = {
     <span class="s">"simple"</span>:   <span class="s">"claude-haiku-4-5"</span>,   <span class="c"># clasificar, extraer, formatear, FAQ</span>
     <span class="s">"complejo"</span>: <span class="s">"claude-sonnet-4-6"</span>,  <span class="c"># razonamiento, código, agentes</span>
@@ -746,7 +746,7 @@ MODELOS = {
         <ul class="clean" style="margin-top: 1.2rem">
           <li>
             Si el 70% de tu tráfico es simple, routearlo a Haiku recorta
-            <strong>~2/3 del costo</strong> de ese tráfico — y suele ser más
+            <strong>~2/3 del costo</strong> de ese tráfico, y suele ser más
             rápido
           </li>
           <li>
@@ -755,7 +755,7 @@ MODELOS = {
           </li>
           <li>
             Valida con tus evals que el modelo pequeño no degrada calidad en esa
-            tarea — el routing sin evals es fe, no ingeniería
+            tarea: el routing sin evals es fe, no ingeniería
           </li>
         </ul>
       </section>
@@ -815,7 +815,7 @@ MODELOS = {
 log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=final.usage.output_tokens)</code></pre>
         <ul class="clean" style="margin-top: 1.2rem">
           <li>
-            Streaming <strong>no reduce el costo ni la latencia total</strong> —
+            Streaming <strong>no reduce el costo ni la latencia total</strong>;
             reduce el abandono
           </li>
           <li>
@@ -830,27 +830,27 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>Manos al código — 30 min en pareja</h2>
+        <h2>Manos al código · 30 min en pareja</h2>
         <p>
           Vamos a instrumentar un mini servicio de Q&amp;A (el de la sesión
           pasada sirve) y a tomar decisiones con los datos:
         </p>
         <ul class="clean" style="margin-top: 1rem">
           <li>
-            <strong>1. Wrapper observado (10 min)</strong> — envolver cada
+            <strong>1. Wrapper observado (10 min)</strong>. Envolver cada
             llamada al SDK: latencia, tokens, costo y cache hits en un log JSON
             por request
           </li>
           <li>
-            <strong>2. Generar tráfico (5 min)</strong> — correr 20 requests con
+            <strong>2. Generar tráfico (5 min)</strong>. Correr 20 requests con
             prompts variados (algunos repetidos para ver el cache pegar)
           </li>
           <li>
-            <strong>3. Calcular p50 / p95 y costo total (10 min)</strong> —
-            script de 15 líneas sobre los logs; nada de herramientas todavía
+            <strong>3. Calcular p50 / p95 y costo total (10 min)</strong>.
+            Script de 15 líneas sobre los logs; nada de herramientas todavía
           </li>
           <li>
-            <strong>4. Decidir la palanca (5 min)</strong> — con los números en
+            <strong>4. Decidir la palanca (5 min)</strong>. Con los números en
             la mesa: ¿qué recorta más aquí, caching, routing o streaming?
             Defiende tu respuesta con datos
           </li>
@@ -897,7 +897,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
             />
             <div>
               <div class="vc-title">
-                10 min Walkthrough of Langfuse — Open Source LLM Observability
+                10 min Walkthrough of Langfuse · Open Source LLM Observability
               </div>
               <div class="vc-meta">Langfuse · Inglés</div>
               <div class="vc-why">
@@ -938,7 +938,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
             />
             <div>
               <div class="vc-title">
-                RouteLLM Tutorial — calidad de modelo grande, 80% más barato
+                RouteLLM Tutorial · calidad de modelo grande, 80% más barato
               </div>
               <div class="vc-meta">Matthew Berman · Inglés</div>
               <div class="vc-why">
@@ -973,7 +973,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 08 · Parte 1</span
           ><span class="tag green">Entregable</span>
@@ -983,8 +983,8 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
           <p>
             Instrumenta tu proyecto del programa con trazas en el 100% de las
             llamadas al LLM y monta un dashboard de costo y latencia (Langfuse o
-            Datadog). Luego usa lo de hoy — caching, routing, batch o streaming
-            — para
+            Datadog). Luego usa lo de hoy (caching, routing, batch o streaming)
+            para
             <strong>reducir el p95 o el costo por request en un 30%</strong>, y
             documenta el antes/después con capturas del dashboard y una
             explicación de qué palanca usaste y por qué.
@@ -1027,17 +1027,16 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
           </li>
           <li>
             Mi proyecto ya tiene el wrapper de instrumentación del bloque de
-            código — el reto 08 parte de ahí
+            código: el reto 08 parte de ahí
           </li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
           <strong
-            >Sesión 10 — Producción II — Guardrails, Seguridad y
+            >Sesión 10 · Producción II · Guardrails, Seguridad y
             Fallbacks</strong
-          >
-          — el dashboard que montaste hoy es lo que te avisará cuando un usuario
-          hostil intente quemar tu presupuesto o romper tu app.
+          >. El dashboard que montaste hoy es lo que te avisará cuando un
+          usuario hostil intente quemar tu presupuesto o romper tu app.
         </p>
       </section>
     </main>

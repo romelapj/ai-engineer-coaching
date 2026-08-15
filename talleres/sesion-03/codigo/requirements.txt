@@ -1,0 +1,5 @@
+# Dependencias del taller de la sesión 03 (tool use y robustez).
+# Estas son las versiones con las que se probaron los 9 ejemplos y con las que
+# se capturaron las salidas que ves en el taller.
+anthropic==0.116.0   # SDK oficial: el cliente, los errores tipados y tool use.
+pydantic==2.13.4     # Valida el JSON del modelo contra una forma declarada.

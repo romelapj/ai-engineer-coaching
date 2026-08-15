@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Pre-Fase N01 — Tipos, valores y operadores | AI Engineer Coaching
+      Pre-Fase N01: Tipos, valores y operadores | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -430,7 +430,7 @@
     <main id="deck">
       <section class="slide active">
         <div class="kicker">
-          Pre-Fase 0.5 — Fundamentos de Python · Día 2 de 6
+          Pre-Fase 0.5: Fundamentos de Python · Día 2 de 6
         </div>
         <h1>Tipos, valores<br />y operadores</h1>
         <p class="lead">
@@ -440,7 +440,7 @@
       </section>
 
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
             <strong>Repaso (5 min):</strong> un traceback nuevo, en voz alta, en
@@ -456,8 +456,8 @@
             + un formateador de reportes.
           </li>
           <li>
-            <strong>Kata del día (10 min):</strong> kata-01 — tipos y
-            conversión.
+            <strong>Kata del día (10 min):</strong> kata-01 (tipos y
+            conversión).
           </li>
           <li><strong>Cierre (5 min):</strong> checklist de salida.</li>
         </ul>
@@ -531,7 +531,7 @@ etiqueta = <span class="s">"Total: $"</span> + <span class="f">str</span>(precio
           <code>int()</code>, <code>float()</code>, <code>str()</code>,
           <code>bool()</code> son los conversores. Ojo:
           <code>int('3.0')</code> lanza <code>ValueError</code> (no es un entero
-          literal), pero <code>int(float('3.0'))</code> funciona — el camino
+          literal), pero <code>int(float('3.0'))</code> funciona: el camino
           importa.
         </p>
       </section>
@@ -548,11 +548,11 @@ activos = [<span class="k">True</span>, <span class="k">False</span>, <span clas
 <span class="f">print</span>(<span class="f">sum</span>(activos))                 <span class="c"># 3   (bool suma como int)</span></code></pre>
         <p class="muted" style="margin-top: 1.2rem">
           <code>float</code> no es exacto: nunca compares floats con
-          <code>==</code> a secas — usa <code>math.isclose</code>. Para dinero
+          <code>==</code> a secas. Usa <code>math.isclose</code>. Para dinero
           (como el <code>precio</code> de la fila) usa enteros en centavos o
           <code>decimal.Decimal</code>. Recuerda: <code>/</code> siempre da
           float, <code>//</code> es división entera, <code>%</code> es el resto.
-          Y <code>activos</code> es una lista (colección ordenada — la vemos
+          Y <code>activos</code> es una lista (colección ordenada; la vemos
           mañana en N02).
         </p>
       </section>
@@ -571,7 +571,7 @@ total = 1500000
 x = 42
 <span class="f">print</span>(<span class="s">f"&#123;x=&#125;"</span>)                          <span class="c"># x=42   (debug instantaneo)</span></code></pre>
         <p class="muted" style="margin-top: 1.2rem">
-          Mini-lenguaje tras <code>:</code> — <code>.2f</code> dos decimales,
+          Mini-lenguaje tras <code>:</code>, con <code>.2f</code> dos decimales,
           <code>&gt;8</code> ancho 8 a la derecha, <code>,</code> separador de
           miles, <code>.1%</code> porcentaje, <code>!r</code> usa
           <code>repr()</code>. Y <code>f'&#123;valor=&#125;'</code> imprime
@@ -597,8 +597,8 @@ x = 42
                 <code>set()</code> vacío.
               </li>
               <li>
-                <strong>Truthy:</strong> todo lo demás — cualquier número no
-                cero, cualquier colección no vacía.
+                <strong>Truthy:</strong> todo lo demás (cualquier número no
+                cero, cualquier colección no vacía).
               </li>
             </ul>
           </div>
@@ -627,7 +627,7 @@ x = 42
         <pre><code><span class="k">def</span> <span class="f">resumen</span>(nombres):
     <span class="k">if</span> <span class="k">not</span> nombres:                 <span class="c"># None o lista vacia</span>
         <span class="k">return</span> <span class="s">"sin datos"</span>
-    <span class="k">return</span> <span class="s">", "</span>.<span class="f">join</span>(nombres)  <span class="c"># join es método del SEPARADOR, no de la lista — al revés que en JS (N04)</span>
+    <span class="k">return</span> <span class="s">", "</span>.<span class="f">join</span>(nombres)  <span class="c"># join es método del SEPARADOR, no de la lista, al revés que en JS (N04)</span>
 
 <span class="f">print</span>(<span class="f">resumen</span>([]))                  <span class="c"># 'sin datos'</span>
 <span class="f">print</span>(<span class="f">resumen</span>([<span class="s">"Ana"</span>, <span class="s">"Beto"</span>]))     <span class="c"># 'Ana, Beto'</span>
@@ -755,7 +755,7 @@ anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span
       </section>
 
       <section class="slide">
-        <h2>Manos al código — Conversor + formateador (35 min)</h2>
+        <h2>Manos al código: Conversor + formateador (35 min)</h2>
         <div class="columns">
           <div class="card">
             <span class="icon">🌡️</span>
@@ -771,8 +771,8 @@ anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span
             <p class="muted">
               Dada una lista de <code>(producto, precio, cantidad)</code>,
               imprime una tabla alineada con f-strings: precios a 2 decimales,
-              totales con separador de miles. Te damos el <code>for</code> hecho
-              — <code>for producto, precio, cantidad in filas:</code> (llega en
+              totales con separador de miles. Te damos el <code>for</code> hecho:
+              <code>for producto, precio, cantidad in filas:</code> (llega en
               N03); tú escribes solo la f-string de cada fila.
             </p>
           </div>
@@ -812,7 +812,7 @@ anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span
             />
             <div>
               <div class="vc-title">
-                String Formatting — Advanced Operations (f-strings)
+                String Formatting: Advanced Operations (f-strings)
               </div>
               <div class="vc-meta">Corey Schafer · Inglés</div>
               <div class="vc-why">
@@ -859,11 +859,11 @@ anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span
       </section>
 
       <section class="slide">
-        <h2>Kata del día — kata-01</h2>
+        <h2>Kata del día: kata-01</h2>
         <div class="card">
           <span class="tag violet">Kata kata-01</span>
           <span class="tag green">Entregable</span>
-          <h3>Tipos y conversión — conversor de unidades</h3>
+          <h3>Tipos y conversión: conversor de unidades</h3>
           <p class="muted">
             Construye un conversor de unidades con conversiones explícitas desde
             <code>str</code> o <code>float</code>. Demuestra que distingues
@@ -909,7 +909,7 @@ anio, mes, dia = <span class="s">"2026-06-19"</span>.<span class="f">split</span
         </ul>
         <p class="muted" style="margin-top: 1.2rem">
           Próxima sesión:
-          <strong>Estructuras de datos — listas, tuplas, dicts y sets</strong>
+          <strong>Estructuras de datos · listas, tuplas, dicts y sets</strong>
         </p>
       </section>
     </main>

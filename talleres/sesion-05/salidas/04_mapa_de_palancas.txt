@@ -1,0 +1,81 @@
+
+========================================================================
+A) QUERY REWRITING · síntoma: la pregunta no habla como el doc
+========================================================================
+
+  original : ¿cómo firmo mis webhooks?
+  reescrita: firmar webhooks seguridad HMAC SHA256 verificar autenticidad solicitudes HTTP firma digital secreto compartido validar payload cabecera header
+  con la original    → chunk correcto en pos 8
+  con la reescrita   → chunk correcto en pos 1
+
+  Cuándo NO usarlo: cuesta una llamada (~300-500 ms) en CADA query y
+  su salida no es determinista, así que la misma query puede medir
+  distinto entre corridas. Mídelo varias veces antes de decidir.
+
+========================================================================
+B) METADATA FILTERING · síntoma: compiten docs que no aplican
+========================================================================
+
+  Query: ¿Qué versión mínima de TLS exige la API?
+
+  Sin filtro (top-3):
+    - changelog-2025.md § Cambios de seguridad 2025
+    - changelog-2026.md § Cambios de seguridad 2026
+    - changelog-2025.md § Changelog 2025
+
+  Con where={'anio': 2026} (pre-filter, top-3):
+    - changelog-2026.md § Cambios de seguridad 2026
+    - api-pagos.md § Autenticación
+    - api-pagos.md § Límites de tasa
+
+  El mismo mecanismo ES tu control de acceso: con
+  where={'tenant': 'acme'} el RAG no puede recuperar lo prohibido,
+  ni siquiera por accidente. Eso no se delega a un prompt.
+
+  Self-query (el LLM deduce el filtro solo):
+    query natural    : ¿Qué cambió en la plataforma durante 2025?
+    filtros extraídos: {'anio': 2025, 'tipo': 'changelog'}
+    query semántica  : cambios en la plataforma
+    resultado (top-3):
+      - changelog-2025.md § Changelog 2025
+      - changelog-2025.md § Nuevos endpoints 2025
+      - changelog-2025.md § Cambios de seguridad 2025
+
+========================================================================
+C) CONTEXTUAL RETRIEVAL · síntoma: el chunk solo no se entiende
+========================================================================
+
+  Un chunk suelto pierde su marco: 'la tasa subió 3%' no dice de qué
+  ni de cuándo. Antes de indexar, el modelo escribe 2-3 frases que lo
+  sitúan en su documento, y se embebe contexto + chunk.
+
+  (Demo omitida: son 23 llamadas al modelo. Córrelo con
+   --contextual para medirlo de verdad.)
+  El paper de Anthropic reporta −35% de fallos en el top-20, y
+  −67% combinándolo con BM25 y reranking.
+
+========================================================================
+D) PARENT-DOCUMENT · síntoma: encuentras bien, respondes corto
+========================================================================
+
+  El conflicto: chunks chicos hacen matching fino, chunks grandes
+  dan mejor contexto al generador. El patrón resuelve las dos: busca
+  con el hijo, entrega el padre. El retrieval no cambia; cambia LO
+  QUE LE PASAS al modelo.
+
+  Query: ¿Qué es el header X-Signature?
+  1) HIJO que hizo match : webhooks.md § Verificación de firma
+     397 caracteres, preciso para buscar
+  2) PADRE que se entrega: webhooks.md completo
+     1272 caracteres, la sección correcta MÁS la
+     configuración y los reintentos, que el modelo puede necesitar
+
+  Trade-off explícito: más tokens al generador = más costo y más
+  latencia en cada respuesta. Combina bien con contextual retrieval:
+  uno mejora ENCONTRAR, el otro mejora RESPONDER.
+
+========================================================================
+La regla que ordena las cuatro: ninguna se activa 'porque sí'.
+Primero el síntoma en tu golden set, después la palanca, y siempre
+volver a medir. Una técnica sofisticada que no sube tu recall es
+complejidad que vas a mantener para siempre a cambio de nada.

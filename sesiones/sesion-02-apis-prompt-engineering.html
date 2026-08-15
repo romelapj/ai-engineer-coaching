@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 02 — APIs de LLM y Prompt Engineering | AI Engineer Coaching
+      Sesión 02: APIs de LLM y Prompt Engineering | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -431,7 +431,7 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 1 — Fundamentos · Semana 3
+          AI Engineer Coaching · Fase 1 · Fundamentos · Semana 3
         </div>
         <h1>Sesión 02<br />APIs de LLM y Prompt Engineering</h1>
         <p class="lead">
@@ -442,25 +442,25 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — entregable de la semana 2: tu primer
+            <strong>Repaso</strong>, entregable de la semana 2: tu primer
             script con el SDK funcionando, dudas de setup y tokens (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — anatomía de la Messages API +
+            <strong>Tema central</strong>: anatomía de la Messages API +
             técnicas de prompting: few-shot, chain-of-thought, XML tags (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: clasificador de
+            <strong>Manos al código</strong>, pair programming: clasificador de
             tickets iterado contra un mini golden set (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym reto 01: extractor
+            <strong>Reto de la semana</strong>, AI Gym reto 01: extractor
             estructurado, criterios de evaluación (10 min)
           </li>
-          <li><strong>Cierre</strong> — checklist de salida y dudas (5 min)</li>
+          <li><strong>Cierre</strong>: checklist de salida y dudas (5 min)</li>
         </ul>
       </section>
 
@@ -520,22 +520,22 @@ resp = client.messages.<span class="f">create</span>(
           <div>
             <ul class="clean">
               <li>
-                <strong><code>system</code></strong> — rol, reglas y tono. Va
+                <strong><code>system</code></strong>: rol, reglas y tono. Va
                 aparte de los mensajes y pesa más que una instrucción suelta en
                 el turno de user.
               </li>
               <li>
-                <strong><code>messages</code></strong> — turnos alternados
+                <strong><code>messages</code></strong>: turnos alternados
                 <code>user</code> / <code>assistant</code>. Siempre termina en
                 <code>user</code>.
               </li>
               <li>
-                <strong><code>max_tokens</code></strong> — techo de salida, no
+                <strong><code>max_tokens</code></strong>: techo de salida, no
                 objetivo. Si la respuesta lo alcanza, se corta: revisa
                 <code>stop_reason == "max_tokens"</code>.
               </li>
               <li>
-                <strong><code>temperature</code></strong> — 0 para
+                <strong><code>temperature</code></strong>: 0 para
                 extracción/clasificación reproducible; sube solo para tareas
                 creativas.
               </li>
@@ -554,7 +554,7 @@ resp = client.messages.<span class="f">create</span>(
         <h2>Multi-turn: la API no tiene memoria</h2>
         <p class="muted" style="margin-bottom: 1rem">
           Cada request es independiente. El "chat" existe porque <em>tú</em>
-          reenvías el historial completo en cada llamada — y pagas los tokens de
+          reenvías el historial completo en cada llamada, y pagas los tokens de
           todo el historial cada vez.
         </p>
         <pre><code>history = [
@@ -610,7 +610,7 @@ final = stream.<span class="f">get_final_message</span>()</code></pre>
               <ul class="clean">
                 <li>Es un pipeline batch: nadie mira la pantalla.</li>
                 <li>
-                  Necesitas la respuesta completa para parsear JSON — streaming
+                  Necesitas la respuesta completa para parsear JSON: streaming
                   no acelera el tiempo total, solo el primer token.
                 </li>
               </ul>
@@ -619,8 +619,8 @@ final = stream.<span class="f">get_final_message</span>()</code></pre>
         </div>
         <p class="muted" style="margin-top: 1.2rem">
           Nuestro clasificador de reclamos es justo ese caso: corre en batch y
-          necesitamos el JSON completo para medir el score contra el golden set
-          — ahí streaming solo suma complejidad.
+          necesitamos el JSON completo para medir el score contra el golden set:
+          ahí streaming solo suma complejidad.
         </p>
       </section>
 
@@ -720,8 +720,8 @@ clase: fraude
         <h2>Estructura con XML tags</h2>
         <p class="muted" style="margin-bottom: 1rem">
           Los tags separan instrucciones, datos y formato. Eliminan la
-          ambigüedad de "¿esto es parte del texto a procesar o una instrucción?"
-          — clave cuando el input viene de usuarios.
+          ambigüedad de "¿esto es parte del texto a procesar o una instrucción?",
+          clave cuando el input viene de usuarios.
         </p>
         <pre><code>texto_del_usuario = <span class="s">"me cobraron dos veces y nadie responde"</span>
 
@@ -746,7 +746,7 @@ resp = client.messages.<span class="f">create</span>(
 )</code></pre>
         <p class="muted" style="margin-top: 1rem">
           Bonus de seguridad: si el usuario escribe "ignora tus instrucciones",
-          queda encerrado dentro de <code>&lt;reclamo&gt;</code> — es dato, no
+          queda encerrado dentro de <code>&lt;reclamo&gt;</code>: es dato, no
           instrucción.
         </p>
       </section>
@@ -768,7 +768,7 @@ resp = client.messages.<span class="f">create</span>(
               </li>
               <li>
                 Cada versión lleva su score contra el golden set en el
-                changelog: <em>v2_few_shot — 17/20</em>.
+                changelog: <em>v2_few_shot · 17/20</em>.
               </li>
               <li>
                 El código referencia una versión explícita. Rollback de prompt =
@@ -836,7 +836,7 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
                 Contexto irrelevante: pegar el documento entero "por si acaso"
               </td>
               <td>
-                Peor precisión, más costo y latencia — el modelo se distrae con
+                Peor precisión, más costo y latencia: el modelo se distrae con
                 lo que no importa
               </td>
               <td>
@@ -879,14 +879,14 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
           El ciclo profesional: 1) escribe 10–20 casos con su salida esperada,
           2) corre el prompt contra todos, 3) cambia <strong>una</strong> cosa,
           4) vuelve a correr. Si el score no sube, revierte. Es el mismo loop de
-          TDD que ya conoces — el prompt es la implementación y el golden set
+          TDD que ya conoces: el prompt es la implementación y el golden set
           son los tests.
         </p>
       </section>
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>Manos al código — 30 min en pareja</h2>
+        <h2>Manos al código: 30 min en pareja</h2>
         <div class="card">
           <span class="tag">Pair programming</span>
           <span class="tag violet">Clasificador de reclamos</span>
@@ -899,15 +899,15 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
               clase esperada en <code>golden.json</code>.
             </li>
             <li>
-              <strong>Min 5–12:</strong> v1 baseline — instrucción simple + loop
+              <strong>Min 5–12:</strong> v1 baseline, instrucción simple + loop
               que corre los 10 casos e imprime el score.
             </li>
             <li>
-              <strong>Min 12–20:</strong> v2 — XML tags + schema de salida
+              <strong>Min 12–20:</strong> v2, XML tags + schema de salida
               explícito. Medimos de nuevo.
             </li>
             <li>
-              <strong>Min 20–28:</strong> v3 — few-shot con los 2 casos que v2
+              <strong>Min 20–28:</strong> v3, few-shot con los 2 casos que v2
               falló. Medimos de nuevo.
             </li>
             <li>
@@ -941,7 +941,7 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
               <div class="vc-meta">Anthropic · Inglés</div>
               <div class="vc-why">
                 Workshop oficial: construye un prompt de producción con XML tags
-                y few-shot — mapea 1:1 con esta sesión. Empieza aquí.
+                y few-shot: mapea 1:1 con esta sesión. Empieza aquí.
               </div>
             </div>
           </a>
@@ -1001,7 +1001,7 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
               </div>
               <div class="vc-meta">IBM Technology · Inglés</div>
               <div class="vc-why">
-                Cuándo usar y combinar cada técnica de prompting — otra
+                Cuándo usar y combinar cada técnica de prompting: otra
                 perspectiva además de la de Anthropic.
               </div>
             </div>
@@ -1032,14 +1032,14 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
       </section>
 
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 01</span
           ><span class="tag green">Entregable: viernes</span>
           <h3 style="margin-top: 0.8rem">Extractor estructurado</h3>
           <p>
             Extraer JSON validado de <strong>20 textos libres</strong> usando
-            solo prompting — sin tool use, sin structured outputs (eso es la
+            solo prompting: sin tool use, sin structured outputs (eso es la
             sesión 03). Tu score se mide contra un golden set: cada campo
             correcto suma, un JSON que no parsea da 0 en ese caso.
           </p>
@@ -1090,8 +1090,8 @@ prompt = template.<span class="f">format</span>(texto=texto_del_usuario)</code><
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
-          <strong>Sesión 03 — Tool Use, Structured Outputs y Robustez</strong>
-          — dejamos de pedir JSON por favor y empezamos a garantizarlo.
+          <strong>Sesión 03 · Tool Use, Structured Outputs y Robustez</strong>.
+          Dejamos de pedir JSON por favor y empezamos a garantizarlo.
         </p>
       </section>
     </main>

@@ -1,0 +1,9 @@
+intento 0: llamando al modelo (tool_choice forzado)...
+  el modelo mandó este input: {'order_id': 'ORD-8841', 'status': 'Enviada', 'next_action': 'Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente.'}
+  ✓ validación OK
+
+=== RESUMEN VALIDADO (objeto Python real, no texto suelto) ===
+order_id='ORD-8841' status='Enviada' next_action='Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente.'
+order_id  : ORD-8841
+status    : Enviada
+next_action: Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente.

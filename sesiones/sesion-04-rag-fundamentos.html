@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 04 — RAG I — Embeddings, Chunking y Vector Stores | AI Engineer
+      Sesión 04 · RAG I: Embeddings, Chunking y Vector Stores | AI Engineer
       Coaching
     </title>
     <style>
@@ -432,38 +432,38 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 2 — Patrones · Semana 5
+          AI Engineer Coaching · Fase 2: Patrones · Semana 5
         </div>
-        <h1>Sesión 04<br />RAG I — Embeddings, Chunking y Vector Stores</h1>
+        <h1>Sesión 04<br />RAG I: Embeddings, Chunking y Vector Stores</h1>
         <p class="lead">
           Tu chatbot inventa respuestas sobre tus propios docs y no puedes
           auditar de dónde salieron. Hoy construyes el pipeline RAG que las
-          obliga a citar su fuente — o a admitir que no la tienen.
+          obliga a citar su fuente, o a admitir que no la tienen.
         </p>
       </section>
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda · 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — entregable de la semana pasada: qué
+            <strong>Repaso</strong>: entregable de la semana pasada, qué
             funcionó, qué se rompió y por qué (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — el pipeline RAG: cuándo usarlo,
+            <strong>Tema central</strong>: el pipeline RAG, cuándo usarlo,
             chunking, embeddings, vector stores y retrieval (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: mini-RAG con
-            citas sobre docs reales, de cero a query funcionando (30 min)
+            <strong>Manos al código</strong>: pair programming de un mini-RAG
+            con citas sobre docs reales, de cero a query funcionando (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym reto 03: enunciado,
+            <strong>Reto de la semana</strong>: AI Gym reto 03, con enunciado,
             entregable y cómo se evalúa (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y próxima sesión (5
+            <strong>Cierre</strong>: checklist de salida y próxima sesión (5
             min)
           </li>
         </ul>
@@ -487,7 +487,7 @@
             <h3>Chunking con criterio</h3>
             <p class="muted">
               Elegir estrategia de chunking según el documento y el caso de uso
-              — y poder defender la decisión con argumentos, no con fe.
+              y poder defender la decisión con argumentos, no con fe.
             </p>
           </div>
           <div class="card">
@@ -541,7 +541,7 @@
               <td>
                 Pagas el corpus entero en cada query (150K tokens/pregunta vs
                 ~2K con RAG); prompt caching (reusar el prefijo repetido del
-                prompt entre llamadas, con descuento — lo verás en la sesión 09)
+                prompt entre llamadas, con descuento; lo verás en la sesión 09)
                 lo mitiga, no lo elimina
               </td>
               <td><span class="tag">Parciales</span></td>
@@ -585,7 +585,10 @@
         </ul>
         <p class="muted" style="margin-top: 1.2rem">
           Ese es el mapa de hoy: de aquí en adelante recorremos cada caja del
-          diagrama, una por una — arrancando por el chunking.
+          diagrama, una por una, arrancando por el chunking. Cada etapa tiene su
+          ejemplo ejecutable en <code>ejemplos/</code>:
+          <code>00_chunking.py</code> → <code>01_ingesta.py</code> →
+          <code>02_retrieval.py</code> → <code>03_rag_completo.py</code>.
         </p>
       </section>
 
@@ -620,7 +623,7 @@
               <li>Headers de Markdown, secciones HTML, funciones en código</li>
               <li>Respeta los límites que el autor ya definió</li>
               <li>Guarda metadata: título, sección, URL</li>
-              <li>La mejor opción para documentación técnica — el reto</li>
+              <li>La mejor opción para documentación técnica: el reto</li>
             </ul>
           </div>
         </div>
@@ -641,7 +644,12 @@
     palabras = texto.<span class="f">split</span>()
     tam = <span class="f">int</span>(max_tokens / 1.3)
     paso = <span class="f">max</span>(1, tam - <span class="f">int</span>(overlap / 1.3))
-    <span class="k">return</span> [<span class="s">" "</span>.<span class="f">join</span>(palabras[i : i + tam]) <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(0, <span class="f">len</span>(palabras), paso)] <span class="k">or</span> [texto]
+    partes = []
+    <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(0, <span class="f">len</span>(palabras), paso):
+        partes.<span class="f">append</span>(<span class="s">" "</span>.<span class="f">join</span>(palabras[i : i + tam]))
+        <span class="k">if</span> i + tam >= <span class="f">len</span>(palabras):
+            <span class="k">break</span>  <span class="c"># sin esto, queda una "cola" diminuta ya contenida en el chunk anterior → ruido en retrieval</span>
+    <span class="k">return</span> partes <span class="k">or</span> [texto]
 
 <span class="k">def</span> <span class="f">chunk_markdown</span>(texto: str, fuente: str) -> list[dict]:
     <span class="c"># (?=...) = lookahead: re.split corta ANTES de cada '## '/'### ' sin borrar el header del chunk.</span>
@@ -660,7 +668,8 @@
         <p class="muted" style="margin-top: 1rem">
           La metadata (<code>fuente</code>, <code>seccion</code>) no es
           decoración: es lo que convierte una respuesta en una respuesta
-          <em>citable</em>.
+          <em>citable</em>. Ejecutable con comentarios línea por línea:
+          <code>ejemplos/00_chunking.py</code>.
         </p>
       </section>
 
@@ -729,7 +738,7 @@
             <span class="icon">🐘</span>
             <h3>pgvector</h3>
             <ul class="clean">
-              <li>Extensión de Postgres — cero infra nueva</li>
+              <li>Extensión de Postgres: cero infra nueva</li>
               <li>
                 Vectores junto a tus datos transaccionales, con SQL y joins
               </li>
@@ -746,9 +755,7 @@
               <li>Embebido en tu proceso Python, persiste a disco</li>
               <li>De <code>pip install</code> a query en 5 minutos</li>
               <li>No pensado para alta concurrencia ni escala grande</li>
-              <li>
-                <strong>Ideal para prototipos</strong> — y para el reto 03
-              </li>
+              <li><strong>Ideal para prototipos</strong>, y para el reto 03</li>
             </ul>
           </div>
           <div class="card">
@@ -766,12 +773,65 @@
         </div>
         <p class="muted" style="margin-top: 1.2rem">
           No empieces eligiendo base de datos. Empieza con Chroma, mide, y migra
-          cuando los números te lo pidan — la interfaz es la misma idea en
-          todos: upsert de vectores + query por similitud.
+          cuando los números te lo pidan; la interfaz es la misma idea en todos:
+          upsert de vectores + query por similitud.
         </p>
       </section>
 
-      <!-- SLIDE 10: top-k y umbrales -->
+      <!-- SLIDE 10: ingesta en código -->
+      <section class="slide">
+        <h2>Ingesta: chunks → embeddings → vector store</h2>
+        <div class="columns">
+          <div>
+            <ul class="clean">
+              <li>
+                <code>collection.add</code> hace las dos cosas de una vez:
+                calcula el embedding de cada texto y lo guarda junto a su
+                metadata.
+              </li>
+              <li>
+                <code>PersistentClient</code> escribe a disco
+                (<code>./rag_db</code>): la ingesta se paga <em>una vez</em>;
+                las queries de las próximas slides solo abren esa carpeta.
+              </li>
+              <li>
+                <strong>Detalle que rompe pipelines:</strong> la métrica de
+                distancia se fija al crear la colección. El default de Chroma es
+                L2; la cuenta <code>similitud = 1 - distancia</code> solo vale
+                con <code>cosine</code>.
+              </li>
+              <li>
+                La metadata del chunking (<code>fuente</code>,
+                <code>seccion</code>) viaja junto al vector: por eso después
+                podremos citar [n].
+              </li>
+            </ul>
+          </div>
+          <pre><code><span class="c"># pip install chromadb. Ejecutable: ejemplos/01_ingesta.py</span>
+<span class="k">import</span> chromadb
+
+chroma = chromadb.<span class="f">PersistentClient</span>(<span class="s">"./rag_db"</span>)
+collection = chroma.<span class="f">get_or_create_collection</span>(
+    <span class="s">"docs"</span>,
+    <span class="c"># Con coseno: distancia = 1 - similitud. El default (L2) NO.</span>
+    metadata={<span class="s">"hnsw:space"</span>: <span class="s">"cosine"</span>},
+)
+
+<span class="c"># 'chunks' viene de chunk_markdown(), de la slide de chunking.</span>
+collection.<span class="f">add</span>(
+    ids=[<span class="s">f"chunk-{i}"</span> <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(<span class="f">len</span>(chunks))],
+    documents=[c[<span class="s">"texto"</span>] <span class="k">for</span> c <span class="k">in</span> chunks],
+    metadatas=[
+        {<span class="s">"fuente"</span>: c[<span class="s">"fuente"</span>], <span class="s">"seccion"</span>: c[<span class="s">"seccion"</span>]}
+        <span class="k">for</span> c <span class="k">in</span> chunks
+    ],
+)
+<span class="c"># Sin embedding_function explícita, Chroma usa su modelo local</span>
+<span class="c"># (MiniLM, gratis). En producción: voyage / text-embedding-3-small.</span></code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 11: top-k y umbrales -->
       <section class="slide">
         <h2>Top-k retrieval y umbrales de similitud</h2>
         <div class="columns">
@@ -783,13 +843,16 @@
               </li>
               <li>
                 <strong>Umbral de similitud:</strong> si el mejor chunk queda
-                por debajo, la respuesta correcta es "no tengo evidencia" — no
+                por debajo, la respuesta correcta es "no tengo evidencia", no
                 inventar.
               </li>
               <li>
                 El umbral
                 <em>depende del modelo de embeddings y de tu corpus</em>:
                 calíbralo con 10–20 preguntas reales, no lo copies de un blog.
+                Ejemplo real: con embeddings comerciales ~0.7 funciona; con el
+                MiniLM local de <code>ejemplos/</code> las preguntas legítimas
+                puntúan 0.42–0.66 y las irrelevantes ≤0.36 → umbral 0.40.
               </li>
               <li>
                 Síntoma clásico: respuestas "plausibles pero falsas" = el
@@ -797,14 +860,17 @@
               </li>
             </ul>
           </div>
-          <pre><code><span class="c"># pip install chromadb</span>
+          <pre><code><span class="c"># Ejecutable: ejemplos/02_retrieval.py (solo retrieval) y 03_rag_completo.py</span>
 <span class="k">import</span> chromadb
 <span class="k">import</span> anthropic
 
+<span class="c"># Abre la base que dejó la ingesta. La métrica cosine debe coincidir.</span>
 chroma = chromadb.<span class="f">PersistentClient</span>(<span class="s">"./rag_db"</span>)
-collection = chroma.<span class="f">get_or_create_collection</span>(<span class="s">"docs"</span>)
+collection = chroma.<span class="f">get_or_create_collection</span>(
+    <span class="s">"docs"</span>, metadata={<span class="s">"hnsw:space"</span>: <span class="s">"cosine"</span>}
+)
 client = anthropic.<span class="f">Anthropic</span>()  <span class="c"># el mismo cliente para todo el archivo</span>
-UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 preguntas reales.</span>
+UMBRAL = 0.7  <span class="c"># embeddings comerciales. Con MiniLM local: 0.40 (calibrado).</span>
 
 <span class="k">def</span> <span class="f">responder</span>(pregunta: str) -> str:
     results = collection.<span class="f">query</span>(
@@ -824,11 +890,11 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
     ]
     <span class="k">if</span> <span class="k">not</span> hits:
         <span class="k">return</span> <span class="s">"No tengo evidencia para responder."</span>
-    <span class="c"># ...la generación con citas continúa en la slide 11, dentro de responder().</span></code></pre>
+    <span class="c"># ...la generación con citas continúa en la siguiente slide, dentro de responder().</span></code></pre>
         </div>
       </section>
 
-      <!-- SLIDE 11: generación con citas -->
+      <!-- SLIDE 12: generación con citas -->
       <section class="slide">
         <h2>Generación con citas obligatorias</h2>
         <pre><code>    <span class="c"># ...seguimos dentro de responder(pregunta), ya con los hits del retrieval:</span>
@@ -856,33 +922,51 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
     <span class="k">return</span> resp.content[0].text  <span class="c"># "...el timeout default es 30s [2]."</span>
 
 <span class="f">print</span>(<span class="f">responder</span>(<span class="s">"¿Cuál es el timeout default?"</span>))  <span class="c"># o input("> ")</span></code></pre>
+        <p class="muted" style="margin-top: 1rem">
+          Pipeline completo ejecutable:
+          <code>ejemplos/03_rag_completo.py</code>. Salida real:
+          <em
+            >"El timeout default de la API es de 30 segundos por petición
+            [1]."</em
+          >
+          Y ante una pregunta fuera del corpus:
+          <em>"No tengo evidencia para responder."</em> (sin gastar tokens: ni
+          se llama al modelo).
+        </p>
       </section>
 
-      <!-- SLIDE 12: ejercicio en vivo -->
+      <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>🛠️ Manos al código — 30 min juntos</h2>
+        <h2>🛠️ Manos al código · 30 min juntos</h2>
         <p>
-          Construimos un mini-RAG sobre la documentación en Markdown de este
-          mismo programa de coaching, en un solo archivo Python:
+          Recorremos la carpeta <code>ejemplos/</code>: un archivo por etapa del
+          pipeline, sobre una base de conocimiento en Markdown
+          (<code>docs/</code>). Cada uno corre solo y está comentado línea por
+          línea:
         </p>
         <ul class="clean">
           <li>
-            <strong>Min 0–8:</strong> ingesta + chunking por headers de Markdown
-            con metadata (<code>fuente</code>, <code>seccion</code>) — la
-            función de la slide 7.
+            <strong>Min 0–8 · <code>00_chunking.py</code>:</strong> chunking por
+            headers de Markdown con metadata (<code>fuente</code>,
+            <code>seccion</code>): la función de la slide de chunking, viendo
+            los chunks que produce.
           </li>
           <li>
-            <strong>Min 8–15:</strong> embeddings e indexación en Chroma
-            persistente (<code>chromadb.PersistentClient</code>).
+            <strong>Min 8–15 · <code>01_ingesta.py</code>:</strong> embeddings e
+            indexación en Chroma persistente (<code>PersistentClient</code> +
+            métrica <code>cosine</code>). Se corre una vez; deja la base en
+            <code>rag_db/</code>.
           </li>
           <li>
-            <strong>Min 15–22:</strong> loop de consulta: top-4, umbral de
-            similitud, y el caso "sin evidencia".
+            <strong>Min 15–22 · <code>02_retrieval.py</code>:</strong> top-4 con
+            las similitudes a la vista: qué PASA y qué queda FUERA del umbral, y
+            el caso "sin evidencia".
           </li>
           <li>
-            <strong>Min 22–30:</strong> generación con
-            <code>claude-sonnet-4-6</code> y citas [n]; probamos 3 preguntas —
-            una respondible, una ambigua y una que NO está en los docs.
+            <strong>Min 22–30 · <code>03_rag_completo.py</code>:</strong>
+            generación con <code>claude-sonnet-4-6</code> y citas [n]; probamos
+            3 preguntas: una respondible, una que cruza documentos y una que NO
+            está en los docs.
           </li>
         </ul>
         <p class="muted" style="margin-top: 1rem">
@@ -891,7 +975,7 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
         </p>
       </section>
 
-      <!-- SLIDE 13: videos -->
+      <!-- SLIDE 14: videos -->
       <section class="slide">
         <h2>📺 Videos para reforzar</h2>
         <div class="video-grid">
@@ -967,7 +1051,7 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
             />
             <div>
               <div class="vc-title">
-                Learn RAG From Scratch — Python AI Tutorial
+                Learn RAG From Scratch: Python AI Tutorial
               </div>
               <div class="vc-meta">freeCodeCamp.org · Inglés · 2.5 h</div>
               <div class="vc-why">
@@ -987,7 +1071,7 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
             />
             <div>
               <div class="vc-title">
-                ¿Qué es RAG? — Clase con código y ejemplo
+                ¿Qué es RAG? Clase con código y ejemplo
               </div>
               <div class="vc-meta">EvoAcademy · Español</div>
               <div class="vc-why">
@@ -998,9 +1082,9 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
         </div>
       </section>
 
-      <!-- SLIDE 14: reto de la semana -->
+      <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 03</span
           ><span class="tag green">Entregable: repo + demo</span>
@@ -1017,7 +1101,7 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
               respuesta en el corpus.
             </li>
             <li>
-              Cada cita debe apuntar a un chunk real recuperado — citas
+              Cada cita debe apuntar a un chunk real recuperado; las citas
               inventadas descalifican la pregunta.
             </li>
             <li>
@@ -1032,7 +1116,7 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
         </div>
       </section>
 
-      <!-- SLIDE 15: checklist de salida -->
+      <!-- SLIDE 16: checklist de salida -->
       <section class="slide">
         <h2>Checklist de salida</h2>
         <ul class="checklist">
@@ -1041,7 +1125,7 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
             indexación vs en cada query
           </li>
           <li>
-            Sé cuándo elegir RAG, fine-tuning o long context — y por qué
+            Sé cuándo elegir RAG, fine-tuning o long context, y por qué
             fine-tuning no inyecta conocimiento
           </li>
           <li>
@@ -1064,10 +1148,10 @@ UMBRAL = 0.7  <span class="c"># punto de partida; calíbralo con tus 10-20 pregu
         <p class="muted" style="margin-top: 1.5rem">
           Próxima sesión:
           <strong
-            >Sesión 05 — RAG II — Retrieval Híbrido, Reranking y
+            >Sesión 05 · RAG II: Retrieval Híbrido, Reranking y
             Evaluación</strong
           >
-          — tu RAG ya responde; ahora vas a medir por qué a veces recupera mal y
+          Tu RAG ya responde; ahora vas a medir por qué a veces recupera mal y
           subir el recall con números, no con corazonadas.
         </p>
       </section>

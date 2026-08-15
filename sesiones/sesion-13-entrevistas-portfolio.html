@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 13 — Mock Interviews, Portfolio y Estrategia | AI Engineer Coaching
+      Sesión 13: Mock Interviews, Portfolio y Estrategia | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -431,7 +431,7 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 4 — Entrevistas · Semanas 15-16
+          AI Engineer Coaching · Fase 4: Entrevistas · Semanas 15-16
         </div>
         <h1>Sesión 13<br />Mock Interviews, Portfolio y Estrategia</h1>
         <p class="lead">
@@ -442,27 +442,27 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — tus 2 system designs de la S12 con timer:
-            defiende uno en voz alta en 5 min, incluida la estimación de costos
+            <strong>Repaso</strong>: tus 2 system designs de la S12 con timer.
+            Defiende uno en voz alta en 5 min, incluida la estimación de costos
             que sacaste con <code>estimador.py</code> (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — anatomía de la entrevista 2026,
+            <strong>Tema central</strong>: anatomía de la entrevista 2026,
             STAR, CV de evidencia y estrategia de aplicación (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — construimos un STAR Grader:
+            <strong>Manos al código</strong>: construimos un STAR Grader,
             Claude como entrevistador que puntúa tus respuestas (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — mock grabada + CV final + lista
+            <strong>Reto de la semana</strong>: mock grabada + CV final + lista
             de 15 empresas (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — qué pasa después del programa (5 min)
+            <strong>Cierre</strong>: qué pasa después del programa (5 min)
           </li>
         </ul>
       </section>
@@ -520,7 +520,7 @@
               <td>60 min</td>
               <td>
                 Código en vivo con un LLM API: manejo de errores, streaming,
-                structured outputs — no LeetCode puro
+                structured outputs; no LeetCode puro
               </td>
             </tr>
             <tr>
@@ -552,20 +552,20 @@
 
       <!-- SLIDE 5: behavioral con STAR -->
       <section class="slide">
-        <h2>Behavioral con STAR — tus proyectos son tu munición</h2>
+        <h2>Behavioral con STAR: tus proyectos son tu munición</h2>
         <div class="columns">
           <div class="card">
             <h3>La fórmula con tiempos (~2 min)</h3>
             <ul class="clean">
-              <li><strong>S</strong>ituación — contexto en 15 s, sin novela</li>
+              <li><strong>S</strong>ituación: contexto en 15 s, sin novela</li>
               <li>
-                <strong>T</strong>area — tu responsabilidad concreta, 10 s
+                <strong>T</strong>area: tu responsabilidad concreta, 10 s
               </li>
               <li>
-                <strong>A</strong>cción — qué hiciste TÚ (no "el equipo"),
+                <strong>A</strong>cción: qué hiciste TÚ (no "el equipo"),
                 decisiones y trade-offs, 60 s
               </li>
-              <li><strong>R</strong>esultado — métrica + aprendizaje, 20 s</li>
+              <li><strong>R</strong>esultado: métrica + aprendizaje, 20 s</li>
             </ul>
           </div>
           <div class="card">
@@ -590,23 +590,23 @@
 
       <!-- SLIDE 6: walk me through your project -->
       <section class="slide">
-        <h2>"Walk me through your project" — la respuesta de 3 minutos</h2>
+        <h2>"Walk me through your project": la respuesta de 3 minutos</h2>
         <ul class="clean">
           <li>
-            <strong>0:00-0:30 · El problema</strong> — quién lo sufría y por qué
+            <strong>0:00-0:30 · El problema</strong>: quién lo sufría y por qué
             importaba. Sin mencionar tecnología todavía.
           </li>
           <li>
-            <strong>0:30-2:00 · Decisiones y trade-offs</strong> — 2 o 3
-            decisiones clave: "elegí X sobre Y porque Z". Aquí vive el 80% de la
+            <strong>0:30-2:00 · Decisiones y trade-offs</strong>: 2 o 3
+            decisiones clave, "elegí X sobre Y porque Z". Aquí vive el 80% de la
             señal de seniority.
           </li>
           <li>
-            <strong>2:00-2:45 · Resultados</strong> — métricas de evals,
+            <strong>2:00-2:45 · Resultados</strong>: métricas de evals,
             latencia, costo por request. Números, no adjetivos.
           </li>
           <li>
-            <strong>2:45-3:00 · Qué harías distinto</strong> — una autocrítica
+            <strong>2:45-3:00 · Qué harías distinto</strong>: una autocrítica
             honesta cierra mejor que un "quedó perfecto".
           </li>
         </ul>
@@ -688,7 +688,7 @@
               </li>
             </ul>
           </div>
-          <pre><code><span class="c"># evals/run_evals.py — la tabla del README sale de aquí</span>
+          <pre><code><span class="c"># evals/run_evals.py: la tabla del README sale de aquí</span>
 <span class="k">import</span> anthropic
 
 client = anthropic.<span class="f">Anthropic</span>()
@@ -713,7 +713,7 @@ client = anthropic.<span class="f">Anthropic</span>()
       <section class="slide">
         <h2>🛠️ En vivo: construimos un STAR Grader (30 min)</h2>
         <p>
-          Un CLI en Python que te entrevista y te puntúa — lo usarás toda la
+          Un CLI en Python que te entrevista y te puntúa. Lo usarás toda la
           semana para entrenar antes de la mock grabada.
         </p>
         <div class="columns-3" style="margin-top: 1rem">
@@ -743,7 +743,7 @@ client = anthropic.<span class="f">Anthropic</span>()
           </div>
         </div>
         <p class="muted" style="margin-top: 1.2rem">
-          Es la misma técnica LLM-as-judge de la sesión 9 — aplicada a ti.
+          Es la misma técnica LLM-as-judge de la sesión 9, aplicada a ti.
         </p>
       </section>
 
@@ -755,7 +755,7 @@ client = anthropic.<span class="f">Anthropic</span>()
             <h3>🚀 Startup (seed - serie B)</h3>
             <ul class="clean">
               <li>Proceso: 2-3 semanas, a veces una sola semana</li>
-              <li>Scope amplio: tú eres "el de AI" — del prompt al deploy</li>
+              <li>Scope amplio: tú eres "el de AI", del prompt al deploy</li>
               <li>
                 Comp: base menor + equity (lotería: valórala en 0 al negociar)
               </li>
@@ -827,7 +827,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         <ul class="clean">
           <li>
             <strong>No des tu número primero.</strong> "¿Cuál es el rango
-            presupuestado para el rol?" — en muchos países están obligados a
+            presupuestado para el rol?" En muchos países están obligados a
             decirlo.
           </li>
           <li>
@@ -892,7 +892,7 @@ client = anthropic.<span class="f">Anthropic</span>()
             />
             <div>
               <div class="vc-title">
-                ML System Design Mock Interview — Classify Toxic Tweets
+                ML System Design Mock Interview: Classify Toxic Tweets
               </div>
               <div class="vc-meta">Exponent · Inglés</div>
               <div class="vc-why">
@@ -917,8 +917,8 @@ client = anthropic.<span class="f">Anthropic</span>()
               </div>
               <div class="vc-meta">Geekific · Inglés</div>
               <div class="vc-why">
-                STAR explicado para developers con ejemplos de proyectos propios
-                — directo al bloque behavioral.
+                STAR explicado para developers con ejemplos de proyectos propios,
+                directo al bloque behavioral.
               </div>
             </div>
           </a>
@@ -969,24 +969,24 @@ client = anthropic.<span class="f">Anthropic</span>()
 
       <!-- SLIDE 14: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 13</span
           ><span class="tag green">Entregable final</span>
           <h3 style="margin-top: 0.8rem">Listo para aplicar</h3>
           <p>
-            <strong>1. Mock interview completa grabada</strong> — coding +
+            <strong>1. Mock interview completa grabada</strong>: coding +
             system design + behavioral con un compañero del programa.
             Autoevalúate con las rúbricas del coach y anota tus 3 gaps
             principales.
           </p>
           <p style="margin-top: 0.6rem">
-            <strong>2. CV final</strong> — una página, cada bullet con métrica.
+            <strong>2. CV final</strong>: una página, cada bullet con métrica.
             Pásalo por el filtro: si un bullet no responde "¿y qué lograste?",
             se reescribe o se va.
           </p>
           <p style="margin-top: 0.6rem">
-            <strong>3. Lista de 15 empresas objetivo</strong> — 8 startups + 7
+            <strong>3. Lista de 15 empresas objetivo</strong>: 8 startups + 7
             corporates, con posible referido identificado por empresa y plan de
             aplicación semanal (10 applies + 5 mensajes + 1 mock).
           </p>
@@ -1010,7 +1010,7 @@ client = anthropic.<span class="f">Anthropic</span>()
             <h3>Qué mides ahora</h3>
             <p class="muted">
               Faithfulness, recall@k, latencia p95 y costo por request. Pasaste
-              de "funciona" a un delta con metodología — la evidencia que nadie
+              de "funciona" a un delta con metodología: la evidencia que nadie
               discute.
             </p>
           </div>
@@ -1026,7 +1026,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         </div>
         <blockquote style="margin-top: 1.4rem">
           Empezaste sabiendo programar. Sales sabiendo decidir, medir y
-          demostrar — que es exactamente lo que separa a un AI engineer del
+          demostrar, que es exactamente lo que separa a un AI engineer del
           resto.
         </blockquote>
       </section>
@@ -1053,12 +1053,12 @@ client = anthropic.<span class="f">Anthropic</span>()
             semanal de aplicación
           </li>
           <li>
-            Sé qué responder cuando pregunten expectativa salarial — y qué no
+            Sé qué responder cuando pregunten expectativa salarial, y qué no
             responder
           </li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
-          Próxima sesión: <strong>no hay — ¡fin del programa!</strong> Desde la
+          Próxima sesión: <strong>no hay, ¡fin del programa!</strong> Desde la
           semana 17 ejecutas tu plan: 10 applies + 5 mensajes + 1 mock por
           semana. Nos vemos en los office hours para destrabar procesos. A
           aplicar. 🚀

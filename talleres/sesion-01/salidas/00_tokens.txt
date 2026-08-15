@@ -1,0 +1,17 @@
+Contando tokens con claude-sonnet-4-6
+
+tipo        caracteres   tokens  car/token
+------------------------------------------
+español            127       39       3.26
+JSON               119       60       1.98
+código             162       64       2.53
+
+El español corriente es el más eficiente. El JSON y el código gastan
+más tokens por carácter: las llaves, comillas y sangrías son tokens
+que pagas igual que las palabras. Por eso pedirle JSON al modelo
+cuesta más de lo que parece, y por eso importa el formato que eliges.
+
+--- por qué se equivoca contando letras ---
+'strawberry' son 9 token(s) para el modelo,
+pero 10 caracteres para ti. Él no ve las 3 erres:
+ve un puñado de números que representan pedazos de la palabra.

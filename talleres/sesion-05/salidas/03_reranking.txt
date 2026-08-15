@@ -1,0 +1,42 @@
+Golden set: 15 queries
+El reranker hace 1 llamada al modelo por query: esto tarda.
+
+variante                   recall@1 recall@5 recall@10    MRR
+-------------------------------------------------------------
+vectorial (sesión 04)          0.60     0.87      0.93   0.71
+solo BM25                      0.73     0.93      0.93   0.81
+híbrido RRF                    0.73     0.87      1.00   0.82
+híbrido + rerank               1.00     1.00      1.00   1.00
+
+=== Latencia media por query (el precio de cada variante) ===
+  vectorial (sesión 04)        0.09 s
+  solo BM25                    0.00 s
+  híbrido RRF                  0.13 s
+  híbrido + rerank             1.60 s
+
+=== Queries que el híbrido tenía mal ordenadas y el reranker subió ===
+  pos 2 → 1   ¿Qué versión mínima de TLS exige la API actualmente?
+  pos 7 → 1   ¿Cómo evito cobros duplicados cuando reintento un pago?
+  pos 2 → 1   ¿Cómo verifico que un webhook realmente viene de PagosYa?
+  pos 8 → 1   ¿cómo firmo mis webhooks?
+
+Fíjate en '¿cómo firmo mis webhooks?': BM25 solo la perdía del todo,
+el híbrido la trajo de octava y el reranker la puso de primera. Ninguno
+de los dos pasos habría bastado solo. Ese es el argumento del pipeline
+completo, y salió de los datos, no de la teoría.
+
+Cómo se lee este resultado sin engañarse:
+  · El reranker sube recall@1 porque el trabajo pesado ya estaba
+    hecho: el híbrido le entregó 10 candidatos con el correcto
+    adentro. Reordenar 10 buenos candidatos es un problema fácil.
+  · En un corpus de 23 chunks los 10 candidatos son casi medio
+    corpus, así que el número se ve espectacular. En un corpus real
+    de cientos de miles, el reranker sigue viendo solo 10-50: por
+    eso el recall del paso anterior es el que manda.
+  · Y el reranker es la variante más lenta de la tabla. Si tu
+    producto tolera ese tiempo, entra; si no, el híbrido solo ya
+    resolvía el fallo grave (no perder la evidencia).
+
+Con esto cerramos el núcleo: diagnosticamos, medimos, aplicamos dos
+palancas y volvimos a medir. Lo demás son palancas para OTROS
+síntomas → script 04.

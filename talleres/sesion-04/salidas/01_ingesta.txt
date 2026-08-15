@@ -1,0 +1,3 @@
+1) Chunking: 10 chunks generados
+2) Embeddings + guardado: 10 chunks en la colección 'docs'
+3) Base persistida en: /Users/romel/Documents/repositorios/Otros/ai-engineer-coaching/talleres/sesion-04/codigo/rag_db

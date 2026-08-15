@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sesión 11 — Hardening Final y Demo Day | AI Engineer Coaching</title>
+    <title>Sesión 11 · Hardening Final y Demo Day | AI Engineer Coaching</title>
     <style>
       :root {
         --bg: #0b0f1a;
@@ -429,7 +429,7 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 3 — Producción · Semana 12
+          AI Engineer Coaching · Fase 3 · Producción · Semana 12
         </div>
         <h1>Sesión 11<br />Hardening Final y Demo Day</h1>
         <p class="lead">
@@ -446,40 +446,40 @@
           indistinguible de un wrapper pegado en un fin de semana.
         </p>
         <blockquote>
-          Una demo no es para mostrar que funciona — es para probar, con
+          Una demo no es para mostrar que funciona: es para probar, con
           números, que tú tomas buenas decisiones de ingeniería.
         </blockquote>
         <p class="muted">
           Lo que distingue a un AI Engineer es el rastro de decisiones medidas:
           por qué este modelo, por qué esta arquitectura, qué se sacrificó y
-          cómo se verificó. Eso es lo que el entrevistador está comprando — y lo
+          cómo se verificó. Eso es lo que el entrevistador está comprando, y lo
           que hoy dejas listo.
         </p>
       </section>
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 minutos</h2>
+        <h2>Agenda · 90 minutos</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — estado del proyecto: qué quedó pendiente
+            <strong>Repaso</strong>: estado del proyecto, qué quedó pendiente
             del hardening de la Sesión 10 (15 min)
           </li>
           <li>
-            <strong>Tema central</strong> — checklist de production-readiness,
+            <strong>Tema central</strong>: checklist de production-readiness,
             README de calidad y anatomía de una demo que convence (30 min)
           </li>
           <li>
-            <strong>Manos al código</strong> — construimos juntos el reporte de
+            <strong>Manos al código</strong>: construimos juntos el reporte de
             evidencia (<code>EVIDENCE.md</code>) y ensayamos la apertura de la
             demo (30 min)
           </li>
           <li>
-            <strong>Reto de la semana</strong> — demo grabada de 15 min + README
+            <strong>Reto de la semana</strong>: demo grabada de 15 min + README
             final + 5 preguntas de entrevista con respuestas (10 min)
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y preview de la Sesión
+            <strong>Cierre</strong>: checklist de salida y preview de la Sesión
             12 (5 min)
           </li>
         </ul>
@@ -524,7 +524,7 @@
             <h3>Confiabilidad</h3>
             <ul class="clean">
               <li>
-                Timeouts explícitos y retries con backoff — el SDK de
+                Timeouts explícitos y retries con backoff: el SDK de
                 <code>anthropic</code> ya reintenta 429/5xx 2 veces; configura
                 <code>max_retries</code> y un timeout &lt; al de tu API
               </li>
@@ -551,7 +551,7 @@
                 precio de input) y presupuesto mensual estimado
               </li>
               <li>
-                Secrets en variables de entorno o secret manager — cero keys en
+                Secrets en variables de entorno o secret manager: cero keys en
                 el repo, verificado con un scan del historial de git
               </li>
               <li>
@@ -562,7 +562,7 @@
           </div>
         </div>
         <p class="muted" style="margin-top: 1.2rem">
-          Regla: si un ítem no está, no es "casi listo" — es un bug conocido.
+          Regla: si un ítem no está, no es "casi listo", es un bug conocido.
           Documentarlo en "Limitaciones" del README también cuenta como
           cerrarlo.
         </p>
@@ -576,7 +576,7 @@
             <h3>❌ README que nadie lee</h3>
             <ul class="clean">
               <li>Lista de features sin contexto del problema</li>
-              <li>"Instalar dependencias y correr" — y nada más</li>
+              <li>"Instalar dependencias y correr", y nada más</li>
               <li>Cero números: ni latencia, ni costo, ni accuracy</li>
               <li>Las decisiones técnicas parecen accidentes</li>
             </ul>
@@ -625,7 +625,7 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
             real, no "vector store genérico"
           </li>
           <li>
-            El logging y los evals aparecen en el diagrama — son parte de la
+            El logging y los evals aparecen en el diagrama: son parte de la
             arquitectura, no un extra
           </li>
         </ul>
@@ -671,7 +671,7 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
             <tr>
               <td>10–20</td>
               <td>Preguntas</td>
-              <td>Aquí se gana o se pierde la entrevista — se practica</td>
+              <td>Aquí se gana o se pierde la entrevista: se practica</td>
             </tr>
           </tbody>
         </table>
@@ -734,7 +734,7 @@ Usuario ──▶ API (FastAPI) ──▶ Orquestador
       <!-- SLIDE 9: código del juez LLM -->
       <section class="slide">
         <h2>El juez LLM que genera tu evidencia</h2>
-        <pre><code><span class="c"># evals/judge.py — convierte tu suite de evals en números para la demo</span>
+        <pre><code><span class="c"># evals/judge.py: convierte tu suite de evals en números para la demo</span>
 <span class="k">import</span> anthropic, json
 
 client = anthropic.<span class="f">Anthropic</span>()
@@ -755,7 +755,7 @@ client = anthropic.<span class="f">Anthropic</span>()
 
 <span class="c"># 50 casos × ~600 tokens ≈ $0.15 por corrida completa con Sonnet</span></code></pre>
         <p class="muted" style="margin-top: 1rem">
-          Mismo modelo de juez en baseline y final — si cambia el juez, tus
+          Mismo modelo de juez en baseline y final: si cambia el juez, tus
           deltas no significan nada.
         </p>
       </section>
@@ -768,7 +768,7 @@ client = anthropic.<span class="f">Anthropic</span>()
             <strong
               >¿Por qué no fine-tuning en vez de RAG (o viceversa)?</strong
             >
-            — pregunta de trade-offs: costo de entrenamiento, frescura del
+            Pregunta de trade-offs: costo de entrenamiento, frescura del
             corpus, control de fuentes
           </li>
           <li>
@@ -776,27 +776,27 @@ client = anthropic.<span class="f">Anthropic</span>()
               >¿Cómo sabes que no alucina? ¿Qué mide exactamente tu
               eval?</strong
             >
-            — pregunta de rigor: muestra, juez, casos adversariales
+            Pregunta de rigor: muestra, juez, casos adversariales
           </li>
           <li>
             <strong
               >¿Qué pasa si el proveedor del LLM se cae o te
               rate-limitea?</strong
             >
-            — pregunta de producción: retries, degradación, fallback
+            Pregunta de producción: retries, degradación, fallback
           </li>
           <li>
             <strong
               >¿Cuánto cuesta por usuario al mes y cómo lo bajarías 10x?</strong
             >
-            — pregunta de negocio: caching, modelo más pequeño, batch API
+            Pregunta de negocio: caching, modelo más pequeño, batch API
           </li>
           <li>
             <strong
               >¿Cómo manejas prompt injection y datos sensibles en los
               inputs?</strong
             >
-            — pregunta de seguridad: validación, separación de instrucciones y
+            Pregunta de seguridad: validación, separación de instrucciones y
             datos, qué se loguea
           </li>
         </ul>
@@ -865,7 +865,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               </div>
               <div class="vc-meta">AI Engineer · Inglés</div>
               <div class="vc-why">
-                Pipelines de evals en producción — la profundidad técnica para
+                Pipelines de evals en producción: la profundidad técnica para
                 usar métricas como evidencia central de tu demo.
               </div>
             </div>
@@ -886,7 +886,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               </div>
               <div class="vc-meta">Dev Rel · Inglés</div>
               <div class="vc-why">
-                Demos técnicas para audiencias de ingenieros — el formato exacto
+                Demos técnicas para audiencias de ingenieros, el formato exacto
                 de esta sesión: demo + preguntas.
               </div>
             </div>
@@ -908,7 +908,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               <div class="vc-meta">Aditya Singh · Inglés</div>
               <div class="vc-why">
                 Qué proyectos de IA impresionan a reclutadores (agentes, RAG en
-                producción) — para enmarcar el tuyo.
+                producción), para enmarcar el tuyo.
               </div>
             </div>
           </a>
@@ -928,7 +928,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               </div>
               <div class="vc-meta">mthree · Inglés</div>
               <div class="vc-why">
-                Estructura corta para el qué, por qué y cómo — preparación
+                Estructura corta para el qué, por qué y cómo: preparación
                 directa para las 5 preguntas difíciles.
               </div>
             </div>
@@ -949,7 +949,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               </div>
               <div class="vc-meta">Mauro · Español</div>
               <div class="vc-why">
-                README profesional paso a paso — cubre el entregable de
+                README profesional paso a paso: cubre el entregable de
                 documentación del reto.
               </div>
             </div>
@@ -959,7 +959,7 @@ client = anthropic.<span class="f">Anthropic</span>()
 
       <!-- SLIDE 14: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 11</span
           ><span class="tag green">Entregable</span>
@@ -982,7 +982,7 @@ client = anthropic.<span class="f">Anthropic</span>()
           </ul>
           <p class="muted" style="margin-top: 0.8rem">
             Evaluación: <code>coach/rubrica-demo-day.md</code>. La rúbrica pesa
-            evidencia y manejo de preguntas más que pulido visual — invierte el
+            evidencia y manejo de preguntas más que pulido visual. Invierte el
             tiempo donde puntúa.
           </p>
         </div>
@@ -1014,8 +1014,8 @@ client = anthropic.<span class="f">Anthropic</span>()
           decides bien y lo respalda con números.
         </blockquote>
         <p class="muted" style="margin-top: 1.2rem">
-          Próxima sesión —
-          <strong>Sesión 12: System Design de Sistemas con LLMs</strong>: tu
+          Próxima sesión:
+          <strong>Sesión 12: System Design de Sistemas con LLMs</strong>. Tu
           proyecto de hoy es el primer caso que pondremos sobre la pizarra, así
           que llega con el diagrama y las métricas a la mano.
         </p>

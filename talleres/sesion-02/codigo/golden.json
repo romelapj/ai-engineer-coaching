@@ -1,0 +1,84 @@
+{
+  "test_cases": [
+    {
+      "id": 1,
+      "claim": "Vi que me habían cobrado dos veces por el mismo producto",
+      "expected_class": "duplicated"
+    },
+    {
+      "id": 2,
+      "claim": "Pagué pero el pedido nunca llegó a mi casa",
+      "expected_class": "not_received"
+    },
+    {
+      "id": 3,
+      "claim": "Hay un cargo en mi tarjeta que yo no autoricé",
+      "expected_class": "fraud"
+    },
+    {
+      "id": 4,
+      "claim": "Me aparecen dos transacciones idénticas el mismo día",
+      "expected_class": "duplicated"
+    },
+    {
+      "id": 5,
+      "claim": "El paquete dice entregado pero no lo recibí",
+      "expected_class": "not_received"
+    },
+    {
+      "id": 6,
+      "claim": "Alguien usó mi cuenta para comprar sin mi permiso",
+      "expected_class": "fraud"
+    },
+    {
+      "id": 7,
+      "claim": "Quiero saber el horario de atención al cliente",
+      "expected_class": "other"
+    },
+    {
+      "id": 8,
+      "claim": "¿Cómo cambio la dirección de envío de mi perfil?",
+      "expected_class": "other"
+    },
+    {
+      "id": 9,
+      "claim": "Me cobraron el mismo servicio repetido este mes",
+      "expected_class": "duplicated"
+    },
+    {
+      "id": 10,
+      "claim": "Necesito ayuda para actualizar mi correo electrónico",
+      "expected_class": "other"
+    },
+    {
+      "id": 11,
+      "claim": "Aparecen dos cargos: uno mío y otro que no reconozco",
+      "expected_class": "fraud"
+    },
+    {
+      "id": 12,
+      "claim": "El pedido llegó incompleto, faltaron dos de los cuatro artículos",
+      "expected_class": "other"
+    },
+    {
+      "id": 13,
+      "claim": "Pagué con tarjeta y también me cobraron en efectivo al recibir",
+      "expected_class": "duplicated"
+    },
+    {
+      "id": 14,
+      "claim": "Me devolvieron el dinero la semana pasada y hoy volvieron a cobrarme lo mismo",
+      "expected_class": "duplicated"
+    },
+    {
+      "id": 15,
+      "claim": "Me cobraron de más: no dos veces, sino un monto mayor al del producto",
+      "expected_class": "other"
+    },
+    {
+      "id": 16,
+      "claim": "La app dice entregado y firmado, pero yo no firmé nada ni recibí el paquete",
+      "expected_class": "not_received"
+    }
+  ]
+}

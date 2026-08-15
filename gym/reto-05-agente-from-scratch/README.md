@@ -1,18 +1,18 @@
-# 🏋️ Reto 05 — Agente desde cero
+# 🏋️ Reto 05: Agente desde cero
 
 |                         |                                                                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | **Fase**                | Fase 2                                                                                                                                    |
 | **Se asigna en**        | Sesión 6                                                                                                                                  |
 | **Tiempo estimado**     | 6–8 horas (repartidas en la semana)                                                                                                       |
-| **Skill de entrevista** | "Explícame cómo funciona un agente por dentro, sin decir 'LangChain'" — diseño del loop agéntico, tool use crudo, control de presupuestos |
+| **Skill de entrevista** | "Explícame cómo funciona un agente por dentro, sin decir 'LangChain'": diseño del loop agéntico, tool use crudo, control de presupuestos  |
 | **Prerrequisitos**      | Reto 03 (tool calling básico) y Reto 04 (manejo de contexto) completados                                                                  |
 
 ---
 
 ## Contexto
 
-Si en una entrevista de AI Engineer te preguntan _"¿cómo funciona un agente?"_ y tu respuesta empieza con el nombre de un framework, acabas de perder puntos. Los frameworks (LangChain, CrewAI, LlamaIndex, smolagents) son azúcar encima de una idea brutalmente simple: **un `while` loop donde el modelo decide la siguiente acción, tú la ejecutas, le devuelves el resultado, y se repite hasta que el modelo declara que terminó o se le acaba el presupuesto**. Quien no ha escrito ese loop a mano no entiende qué abstrae el framework — y por tanto no puede debuggearlo cuando se rompe, que es el 80 % del trabajo real.
+Si en una entrevista de AI Engineer te preguntan _"¿cómo funciona un agente?"_ y tu respuesta empieza con el nombre de un framework, acabas de perder puntos. Los frameworks (LangChain, CrewAI, LlamaIndex, smolagents) son azúcar encima de una idea brutalmente simple: **un `while` loop donde el modelo decide la siguiente acción, tú la ejecutas, le devuelves el resultado, y se repite hasta que el modelo declara que terminó o se le acaba el presupuesto**. Quien no ha escrito ese loop a mano no entiende qué abstrae el framework, y por tanto no puede debuggearlo cuando se rompe, que es el 80 % del trabajo real.
 
 Este reto te obliga a construir ese loop con las manos: solo el SDK oficial del proveedor del modelo (`anthropic`, `openai` o equivalente), la librería estándar y, como mucho, un cliente HTTP. Vas a tocar las tres decisiones que definen a cualquier agente en producción: **cómo se le presentan las tools al modelo**, **cómo se acumula la conversación entre pasos** (y cuánto crece), y **qué pasa cuando el agente quiere seguir pero ya no puede** (presupuesto de pasos y de tokens agotado). Ninguna de las tres la resuelve el modelo por ti.
 
@@ -35,14 +35,14 @@ El corazón del proyecto es un archivo `agent.py` cuyo loop hace exactamente est
 
 ### Las tools (elige UNA modalidad y hazla bien)
 
-**Modalidad A — Investigador local (recomendada: determinista y evaluable):**
+**Modalidad A, investigador local (recomendada: determinista y evaluable):**
 
 - `list_files()` → lista los archivos del corpus con su tamaño.
 - `read_file(path)` → devuelve el contenido (truncado a un máximo que tú definas, p. ej. 8 000 caracteres, indicando que fue truncado).
 - `search_corpus(query)` → grep simple (substring o regex) sobre el corpus, devuelve archivo + línea + contexto.
 - **Corpus sugerido:** descarga 12–15 ensayos de Paul Graham en texto plano (paulgraham.com), o 10 RFCs cortos (p. ej. RFC 1945, 2616, 6455, 6749, 7519, 9110...), o los release notes de un proyecto open source que conozcas. Inclúyelo en `corpus/` con un script `download_corpus.sh` reproducible.
 
-**Modalidad B — Investigador web:**
+**Modalidad B, investigador web:**
 
 - `web_search(query)` → vía API de Brave Search, Tavily o la búsqueda de DuckDuckGo (sin scraping frágil). Devuelve título + URL + snippet de los top 5 resultados.
 - `fetch_page(url)` → descarga la página y devuelve texto plano (truncado, p. ej. 10 000 caracteres).
@@ -51,7 +51,7 @@ El corazón del proyecto es un archivo `agent.py` cuyo loop hace exactamente est
 ### Presupuestos (no negociables)
 
 - **Máximo de pasos:** configurable, default **10** iteraciones del loop.
-- **Máximo de tokens:** configurable, default **50 000 tokens totales** (input + output acumulados, leídos del campo `usage` de cada respuesta del API — no estimados).
+- **Máximo de tokens:** configurable, default **50 000 tokens totales** (input + output acumulados, leídos del campo `usage` de cada respuesta del API, no estimados).
 - Ambos por flag de CLI: `--max-steps`, `--max-tokens`.
 
 ### Interfaz
@@ -79,8 +79,8 @@ ser el formato del access token [1][2]...
 
 ## Fuentes
 
-1. corpus/rfc6749.txt — sección 1.4, líneas 210–245
-2. corpus/rfc7519.txt — sección 3, líneas 88–120
+1. corpus/rfc6749.txt, sección 1.4, líneas 210–245
+2. corpus/rfc7519.txt, sección 3, líneas 88–120
 
 ## Metadatos de la corrida
 
@@ -103,7 +103,7 @@ Además del informe, cada corrida debe escribir un **trace JSONL** (`traces/<tim
 6. Toda corrida produce: (a) el informe markdown con secciones `Respuesta`, `Fuentes` y `Metadatos de la corrida`, y (b) el trace JSONL.
 7. Cada afirmación sustantiva del informe cita su fuente con referencia verificable: archivo + líneas (Modalidad A) o URL (Modalidad B). Mínimo **2 fuentes distintas** por informe.
 8. Manejo de errores de tool: si una tool falla (archivo inexistente, HTTP 4xx/5xx), el error se devuelve **al modelo** como resultado de la tool (para que se recupere), no revienta el proceso.
-9. El agente termina por sí mismo (el modelo decide responder) en al menos una de las preguntas del eval — es decir, no siempre muere por presupuesto.
+9. El agente termina por sí mismo (el modelo decide responder) en al menos una de las preguntas del eval; es decir, no siempre muere por presupuesto.
 10. `README.md` propio del proyecto con: cómo instalar, cómo correr, una corrida de ejemplo pegada, y 3–5 líneas sobre la decisión de diseño más difícil que tomaste.
 
 ## Criterios de aceptación
@@ -120,7 +120,7 @@ Además del informe, cada corrida debe escribir un **trace JSONL** (`traces/<tim
 
 ## Cómo se evalúa
 
-El reto incluye su propio harness en `eval/`. Define **5 preguntas fijas** sobre tu corpus en `eval/questions.json` (3 que el corpus responde bien, 1 que requiere sintetizar de ≥ 2 documentos, 1 que el corpus NO responde — el informe debe decirlo honestamente, no alucinar). El harness corre el agente sobre cada una y aplica checks deterministas + un juez LLM.
+El reto incluye su propio harness en `eval/`. Define **5 preguntas fijas** sobre tu corpus en `eval/questions.json` (3 que el corpus responde bien, 1 que requiere sintetizar de ≥ 2 documentos, 1 que el corpus NO responde: el informe debe decirlo honestamente, no alucinar). El harness corre el agente sobre cada una y aplica checks deterministas + un juez LLM.
 
 Estructura sugerida (esqueleto, no la solución):
 
@@ -181,23 +181,23 @@ En la sesión de revisión, el coach correrá `python eval/run_eval.py` en frío
 ## Pistas
 
 <details>
-<summary>Pista 1 — La forma del loop</summary>
+<summary>Pista 1: La forma del loop</summary>
 
 El loop entero cabe en esta silueta: una lista `messages`, un `for step in range(max_steps)`, una llamada al API con `tools=[...]`, y un `if` sobre la razón de parada de la respuesta (`stop_reason` / `finish_reason`). Si el modelo paró por tool use, iteras sobre los tool calls, ejecutas cada uno con un `dict` que mapea nombre → función, y agregas a `messages` tanto la respuesta del assistant como los resultados de las tools en el formato que el SDK exige. Si paró por fin de turno, ese texto es tu informe. No necesitas clases, ni "AgentExecutor", ni grafos: necesitas una lista y un `for`.
 
 </details>
 
 <details>
-<summary>Pista 2 — Presupuesto de tokens sin estimar</summary>
+<summary>Pista 2: Presupuesto de tokens sin estimar</summary>
 
-No uses tiktoken ni heurísticas de caracteres/4. Cada respuesta del API trae `usage` con tokens de input y output exactos. Acumula `total += usage.input_tokens + usage.output_tokens` después de cada llamada, y chequea `total >= max_tokens` **al inicio** de la siguiente iteración, no al final. Detalle que separa juniors de seniors: como el historial completo se reenvía en cada paso, el input crece cuadráticamente con los pasos — por eso truncar los resultados de tools (8–10k chars) no es cosmético, es lo que hace viable el presupuesto. Loguea el acumulado en el trace en cada paso y verás la curva.
+No uses tiktoken ni heurísticas de caracteres/4. Cada respuesta del API trae `usage` con tokens de input y output exactos. Acumula `total += usage.input_tokens + usage.output_tokens` después de cada llamada, y chequea `total >= max_tokens` **al inicio** de la siguiente iteración, no al final. Detalle que separa juniors de seniors: como el historial completo se reenvía en cada paso, el input crece cuadráticamente con los pasos; por eso truncar los resultados de tools (8–10k chars) no es cosmético, es lo que hace viable el presupuesto. Loguea el acumulado en el trace en cada paso y verás la curva.
 
 </details>
 
 <details>
-<summary>Pista 3 — El cierre forzado (casi spoiler)</summary>
+<summary>Pista 3: El cierre forzado (casi spoiler)</summary>
 
-Cuando se agota el presupuesto a mitad de investigación, NO devuelvas el último texto parcial ni lances excepción. Haz una última llamada extra (fuera del loop, presupuestada aparte, ~2 000 tokens de margen) con el historial completo, `tools` vacío o `tool_choice` deshabilitado, y un mensaje final tipo: _"Se agotó el presupuesto de investigación. Escribe el mejor informe posible SOLO con la información ya recolectada arriba. Cita únicamente fuentes que efectivamente leíste. Si la pregunta no quedó respondida, dilo explícitamente en la primera línea de la sección Respuesta."_ Eso convierte un corte abrupto en una degradación elegante — y es exactamente la frase "graceful degradation under budget" que quieres poder decir en entrevista con código que la respalde.
+Cuando se agota el presupuesto a mitad de investigación, NO devuelvas el último texto parcial ni lances excepción. Haz una última llamada extra (fuera del loop, presupuestada aparte, ~2 000 tokens de margen) con el historial completo, `tools` vacío o `tool_choice` deshabilitado, y un mensaje final tipo: _"Se agotó el presupuesto de investigación. Escribe el mejor informe posible SOLO con la información ya recolectada arriba. Cita únicamente fuentes que efectivamente leíste. Si la pregunta no quedó respondida, dilo explícitamente en la primera línea de la sección Respuesta."_ Eso convierte un corte abrupto en una degradación elegante, y es exactamente la frase "graceful degradation under budget" que quieres poder decir en entrevista con código que la respalde.
 
 </details>
 
@@ -208,9 +208,9 @@ Cuando se agota el presupuesto a mitad de investigación, NO devuelvas el últim
 
 ## Qué demuestra en entrevista
 
-- _"Implementé el loop agéntico desde cero con el SDK crudo: el modelo decide la tool por `stop_reason`, yo ejecuto y devuelvo el resultado como tool result, y todo el agente son ~150 líneas. Por eso sé exactamente qué me abstrae un framework — y qué me esconde cuando algo falla."_
+- _"Implementé el loop agéntico desde cero con el SDK crudo: el modelo decide la tool por `stop_reason`, yo ejecuto y devuelvo el resultado como tool result, y todo el agente son ~150 líneas. Por eso sé exactamente qué me abstrae un framework, y qué me esconde cuando algo falla."_
 - _"El problema real no es que el agente funcione, es que pare: implementé presupuesto dual de pasos y tokens medidos del `usage` real del API, con cierre forzado que produce un informe parcial honesto en lugar de una excepción. Graceful degradation under budget."_
-- _"Cada corrida emite un trace JSONL por paso, y el eval combina checks deterministas (presupuestos, citas verificables contra el corpus) con un juez LLM con rúbrica fija — incluyendo una pregunta-trampa que el corpus no responde, para medir que el agente no alucine."_
+- _"Cada corrida emite un trace JSONL por paso, y el eval combina checks deterministas (presupuestos, citas verificables contra el corpus) con un juez LLM con rúbrica fija, incluyendo una pregunta-trampa que el corpus no responde, para medir que el agente no alucine."_
 
 ## Entregable
 

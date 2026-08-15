@@ -1,8 +1,8 @@
-# 🏋️ Kata 01 — Conversor de unidades tipado
+# 🏋️ Kata 01: Conversor de unidades tipado
 
 | Metadato                  | Valor                                                                                                          |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Fase**                  | Pre-Fase 0.5 — Fundamentos de Python                                                                            |
+| **Fase**                  | Pre-Fase 0.5: Fundamentos de Python                                                                            |
 | **Sesión en que se asigna** | Sesión N01                                                                                                     |
 | **Tiempo estimado**       | 45–60 min                                                                                                      |
 | **Skill que entrena**     | Conversión explícita entre `str` y números, truthiness, f-strings con formato, redondeo, casos borde de entrada |
@@ -14,7 +14,7 @@
 
 El error fundacional que delata a un dev que "sabe programar" pero no domina Python es **no distinguir tipos**: comparar `'500' >= '400'` como si fueran números (y obtener el resultado correcto por pura casualidad léxica), o asumir que un campo que "se ve numérico" ya es un `int`. En lenguajes con tipado estático el compilador te frena; en Python no hay nadie que te avise hasta que `'9' < '10'` te devuelve `False` en producción.
 
-Si vienes de Java, C# o Go, tu instinto es que la conversión "pasa sola" o que el tipo está declarado. En Python la conversión es **una decisión que tomas tú, explícitamente, en el momento exacto en que el dato cruza la frontera del mundo real hacia tu lógica**. Los datos llegan como `str` —desde un input, un CSV, un query param, un JSON laxo— a veces vacíos, a veces con espacios sobrantes. Tu trabajo es convertir a propósito con `int()`/`float()`, calcular sobre números de verdad, y formatear la salida con f-strings.
+Si vienes de Java, C# o Go, tu instinto es que la conversión "pasa sola" o que el tipo está declarado. En Python la conversión es **una decisión que tomas tú, explícitamente, en el momento exacto en que el dato cruza la frontera del mundo real hacia tu lógica**. Los datos llegan como `str` (desde un input, un CSV, un query param, un JSON laxo), a veces vacíos, a veces con espacios sobrantes. Tu trabajo es convertir a propósito con `int()`/`float()`, calcular sobre números de verdad, y formatear la salida con f-strings.
 
 Esta kata aísla justo eso sobre un dominio mínimo y real: **un conversor de unidades** (temperaturas y distancias). No hay logs, no hay framework, no hay nada que esconda la decisión de tipo. Es pequeño a propósito, para que el único músculo que entrenes sea la frontera entre tratar un texto como texto y convertirlo, a conciencia, en un número.
 
@@ -80,7 +80,7 @@ Las conversiones deben usar `int()`/`float()` **de forma explícita** y **nunca*
 2. **`km_a_millas(km)`** acepta `str` o numérico, convierte con `float()`, retorna un `float` redondeado a 2 decimales.
 3. **`formatear_tabla(filas)`** formatea con f-strings (`:<12`, `:>8.2f`), una línea por fila, unidas con `\n` y **sin** salto de línea final.
 4. **Tipos de retorno reales**: las dos conversiones retornan `float` (no `str`, no `Decimal`), verificable con `isinstance`.
-5. **Entrada inválida ruidosa**: pasar una cadena no numérica (`''`, `'abc'`, `'  '`) a una conversión debe **dejar subir el `ValueError`** de `float()` — no lo silencies, no lo conviertas en `0`, no lo envuelvas en un `None`.
+5. **Entrada inválida ruidosa**: pasar una cadena no numérica (`''`, `'abc'`, `'  '`) a una conversión debe **dejar subir el `ValueError`** de `float()`: no lo silencies, no lo conviertas en `0`, no lo envuelvas en un `None`.
 6. **Sin dependencias externas**: solo stdlib y `pytest`. Nada de `tabulate`, `rich`, `numpy` ni similares.
 
 ## Criterios de aceptación
@@ -152,19 +152,19 @@ Nota que `"12,5"` (coma decimal) **debe** fallar: `float()` no entiende la coma,
 
 ## Pistas
 
-<details><summary>Pista 1 — Convierte explícito y deja subir el error</summary>
+<details><summary>Pista 1: Convierte explícito y deja subir el error</summary>
 
-`float('37')` funciona y devuelve `37.0`. `float('')` y `float('abc')` lanzan `ValueError` — eso es **lo que quieres**: no lo envuelvas en un `try/except` que devuelva `0` o `None`. La conversión es una sola línea: `c = float(celsius)`. Funciona igual si `celsius` ya es un `int` o `float`, porque `float(37)` también devuelve `37.0`. No necesitas comprobar el tipo de antemano; convierte y ya.
+`float('37')` funciona y devuelve `37.0`. `float('')` y `float('abc')` lanzan `ValueError`, y eso es **lo que quieres**: no lo envuelvas en un `try/except` que devuelva `0` o `None`. La conversión es una sola línea: `c = float(celsius)`. Funciona igual si `celsius` ya es un `int` o `float`, porque `float(37)` también devuelve `37.0`. No necesitas comprobar el tipo de antemano; convierte y ya.
 
 </details>
 
-<details><summary>Pista 2 — Redondeo y formato son cosas distintas</summary>
+<details><summary>Pista 2: Redondeo y formato son cosas distintas</summary>
 
 `round(x, n)` devuelve un `float` con `n` decimales para el **valor** (`round(98.5999, 1) == 98.6`). Eso es lo que retornan tus conversiones. El **formato de columnas** es otra cosa: vive en el f-string, no en el valor. `f'{x:<12}'` alinea a la izquierda en 12 caracteres; `f'{x:>8.2f}'` alinea a la derecha en 8 y fuerza 2 decimales. Mezclar las dos (intentar alinear con `round`, o redondear con el f-string para el valor de retorno) es el error típico aquí.
 
 </details>
 
-<details><summary>Pista 3 — La solución completa, casi entera (casi-spoiler)</summary>
+<details><summary>Pista 3: La solución completa, casi entera (casi-spoiler)</summary>
 
 ```python
 def c_a_f(celsius) -> float:
@@ -183,7 +183,7 @@ def formatear_tabla(filas) -> str:
     )
 ```
 
-Fíjate en tres cosas: (1) ningún `try/except` —el `ValueError` sube solo—; (2) `round(...)` devuelve `float`, así que `isinstance(..., float)` pasa sin esfuerzo; (3) `formatear_tabla` usa `str.join` sobre un **generador** con `enumerate`/desempaquetado de la tupla, no un bucle con concatenación manual ni un `\n` colgando al final.
+Fíjate en tres cosas: (1) ningún `try/except`, el `ValueError` sube solo; (2) `round(...)` devuelve `float`, así que `isinstance(..., float)` pasa sin esfuerzo; (3) `formatear_tabla` usa `str.join` sobre un **generador** con `enumerate`/desempaquetado de la tupla, no un bucle con concatenación manual ni un `\n` colgando al final.
 
 </details>
 
@@ -194,7 +194,7 @@ Fíjate en tres cosas: (1) ningún `try/except` —el `ValueError` sube solo—;
 
 ## Qué demuestra
 
-Que distingues `str` de número y conviertes **a propósito**, en la frontera correcta, en vez de confiar en que el tipo "ya viene bien". Que sabes que `round` produce el valor y el f-string produce el formato, y que no confundes los dos. Que dejas que una entrada inválida **falle ruidosamente** con su `ValueError` en lugar de comparar strings o tragarte el error con un `except` perezoso. Y que escribes formato de salida idiomático —un `str.join` sobre un generador con desempaquetado de tupla— en vez de concatenar a mano con un acumulador. Es la frontera exacta entre escribir Python con acento de otro lenguaje y escribirlo como Python.
+Que distingues `str` de número y conviertes **a propósito**, en la frontera correcta, en vez de confiar en que el tipo "ya viene bien". Que sabes que `round` produce el valor y el f-string produce el formato, y que no confundes los dos. Que dejas que una entrada inválida **falle ruidosamente** con su `ValueError` en lugar de comparar strings o tragarte el error con un `except` perezoso. Y que escribes formato de salida idiomático (un `str.join` sobre un generador con desempaquetado de tupla) en vez de concatenar a mano con un acumulador. Es la frontera exacta entre escribir Python con acento de otro lenguaje y escribirlo como Python.
 
 ## Entregable
 

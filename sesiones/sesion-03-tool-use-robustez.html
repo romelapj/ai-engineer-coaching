@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Sesión 03 — Tool Use, Structured Outputs y Robustez | AI Engineer Coaching
+      Sesión 03: Tool Use, Structured Outputs y Robustez | AI Engineer Coaching
     </title>
     <style>
       :root {
@@ -431,7 +431,7 @@
       <!-- SLIDE 1: portada -->
       <section class="slide active">
         <div class="kicker">
-          AI Engineer Coaching · Fase 1 — Fundamentos · Semana 4
+          AI Engineer Coaching · Fase 1 · Fundamentos · Semana 4
         </div>
         <h1>Sesión 03<br />Tool Use, Structured Outputs y Robustez</h1>
         <p class="lead">
@@ -442,34 +442,34 @@
 
       <!-- SLIDE 2: agenda -->
       <section class="slide">
-        <h2>Agenda — 90 min</h2>
+        <h2>Agenda: 90 min</h2>
         <ul class="clean">
           <li>
-            <strong>Repaso</strong> — reto 01: qué se rompió extrayendo JSON a
+            <strong>Repaso</strong>, reto 01: qué se rompió extrayendo JSON a
             mano (lo vamos a resolver hoy)
             <span class="muted">(15 min)</span>
           </li>
           <li>
-            <strong>Acto 1 — haz que funcione</strong> — construimos
+            <strong>Acto 1 · haz que funcione</strong>, construimos
             <code>tool_loop.py</code> pieza a pieza: la tool, el loop, paralelo
             y JSON garantizado <span class="muted">(15 min)</span>
           </li>
           <li>
-            <strong>Acto 2 — haz que sobreviva</strong> — endurecemos ese mismo
+            <strong>Acto 2 · haz que sobreviva</strong>, endurecemos ese mismo
             código con los 4 pilares: retries, rate limits, timeouts, logging
             <span class="muted">(15 min)</span>
           </li>
           <li>
-            <strong>Manos al código</strong> — pair programming: ensamblas las
+            <strong>Manos al código</strong>, pair programming: ensamblas las
             piezas en un script que corre de punta a punta
             <span class="muted">(30 min)</span>
           </li>
           <li>
-            <strong>Reto de la semana</strong> — AI Gym reto 02: tool use
+            <strong>Reto de la semana</strong>, AI Gym reto 02: tool use
             robusto bajo fallos simulados <span class="muted">(10 min)</span>
           </li>
           <li>
-            <strong>Cierre</strong> — checklist de salida y preguntas
+            <strong>Cierre</strong>: checklist de salida y preguntas
             <span class="muted">(5 min)</span>
           </li>
         </ul>
@@ -508,13 +508,13 @@
 
       <!-- SLIDE 4: el gancho -->
       <section class="slide">
-        <div class="kicker">Acto 1 — Haz que funcione</div>
+        <div class="kicker">Acto 1 · Haz que funcione</div>
         <h2>¿Dónde va mi orden ORD-8841?</h2>
         <div class="columns">
           <div>
             <p>
               Pregúntale eso a un modelo <strong>sin herramientas</strong> y
-              solo tiene dos salidas — las dos malas:
+              solo tiene dos salidas, las dos malas:
             </p>
             <ul class="clean" style="margin-top: 1rem">
               <li>
@@ -522,7 +522,7 @@
                 pero inútil.
               </li>
               <li>
-                Alucina: <em>"su orden llega mañana"</em>. Suena perfecto — y es
+                Alucina: <em>"su orden llega mañana"</em>. Suena perfecto, y es
                 falso.
               </li>
               <li>
@@ -532,8 +532,8 @@
               </li>
             </ul>
             <p class="muted" style="margin-top: 1.2rem">
-              Hoy construimos <code>tool_loop.py</code> — un asistente de
-              soporte e-commerce — pieza a pieza: <strong>4 pasos</strong> para
+              Hoy construimos <code>tool_loop.py</code>, un asistente de
+              soporte e-commerce, pieza a pieza: <strong>4 pasos</strong> para
               que funcione, <strong>4 pilares</strong> para que sobreviva.
             </p>
           </div>
@@ -556,7 +556,7 @@ Modelo:
 
       <!-- SLIDE 5: anatomía del round-trip -->
       <section class="slide">
-        <div class="kicker">Acto 1 — Haz que funcione</div>
+        <div class="kicker">Acto 1 · Haz que funcione</div>
         <h2>Anatomía del round-trip</h2>
         <div class="columns">
           <div class="card">
@@ -590,7 +590,7 @@ Modelo:
             <span class="icon">4️⃣</span>
             <h3>Responde</h3>
             <p class="muted">
-              Con el resultado en contexto, el modelo responde al usuario — o
+              Con el resultado en contexto, el modelo responde al usuario, o
               pide otra tool, y el ciclo se repite.
             </p>
           </div>
@@ -601,7 +601,7 @@ Modelo:
         </p>
       </section>
 
-      <!-- SLIDE 6: paso 1 — la tool -->
+      <!-- SLIDE 6: paso 1, la tool -->
       <section class="slide">
         <div class="kicker">Acto 1 · Paso 1 de 4</div>
         <h2>La tool: la descripción ES el prompt</h2>
@@ -614,14 +614,14 @@ Modelo:
             </p>
             <p style="margin-top: 0.8rem">
               <code>input_schema</code> es <strong>JSON Schema</strong> (el
-              estándar de OpenAPI): la firma de tu función traducida a JSON —
-              qué argumentos existen, de qué tipo y cuáles son obligatorios. El
+              estándar de OpenAPI): la firma de tu función traducida a JSON
+              (qué argumentos existen, de qué tipo y cuáles son obligatorios). El
               modelo lo lee todo: los <code>description</code> y
               <code>enum</code> de cada propiedad también son prompt.
             </p>
             <ul class="clean" style="margin-top: 1rem">
               <li>
-                ❌ <code>"orders"</code> / <code>"Gets orders"</code> — el
+                ❌ <code>"orders"</code> / <code>"Gets orders"</code>: el
                 modelo la ignora o inventa argumentos.
               </li>
               <li>✅ Nombre con verbo + objeto, en snake_case.</li>
@@ -634,7 +634,7 @@ Modelo:
               </li>
             </ul>
           </div>
-          <pre><code><span class="c"># tool_loop.py — paso 1: la tool</span>
+          <pre><code><span class="c"># tool_loop.py, paso 1: la tool</span>
 ORDERS = {<span class="s">"ORD-8841"</span>: {<span class="s">"status"</span>: <span class="s">"shipped"</span>,
                        <span class="s">"eta"</span>: <span class="s">"2026-07-04"</span>}}
 
@@ -661,11 +661,11 @@ tools = [{
         </div>
       </section>
 
-      <!-- SLIDE 7: paso 2 — el loop -->
+      <!-- SLIDE 7: paso 2, el loop -->
       <section class="slide">
         <div class="kicker">Acto 1 · Paso 2 de 4</div>
         <h2>El loop: tool_use → tool_result</h2>
-        <pre><code><span class="c"># tool_loop.py — paso 2: el loop. Pide, ejecutas, devuelves, responde.</span>
+        <pre><code><span class="c"># tool_loop.py, paso 2: el loop. Pide, ejecutas, devuelves, responde.</span>
 <span class="k">import</span> json
 <span class="k">import</span> anthropic
 
@@ -680,7 +680,7 @@ TOOLS = {<span class="s">"get_order_status"</span>: get_order_status}
     <span class="k">return</span> json.<span class="f">dumps</span>(<span class="f">fn</span>(**args), ensure_ascii=<span class="k">False</span>)  <span class="c"># string, no dict</span>
 
 messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"¿Dónde va mi orden ORD-8841?"</span>}]
-<span class="k">for</span> _ <span class="k">in</span> <span class="f">range</span>(10):  <span class="c"># presupuesto de pasos — nunca while True</span>
+<span class="k">for</span> _ <span class="k">in</span> <span class="f">range</span>(10):  <span class="c"># presupuesto de pasos: nunca while True</span>
     resp = client.messages.<span class="f">create</span>(
         model=<span class="s">"claude-sonnet-4-6"</span>, max_tokens=1024,
         tools=tools, messages=messages,
@@ -700,12 +700,12 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
           Tres errores clásicos: olvidar reinyectar el turno
           <code>assistant</code> completo; pasar el dict crudo en
           <code>content</code> (va serializado con <code>json.dumps</code>); y
-          el loop sin tope — un agente confundido con <code>while True</code>
+          el loop sin tope: un agente confundido con <code>while True</code>
           te quema el budget. El presupuesto va en el código, no en un TODO.
         </p>
       </section>
 
-      <!-- SLIDE 8: paso 3 — tool calls en paralelo -->
+      <!-- SLIDE 8: paso 3, tool calls en paralelo -->
       <section class="slide">
         <div class="kicker">Acto 1 · Paso 3 de 4</div>
         <h2>Tool calls en paralelo</h2>
@@ -713,7 +713,7 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
           <div>
             <p>
               "Compara mis órdenes <strong>ORD-8841</strong> y
-              <strong>ORD-9200</strong>" — un solo turno del modelo trae
+              <strong>ORD-9200</strong>": un solo turno del modelo trae
               <strong>dos bloques <code>tool_use</code></strong> a la vez.
               Nuestro loop ya los recorre; falta ejecutarlos bien.
             </p>
@@ -738,14 +738,14 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
               </li>
             </ul>
           </div>
-          <pre><code><span class="c"># tool_loop.py — paso 3: el lote en paralelo</span>
+          <pre><code><span class="c"># tool_loop.py, paso 3: el lote en paralelo</span>
 <span class="k">from</span> concurrent.futures <span class="k">import</span> ThreadPoolExecutor
 
 calls = [b <span class="k">for</span> b <span class="k">in</span> resp.content
          <span class="k">if</span> b.type == <span class="s">"tool_use"</span>]
 
 <span class="c"># run_tool_safe = run_tool + try/except que devuelve</span>
-<span class="c"># un NamedTuple con .content y .failed — la escribes en el Acto 2</span>
+<span class="c"># un NamedTuple con .content y .failed: la escribes en el Acto 2</span>
 <span class="k">with</span> <span class="f">ThreadPoolExecutor</span>() <span class="k">as</span> ex:
     outs = ex.<span class="f">map</span>(run_tool_safe, calls)
 
@@ -759,16 +759,16 @@ results = [
         </div>
       </section>
 
-      <!-- SLIDE 9: paso 4 — structured outputs -->
+      <!-- SLIDE 9: paso 4, structured outputs -->
       <section class="slide">
         <div class="kicker">Acto 1 · Paso 4 de 4</div>
         <h2>JSON garantizado: tool_choice + Pydantic</h2>
         <p class="muted" style="margin-bottom: 1rem">
           En el reto 01 extraías JSON con prompts, parsing tolerante y rezos.
           Esto es lo que la API hace por ti: <code>tool_choice</code> fuerza la
-          "llamada" — y el input de la tool <strong>es</strong> tu JSON.
+          "llamada", y el input de la tool <strong>es</strong> tu JSON.
         </p>
-        <pre><code><span class="c"># tool_loop.py — paso 4: cierre del caso con JSON garantizado</span>
+        <pre><code><span class="c"># tool_loop.py, paso 4: cierre del caso con JSON garantizado</span>
 <span class="k">from</span> pydantic <span class="k">import</span> BaseModel, ValidationError
 
 <span class="k">class</span> <span class="f">CaseSummary</span>(BaseModel):
@@ -804,14 +804,14 @@ summary_tool = {<span class="s">"name"</span>: <span class="s">"save_case_summar
         </p>
       </section>
 
-      <!-- SLIDE 10: bisagra — idea fuerza -->
+      <!-- SLIDE 10: bisagra, idea fuerza -->
       <section class="slide">
-        <div class="kicker">Acto 2 — Haz que sobreviva</div>
+        <div class="kicker">Acto 2 · Haz que sobreviva</div>
         <h2>Ya funciona. Ahora rómpelo.</h2>
         <blockquote>
           Trata al LLM como a cualquier servicio externo: todo lo que devuelve
           es input no confiable, y toda llamada de red va a fallar tarde o
-          temprano. Lo que separa una demo de un producto no es el prompt — es
+          temprano. Lo que separa una demo de un producto no es el prompt: es
           lo que pasa cuando algo sale mal.
         </blockquote>
         <div class="columns">
@@ -838,7 +838,7 @@ summary_tool = {<span class="s">"name"</span>: <span class="s">"save_case_summar
           <div class="card">
             <span class="icon">4️⃣</span>
             <h3>Logging</h3>
-            <p class="muted">Poder explicar qué pasó — a las 3 a.m.</p>
+            <p class="muted">Poder explicar qué pasó, a las 3 a.m.</p>
           </div>
         </div>
         <p class="muted" style="margin-top: 1.2rem">
@@ -847,11 +847,11 @@ summary_tool = {<span class="s">"name"</span>: <span class="s">"save_case_summar
         </p>
       </section>
 
-      <!-- SLIDE 11: pilar 1 — retries con backoff -->
+      <!-- SLIDE 11: pilar 1, retries con backoff -->
       <section class="slide">
         <div class="kicker">Acto 2 · Pilar 1 de 4</div>
         <h2>Retries: backoff exponencial + jitter</h2>
-        <pre><code><span class="c"># tool_loop.py — pilar 1: la llamada ya no va directa</span>
+        <pre><code><span class="c"># tool_loop.py, pilar 1: la llamada ya no va directa</span>
 <span class="k">import</span> random, time, anthropic
 
 <span class="k">def</span> <span class="f">with_backoff</span>(fn, max_retries=5):
@@ -885,7 +885,7 @@ ToolOut = namedtuple(<span class="s">"ToolOut"</span>, [<span class="s">"content
             s exactos crean una <em>retry storm</em>: el jitter los dispersa.
           </li>
           <li>
-            El SDK ya trae <code>max_retries=2</code> por defecto — súbelo con
+            El SDK ya trae <code>max_retries=2</code> por defecto: súbelo con
             <code>anthropic.Anthropic(max_retries=4)</code> antes de escribir el
             tuyo.
           </li>
@@ -897,7 +897,7 @@ ToolOut = namedtuple(<span class="s">"ToolOut"</span>, [<span class="s">"content
         </ul>
       </section>
 
-      <!-- SLIDE 12: pilar 2 — rate limits -->
+      <!-- SLIDE 12: pilar 2, rate limits -->
       <section class="slide">
         <div class="kicker">Acto 2 · Pilar 2 de 4</div>
         <h2>Rate limits: 429, 529 y qué hacer con cada error</h2>
@@ -932,7 +932,7 @@ ToolOut = namedtuple(<span class="s">"ToolOut"</span>, [<span class="s">"content
             <tr>
               <td><strong>529</strong></td>
               <td><code>overloaded_error</code></td>
-              <td>La API está sobrecargada — no es culpa tuya</td>
+              <td>La API está sobrecargada, no es culpa tuya</td>
               <td>Backoff + jitter; degrada con gracia si persiste</td>
             </tr>
             <tr>
@@ -946,25 +946,25 @@ ToolOut = namedtuple(<span class="s">"ToolOut"</span>, [<span class="s">"content
               <td><code>invalid_request_error</code></td>
               <td>Tu request está mal (schema, tool_result faltante…)</td>
               <td>
-                <strong>NO reintentar</strong> — loggear y arreglar el código
+                <strong>NO reintentar</strong>: loggear y arreglar el código
               </td>
             </tr>
           </tbody>
         </table>
         <p class="muted" style="margin-top: 1.1rem">
           Pro tip: lee <code>anthropic-ratelimit-requests-remaining</code> en
-          los headers y frena <em>antes</em> del 429 — throttling proactivo gana
+          los headers y frena <em>antes</em> del 429: throttling proactivo gana
           a reactivo.
         </p>
       </section>
 
-      <!-- SLIDE 13: pilar 3 — timeouts e idempotencia -->
+      <!-- SLIDE 13: pilar 3, timeouts e idempotencia -->
       <section class="slide">
         <div class="kicker">Acto 2 · Pilar 3 de 4</div>
         <h2>Timeouts e idempotencia</h2>
         <pre
           style="margin-bottom: 1.2rem"
-        ><code><span class="c"># tool_loop.py — pilar 3: el cliente, bien configurado</span>
+        ><code><span class="c"># tool_loop.py, pilar 3: el cliente, bien configurado</span>
 client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)</code></pre>
         <div class="columns">
           <div class="card">
@@ -972,7 +972,7 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
             <ul class="clean">
               <li>
                 Default del SDK: <strong>10 minutos</strong>. Para un chatbot
-                interactivo eso es una eternidad — baja a 30–60 s:
+                interactivo eso es una eternidad, baja a 30–60 s:
                 <code>Anthropic(timeout=30.0)</code>.
               </li>
               <li>
@@ -980,7 +980,7 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
                 genera más retries → más costo en tokens.
               </li>
               <li>
-                Respuestas largas: usa <code>streaming</code> — el primer token
+                Respuestas largas: usa <code>streaming</code>, el primer token
                 llega en segundos y resetea tu percepción de "colgado".
               </li>
             </ul>
@@ -1006,7 +1006,7 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
         </div>
       </section>
 
-      <!-- SLIDE 14: pilar 4 — logging -->
+      <!-- SLIDE 14: pilar 4, logging -->
       <section class="slide">
         <div class="kicker">Acto 2 · Pilar 4 de 4</div>
         <h2>Logging: si no lo logueaste, no pasó</h2>
@@ -1015,15 +1015,15 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
             <p>Lo mínimo por cada llamada al modelo:</p>
             <ul class="clean" style="margin-top: 0.8rem">
               <li>
-                <code>request_id</code> — es lo que soporte de Anthropic te va a
+                <code>request_id</code>: es lo que soporte de Anthropic te va a
                 pedir para investigar
               </li>
               <li>
-                <code>usage.input_tokens</code> / <code>output_tokens</code> —
+                <code>usage.input_tokens</code> / <code>output_tokens</code>:
                 tu factura vive aquí
               </li>
               <li>
-                <code>stop_reason</code> — <code>max_tokens</code> aquí =
+                <code>stop_reason</code>: <code>max_tokens</code> aquí =
                 respuesta truncada silenciosa
               </li>
               <li>Latencia y número de intento (¿cuántos retries costó?)</li>
@@ -1033,7 +1033,7 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
               </li>
             </ul>
           </div>
-          <pre><code><span class="c"># tool_loop.py — pilar 4: cada llamada deja rastro</span>
+          <pre><code><span class="c"># tool_loop.py, pilar 4: cada llamada deja rastro</span>
 <span class="k">import</span> logging
 
 logging.<span class="f">basicConfig</span>(level=logging.INFO)
@@ -1051,13 +1051,13 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
     <span class="s">"latency_s"</span>: time.<span class="f">monotonic</span>() - t0,
 })
 <span class="c"># DEBUG: payload completo (sin PII)</span>
-<span class="c"># INFO:  solo métricas — esto va a prod</span></code></pre>
+<span class="c"># INFO:  solo métricas, esto va a prod</span></code></pre>
         </div>
       </section>
 
       <!-- SLIDE 15: ejercicio en vivo -->
       <section class="slide">
-        <h2>👩‍💻 Manos al código — 30 min</h2>
+        <h2>👩‍💻 Manos al código: 30 min</h2>
         <p class="muted" style="margin-bottom: 1.2rem">
           Las piezas ya las escribimos en la sesión. Ahora las ensamblas tú:
           <code>tool_loop.py</code> corriendo de punta a punta, en menos de 80
@@ -1113,7 +1113,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
               alt=""
             />
             <div>
-              <div class="vc-title">Pydantic is all you need — Jason Liu</div>
+              <div class="vc-title">Pydantic is all you need · Jason Liu</div>
               <div class="vc-meta">AI Engineer · Inglés</div>
               <div class="vc-why">
                 La charla canónica sobre structured outputs: por qué validar con
@@ -1133,7 +1133,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
             />
             <div>
               <div class="vc-title">
-                Pydantic is STILL all you need — Jason Liu
+                Pydantic is STILL all you need · Jason Liu
               </div>
               <div class="vc-meta">AI Engineer · Inglés</div>
               <div class="vc-why">
@@ -1198,7 +1198,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
             />
             <div>
               <div class="vc-title">
-                Tutorial Assistants API de OpenAI — Parte 2: Function Calling
+                Tutorial Assistants API de OpenAI · Parte 2: Function Calling
               </div>
               <div class="vc-meta">LLM Master · Español</div>
               <div class="vc-why">
@@ -1211,7 +1211,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
       </section>
 
       <section class="slide">
-        <h2>🏋️ Reto de la semana — AI Gym</h2>
+        <h2>🏋️ Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 02</span
           ><span class="tag green">Entregable: viernes</span>
@@ -1219,9 +1219,9 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
           <p>
             En producción va a fallar: la API de clima devuelve un 500 a las 3
             a.m. Construye un asistente CLI con las
-            <strong>3 herramientas del enunciado</strong> —
+            <strong>3 herramientas del enunciado</strong>:
             <code>get_weather</code>, <code>convert_currency</code> y
-            <code>search_db</code>, con datos sintéticos locales — y hazlo
+            <code>search_db</code>, con datos sintéticos locales, y hazlo
             sobrevivir el harness de caos del gym (<code>chaos.py</code>, seed
             fijo): <strong>timeouts</strong>,
             <strong>500s intermitentes</strong> y
@@ -1259,7 +1259,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
           style="margin-bottom: 1.4rem"
         ><code>[modelo]    ── tool_use (name, input) ──▶ [tu código ejecuta]
 [tu código] ── tool_result (rol user · mismo tool_use_id) ──▶ [modelo responde]</code></pre>
-        <h3 style="margin-bottom: 0.8rem">Acto 1 — Haz que funcione</h3>
+        <h3 style="margin-bottom: 0.8rem">Acto 1 · Haz que funcione</h3>
         <ul class="checklist">
           <li>
             Puedo explicar el round-trip <code>tool_use</code> →
@@ -1274,7 +1274,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
             <code>ValidationError</code> cuando falla
           </li>
         </ul>
-        <h3 style="margin: 1.4rem 0 0.8rem">Acto 2 — Haz que sobreviva</h3>
+        <h3 style="margin: 1.4rem 0 0.8rem">Acto 2 · Haz que sobreviva</h3>
         <ul class="checklist">
           <li>
             Tengo un wrapper de retries con backoff exponencial + jitter, y sé
@@ -1292,13 +1292,13 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
             Logueo <code>request_id</code>, tokens, <code>stop_reason</code> y
             latencia de cada llamada
           </li>
-          <li>Reto 02 del AI Gym agendado — entrega el viernes</li>
+          <li>Reto 02 del AI Gym agendado, entrega el viernes</li>
         </ul>
         <p class="muted" style="margin-top: 1.5rem">
-          Tu asistente ya actúa y sobrevive fallos — pero solo sabe lo que sus
+          Tu asistente ya actúa y sobrevive fallos, pero solo sabe lo que sus
           tools devuelven. Próxima sesión:
           <strong
-            >Sesión 04 — RAG I — Embeddings, Chunking y Vector Stores</strong
+            >Sesión 04 · RAG I: Embeddings, Chunking y Vector Stores</strong
           >: le damos conocimiento.
         </p>
       </section>

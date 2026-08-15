@@ -1,0 +1,17 @@
+Estimación previa (count_tokens): 41 tokens de entrada
+Costo de entrada estimado: $0.000123
+
+Real (resp.usage): 41 entrada / 227 salida
+stop_reason: end_turn
+
+Diferencia en la entrada: +0 tokens
+  (una diferencia pequeña es normal: la API agrega unos pocos tokens
+   de estructura al armar el mensaje)
+
+Costo real de esta llamada: $0.003528
+De ese costo, la SALIDA fue el 97%
+
+Esa es la lección del día: puedes estimar la entrada con precisión
+antes de gastar un centavo, pero la salida no la sabes hasta que
+ocurre, y suele ser la mayor parte de la factura. Controlarla es
+prompt (pedir respuestas cortas) y max_tokens, no suerte.

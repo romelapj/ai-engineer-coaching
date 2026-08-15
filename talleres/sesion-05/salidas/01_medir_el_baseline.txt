@@ -1,0 +1,60 @@
+Corpus: 23 chunks · Golden set: 15 queries
+
+=== Baseline: solo vectores (el RAG de la sesión 04) ===
+variante                   recall@1 recall@5 recall@10    MRR
+-------------------------------------------------------------
+vectorial (sesión 04)          0.60     0.87      0.93   0.71
+
+=== Detalle por query, con su síntoma ===
+(el RAG entrega 4 chunks: de la posición 5 en adelante, el modelo nunca lo ve)
+  ✓ ok         pos=1            ¿Cuál es el timeout default de la API?
+  ✓ ok         pos=1            ¿Cómo autentico mis peticiones a la API?
+  ✓ ok         pos=1            Superé el rate limit, ¿cuánto debo esperar?
+  ✓ ok         pos=1            ¿Cuántas veces se reintenta la entrega de un webhook?
+  ✓ ok         pos=1            ¿Qué significa el error E-4012?
+  ✓ ok         pos=1            código E-5001
+  ✓ ok         pos=1            ¿Puedo reintentar un pago que devolvió E-7777?
+  ✓ ok         pos=1            ¿Qué hago si el cliente paga con una tarjeta vencida?
+  ✓ ok         pos=1            endpoint v3 de Checkout Lite
+  ~ ORDEN      pos=2            ¿Qué versión mínima de TLS exige la API actualmente?
+                esperado: changelog-2026.md § Cambios de seguridad 2026
+                salió #1: changelog-2025.md § Cambios de seguridad 2025
+  ✗ NO LLEGA   fuera del top-10 ¿Cómo evito cobros duplicados cuando reintento un pago?
+                esperado: api-pagos.md § Timeouts y reintentos
+                salió #1: webhooks.md § Guía de Webhooks
+  ~ ORDEN      pos=4            ¿puedo usar sk_test_ en producción?
+                esperado: api-pagos.md § Autenticación
+                salió #1: errores.md § Catálogo de errores de PagosYa
+  ✗ NO LLEGA   pos=6            ¿Cómo verifico que un webhook realmente viene de PagosYa?
+                esperado: webhooks.md § Verificación de firma
+                salió #1: webhooks.md § Guía de Webhooks
+  ✗ NO LLEGA   pos=5            ¿cómo firmo mis webhooks?
+                esperado: webhooks.md § Verificación de firma
+                salió #1: webhooks.md § Guía de Webhooks
+  ~ ORDEN      pos=2            ¿cuánto tiempo tengo para responder un webhook?
+                esperado: webhooks.md § Reintentos de entrega
+                salió #1: webhooks.md § Guía de Webhooks
+
+=== Diagnóstico: ¿qué TIPO de error tenemos? ===
+  (ventana: los 4 chunks que rag.py entrega al generador)
+  correctas de primeras : 9
+  fallo de ORDEN        : 3   (llega, pero enterrado)
+  fallo de RECUPERACIÓN : 3   (no llega al modelo)
+
+Dos lecturas, en este orden:
+
+1. Las queries que fallan comparten un patrón. Todas se apoyan en un
+   término LITERAL del documento ('cobros duplicados', 'sk_test_',
+   'firma') y el embedding lo suaviza hacia el tema general: por eso
+   gana el chunk introductorio genérico ('Guía de Webhooks') sobre la
+   sección específica. Es exactamente la slide 'dónde se rompe el
+   vector search puro': brilla en paráfrasis, falla en lo exacto.
+
+2. Tenemos los DOS síntomas, y eso fija el orden de trabajo. El
+   reranking solo puede arreglar los fallos de orden: reordenar no
+   rescata un chunk que nunca se recuperó. Así que primero atacamos
+   recuperación (cambiando CÓMO se busca) y recién después decidimos
+   si el orden sigue siendo un problema.
+
+Fallo de recuperación por términos literales tiene una palanca con
+nombre propio: búsqueda léxica → script 02.

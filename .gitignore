@@ -6,3 +6,9 @@ coach/
 
 # Plantilla interna de diseño, no es material del alumno.
 _template.html
+
+# Artefactos que se generan al correr los ejemplos de los talleres.
+# El código y las salidas capturadas SÍ se versionan; la base vectorial no.
+talleres/*/codigo/rag_db/
+talleres/*/codigo/.venv/
+__pycache__/

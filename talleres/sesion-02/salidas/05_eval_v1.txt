@@ -1,0 +1,25 @@
+Evaluando el prompt v1 contra 16 casos...
+
+✓ [ 1] esperaba duplicated    → 'duplicated'
+✓ [ 2] esperaba not_received  → 'not_received'
+✓ [ 3] esperaba fraud         → 'fraud'
+✓ [ 4] esperaba duplicated    → 'duplicated'
+✓ [ 5] esperaba not_received  → 'not_received'
+✓ [ 6] esperaba fraud         → 'fraud'
+✓ [ 7] esperaba other         → 'other'
+✓ [ 8] esperaba other         → 'other'
+✓ [ 9] esperaba duplicated    → 'duplicated'
+✓ [10] esperaba other         → 'other'
+✗ [11] esperaba fraud         → 'duplicated'
+✗ [12] esperaba other         → 'not_received'
+✓ [13] esperaba duplicated    → 'duplicated'
+✓ [14] esperaba duplicated    → 'duplicated'
+✓ [15] esperaba other         → 'other'
+✗ [16] esperaba not_received  → 'fraud'
+
+Exactitud v1: 13/16 = 81%
+
+Los que falló (aquí es donde se decide el próximo cambio):
+  [11] Aparecen dos cargos: uno mío y otro que no reconozco
+  [12] El pedido llegó incompleto, faltaron dos de los cuatro artículos
+  [16] La app dice entregado y firmado, pero yo no firmé nada ni recibí el paquete

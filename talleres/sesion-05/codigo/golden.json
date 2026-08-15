@@ -1,0 +1,17 @@
+{
+  "¿Cuál es el timeout default de la API?": "api-pagos.md § Timeouts y reintentos",
+  "¿Cómo autentico mis peticiones a la API?": "api-pagos.md § Autenticación",
+  "Superé el rate limit, ¿cuánto debo esperar?": "api-pagos.md § Límites de tasa",
+  "¿Cuántas veces se reintenta la entrega de un webhook?": "webhooks.md § Reintentos de entrega",
+  "¿Qué significa el error E-4012?": "errores.md § Error E-4012: fondos insuficientes",
+  "código E-5001": "errores.md § Error E-5001: timeout del emisor",
+  "¿Puedo reintentar un pago que devolvió E-7777?": "errores.md § Error E-7777: rechazo por riesgo",
+  "¿Qué hago si el cliente paga con una tarjeta vencida?": "errores.md § Error E-4019: tarjeta vencida",
+  "endpoint v3 de Checkout Lite": "changelog-2026.md § Nuevos endpoints 2026",
+  "¿Qué versión mínima de TLS exige la API actualmente?": "changelog-2026.md § Cambios de seguridad 2026",
+  "¿Cómo evito cobros duplicados cuando reintento un pago?": "api-pagos.md § Timeouts y reintentos",
+  "¿puedo usar sk_test_ en producción?": "api-pagos.md § Autenticación",
+  "¿Cómo verifico que un webhook realmente viene de PagosYa?": "webhooks.md § Verificación de firma",
+  "¿cómo firmo mis webhooks?": "webhooks.md § Verificación de firma",
+  "¿cuánto tiempo tengo para responder un webhook?": "webhooks.md § Reintentos de entrega"
+}

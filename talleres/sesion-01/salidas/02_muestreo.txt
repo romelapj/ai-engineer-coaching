@@ -1,0 +1,25 @@
+=== temperature = 0 (conservador) ===
+  corrida 1: 1. **Fluxa**
+  corrida 2: 1. **Fluxa**
+  corrida 3: 1. **Fluxa**
+
+=== temperature = 1 (creativo) ===
+  corrida 1: 1. **Velo**
+  corrida 2: 1. **Fluxa**
+  corrida 3: 1. **Pagora**
+
+Con temperature 0 las tres corridas se parecen mucho; con 1 se
+separan. Para clasificar o extraer datos quieres 0: si cada corrida
+diera algo distinto no podrías medir si tu prompt mejoró.
+OJO: ni temperature=0 garantiza salidas idénticas. El cálculo en
+GPU por lotes no es determinista. Diseña tests tolerantes.
+
+=== max_tokens = 10 (a propósito, demasiado bajo) ===
+  respuesta   : '1. **Fluxa**\n2'
+  stop_reason : max_tokens
+  output_tokens: 10
+
+  ↑ Ahí está el bug silencioso. La respuesta se cortó a media
+  frase y NADA falló: no hay excepción, no hay error HTTP.
+  Si no miras stop_reason, procesas una respuesta incompleta
+  como si estuviera entera. Por eso va en tus logs desde el día 1.
