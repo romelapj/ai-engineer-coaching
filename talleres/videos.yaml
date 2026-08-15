@@ -120,6 +120,146 @@ videos:
     autor: "Greg Kamradt"
     idioma: "Inglés"
     duracion: "~1 h 10 min"
+    resumen: |
+      Greg Kamradt organiza el chunking en cinco niveles que van de lo mecánico
+      a lo semántico, y arranca con una regla que repite tres veces a lo largo
+      de la hora: **el objetivo no es trocear por trocear, es dejar los datos en
+      un formato del que se pueda recuperar valor después**. Su reformulación de
+      la pregunta vale por sí sola: no preguntes "¿cómo troceo mis datos?", sino
+      "¿cuál es la forma óptima de pasarle a mi modelo los datos que necesita
+      para mi tarea?". La justificación es doble: el modelo tiene un límite de
+      contexto, y rinde mejor cuando sube la relación señal/ruido. Cita a Anton,
+      cofundador de Chroma: la información que distrae dentro de la ventana de
+      contexto degrada de forma medible el rendimiento de toda la aplicación.
+
+      **Nivel 1, corte por caracteres.** Trocear cada N caracteres, con un
+      solape opcional. Lo enseña a mano para que se vea el fallo: con 35
+      caracteres, la palabra "chunk" queda partida en "CH" y "unk". Su veredicto
+      es directo: no conoce a nadie que use esto en producción. Aquí introduce
+      `chunk_size` y `chunk_overlap`, y de paso su herramienta
+      [chunkviz.com](https://chunkviz.com), que colorea los chunks en vivo
+      mientras mueves el tamaño.
+
+      **Nivel 2, corte recursivo.** En vez de un número fijo, una lista de
+      separadores que se prueban en orden: primero doble salto de línea
+      (párrafos), luego salto de línea, luego espacios, luego caracteres. La
+      idea de fondo es que aprovecha cómo escriben los humanos, que separan sus
+      ideas en párrafos. Con 65 caracteres todavía corta a mitad de frase; al
+      subir a 450 empieza a respetar los párrafos completos. Es el nivel que él
+      recomienda como punto de partida de cualquier proyecto.
+
+      **Nivel 3, corte por tipo de documento.** Si el documento trae estructura,
+      úsala: encabezados en Markdown, `class` y `def` en Python, la sintaxis de
+      JavaScript. La parte más útil es la de PDFs: extrae las tablas como
+      **HTML**, porque el modelo entiende HTML y Markdown mucho mejor que una
+      tabla maquetada visualmente. Y para las imágenes propone algo que no es
+      obvio: como los espacios vectoriales de texto e imagen no coinciden,
+      genera con un modelo de visión un **resumen en texto de cada imagen**,
+      indexa ese resumen, y en la recuperación devuelve el resumen o le pasa la
+      imagen a un modelo multimodal.
+
+      **Nivel 4, corte semántico.** Aquí está su mejor observación: los tres
+      primeros niveles solo miran la posición física del texto. Es como ordenar
+      una biblioteca por el tamaño de los libros y el hueco del estante, en vez
+      de por lo que tratan. Su método: partir en frases, agrupar cada frase con
+      la anterior y la siguiente para reducir ruido, embeber cada grupo y medir
+      la distancia entre grupos consecutivos. Donde la distancia se dispara, hay
+      un cambio de tema y por tanto un corte. Usa el percentil 95 de las
+      distancias como umbral y le salen 17 chunks del ensayo de Paul Graham.
+
+      **Nivel 5, corte agéntico.** Parte de preguntarse cómo lo haría una
+      persona: empezar por arriba, meter lo primero en un chunk, e ir bajando
+      decidiendo si cada pieza nueva pertenece a un chunk que ya existe o abre
+      uno nuevo. Para que el modelo pueda decidir, primero convierte el texto en
+      **proposiciones**, frases que se sostienen solas: *"Greg fue al parque. Le
+      gusta caminar"* se convierte en *"Greg fue al parque. A Greg le gusta
+      caminar"*. Se lee peor y se recupera mejor. Cada chunk lleva un título y
+      un resumen que **se reescriben** cuando entra una proposición nueva, y en
+      la demo se ve a un chunk cambiar de nombre al crecer.
+
+      **Nivel extra, representaciones alternativas.** Cierra saliéndose del
+      chunking: indexar un resumen del texto en vez del texto, indexar preguntas
+      hipotéticas que alguien haría, buscar con el chunk pequeño pero entregar
+      el documento padre, o extraer un grafo de entidades en vez de trocear.
+    valioso:
+      - |
+        **El mandamiento del chunking**: el objetivo no es trocear, es dejar los
+        datos listos para que se pueda recuperar valor de ellos. Si tu estrategia
+        no sirve a la tarea de después, da igual lo sofisticada que sea.
+      - |
+        **El nivel 2 es el que mejor paga.** Es una línea de código, no necesita
+        procesamiento extra y aprovecha que la gente separa sus ideas en
+        párrafos. Empezar por ahí y complicarse solo si los números lo piden.
+      - |
+        **Las tablas de un PDF se entregan como HTML, no como texto plano.** El
+        modelo fue entrenado con tablas HTML y Markdown; una tabla maquetada
+        visualmente pierde la relación entre celda y encabezado al aplanarse.
+      - |
+        **Las imágenes se indexan por su resumen en texto.** Los embeddings de
+        imagen y los de texto viven en espacios distintos, así que buscar entre
+        los dos no funciona bien. Convertir la imagen en texto la mete en el
+        mismo espacio que el resto del corpus.
+      - |
+        **La analogía de la biblioteca** para explicar por qué el corte físico
+        se queda corto: ordenar los libros por su tamaño y el hueco del estante
+        en vez de por lo que tratan.
+      - |
+        **Las proposiciones del nivel 5**: un texto óptimo para recuperar no es
+        un texto agradable de leer. Resolver los pronombres ("él" a "Greg")
+        empeora la prosa y mejora la recuperación.
+      - |
+        La honestidad de fondo: dice de entrada que **no va a prescribir el
+        mejor método** porque no existe, y enseña por qué. Ese encuadre vale más
+        que cualquiera de las cinco técnicas.
+    conecta: |
+      **Lo que hiciste hoy es su nivel 3, no el 1 ni el 2.** Tu `chunk_markdown`
+      corta por los títulos `##` y `###`, que es exactamente el caso de Markdown
+      que él muestra: usar la estructura que el documento ya trae en vez de un
+      número de caracteres. Vale la pena ver los niveles 1 y 2 sabiendo eso,
+      porque explican de qué te libraste.
+
+      Hay un detalle donde el taller va un paso más allá que el video. Él corta
+      por encabezado; nosotros además construimos el id `archivo § sección` con
+      ese encabezado, y ese id es el que hace posible el golden set de la sesión
+      05. El video se queda en producir los chunks; el taller los produce
+      **identificables**, que es lo que después permite medir.
+
+      Su nivel 4 y su nivel extra no son curiosidades: son literalmente el
+      contenido del día 9 del taller 05. El corte semántico es primo del
+      contextual retrieval, y su "busca con el chunk pequeño y entrega el padre"
+      es la palanca D, parent-document, tal cual.
+
+      Y el momento que más conviene retener es cuando dice que no hay una forma
+      correcta y que hay que evaluar. Ahí remite a una herramienta externa y
+      sigue adelante. Ese hueco exacto es la sesión 05 completa: recall@k, MRR y
+      un golden set con el que esa pregunta deja de ser de opinión.
+    reparos: |
+      **El video no mide nada, y él lo dice.** Enseña cinco estrategias y declara
+      de entrada que su objetivo no es prescribir la mejor. Como exposición está
+      muy bien, pero te deja con cinco opciones y sin criterio para elegir entre
+      ellas. Cuando menciona las evaluaciones las despacha como "más un tema de
+      retrieval" y remite a otra herramienta. Míralo sabiendo que la parte que
+      falta es la que más te va a costar en tu proyecto.
+
+      **El percentil 95 del nivel 4 es un número puesto a ojo**, y él lo admite
+      ("hay un millón de formas de hacer esto"). No es un defecto del método,
+      pero sí una perilla más que alguien tendrá que calibrar, y calibrar sin
+      golden set es adivinar.
+
+      **El nivel 5 es lento y caro**, y en la propia demo solo procesa cinco
+      párrafos. Su apuesta es que los modelos se abaraten. Razonable, pero hoy
+      sigue siendo una llamada al modelo por cada proposición y por cada
+      actualización de título y resumen.
+
+      **La parte de imágenes está fechada.** Descarta CLIP diciendo que la
+      tecnología "todavía no está ahí" y avisa de que eso puede cambiar. El
+      video es de 2024: si vas a trabajar con material visual, esa sección hay
+      que revisarla contra los modelos multimodales de hoy antes de copiarla.
+
+      **Casi todo va sobre LangChain y LlamaIndex.** El curso lo hace a mano a
+      propósito, para que cada pieza se entienda por dentro. No es una
+      contradicción, pero cuando veas su código de una línea, recuerda que tú ya
+      sabes qué hay debajo.
 
   dN0lsF2cvm4:
     titulo: "Vector Databases simply explained! (Embeddings & Indexes)"
