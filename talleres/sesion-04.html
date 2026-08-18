@@ -526,6 +526,13 @@
         gap: 0.9rem;
         position: sticky;
         top: 2rem;
+        /* Sin esto el sticky no sirve de nada. Como celda de grid, por defecto
+           se estira a la altura de toda la fila (en un paso largo, 1800px), y
+           un elemento pegajoso tan alto como su contenedor no tiene recorrido:
+           su contenido se queda arriba y sale de pantalla al leer. Con
+           `start` mide lo que mide el número más el círculo, y entonces sí
+           acompaña la lectura. */
+        align-self: start;
       }
       .paso-cifra {
         font-size: 1.05rem;
@@ -570,6 +577,73 @@
       }
       .paso.hecho .tick::after {
         opacity: 1;
+      }
+      /* ---------- marcar como hecho, al cierre del paso ----------
+         El círculo del margen queda arriba, y en un paso largo hay que subir
+         a buscarlo justo cuando acabas de leer. Este repite la acción donde
+         termina la lectura, que es donde nace la intención de marcarla. */
+      .tick-fin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1.75rem;
+        padding: 0.5rem 1.05rem 0.5rem 0.75rem;
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        background: none;
+        color: var(--tenue);
+        font: 600 0.82rem/1 inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .tick-fin:hover {
+        border-color: var(--ok);
+        color: var(--texto-2);
+      }
+      .tick-fin-marca {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--linea);
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .tick-fin-marca::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 0.62rem;
+        font-weight: 900;
+        color: var(--fondo);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .tick-fin:hover .tick-fin-marca {
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin {
+        border-color: rgba(52, 211, 153, 0.3);
+        color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca::after {
+        opacity: 1;
+      }
+      .paso.hecho .tick-fin-texto::after {
+        content: " ✓";
+      }
+      .paso.hecho .tick-fin-texto {
+        font-size: 0;
+      }
+      .paso.hecho .tick-fin-texto::before {
+        content: "Hecho";
+        font-size: 0.82rem;
       }
       .paso-cab {
         display: flex;
@@ -833,6 +907,107 @@
         background: var(--superficie);
         border-radius: 4px;
         padding: 0.08em 0.35em;
+      }
+      /* ---------- sintaxis de Python ----------
+         No es estado (ni atención ni verificado): es material de apoyo, así
+         que va en neutro. Plegado por defecto porque el alumno que ya sabe
+         Python no necesita ver esto 41 veces; el que no sabe lo abre. */
+      details.sintaxis {
+        margin-left: var(--margen-paso);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        padding: 0.85rem 1.3rem;
+      }
+      details.sintaxis > summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        transition: color 0.2s ease;
+      }
+      details.sintaxis > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.sintaxis > summary::before {
+        content: "▸";
+        font-size: 0.8rem;
+        letter-spacing: 0;
+        transition: transform 0.2s ease;
+      }
+      details.sintaxis[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.sintaxis > summary:hover {
+        color: var(--texto-2);
+      }
+      details.sintaxis .cuenta {
+        margin-left: auto;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: var(--tenue);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.05em 0.55em;
+      }
+      ul.sintaxis-lista {
+        list-style: none;
+        margin-top: 0.5rem;
+      }
+      ul.sintaxis-lista li {
+        display: grid;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+        gap: 0.25rem 1.4rem;
+        align-items: baseline;
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--linea-suave);
+        font-size: 0.92rem;
+      }
+      ul.sintaxis-lista li {
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > code {
+        color: var(--acento);
+        background: var(--acento-suave);
+        border: 1px solid var(--acento-borde);
+        border-radius: 5px;
+        padding: 0.15em 0.5em;
+        font-size: 0.84rem;
+        /* Sin nowrap: hay símbolos largos (una f-string con formato, una
+           llamada con tres argumentos) que a 768px empujaban la página entera
+           a scroll horizontal. Partirlos es más feo que una línea; sacar la
+           página de cuadro lo es mucho más. */
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > span {
+        color: var(--texto-2);
+      }
+      ul.sintaxis-lista li > span code {
+        color: var(--texto);
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 4px;
+        padding: 0.08em 0.35em;
+        font-size: 0.86em;
+        overflow-wrap: anywhere;
+      }
+      /* En móvil el símbolo no cabe al lado: pasa arriba y el texto debajo. */
+      @media (max-width: 720px) {
+        ul.sintaxis-lista li {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0.5rem;
+        }
+        ul.sintaxis-lista li > code {
+          justify-self: start;
+        }
       }
       details.completo {
         border: 1px dashed var(--linea);
@@ -1270,6 +1445,10 @@
 cd ~/talleres/sesion-04
 python3 -m venv .venv
 source .venv/bin/activate"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">mkdir</span> -p ~/talleres/sesion-04</span><span class="l"><span class="k">cd</span> ~/talleres/sesion-04</span><span class="l">python3 -m venv .venv</span><span class="l"><span class="k">source</span> .venv/bin/activate</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Cuando el prompt de tu terminal empieza a mostrar <code>(.venv)</code>, estás dentro. Vas a tener que correr <code>source .venv/bin/activate</code> cada vez que abras una terminal nueva: es el olvido número uno de la semana.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>command not found: python3</code><span>No tienes Python instalado. En Mac: <code>brew install python</code>. En Windows, descárgalo de python.org y marca <em>Add to PATH</em>.</span></li><li><code>source: no such file or directory: .venv/bin/activate</code><span>En Windows el comando es <code>.venv\Scripts\activate</code>.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d1p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d1p2" data-paso="d1p2">
@@ -1289,6 +1468,10 @@ source .venv/bin/activate"><div class="bloque-cab"><span class="ruta">terminal</
 # se capturaron las salidas que ves en el taller.
 chromadb==1.5.9      # Vector store embebido: guarda los embeddings en disco.
 anthropic==0.120.2   # SDK oficial de Anthropic, para el paso de generación."><div class="bloque-cab"><span class="ruta">requirements.txt · archivo completo (5 líneas)</span></div><pre><code><span class="l"># Dependencias del taller de la sesión 04 (RAG I).</span><span class="l"># Estas son las versiones con las que se probaron los 5 ejemplos y con las que</span><span class="l"># se capturaron las salidas que ves en el taller.</span><span class="l">chromadb==1.5.9      # Vector store embebido: guarda los embeddings en disco.</span><span class="l">anthropic==0.120.2   # SDK oficial de Anthropic, para el paso de generación.</span></code></pre></div><div class="bloque" data-codigo="pip install -r requirements.txt"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">pip</span> install -r requirements.txt</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>chromadb</code> es el vector store; trae además un modelo de embeddings local que se descarga solo la primera vez (~80 MB). <code>anthropic</code> es el SDK que usaremos recién en el día 4; hasta entonces, todo corre sin internet y sin gastar un solo token.</p></div>
+        <button class="tick-fin" type="button" data-tick="d1p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d1p3" data-paso="d1p3">
@@ -1305,6 +1488,10 @@ anthropic==0.120.2   # SDK oficial de Anthropic, para el paso de generación."><
         </header>
         <p>Los días 4 y 5 llaman al modelo. La llave se lee de una variable de entorno: nunca se escribe dentro del código.</p><div class="bloque" data-codigo="export ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   # tu llave real, sin comillas raras
 python -c &quot;import chromadb, anthropic; print(&#x27;entorno listo&#x27;)&quot;"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">export</span> ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   <span class="c"># tu llave real, sin comillas raras</span></span><span class="l"><span class="k">python</span> -c &quot;import chromadb, anthropic; print(&#x27;entorno listo&#x27;)&quot;</span></code></pre></div><div class="bloque salida" data-codigo="entorno listo"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">entorno listo</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>export</code> solo dura lo que dure esa terminal. Si vas a trabajar varios días, mete esa línea en tu <code>~/.zshrc</code> (o <code>~/.bashrc</code>) para no repetirla. Y nunca la subas a git.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Si el alumno no tiene llave todavía, los días 1 al 3 se pueden hacer igual: no llaman al modelo. Solo los días 4 y 5 la necesitan.</p></div>
+        <button class="tick-fin" type="button" data-tick="d1p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       
@@ -1368,6 +1555,10 @@ el límite es de 100 peticiones por minuto por API key, y la respuesta
 incluye el header `Retry-After` con los segundos a esperar. Los errores
 `5xx` son fallas del lado de PagosYa y es seguro reintentarlos con la misma
 `Idempotency-Key`."><div class="bloque-cab"><span class="ruta">docs/api-pagos.md · archivo completo (34 líneas)</span></div><pre><code><span class="l"><span class="k"># Guía de la API de Pagos</span></span><span class="l"></span><span class="l">Documentación interna de la API de pagos de la empresa ficticia &quot;PagosYa&quot;.</span><span class="l">Este archivo es la &quot;base de conocimiento&quot; que el pipeline RAG va a ingestar.</span><span class="l"></span><span class="l"><span class="k">## Autenticación</span></span><span class="l"></span><span class="l">Todas las peticiones a la API de PagosYa requieren una API key en el header</span><span class="l"><span class="s">`X-Api-Key`</span>. Las API keys se generan desde el dashboard, en la sección</span><span class="l">Configuración &gt; Credenciales. Existen dos tipos de llaves: las de sandbox</span><span class="l">(prefijo <span class="s">`sk_test_`</span>) y las de producción (prefijo <span class="s">`sk_live_`</span>). Nunca uses</span><span class="l">llaves de producción en ambientes de prueba. Si una llave se filtra, puedes</span><span class="l">rotarla desde el dashboard sin downtime: la llave anterior sigue siendo</span><span class="l">válida durante 24 horas después de la rotación.</span><span class="l"></span><span class="l"><span class="k">## Timeouts y reintentos</span></span><span class="l"></span><span class="l">El timeout default de la API es de 30 segundos por petición. Si tu cliente</span><span class="l">necesita un límite más corto, puedes enviar el header <span class="s">`X-Timeout-Ms`</span> con un</span><span class="l">valor entre 1000 y 30000 milisegundos. Para operaciones de creación de pago</span><span class="l">recomendamos configurar reintentos con backoff exponencial: máximo 3</span><span class="l">reintentos, empezando con una espera de 2 segundos. Todas las operaciones</span><span class="l">de escritura aceptan el header <span class="s">`Idempotency-Key`</span> para evitar cobros</span><span class="l">duplicados cuando reintentas una petición.</span><span class="l"></span><span class="l"><span class="k">## Códigos de error</span></span><span class="l"></span><span class="l">La API usa códigos HTTP estándar. Un <span class="s">`400`</span> indica que la petición está mal</span><span class="l">formada (revisa el campo <span class="s">`error.message`</span> para el detalle). Un <span class="s">`401`</span> indica</span><span class="l">API key inválida o expirada. Un <span class="s">`429`</span> significa que superaste el rate limit:</span><span class="l">el límite es de 100 peticiones por minuto por API key, y la respuesta</span><span class="l">incluye el header <span class="s">`Retry-After`</span> con los segundos a esperar. Los errores</span><span class="l"><span class="s">`5xx`</span> son fallas del lado de PagosYa y es seguro reintentarlos con la misma</span><span class="l"><span class="s">`Idempotency-Key`</span>.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Fíjate en la forma, no en el contenido: <strong>títulos <code>##</code> que separan temas</strong> (autenticación, timeouts, errores). Esa estructura ya es una decisión de chunking tomada por quien escribió el documento, y en un momento la vamos a aprovechar en vez de inventar la nuestra. El segundo archivo, <code>docs/webhooks.md</code>, tiene la misma forma y está completo al final de este día.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p2" data-paso="d2p2">
@@ -1402,6 +1593,10 @@ Cómo correrlo:
 import re  # &quot;re&quot; = expresiones regulares, el buscador de patrones de texto de Python.
 from pathlib import Path  # Manejo de rutas de archivos multiplataforma.
 "><div class="bloque-cab"><span class="ruta">00_chunking.py · líneas 1–20</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1: Chunking por estructura, en 20 líneas</span></span><span class="l"></span><span class="l"><span class="s">Del deck: antes de poder &quot;buscar&quot; en tus documentos, hay que partirlos en</span></span><span class="l"><span class="s">pedazos (chunks). La estrategia más simple es por tamaño fijo, pero la más</span></span><span class="l"><span class="s">útil en la práctica es POR ESTRUCTURA: cortar donde el documento ya tiene</span></span><span class="l"><span class="s">cortes naturales (los títulos ## y ### de un Markdown). Así cada chunk</span></span><span class="l"><span class="s">habla de UN solo tema y además sabemos de qué sección salió (metadata que</span></span><span class="l"><span class="s">luego usaremos para citar fuentes).</span></span><span class="l"></span><span class="l"><span class="s">Este archivo NO llama a ningún modelo ni necesita internet: solo lee los</span></span><span class="l"><span class="s">.md de la carpeta docs/ y muestra los chunks que produce.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python ejemplos/00_chunking.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> re  <span class="c"># &quot;re&quot; = expresiones regulares, el buscador de patrones de texto de Python.</span></span><span class="l"><span class="k">from</span> pathlib <span class="k">import</span> Path  <span class="c"># Manejo de rutas de archivos multiplataforma.</span></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El <em>docstring</em> de arriba no es decoración: cada archivo del taller empieza diciendo qué explica y cómo se corre. Cuando vuelvas en tres meses, eso es lo que te salva.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p3" data-paso="d2p3">
@@ -1444,6 +1639,10 @@ def split_max_tokens(texto, max_tokens=800, overlap=100):
     return partes or [texto]
     # El &quot;or [texto]&quot; cubre el caso borde de un texto vacío: devolvemos
     # al menos el texto original en lugar de una lista vacía."><div class="bloque-cab"><span class="ruta">00_chunking.py · líneas 21–48</span><span class="pill nuevo">+28 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">split_max_tokens</span>(texto, max_tokens=800, overlap=100):</span><span class="l">    <span class="c"># Un chunk no puede ser infinito: los modelos de embeddings tienen un</span></span><span class="l">    <span class="c"># límite de tokens. Esta función parte un texto largo en pedazos de</span></span><span class="l">    <span class="c"># máximo ~800 tokens, con un &quot;overlap&quot; (solape) de ~100 tokens entre</span></span><span class="l">    <span class="c"># pedazos para no cortar una idea justo en la frontera.</span></span><span class="l">    palabras = texto.<span class="f">split</span>()</span><span class="l">    <span class="c"># No tenemos el tokenizador exacto a la mano, así que aproximamos:</span></span><span class="l">    <span class="c"># en español/inglés, 1 palabra ≈ 1.3 tokens. Dividimos para pasar</span></span><span class="l">    <span class="c"># de &quot;tokens&quot; a &quot;cantidad de palabras&quot;.</span></span><span class="l">    tam = <span class="f">int</span>(max_tokens / 1.3)  <span class="c"># Tamaño de cada pedazo, en palabras.</span></span><span class="l">    paso = <span class="f">max</span>(</span><span class="l">        1, tam - <span class="f">int</span>(overlap / 1.3)</span><span class="l">    )  <span class="c"># Cuánto avanzamos entre pedazo y pedazo (menos que &#x27;tam&#x27; = hay solape).</span></span><span class="l">    partes = []</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(0, <span class="f">len</span>(palabras), paso):  <span class="c"># i avanza de &#x27;paso&#x27; en &#x27;paso&#x27;: 0, paso, 2*paso...</span></span><span class="l">        partes.<span class="f">append</span>(<span class="s">&quot; &quot;</span>.<span class="f">join</span>(palabras[i : i + tam]))</span><span class="l">        <span class="c"># Tomamos &#x27;tam&#x27; palabras desde la posición i y las unimos en un texto.</span></span><span class="l">        <span class="k">if</span> i + tam &gt;= <span class="f">len</span>(palabras):</span><span class="l">            <span class="k">break</span></span><span class="l">            <span class="c"># Si esta ventana ya llegó al final del texto, PARAMOS. Sin este</span></span><span class="l">            <span class="c"># break, el range genera una ventana más: una &quot;cola&quot; de pocas</span></span><span class="l">            <span class="c"># palabras que ya estaba contenida en el chunk anterior. Esos</span></span><span class="l">            <span class="c"># fragmentos huérfanos embeben con mucho ruido y producen</span></span><span class="l">            <span class="c"># falsos positivos en el retrieval.</span></span><span class="l">    <span class="k">return</span> partes <span class="k">or</span> [texto]</span><span class="l">    <span class="c"># El &quot;or [texto]&quot; cubre el caso borde de un texto vacío: devolvemos</span></span><span class="l">    <span class="c"># al menos el texto original en lugar de una lista vacía.</span></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Dos detalles que valen la sesión entera. <strong>El solape</strong>: si cortas seco, la idea que quedaba a caballo entre dos chunks se pierde en los dos. <strong>El <code>break</code></strong>: sin él, el último pedazo es una cola de pocas palabras que ya estaba dentro del chunk anterior. Esos fragmentos huérfanos se convierten en vectores con mucho ruido y luego aparecen como falsos positivos en las búsquedas. Un bug de chunking se paga en el retrieval, dos días después, y no se ve venir.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p4" data-paso="d2p4">
@@ -1484,6 +1683,10 @@ def chunk_markdown(texto, fuente):
                 }
             )
     return chunks"><div class="bloque-cab"><span class="ruta">00_chunking.py · líneas 49–74</span><span class="pill nuevo">+26 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">chunk_markdown</span>(texto, fuente):</span><span class="l">    <span class="c"># Corta un documento Markdown por sus títulos de nivel 2 y 3 (## y ###).</span></span><span class="l">    <span class="c"># &#x27;fuente&#x27; es el nombre del archivo, que guardamos como metadata.</span></span><span class="l">    secciones = re.<span class="f">split</span>(<span class="s">r&quot;\n(?=#{2,3} )&quot;</span>, texto)</span><span class="l">    <span class="c"># El patrón se lee así: corta en cada salto de línea (\n) que esté</span></span><span class="l">    <span class="c"># seguido de &quot;## &quot; o &quot;### &quot;. El &quot;(?=...)&quot; es un &quot;lookahead&quot;: mira que</span></span><span class="l">    <span class="c"># el título viene después, pero NO lo consume; así el título queda</span></span><span class="l">    <span class="c"># DENTRO de su sección, no se pierde en el corte.</span></span><span class="l">    chunks = []  <span class="c"># Aquí iremos acumulando los chunks terminados.</span></span><span class="l">    <span class="k">for</span> sec <span class="k">in</span> secciones:</span><span class="l">        titulo = sec.<span class="f">splitlines</span>()[0].<span class="f">lstrip</span>(<span class="s">&quot;# &quot;</span>)</span><span class="l">        <span class="c"># La primera línea de cada sección es su título; le quitamos los</span></span><span class="l">        <span class="c"># &#x27;#&#x27; y espacios del inicio para quedarnos con el texto limpio.</span></span><span class="l">        <span class="k">for</span> parte <span class="k">in</span> <span class="f">split_max_tokens</span>(sec, max_tokens=100, overlap=20):</span><span class="l">            <span class="c"># Si una sección es muy larga, la volvemos a partir por tamaño.</span></span><span class="l">            <span class="c"># (En nuestros docs de ejemplo cada sección cabe en un chunk.)</span></span><span class="l">            chunks.<span class="f">append</span>(</span><span class="l">                {</span><span class="l">                    <span class="s">&quot;texto&quot;</span>: parte,  <span class="c"># El contenido del chunk (lo que se va a embeber y buscar).</span></span><span class="l">                    <span class="s">&quot;fuente&quot;</span>: fuente,  <span class="c"># De qué archivo salió, para poder citar [1] (api-pagos.md § ...).</span></span><span class="l">                    <span class="s">&quot;seccion&quot;</span>: titulo,  <span class="c"># De qué sección salió, misma razón.</span></span><span class="l">                }</span><span class="l">            )</span><span class="l">    <span class="k">return</span> chunks</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El <code>(?=...)</code> de la expresión regular es un <em>lookahead</em>: mira que viene un título pero no lo consume, así el título queda <strong>dentro</strong> de su sección en vez de perderse en el corte. Y lo más importante de todo el día: <code>fuente</code> y <code>seccion</code>. Esa metadata no se usa para buscar: se usa para <strong>citar</strong>. Sin ella, el día 4 no existe: tendrías respuestas sin manera de verificarlas.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p5" data-paso="d2p5">
@@ -1541,6 +1744,10 @@ if __name__ == &quot;__main__&quot;:
 
 [4] api-pagos.md § Timeouts y reintentos
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Se generaron 10 chunks a partir de 2 documentos:</span><span class="l"></span><span class="l">[1] api-pagos.md § Guía de la API de Pagos</span><span class="l">    &quot;# Guía de la API de Pagos Documentación interna de la API de pagos de la empresa...&quot;  (177 caracteres)</span><span class="l"></span><span class="l">[2] api-pagos.md § Autenticación</span><span class="l">    &quot;## Autenticación Todas las peticiones a la API de PagosYa requieren una API key ...&quot;  (474 caracteres)</span><span class="l"></span><span class="l">[3] api-pagos.md § Autenticación</span><span class="l">    &quot;filtra, puedes rotarla desde el dashboard sin downtime: la llave anterior sigue ...&quot;  (134 caracteres)</span><span class="l"></span><span class="l">[4] api-pagos.md § Timeouts y reintentos</span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Mira el chunk <code>[3]</code>: dice <em>&quot;filtra, puedes rotarla desde el dashboard...&quot;</em>, o sea empieza a mitad de una frase, y tiene 134 caracteres contra los 474 del chunk <code>[2]</code>. Ese es <code>split_max_tokens</code> partiendo una sección larga: el solape hace que el pedazo de arriba se repita abajo. Es correcto, pero <strong>anótalo</strong>: en el día 3 vas a ver a ese mismo chunk aparecer en los resultados con una similitud más baja que su hermano.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>FileNotFoundError: docs</code><span>Estás corriendo el script desde otra carpeta. Haz <code>cd</code> a la carpeta donde está <code>00_chunking.py</code>.</span></li></ul></details><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Aquí es donde vale la pena parar y preguntar: <em>¿qué pasaría si el documento no tuviera títulos?</em> Es el puente natural al chunking semántico, que es tema de la sesión 05.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>00_chunking.py</code> completo (105 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -1749,6 +1956,10 @@ import chromadb  # La librería del vector store. Se instala con: pip install ch
 import importlib
 
 chunk_markdown = importlib.import_module(&quot;00_chunking&quot;).chunk_markdown"><div class="bloque-cab"><span class="ruta">01_ingesta.py · líneas 1–31</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 2: Ingesta. Chunks → embeddings → vector store (Chroma)</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el pipeline RAG en una línea es</span></span><span class="l"><span class="s">    Ingesta → Chunking → Embeddings → Vector Store → Retrieval → Generación</span></span><span class="l"></span><span class="l"><span class="s">Este archivo hace la mitad izquierda: toma los chunks de 00_chunking.py,</span></span><span class="l"><span class="s">los convierte en embeddings (vectores de números que capturan el</span></span><span class="l"><span class="s">SIGNIFICADO del texto) y los guarda en Chroma, una base de datos vectorial</span></span><span class="l"><span class="s">que corre embebida en tu máquina, ideal para prototipar, como dice el deck</span></span><span class="l"><span class="s">(pgvector y Qdrant son las opciones para producción).</span></span><span class="l"></span><span class="l"><span class="s">No llama a la API de Anthropic. Chroma usa un modelo de embeddings local</span></span><span class="l"><span class="s">(all-MiniLM-L6-v2) que se descarga la primera vez (~80 MB), así que la</span></span><span class="l"><span class="s">primera ejecución tarda un poco más.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python ejemplos/01_ingesta.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">from</span> pathlib <span class="k">import</span> Path</span><span class="l"></span><span class="l"><span class="k">import</span> chromadb  <span class="c"># La librería del vector store. Se instala con: pip install chromadb</span></span><span class="l"></span><span class="l"><span class="c"># Reutilizamos el chunking del ejemplo anterior en lugar de copiarlo.</span></span><span class="l"><span class="c"># (Python puede importar funciones de otro archivo .py de la misma carpeta,</span></span><span class="l"><span class="c"># pero como el nombre &quot;00_chunking&quot; empieza con número, el &quot;import&quot; normal</span></span><span class="l"><span class="c"># no lo acepta y usamos importlib, que recibe el nombre como texto.)</span></span><span class="l"><span class="k">import</span> importlib</span><span class="l"></span><span class="l">chunk_markdown = importlib.<span class="f">import_module</span>(<span class="s">&quot;00_chunking&quot;</span>).chunk_markdown</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>importlib</code> aparece por una razón boba: un módulo de Python no puede llamarse <code>00_chunking</code> para el <code>import</code> normal, porque empieza con un número. Se resuelve pasando el nombre como texto. La regla de fondo sí importa: <strong>el chunking se define en un solo lugar</strong>. Si mañana cambias el tamaño de los chunks, no quieres buscarlo en cinco archivos.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p2" data-paso="d3p2">
@@ -1781,6 +1992,10 @@ def ingestar():
     # solo abren esta carpeta, no vuelven a ingestar.
     ruta_db = Path(__file__).parent / &quot;rag_db&quot;
     chroma = chromadb.PersistentClient(str(ruta_db))"><div class="bloque-cab"><span class="ruta">01_ingesta.py · líneas 32–49</span><span class="pill nuevo">+18 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">ingestar</span>():</span><span class="l">    <span class="c"># --- 1. Chunking (lo que ya vimos en 00_chunking.py) -------------------</span></span><span class="l">    <span class="c"># operator overloading</span></span><span class="l">    carpeta_docs = <span class="f">Path</span>(__file__).parent / <span class="s">&quot;docs&quot;</span></span><span class="l">    chunks = []</span><span class="l">    <span class="k">for</span> archivo <span class="k">in</span> <span class="f">sorted</span>(carpeta_docs.<span class="f">glob</span>(<span class="s">&quot;*.md&quot;</span>)):</span><span class="l">        texto = archivo.<span class="f">read_text</span>(encoding=<span class="s">&quot;utf-8&quot;</span>)</span><span class="l">        chunks.<span class="f">extend</span>(<span class="f">chunk_markdown</span>(texto, archivo.name))</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;1) Chunking: {len(chunks)} chunks generados&quot;</span>)</span><span class="l"></span><span class="l">    <span class="c"># --- 2. Abrir (o crear) la base vectorial ------------------------------</span></span><span class="l">    <span class="c"># PersistentClient guarda todo en la carpeta ./rag_db, así que la</span></span><span class="l">    <span class="c"># ingesta sobrevive entre ejecuciones: los siguientes scripts (02 y 03)</span></span><span class="l">    <span class="c"># solo abren esta carpeta, no vuelven a ingestar.</span></span><span class="l">    ruta_db = <span class="f">Path</span>(__file__).parent / <span class="s">&quot;rag_db&quot;</span></span><span class="l">    chroma = chromadb.<span class="f">PersistentClient</span>(<span class="f">str</span>(ruta_db))</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>PersistentClient</code> es lo que separa la <strong>indexación</strong> (offline, se paga una vez) de la <strong>consulta</strong> (online, cada pregunta). Los scripts de los días 3, 4 y 5 no van a volver a ingestar: solo abren esta carpeta.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p3" data-paso="d3p3">
@@ -1816,6 +2031,10 @@ def ingestar():
         # no funcionaría.
         metadata={&quot;hnsw:space&quot;: &quot;cosine&quot;},
     )"><div class="bloque-cab"><span class="ruta">01_ingesta.py · líneas 50–70</span><span class="pill nuevo">+21 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l">    <span class="c"># IMPORTANTE: la ingesta debe ser IDEMPOTENTE (correrla dos veces deja</span></span><span class="l">    <span class="c"># el mismo resultado). collection.add NO sobreescribe ids que ya</span></span><span class="l">    <span class="c"># existen: los salta en silencio. Si cambias el chunking y re-corres</span></span><span class="l">    <span class="c"># sin borrar, la base queda con una MEZCLA de chunks viejos y nuevos</span></span><span class="l">    <span class="c"># (duplicados + fragmentos huérfanos). Por eso: borrar y re-crear.</span></span><span class="l">    <span class="k">try</span>:</span><span class="l">        chroma.<span class="f">delete_collection</span>(<span class="s">&quot;docs&quot;</span>)</span><span class="l">    <span class="k">except</span> Exception:</span><span class="l">        <span class="k">pass</span>  <span class="c"># La primera vez la colección no existe todavía: no pasa nada.</span></span><span class="l"></span><span class="l">    <span class="c"># Una &quot;collection&quot; es como una tabla: agrupa documentos del mismo tipo.</span></span><span class="l">    collection = chroma.<span class="f">get_or_create_collection</span>(</span><span class="l">        <span class="s">&quot;docs&quot;</span>,</span><span class="l">        <span class="c"># IMPORTANTE: le decimos a Chroma que mida distancias con COSENO.</span></span><span class="l">        <span class="c"># Con coseno, distancia = 1 - similitud, así que en los siguientes</span></span><span class="l">        <span class="c"># scripts podremos calcular &quot;similitud = 1 - distancia&quot; (como en el</span></span><span class="l">        <span class="c"># deck). El default de Chroma es otra métrica (L2) y esa cuenta</span></span><span class="l">        <span class="c"># no funcionaría.</span></span><span class="l">        metadata={<span class="s">&quot;hnsw:space&quot;</span>: <span class="s">&quot;cosine&quot;</span>},</span><span class="l">    )</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><strong>Idempotencia</strong>: <code>collection.add</code> no sobrescribe ids que ya existen, los salta en silencio. Si cambias el chunking y re-corres sin borrar, la base queda con una mezcla de chunks viejos y nuevos, y tú viendo resultados raros sin entender por qué. Por eso borramos y recreamos. <strong>La métrica</strong>: el default de Chroma es distancia L2. Nosotros pedimos coseno, porque solo con coseno vale la cuenta <code>similitud = 1 - distancia</code> que usaremos mañana para el umbral. Con L2 el número que verías no significaría lo que crees.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Estas dos son las que más rendimiento dan en una entrevista: &quot;cuéntame un bug de RAG que hayas tenido&quot;. Vale la pena que el alumno rompa la base a propósito y vea los duplicados.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p4" data-paso="d3p4">
@@ -1860,6 +2079,10 @@ if __name__ == &quot;__main__&quot;:
     ingestar()"><div class="bloque-cab"><span class="ruta">01_ingesta.py · líneas 71–98</span><span class="pill nuevo">+28 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l">    <span class="c"># --- 3. Embeddings + guardado ------------------------------------------</span></span><span class="l">    <span class="c"># collection.add hace las DOS cosas de una vez: calcula el embedding de</span></span><span class="l">    <span class="c"># cada texto (con el modelo local de Chroma) y lo guarda junto con su</span></span><span class="l">    <span class="c"># metadata. En producción usarías un modelo de embeddings de pago</span></span><span class="l">    <span class="c"># (voyage-3.5-lite, text-embedding-3-small...) por mejor calidad.</span></span><span class="l">    collection.<span class="f">add</span>(</span><span class="l">        ids=[</span><span class="l">            <span class="s">f&quot;chunk-{i}&quot;</span> <span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(<span class="f">len</span>(chunks))</span><span class="l">        ],  <span class="c"># Cada chunk necesita un id único.</span></span><span class="l">        documents=[c[<span class="s">&quot;texto&quot;</span>] <span class="k">for</span> c <span class="k">in</span> chunks],  <span class="c"># El texto que se convierte en vector.</span></span><span class="l">        metadatas=[  <span class="c"># Lo que NO se vectoriza pero sí se guarda:</span></span><span class="l">            {</span><span class="l">                <span class="s">&quot;fuente&quot;</span>: c[<span class="s">&quot;fuente&quot;</span>],</span><span class="l">                <span class="s">&quot;seccion&quot;</span>: c[<span class="s">&quot;seccion&quot;</span>],</span><span class="l">            }  <span class="c"># fuente y sección, para citar después.</span></span><span class="l">            <span class="k">for</span> c <span class="k">in</span> chunks</span><span class="l">        ],</span><span class="l">    )</span><span class="l">    <span class="f">print</span>(</span><span class="l">        <span class="s">f&quot;2) Embeddings + guardado: {collection.count()} chunks en la colección &#x27;docs&#x27;&quot;</span></span><span class="l">    )</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;3) Base persistida en: {ruta_db}&quot;</span>)</span><span class="l">    <span class="k">return</span> collection</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">ingestar</span>()</span></code></pre></div><div class="bloque" data-codigo="python 01_ingesta.py"><div class="bloque-cab"><span class="ruta">córrelo</span></div><pre><code><span class="l"><span class="k">python</span> 01_ingesta.py</span></code></pre></div><div class="bloque salida" data-codigo="1) Chunking: 10 chunks generados
 2) Embeddings + guardado: 10 chunks en la colección &#x27;docs&#x27;
 3) Base persistida en: …/talleres/sesion-04/codigo/rag_db"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">1) Chunking: 10 chunks generados</span><span class="l">2) Embeddings + guardado: 10 chunks en la colección &#x27;docs&#x27;</span><span class="l">3) Base persistida en: …/talleres/sesion-04/codigo/rag_db</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Fíjate en la separación: <code>documents</code> es lo que se convierte en vector y contra lo que se busca; <code>metadatas</code> es lo que viaja al lado sin vectorizarse: la fuente y la sección que servirán para citar. La primera corrida tarda: Chroma descarga su modelo de embeddings local. De la segunda en adelante es instantánea. En producción cambiarías ese modelo por uno de pago (voyage-3.5-lite, text-embedding-3-small) por calidad, no por velocidad.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>ModuleNotFoundError: No module named &#x27;chromadb&#x27;</code><span>El entorno virtual no está activo. <code>source .venv/bin/activate</code> y vuelve a intentar.</span></li><li><code>La corrida se queda colgada varios minutos</code><span>Es la descarga del modelo de embeddings (~80 MB), solo la primera vez. Déjala terminar.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d3p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>01_ingesta.py</code> completo (98 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2032,6 +2255,10 @@ import chromadb
 # umbral SIEMPRE se calibra mirando los números de tu propio modelo,
 # no se copia de un tutorial.
 UMBRAL = 0.40"><div class="bloque-cab"><span class="ruta">02_retrieval.py · líneas 1–30</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 3: Top-k retrieval y umbrales de similitud</span></span><span class="l"></span><span class="l"><span class="s">Del deck: recuperar es hacerle una pregunta al vector store y quedarte con</span></span><span class="l"><span class="s">los k chunks más parecidos (top-k, típicamente 3-5)... pero &quot;los más</span></span><span class="l"><span class="s">parecidos&quot; no significa &quot;parecidos de verdad&quot;. Por eso se aplica un UMBRAL:</span></span><span class="l"><span class="s">si la similitud del mejor chunk no supera cierto valor, es mejor no</span></span><span class="l"><span class="s">responder que responder con contexto irrelevante.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo NO llama a la API de Anthropic: solo consulta la base Chroma</span></span><span class="l"><span class="s">que creó 01_ingesta.py y te muestra los números crudos (similitudes) para</span></span><span class="l"><span class="s">que veas al umbral trabajando. Corre primero 01_ingesta.py.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python ejemplos/02_retrieval.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">from</span> pathlib <span class="k">import</span> Path</span><span class="l"></span><span class="l"><span class="k">import</span> chromadb</span><span class="l"></span><span class="l"><span class="c"># El umbral de similitud: por debajo de este valor, un chunk se descarta.</span></span><span class="l"><span class="c"># OJO: el valor correcto depende del modelo de embeddings. El deck usa 0.7</span></span><span class="l"><span class="c"># pensando en modelos comerciales (voyage, openai); con el modelo local</span></span><span class="l"><span class="c"># de Chroma (MiniLM) las similitudes salen más bajas. Midiendo con estos</span></span><span class="l"><span class="c"># docs: las preguntas legítimas puntúan 0.42-0.66 y la pregunta fuera de</span></span><span class="l"><span class="c"># tema llega máximo a 0.36, así que 0.40 separa limpio. La lección: el</span></span><span class="l"><span class="c"># umbral SIEMPRE se calibra mirando los números de tu propio modelo,</span></span><span class="l"><span class="c"># no se copia de un tutorial.</span></span><span class="l">UMBRAL = 0.40</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El deck usa <code>0.7</code> pensando en embeddings comerciales. Aquí es <code>0.40</code> y <strong>no es una errata</strong>: con el modelo local (MiniLM) las similitudes salen más bajas. Midiendo con estos documentos, las preguntas legítimas puntúan entre 0.42 y 0.66, y la pregunta fuera de tema llega máximo a 0.36. Por eso 0.40 separa limpio. La lección es esa, no el número: <strong>el umbral se calibra mirando los números de tu propio modelo</strong>. Si cambias de modelo de embeddings, el umbral que tenías deja de servir el mismo día.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p2" data-paso="d4p2">
@@ -2071,6 +2298,10 @@ def recuperar(pregunta, collection, n_results=4):
         # El filtro del umbral: solo pasan los chunks con similitud &gt;= UMBRAL.
     ]
     return hits, results  # Devolvemos también los crudos para poder imprimirlos."><div class="bloque-cab"><span class="ruta">02_retrieval.py · líneas 31–55</span><span class="pill nuevo">+25 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">recuperar</span>(pregunta, collection, n_results=4):</span><span class="l">    <span class="c"># Hace la búsqueda semántica y aplica el umbral. Devuelve los &quot;hits&quot;:</span></span><span class="l">    <span class="c"># los chunks que sí son suficientemente parecidos a la pregunta.</span></span><span class="l">    results = collection.<span class="f">query</span>(</span><span class="l">        query_texts=[pregunta],   <span class="c"># Chroma convierte la pregunta en embedding automáticamente...</span></span><span class="l">        n_results=n_results,      <span class="c"># ...y trae los k vecinos más cercanos (top-k). Aquí k=4.</span></span><span class="l">    )</span><span class="l">    <span class="c"># Chroma devuelve listas paralelas (documento i ↔ metadata i ↔ distancia i).</span></span><span class="l">    <span class="c"># zip() las recorre juntas para armar un diccionario por resultado.</span></span><span class="l">    hits = [</span><span class="l">        {**meta, <span class="s">&quot;texto&quot;</span>: doc, <span class="s">&quot;similitud&quot;</span>: 1 - dist}</span><span class="l">        <span class="c"># {**meta, ...} copia la metadata (fuente, seccion) y le agrega</span></span><span class="l">        <span class="c"># el texto y la similitud. Como la colección usa distancia coseno,</span></span><span class="l">        <span class="c"># similitud = 1 - distancia (1.0 = idéntico, 0.0 = nada que ver).</span></span><span class="l">        <span class="k">for</span> doc, meta, dist <span class="k">in</span> <span class="f">zip</span>(</span><span class="l">            results[<span class="s">&quot;documents&quot;</span>][0],   <span class="c"># El [0] es porque preguntamos con UNA sola query.</span></span><span class="l">            results[<span class="s">&quot;metadatas&quot;</span>][0],</span><span class="l">            results[<span class="s">&quot;distances&quot;</span>][0],</span><span class="l">        )</span><span class="l">        <span class="k">if</span> 1 - dist &gt;= UMBRAL</span><span class="l">        <span class="c"># El filtro del umbral: solo pasan los chunks con similitud &gt;= UMBRAL.</span></span><span class="l">    ]</span><span class="l">    <span class="k">return</span> hits, results  <span class="c"># Devolvemos también los crudos para poder imprimirlos.</span></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>k = 3–5</code> es el punto de partida sano. Más k es más tokens, más latencia y más ruido que confunde al modelo; subirlo casi nunca es la solución que parece. Chroma devuelve listas paralelas (documento <em>i</em> ↔ metadata <em>i</em> ↔ distancia <em>i</em>); <code>zip()</code> las recorre juntas. Y el <code>[0]</code> de <code>results[&quot;documents&quot;][0]</code> es porque la API acepta varias preguntas a la vez y nosotros mandamos una.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p3" data-paso="d4p3">
@@ -2100,6 +2331,10 @@ def demo(pregunta, collection):
     print(f&quot;  → {len(hits)} chunk(s) superan el umbral de {UMBRAL}&quot;)
     if not hits:
         print(&quot;  → Sin evidencia: el pipeline debería negarse a responder.&quot;)"><div class="bloque-cab"><span class="ruta">02_retrieval.py · líneas 56–70</span><span class="pill nuevo">+15 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">demo</span>(pregunta, collection):</span><span class="l">    <span class="c"># Imprime el top-k completo (con y sin filtro) para UNA pregunta.</span></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\nPregunta: \&quot;{pregunta}\&quot;&quot;</span>)</span><span class="l">    hits, results = <span class="f">recuperar</span>(pregunta, collection)</span><span class="l">    <span class="k">for</span> doc, meta, dist <span class="k">in</span> <span class="f">zip</span>(</span><span class="l">        results[<span class="s">&quot;documents&quot;</span>][0], results[<span class="s">&quot;metadatas&quot;</span>][0], results[<span class="s">&quot;distances&quot;</span>][0]</span><span class="l">    ):</span><span class="l">        sim = 1 - dist</span><span class="l">        marca = <span class="s">&quot;PASA  &quot;</span> <span class="k">if</span> sim &gt;= UMBRAL <span class="k">else</span> <span class="s">&quot;FUERA &quot;</span>  <span class="c"># ¿Superó el umbral?</span></span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;  {marca} sim={sim:.3f}  {meta[&#x27;fuente&#x27;]} § {meta[&#x27;seccion&#x27;]}&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;  → {len(hits)} chunk(s) superan el umbral de {UMBRAL}&quot;</span>)</span><span class="l">    <span class="k">if</span> <span class="k">not</span> hits:</span><span class="l">        <span class="f">print</span>(<span class="s">&quot;  → Sin evidencia: el pipeline debería negarse a responder.&quot;</span>)</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Sin esto estarías eligiendo el umbral a ciegas. La razón por la que imprimimos también los que quedan <strong>fuera</strong> es que el umbral correcto es el que deja un hueco claro entre el peor &quot;sí&quot; y el mejor &quot;no&quot;. Si no hay hueco, tu problema no es el umbral: es el chunking o el modelo de embeddings.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p4" data-paso="d4p4">
@@ -2161,6 +2396,10 @@ Pregunta: &quot;¿Cuál es la capital de Francia?&quot;
   FUERA  sim=0.305  api-pagos.md § Códigos de error
   → 0 chunk(s) superan el umbral de 0.4
   → Sin evidencia: el pipeline debería negarse a responder."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l"></span><span class="l">Pregunta: &quot;¿Cuál es el timeout default de la API?&quot;</span><span class="l">  PASA   sim=0.655  api-pagos.md § Timeouts y reintentos</span><span class="l">  PASA   sim=0.573  api-pagos.md § Autenticación</span><span class="l">  PASA   sim=0.528  api-pagos.md § Códigos de error</span><span class="l">  PASA   sim=0.434  api-pagos.md § Autenticación</span><span class="l">  → 4 chunk(s) superan el umbral de 0.4</span><span class="l"></span><span class="l">Pregunta: &quot;¿Cómo verifico la firma de un webhook?&quot;</span><span class="l">  PASA   sim=0.585  webhooks.md § Guía de Webhooks</span><span class="l">  PASA   sim=0.566  webhooks.md § Configuración de webhooks</span><span class="l">  PASA   sim=0.540  webhooks.md § Verificación de firma</span><span class="l">  PASA   sim=0.523  webhooks.md § Reintentos de entrega</span><span class="l">  → 4 chunk(s) superan el umbral de 0.4</span><span class="l"></span><span class="l">Pregunta: &quot;¿Cuál es la capital de Francia?&quot;</span><span class="l">  FUERA  sim=0.355  webhooks.md § Reintentos de entrega</span><span class="l">  FUERA  sim=0.351  api-pagos.md § Guía de la API de Pagos</span><span class="l">  FUERA  sim=0.350  api-pagos.md § Autenticación</span><span class="l">  FUERA  sim=0.305  api-pagos.md § Códigos de error</span><span class="l">  → 0 chunk(s) superan el umbral de 0.4</span><span class="l">  → Sin evidencia: el pipeline debería negarse a responder.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Este es <strong>el momento de la sesión</strong>. La capital de Francia no la responde nadie con 0.355 de similitud: el pipeline se queda sin evidencia y eso es exactamente lo que queremos. Un RAG que siempre encuentra algo es un RAG que siempre alucina. Mira también las dos entradas de <em>Autenticación</em> con similitudes distintas: es el chunk partido del día 1 volviendo a aparecer. El fragmento huérfano puntúa más bajo que la sección completa.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>La base está vacía. Corre primero: python ejemplos/01_ingesta.py</code><span>Te saltaste el día 2, o borraste <code>rag_db/</code>. Corre <code>python 01_ingesta.py</code>.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d4p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>02_retrieval.py</code> completo (96 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2332,6 +2571,10 @@ collection = chroma.get_or_create_collection(&quot;docs&quot;, metadata={&quot;h
 client = anthropic.Anthropic()
 # Anthropic() sin argumentos lee la variable de entorno ANTHROPIC_API_KEY.
 UMBRAL = 0.40  # Calibrado para el modelo de embeddings local (ver 02_retrieval.py)."><div class="bloque-cab"><span class="ruta">03_rag_completo.py · líneas 1–31</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 4: El pipeline RAG completo. Generación con citas obligatorias</span></span><span class="l"></span><span class="l"><span class="s">Del deck: la última pieza es la generación. Le pasamos al modelo SOLO los</span></span><span class="l"><span class="s">chunks que superaron el umbral, numerados [1], [2]..., y le exigimos dos</span></span><span class="l"><span class="s">cosas en el system prompt:</span></span><span class="l"><span class="s">  1. Responder ÚNICAMENTE con ese contexto (no con su memoria).</span></span><span class="l"><span class="s">  2. Citar cada afirmación con su marcador [n], así toda respuesta es</span></span><span class="l"><span class="s">     verificable: puedes ir al chunk [n] y comprobar que lo dice.</span></span><span class="l"><span class="s">Y si ningún chunk supera el umbral, ni siquiera llamamos al modelo:</span></span><span class="l"><span class="s">respondemos &quot;No tengo evidencia para responder.&quot; Eso es grounding.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo SÍ llama a la API de Anthropic (necesitas ANTHROPIC_API_KEY</span></span><span class="l"><span class="s">en tu shell) y necesita que 01_ingesta.py ya haya corrido.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python ejemplos/03_rag_completo.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">from</span> pathlib <span class="k">import</span> Path</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic  <span class="c"># El SDK oficial de Anthropic: pip install anthropic</span></span><span class="l"><span class="k">import</span> chromadb</span><span class="l"></span><span class="l"><span class="c"># --- Configuración (igual que en los scripts anteriores) --------------------</span></span><span class="l">ruta_db = <span class="f">Path</span>(__file__).parent / <span class="s">&quot;rag_db&quot;</span></span><span class="l">chroma = chromadb.<span class="f">PersistentClient</span>(<span class="f">str</span>(ruta_db))</span><span class="l">collection = chroma.<span class="f">get_or_create_collection</span>(<span class="s">&quot;docs&quot;</span>, metadata={<span class="s">&quot;hnsw:space&quot;</span>: <span class="s">&quot;cosine&quot;</span>})</span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"><span class="c"># Anthropic() sin argumentos lee la variable de entorno ANTHROPIC_API_KEY.</span></span><span class="l">UMBRAL = 0.40  <span class="c"># Calibrado para el modelo de embeddings local (ver 02_retrieval.py).</span></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>anthropic.Anthropic()</code> sin argumentos lee <code>ANTHROPIC_API_KEY</code> de tu entorno. Nunca escribas la llave en el código: termina en git y de ahí no sale nunca más.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p2" data-paso="d5p2">
@@ -2355,6 +2598,10 @@ SYSTEM = (
     &quot;Si el contexto no alcanza, responde exactamente: &quot;  # Regla 3: escape honesto en vez de inventar.
     &quot;&#x27;No tengo evidencia para responder.&#x27;&quot;
 )"><div class="bloque-cab"><span class="ruta">03_rag_completo.py · líneas 32–40</span><span class="pill nuevo">+9 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"><span class="c"># El system prompt define las reglas del juego ANTES de ver la pregunta.</span></span><span class="l"><span class="c"># Es la parte que convierte &quot;un chat&quot; en &quot;un sistema con grounding&quot;.</span></span><span class="l">SYSTEM = (</span><span class="l">    <span class="s">&quot;Responde SOLO con el contexto provisto. &quot;</span>          <span class="c"># Regla 1: prohibido usar la memoria del modelo.</span></span><span class="l">    <span class="s">&quot;Cita cada afirmación con su marcador [n]. &quot;</span>        <span class="c"># Regla 2: toda afirmación debe ser rastreable.</span></span><span class="l">    <span class="s">&quot;Si el contexto no alcanza, responde exactamente: &quot;</span>  <span class="c"># Regla 3: escape honesto en vez de inventar.</span></span><span class="l">    <span class="s">&quot;&#x27;No tengo evidencia para responder.&#x27;&quot;</span></span><span class="l">)</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Cada línea hace un trabajo distinto. <strong>&quot;Solo con el contexto&quot;</strong> prohíbe usar la memoria del modelo. <strong>&quot;Cita cada afirmación con [n]&quot;</strong> hace la respuesta rastreable: puedes ir al chunk y comprobarlo. <strong>&quot;Si no alcanza, responde exactamente...&quot;</strong> le da una salida honesta: sin una frase literal de escape, un modelo casi siempre prefiere inventar algo antes que quedarse callado. Pedir la frase <em>exacta</em> además te deja detectarla con una comparación de texto y contarla como métrica. Eso es lo que se evalúa en la sesión 08.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Buen ejercicio en vivo: quítale la regla 3 y vuelve a correr la pregunta de Francia. El cambio de comportamiento se ve al instante.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p3" data-paso="d5p3">
@@ -2390,6 +2637,10 @@ def responder(pregunta):
         # Si NADA supera el umbral, ni gastamos tokens: la respuesta honesta
         # sale gratis y sin riesgo de alucinación.
         return &quot;No tengo evidencia para responder.&quot;"><div class="bloque-cab"><span class="ruta">03_rag_completo.py · líneas 41–61</span><span class="pill nuevo">+21 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">responder</span>(pregunta):</span><span class="l">    <span class="c"># ---- RETRIEVAL (lo que vimos en 02_retrieval.py) -----------------------</span></span><span class="l">    results = collection.<span class="f">query</span>(</span><span class="l">        query_texts=[pregunta],  <span class="c"># La pregunta se embebe y se busca por similitud semántica.</span></span><span class="l">        n_results=4,             <span class="c"># top-k = 4: los 4 chunks más parecidos.</span></span><span class="l">    )</span><span class="l">    hits = [</span><span class="l">        {**meta, <span class="s">&quot;texto&quot;</span>: doc}   <span class="c"># Copiamos la metadata y agregamos el texto del chunk.</span></span><span class="l">        <span class="k">for</span> doc, meta, dist <span class="k">in</span> <span class="f">zip</span>(</span><span class="l">            results[<span class="s">&quot;documents&quot;</span>][0],</span><span class="l">            results[<span class="s">&quot;metadatas&quot;</span>][0],</span><span class="l">            results[<span class="s">&quot;distances&quot;</span>][0],</span><span class="l">        )</span><span class="l">        <span class="k">if</span> 1 - dist &gt;= UMBRAL    <span class="c"># Umbral: fuera los chunks poco parecidos.</span></span><span class="l">    ]</span><span class="l">    <span class="k">if</span> <span class="k">not</span> hits:</span><span class="l">        <span class="c"># Si NADA supera el umbral, ni gastamos tokens: la respuesta honesta</span></span><span class="l">        <span class="c"># sale gratis y sin riesgo de alucinación.</span></span><span class="l">        <span class="k">return</span> <span class="s">&quot;No tengo evidencia para responder.&quot;</span></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Ese <code>if not hits: return</code> es la pieza más barata del sistema: cuando nada supera el umbral, <strong>ni siquiera llamamos al modelo</strong>. La respuesta honesta sale gratis, sin latencia y sin riesgo de alucinación. Muchos pipelines de producción no tienen esta línea y pagan tokens para que el modelo les diga que no sabe.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p4" data-paso="d5p4">
@@ -2412,6 +2663,10 @@ def responder(pregunta):
         f&quot;[{i + 1}] ({c[&#x27;fuente&#x27;]} § {c[&#x27;seccion&#x27;]})\n{c[&#x27;texto&#x27;]}&quot;
         for i, c in enumerate(hits)
     )"><div class="bloque-cab"><span class="ruta">03_rag_completo.py · líneas 62–69</span><span class="pill nuevo">+8 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l">    <span class="c"># ---- ARMAR EL CONTEXTO -------------------------------------------------</span></span><span class="l">    <span class="c"># Numeramos cada chunk como [1], [2]... y anotamos su origen</span></span><span class="l">    <span class="c"># (archivo § sección): esos son los marcadores que el modelo va a citar.</span></span><span class="l">    contexto = <span class="s">&quot;\n\n&quot;</span>.<span class="f">join</span>(</span><span class="l">        <span class="s">f&quot;[{i + 1}] ({c[&#x27;fuente&#x27;]} § {c[&#x27;seccion&#x27;]})\n{c[&#x27;texto&#x27;]}&quot;</span></span><span class="l">        <span class="k">for</span> i, c <span class="k">in</span> <span class="f">enumerate</span>(hits)</span><span class="l">    )</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El <code>[1]</code>, <code>[2]</code>... que arma este bloque es exactamente lo que el modelo va a citar. Aquí se cierra el círculo que abriste el día 1 al guardar <code>fuente</code> y <code>seccion</code>: de la metadata del chunk sale la cita verificable de la respuesta.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p5" data-paso="d5p5">
@@ -2441,6 +2696,10 @@ def responder(pregunta):
     )
     # La respuesta llega como lista de bloques; el texto está en el primero.
     return resp.content[0].text"><div class="bloque-cab"><span class="ruta">03_rag_completo.py · líneas 70–84</span><span class="pill nuevo">+15 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l">    <span class="c"># ---- GENERACIÓN --------------------------------------------------------</span></span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=<span class="s">&quot;claude-sonnet-4-6&quot;</span>,  <span class="c"># El modelo del deck.</span></span><span class="l">        max_tokens=1024,            <span class="c"># Tope de largo de la respuesta.</span></span><span class="l">        system=SYSTEM,              <span class="c"># Las 3 reglas de grounding de arriba.</span></span><span class="l">        messages=[{</span><span class="l">            <span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>,</span><span class="l">            <span class="c"># Un solo mensaje con las dos partes: primero el contexto</span></span><span class="l">            <span class="c"># recuperado, después la pregunta real del usuario.</span></span><span class="l">            <span class="s">&quot;content&quot;</span>: <span class="s">f&quot;Contexto:\n{contexto}\n\nPregunta: {pregunta}&quot;</span>,</span><span class="l">        }],</span><span class="l">    )</span><span class="l">    <span class="c"># La respuesta llega como lista de bloques; el texto está en el primero.</span></span><span class="l">    <span class="k">return</span> resp.content[0].text</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El orden importa: contexto primero, pregunta después. Y fíjate que las reglas van en <code>system</code> y los datos en <code>messages</code>; separar instrucciones de contenido es lo que hace difícil que un documento malicioso reescriba tus reglas. De eso se trata la sesión 10.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p6" data-paso="d5p6">
@@ -2487,6 +2746,10 @@ Según la documentación, si tu servidor no responde con un código 2xx en menos
 Pregunta: ¿Cuál es la capital de Francia?
 ------------------------------------------------------------
 No tengo evidencia para responder."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l"></span><span class="l">============================================================</span><span class="l">Pregunta: ¿Cuál es el timeout default?</span><span class="l">------------------------------------------------------------</span><span class="l">El timeout default de la API es de **30 segundos** por petición. [1]</span><span class="l"></span><span class="l">============================================================</span><span class="l">Pregunta: ¿Cuántas veces se reintenta un webhook si mi servidor no responde?</span><span class="l">------------------------------------------------------------</span><span class="l">Según la documentación, si tu servidor no responde con un código 2xx en menos de 10 segundos, PagosYa reintenta la entrega del webhook hasta **8 veces** durante las siguientes 24 horas, con esperas crecientes entre intentos. Después del octavo intento fallido, el evento se marca como no entregado y puedes recuperarlo manualmente desde el dashboard durante los siguientes 30 días. [1]</span><span class="l"></span><span class="l">============================================================</span><span class="l">Pregunta: ¿Cuál es la capital de Francia?</span><span class="l">------------------------------------------------------------</span><span class="l">No tengo evidencia para responder.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Tienes un RAG. Verifica la cita de la segunda respuesta: dice 8 reintentos en 24 horas y recuperación manual por 30 días. Ve a <code>docs/webhooks.md</code> y compruébalo. Eso es lo que ningún chatbot genérico te deja hacer.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>anthropic.AuthenticationError: invalid x-api-key</code><span>La variable <code>ANTHROPIC_API_KEY</code> está vacía o mal copiada. Revísala con <code>echo $ANTHROPIC_API_KEY</code>.</span></li><li><code>El modelo responde sin los marcadores [n]</code><span>Casi siempre es que el <code>system</code> se pasó dentro de <code>messages</code>. Debe ir en el parámetro <code>system=</code>.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d5p6">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>03_rag_completo.py</code> completo (102 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2693,6 +2956,10 @@ collection = chroma.get_or_create_collection(&quot;docs&quot;, metadata={&quot;h
 client = anthropic.Anthropic()
 MODELO = &quot;claude-sonnet-4-6&quot;  # El modelo del deck, para las 3 etapas.
 UMBRAL = 0.40  # Calibrado para MiniLM local (ver 02_retrieval.py)."><div class="bloque-cab"><span class="ruta">04_rag_v04.py · líneas 1–60</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 5: RAG v0.4, el pipeline mejorado con las ideas del paper CLaRa</span></span><span class="l"></span><span class="l"><span class="s">Basado en: &quot;CLaRa: Bridging Retrieval and Generation with Continuous Latent</span></span><span class="l"><span class="s">Reasoning&quot; (Apple + U. Edinburgh, arXiv:2511.18659). El diagnóstico central</span></span><span class="l"><span class="s">del paper aplica a NUESTRO pipeline v0.3 (03_rag_completo.py):</span></span><span class="l"></span><span class="l"><span class="s">    &quot;El retrieval y la generación se optimizan por separado: el retriever</span></span><span class="l"><span class="s">     elige documentos por similitud SUPERFICIAL, mientras que el generador</span></span><span class="l"><span class="s">     necesita documentos útiles para RAZONAR la respuesta.&quot;</span></span><span class="l"></span><span class="l"><span class="s">CLaRa lo resuelve ENTRENANDO todo junto (LoRAs + un top-k diferenciable).</span></span><span class="l"><span class="s">Eso no lo podemos hacer llamando a una API, pero tres de sus ideas sí se</span></span><span class="l"><span class="s">pueden imitar a nivel de prompt, y eso es esta v0.4:</span></span><span class="l"></span><span class="l"><span class="s">  1. QUERY REASONER (sección 3 del paper): su retriever aprende a &quot;anticipar&quot;</span></span><span class="l"><span class="s">     el contenido del documento relevante (a la pregunta sobre Olimpiadas le</span></span><span class="l"><span class="s">     agrega internamente &quot;Athens 1896&quot;). Nuestra imitación: un paso previo</span></span><span class="l"><span class="s">     donde el modelo EXPANDE la pregunta con las palabras que espera</span></span><span class="l"><span class="s">     encontrar en la respuesta, y buscamos con esa versión expandida.</span></span><span class="l"></span><span class="l"><span class="s">  2. RERANKING ALINEADO CON GENERACIÓN (secciones 3 y 4.4): similitud alta</span></span><span class="l"><span class="s">     no garantiza utilidad. Nuestra imitación: recuperamos MÁS candidatos</span></span><span class="l"><span class="s">     (k=6 en vez de 4) y un paso intermedio del modelo decide cuáles</span></span><span class="l"><span class="s">     realmente sirven para responder, descartando los que solo &quot;se parecen&quot;.</span></span><span class="l"></span><span class="l"><span class="s">  3. COMPRESIÓN DE CONTEXTO (sección 2, framework SCP): comprimen documentos</span></span><span class="l"><span class="s">     16x conservando solo la información saliente, sin perder calidad de</span></span><span class="l"><span class="s">     respuesta. Nuestra imitación: ese mismo paso intermedio extrae de cada</span></span><span class="l"><span class="s">     chunk útil SOLO las frases que responden la pregunta, así el contexto</span></span><span class="l"><span class="s">     final que ve el generador es mucho más corto y limpio.</span></span><span class="l"></span><span class="l"><span class="s">El pipeline v0.3 era:   pregunta → retrieval → generación</span></span><span class="l"><span class="s">El pipeline v0.4 es:    pregunta → EXPANSIÓN → retrieval amplio</span></span><span class="l"><span class="s">                                 → RERANK + COMPRESIÓN → generación</span></span><span class="l"></span><span class="l"><span class="s">Cuesta 2 llamadas extra al modelo por pregunta; a cambio, el retrieval</span></span><span class="l"><span class="s">encuentra respuestas aunque la pregunta no comparta palabras con el</span></span><span class="l"><span class="s">documento, y el generador recibe menos ruido.</span></span><span class="l"></span><span class="l"><span class="s">Necesita ANTHROPIC_API_KEY en tu shell y que 01_ingesta.py ya haya corrido.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python ejemplos/04_rag_v04.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> re</span><span class="l"></span><span class="l"><span class="k">from</span> pathlib <span class="k">import</span> Path</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"><span class="k">import</span> chromadb</span><span class="l"></span><span class="l"><span class="c"># --- Configuración (igual que en 02 y 03) -----------------------------------</span></span><span class="l">ruta_db = <span class="f">Path</span>(__file__).parent / <span class="s">&quot;rag_db&quot;</span></span><span class="l">chroma = chromadb.<span class="f">PersistentClient</span>(<span class="f">str</span>(ruta_db))</span><span class="l">collection = chroma.<span class="f">get_or_create_collection</span>(<span class="s">&quot;docs&quot;</span>, metadata={<span class="s">&quot;hnsw:space&quot;</span>: <span class="s">&quot;cosine&quot;</span>})</span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span>  <span class="c"># El modelo del deck, para las 3 etapas.</span></span><span class="l">UMBRAL = 0.40  <span class="c"># Calibrado para MiniLM local (ver 02_retrieval.py).</span></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El diagnóstico de CLaRa cae exacto sobre tu v0.3: <em>el retriever elige por similitud superficial, pero el generador necesita chunks útiles para razonar la respuesta</em>, y esas dos cosas no son la misma. Lo que el paper hace y <strong>nosotros no podemos</strong>: entrenar todo junto, con gradientes fluyendo del generador al retriever. Vía API no hay gradientes. Imitamos el <em>comportamiento</em> con prompts, no la optimización. Decirlo claro es parte de saber leer un paper.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p2" data-paso="d6p2">
@@ -2734,6 +3001,10 @@ def expandir_consulta(pregunta):
     # intención y las keywords acercan el embedding al vocabulario del
     # documento relevante.
     return f&quot;{pregunta} {keywords}&quot;, keywords"><div class="bloque-cab"><span class="ruta">04_rag_v04.py · líneas 61–87</span><span class="pill nuevo">+27 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="c"># PASO 1: Expansión de consulta (la idea del &quot;query reasoner&quot; de CLaRa)</span></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="k">def</span> <span class="f">expandir_consulta</span>(pregunta):</span><span class="l">    <span class="c"># El problema que ataca: la pregunta del usuario y el documento que la</span></span><span class="l">    <span class="c"># responde muchas veces NO comparten palabras. &quot;¿Cuánto tengo antes de</span></span><span class="l">    <span class="c"># perder eventos?&quot; no contiene &quot;reintentos&quot; ni &quot;entrega&quot;, que es donde</span></span><span class="l">    <span class="c"># está la respuesta. CLaRa entrena su retriever para anticipar esas</span></span><span class="l">    <span class="c"># palabras; nosotros se las pedimos al modelo explícitamente.</span></span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=100,  <span class="c"># Solo queremos una línea de keywords: tope corto.</span></span><span class="l">        system=(</span><span class="l">            <span class="s">&quot;Eres el paso de expansión de consulta de un buscador. &quot;</span></span><span class="l">            <span class="s">&quot;Dada una pregunta, responde SOLO con 5-8 palabras clave que &quot;</span></span><span class="l">            <span class="s">&quot;probablemente aparezcan en el documento que la responde. &quot;</span></span><span class="l">            <span class="s">&quot;Sin explicaciones, solo las palabras separadas por espacios.&quot;</span></span><span class="l">        ),</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: pregunta}],</span><span class="l">    )</span><span class="l">    keywords = resp.content[0].text.<span class="f">strip</span>()</span><span class="l">    <span class="c"># Buscamos con pregunta + keywords JUNTAS: la pregunta aporta la</span></span><span class="l">    <span class="c"># intención y las keywords acercan el embedding al vocabulario del</span></span><span class="l">    <span class="c"># documento relevante.</span></span><span class="l">    <span class="k">return</span> <span class="s">f&quot;{pregunta} {keywords}&quot;</span>, keywords</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El problema que ataca: <em>&quot;¿cuánto tiempo tengo antes de perder eventos?&quot;</em> no contiene la palabra <strong>reintentos</strong>, que es justo donde vive la respuesta. Los embeddings ayudan, pero no hacen milagros cuando el vocabulario no se toca en ningún punto. Buscamos con pregunta <strong>+</strong> keywords: la pregunta aporta la intención, las keywords acercan el embedding al vocabulario del documento.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p3" data-paso="d6p3">
@@ -2768,6 +3039,10 @@ def recuperar(consulta, k=6):
         if 1 - dist &gt;= UMBRAL  # El umbral sigue siendo la primera defensa:
         # si NADA se parece ni un poco, ni gastamos las llamadas siguientes.
     ]"><div class="bloque-cab"><span class="ruta">04_rag_v04.py · líneas 88–107</span><span class="pill nuevo">+20 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="c"># PASO 2: Retrieval amplio (más candidatos, el rerank filtra después)</span></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="k">def</span> <span class="f">recuperar</span>(consulta, k=6):</span><span class="l">    <span class="c"># k=6 en vez de 4: como ahora hay un paso que filtra con criterio</span></span><span class="l">    <span class="c"># (el rerank), podemos permitirnos traer más candidatos y dejar que</span></span><span class="l">    <span class="c"># sea ese paso, no la similitud a secas, quien decida qué entra.</span></span><span class="l">    results = collection.<span class="f">query</span>(query_texts=[consulta], n_results=k)</span><span class="l">    <span class="k">return</span> [</span><span class="l">        {**meta, <span class="s">&quot;texto&quot;</span>: doc, <span class="s">&quot;similitud&quot;</span>: <span class="f">round</span>(1 - dist, 3)}</span><span class="l">        <span class="k">for</span> doc, meta, dist <span class="k">in</span> <span class="f">zip</span>(</span><span class="l">            results[<span class="s">&quot;documents&quot;</span>][0],</span><span class="l">            results[<span class="s">&quot;metadatas&quot;</span>][0],</span><span class="l">            results[<span class="s">&quot;distances&quot;</span>][0],</span><span class="l">        )</span><span class="l">        <span class="k">if</span> 1 - dist &gt;= UMBRAL  <span class="c"># El umbral sigue siendo la primera defensa:</span></span><span class="l">        <span class="c"># si NADA se parece ni un poco, ni gastamos las llamadas siguientes.</span></span><span class="l">    ]</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Ojo con la secuencia: subir k <strong>solo</strong> tiene sentido porque agregamos un filtro inteligente después. Subir k a secas es la receta clásica para empeorar un RAG: más contexto, más ruido, peor respuesta.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p4" data-paso="d6p4">
@@ -2835,6 +3110,10 @@ def rerank_y_comprimir(pregunta, candidatos):
                     }
                 )
     return seleccion"><div class="bloque-cab"><span class="ruta">04_rag_v04.py · líneas 108–160</span><span class="pill nuevo">+53 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="c"># PASO 3: Rerank + compresión en una sola llamada (ideas 2 y 3 de CLaRa)</span></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="k">def</span> <span class="f">rerank_y_comprimir</span>(pregunta, candidatos):</span><span class="l">    <span class="c"># Le mostramos al modelo TODOS los candidatos numerados y le pedimos dos</span></span><span class="l">    <span class="c"># cosas a la vez: (a) decidir cuáles sirven de verdad para responder</span></span><span class="l">    <span class="c"># (rerank: utilidad, no similitud) y (b) copiar de cada uno SOLO las</span></span><span class="l">    <span class="c"># frases que responden (compresión: menos contexto = menos ruido).</span></span><span class="l">    lista = <span class="s">&quot;\n\n&quot;</span>.<span class="f">join</span>(</span><span class="l">        <span class="s">f&quot;[{i + 1}] ({c[&#x27;fuente&#x27;]} § {c[&#x27;seccion&#x27;]})\n{c[&#x27;texto&#x27;]}&quot;</span></span><span class="l">        <span class="k">for</span> i, c <span class="k">in</span> <span class="f">enumerate</span>(candidatos)</span><span class="l">    )</span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=500,</span><span class="l">        system=(</span><span class="l">            <span class="s">&quot;Eres el paso de selección de evidencia de un sistema RAG. &quot;</span></span><span class="l">            <span class="s">&quot;Recibes una pregunta y chunks numerados. Para CADA chunk que &quot;</span></span><span class="l">            <span class="s">&quot;contenga información que responda la pregunta, escribe una &quot;</span></span><span class="l">            <span class="s">&quot;línea con el formato:\n&quot;</span></span><span class="l">            <span class="s">&quot;[n] &lt;las frases exactas del chunk que responden, resumidas&gt;\n&quot;</span></span><span class="l">            <span class="s">&quot;Ignora los chunks que solo se parecen a la pregunta pero no &quot;</span></span><span class="l">            <span class="s">&quot;la responden. Si NINGÚN chunk responde, escribe exactamente: &quot;</span></span><span class="l">            <span class="s">&quot;NINGUNO&quot;</span></span><span class="l">        ),</span><span class="l">        messages=[{</span><span class="l">            <span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>,</span><span class="l">            <span class="s">&quot;content&quot;</span>: <span class="s">f&quot;Pregunta: {pregunta}\n\nChunks:\n{lista}&quot;</span>,</span><span class="l">        }],</span><span class="l">    )</span><span class="l">    texto = resp.content[0].text.<span class="f">strip</span>()</span><span class="l">    <span class="k">if</span> texto == <span class="s">&quot;NINGUNO&quot;</span>:</span><span class="l">        <span class="k">return</span> []  <span class="c"># Segunda defensa: pasó el umbral pero no responde nada.</span></span><span class="l"></span><span class="l">    seleccion = []</span><span class="l">    <span class="k">for</span> linea <span class="k">in</span> texto.<span class="f">splitlines</span>():</span><span class="l">        m = re.<span class="f">match</span>(<span class="s">r&quot;\[(\d+)\]\s*(.+)&quot;</span>, linea.<span class="f">strip</span>())</span><span class="l">        <span class="c"># Cada línea útil empieza con &quot;[n]&quot;: la parseamos para saber QUÉ</span></span><span class="l">        <span class="c"># chunk original respalda cada extracto (eso mantiene las citas</span></span><span class="l">        <span class="c"># verificables: el extracto se puede comparar contra el chunk).</span></span><span class="l">        <span class="k">if</span> m:</span><span class="l">            idx = <span class="f">int</span>(m.<span class="f">group</span>(1)) - 1  <span class="c"># De número humano [1] a índice 0.</span></span><span class="l">            <span class="k">if</span> 0 &lt;= idx &lt; <span class="f">len</span>(candidatos):</span><span class="l">                seleccion.<span class="f">append</span>(</span><span class="l">                    {</span><span class="l">                        <span class="s">&quot;fuente&quot;</span>: candidatos[idx][<span class="s">&quot;fuente&quot;</span>],</span><span class="l">                        <span class="s">&quot;seccion&quot;</span>: candidatos[idx][<span class="s">&quot;seccion&quot;</span>],</span><span class="l">                        <span class="s">&quot;extracto&quot;</span>: m.<span class="f">group</span>(2),  <span class="c"># La versión comprimida.</span></span><span class="l">                    }</span><span class="l">                )</span><span class="l">    <span class="k">return</span> seleccion</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Son las ideas 2 y 3 de CLaRa juntas. <strong>Rerank</strong>: decidir por utilidad, no por similitud. <strong>Compresión</strong>: quedarse solo con las frases que responden (el paper comprime 16x sin perder calidad). El parseo del <code>[n]</code> no es un detalle de programación: es lo que mantiene la trazabilidad. Cada extracto comprimido sigue apuntando a su chunk original, así que la cita se puede verificar aunque el texto que ve el generador ya no sea literal.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p5" data-paso="d6p5">
@@ -2877,6 +3156,10 @@ def generar(pregunta, seleccion):
         }],
     )
     return resp.content[0].text"><div class="bloque-cab"><span class="ruta">04_rag_v04.py · líneas 161–188</span><span class="pill nuevo">+28 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l"><span class="c"># PASO 4: Generación (igual que v0.3, pero sobre el contexto comprimido)</span></span><span class="l"><span class="c"># ---------------------------------------------------------------------------</span></span><span class="l">SYSTEM_GENERACION = (</span><span class="l">    <span class="s">&quot;Responde SOLO con el contexto provisto. &quot;</span></span><span class="l">    <span class="s">&quot;Cita cada afirmación con su marcador [n]. &quot;</span></span><span class="l">    <span class="s">&quot;Si el contexto no alcanza, responde exactamente: &quot;</span></span><span class="l">    <span class="s">&quot;&#x27;No tengo evidencia para responder.&#x27;&quot;</span></span><span class="l">)</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">generar</span>(pregunta, seleccion):</span><span class="l">    contexto = <span class="s">&quot;\n\n&quot;</span>.<span class="f">join</span>(</span><span class="l">        <span class="s">f&quot;[{i + 1}] ({s[&#x27;fuente&#x27;]} § {s[&#x27;seccion&#x27;]})\n{s[&#x27;extracto&#x27;]}&quot;</span></span><span class="l">        <span class="k">for</span> i, s <span class="k">in</span> <span class="f">enumerate</span>(seleccion)</span><span class="l">    )</span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=1024,</span><span class="l">        system=SYSTEM_GENERACION,</span><span class="l">        messages=[{</span><span class="l">            <span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>,</span><span class="l">            <span class="s">&quot;content&quot;</span>: <span class="s">f&quot;Contexto:\n{contexto}\n\nPregunta: {pregunta}&quot;</span>,</span><span class="l">        }],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.content[0].text</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El system prompt no cambió ni una palabra respecto al día 4. Todo lo que mejoró pasó <strong>antes</strong> de la generación. Ese es el mensaje de la sesión: la calidad de un RAG se decide antes de llamar al modelo.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p6" data-paso="d6p6">
@@ -2963,6 +3246,10 @@ Pregunta: Si mi endpoint de webhooks está caído, ¿cuánto tiempo tengo para a
 Respuesta: Según la documentación [1], tienes un margen amplio de tiempo para recuperar los eventos:
 
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Respuesta: El timeout default de la API es de 30 segundos por petición. [1]</span><span class="l"></span><span class="l">======================================================================</span><span class="l">Pregunta: Si mi endpoint de webhooks está caído, ¿cuánto tiempo tengo para arreglarlo antes de perder eventos?</span><span class="l">----------------------------------------------------------------------</span><span class="l">1) Expansión     → + &quot;reintentos webhook cola retención horas días expiración&quot;</span><span class="l">2) Retrieval     → 6 candidato(s) sobre el umbral:</span><span class="l">      sim=0.621  webhooks.md § Reintentos de entrega</span><span class="l">      sim=0.615  webhooks.md § Guía de Webhooks</span><span class="l">      sim=0.600  webhooks.md § Configuración de webhooks</span><span class="l">      sim=0.503  webhooks.md § Verificación de firma</span><span class="l">      sim=0.497  api-pagos.md § Timeouts y reintentos</span><span class="l">      sim=0.495  api-pagos.md § Autenticación</span><span class="l">3) Rerank+compr. → 1 chunk(s) útiles de verdad:</span><span class="l">      [webhooks.md § Reintentos de entrega] &quot;Si el servidor no responde con código 2xx en menos de 10 segundos, Pag...&quot;</span><span class="l"></span><span class="l">Respuesta: Según la documentación [1], tienes un margen amplio de tiempo para recuperar los eventos:</span><span class="l"></span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Ahí está todo el día en una pantalla. La expansión agregó <em>&quot;reintentos webhook cola retención horas días expiración&quot;</em>; el retrieval encontró 6 candidatos sobre el umbral; y el rerank se quedó con <strong>uno</strong>. Los otros 5 se parecían pero no respondían, y la v0.3 se los habría pasado enteros al modelo. Compara el costo: la v0.4 gasta 3 llamadas por pregunta en vez de 1. Eso es una decisión de producto, no de ingeniería. En la sesión 08 vas a medir si esa plata compra algo.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Cierre de la sesión: preguntar cuál de las dos versiones llevarían a producción y por qué. No hay respuesta correcta: hay respuesta argumentada con números, que es lo que se evalúa.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p6">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>04_rag_v04.py</code> completo (242 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -3258,9 +3545,11 @@ if __name__ == &quot;__main__&quot;:
           pasos.forEach((p) => {
             const ok = hechos.has(p.id);
             p.classList.toggle("hecho", ok);
-            const boton = p.querySelector("[data-tick]");
-            if (boton)
-              boton.setAttribute("aria-pressed", ok ? "true" : "false");
+            // Hay DOS controles por paso (el círculo del margen y el botón
+            // del cierre): los dos tienen que reflejar el mismo estado.
+            p.querySelectorAll("[data-tick]").forEach((boton) =>
+              boton.setAttribute("aria-pressed", ok ? "true" : "false"),
+            );
             const a = enlacesNav.get(p.id);
             if (a) a.classList.toggle("hecho", ok);
           });

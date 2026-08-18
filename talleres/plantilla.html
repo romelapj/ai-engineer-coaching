@@ -526,6 +526,13 @@
         gap: 0.9rem;
         position: sticky;
         top: 2rem;
+        /* Sin esto el sticky no sirve de nada. Como celda de grid, por defecto
+           se estira a la altura de toda la fila (en un paso largo, 1800px), y
+           un elemento pegajoso tan alto como su contenedor no tiene recorrido:
+           su contenido se queda arriba y sale de pantalla al leer. Con
+           `start` mide lo que mide el número más el círculo, y entonces sí
+           acompaña la lectura. */
+        align-self: start;
       }
       .paso-cifra {
         font-size: 1.05rem;
@@ -570,6 +577,73 @@
       }
       .paso.hecho .tick::after {
         opacity: 1;
+      }
+      /* ---------- marcar como hecho, al cierre del paso ----------
+         El círculo del margen queda arriba, y en un paso largo hay que subir
+         a buscarlo justo cuando acabas de leer. Este repite la acción donde
+         termina la lectura, que es donde nace la intención de marcarla. */
+      .tick-fin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1.75rem;
+        padding: 0.5rem 1.05rem 0.5rem 0.75rem;
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        background: none;
+        color: var(--tenue);
+        font: 600 0.82rem/1 inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .tick-fin:hover {
+        border-color: var(--ok);
+        color: var(--texto-2);
+      }
+      .tick-fin-marca {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--linea);
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .tick-fin-marca::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 0.62rem;
+        font-weight: 900;
+        color: var(--fondo);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .tick-fin:hover .tick-fin-marca {
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin {
+        border-color: rgba(52, 211, 153, 0.3);
+        color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca::after {
+        opacity: 1;
+      }
+      .paso.hecho .tick-fin-texto::after {
+        content: " ✓";
+      }
+      .paso.hecho .tick-fin-texto {
+        font-size: 0;
+      }
+      .paso.hecho .tick-fin-texto::before {
+        content: "Hecho";
+        font-size: 0.82rem;
       }
       .paso-cab {
         display: flex;
@@ -833,6 +907,107 @@
         background: var(--superficie);
         border-radius: 4px;
         padding: 0.08em 0.35em;
+      }
+      /* ---------- sintaxis de Python ----------
+         No es estado (ni atención ni verificado): es material de apoyo, así
+         que va en neutro. Plegado por defecto porque el alumno que ya sabe
+         Python no necesita ver esto 41 veces; el que no sabe lo abre. */
+      details.sintaxis {
+        margin-left: var(--margen-paso);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        padding: 0.85rem 1.3rem;
+      }
+      details.sintaxis > summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        transition: color 0.2s ease;
+      }
+      details.sintaxis > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.sintaxis > summary::before {
+        content: "▸";
+        font-size: 0.8rem;
+        letter-spacing: 0;
+        transition: transform 0.2s ease;
+      }
+      details.sintaxis[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.sintaxis > summary:hover {
+        color: var(--texto-2);
+      }
+      details.sintaxis .cuenta {
+        margin-left: auto;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: var(--tenue);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.05em 0.55em;
+      }
+      ul.sintaxis-lista {
+        list-style: none;
+        margin-top: 0.5rem;
+      }
+      ul.sintaxis-lista li {
+        display: grid;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+        gap: 0.25rem 1.4rem;
+        align-items: baseline;
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--linea-suave);
+        font-size: 0.92rem;
+      }
+      ul.sintaxis-lista li {
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > code {
+        color: var(--acento);
+        background: var(--acento-suave);
+        border: 1px solid var(--acento-borde);
+        border-radius: 5px;
+        padding: 0.15em 0.5em;
+        font-size: 0.84rem;
+        /* Sin nowrap: hay símbolos largos (una f-string con formato, una
+           llamada con tres argumentos) que a 768px empujaban la página entera
+           a scroll horizontal. Partirlos es más feo que una línea; sacar la
+           página de cuadro lo es mucho más. */
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > span {
+        color: var(--texto-2);
+      }
+      ul.sintaxis-lista li > span code {
+        color: var(--texto);
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 4px;
+        padding: 0.08em 0.35em;
+        font-size: 0.86em;
+        overflow-wrap: anywhere;
+      }
+      /* En móvil el símbolo no cabe al lado: pasa arriba y el texto debajo. */
+      @media (max-width: 720px) {
+        ul.sintaxis-lista li {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0.5rem;
+        }
+        ul.sintaxis-lista li > code {
+          justify-self: start;
+        }
       }
       details.completo {
         border: 1px dashed var(--linea);
@@ -1269,9 +1444,11 @@
           pasos.forEach((p) => {
             const ok = hechos.has(p.id);
             p.classList.toggle("hecho", ok);
-            const boton = p.querySelector("[data-tick]");
-            if (boton)
-              boton.setAttribute("aria-pressed", ok ? "true" : "false");
+            // Hay DOS controles por paso (el círculo del margen y el botón
+            // del cierre): los dos tienen que reflejar el mismo estado.
+            p.querySelectorAll("[data-tick]").forEach((boton) =>
+              boton.setAttribute("aria-pressed", ok ? "true" : "false"),
+            );
             const a = enlacesNav.get(p.id);
             if (a) a.classList.toggle("hecho", ok);
           });

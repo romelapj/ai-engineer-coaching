@@ -526,6 +526,13 @@
         gap: 0.9rem;
         position: sticky;
         top: 2rem;
+        /* Sin esto el sticky no sirve de nada. Como celda de grid, por defecto
+           se estira a la altura de toda la fila (en un paso largo, 1800px), y
+           un elemento pegajoso tan alto como su contenedor no tiene recorrido:
+           su contenido se queda arriba y sale de pantalla al leer. Con
+           `start` mide lo que mide el número más el círculo, y entonces sí
+           acompaña la lectura. */
+        align-self: start;
       }
       .paso-cifra {
         font-size: 1.05rem;
@@ -570,6 +577,73 @@
       }
       .paso.hecho .tick::after {
         opacity: 1;
+      }
+      /* ---------- marcar como hecho, al cierre del paso ----------
+         El círculo del margen queda arriba, y en un paso largo hay que subir
+         a buscarlo justo cuando acabas de leer. Este repite la acción donde
+         termina la lectura, que es donde nace la intención de marcarla. */
+      .tick-fin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1.75rem;
+        padding: 0.5rem 1.05rem 0.5rem 0.75rem;
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        background: none;
+        color: var(--tenue);
+        font: 600 0.82rem/1 inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .tick-fin:hover {
+        border-color: var(--ok);
+        color: var(--texto-2);
+      }
+      .tick-fin-marca {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--linea);
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .tick-fin-marca::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 0.62rem;
+        font-weight: 900;
+        color: var(--fondo);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .tick-fin:hover .tick-fin-marca {
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin {
+        border-color: rgba(52, 211, 153, 0.3);
+        color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca::after {
+        opacity: 1;
+      }
+      .paso.hecho .tick-fin-texto::after {
+        content: " ✓";
+      }
+      .paso.hecho .tick-fin-texto {
+        font-size: 0;
+      }
+      .paso.hecho .tick-fin-texto::before {
+        content: "Hecho";
+        font-size: 0.82rem;
       }
       .paso-cab {
         display: flex;
@@ -833,6 +907,107 @@
         background: var(--superficie);
         border-radius: 4px;
         padding: 0.08em 0.35em;
+      }
+      /* ---------- sintaxis de Python ----------
+         No es estado (ni atención ni verificado): es material de apoyo, así
+         que va en neutro. Plegado por defecto porque el alumno que ya sabe
+         Python no necesita ver esto 41 veces; el que no sabe lo abre. */
+      details.sintaxis {
+        margin-left: var(--margen-paso);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        padding: 0.85rem 1.3rem;
+      }
+      details.sintaxis > summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        transition: color 0.2s ease;
+      }
+      details.sintaxis > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.sintaxis > summary::before {
+        content: "▸";
+        font-size: 0.8rem;
+        letter-spacing: 0;
+        transition: transform 0.2s ease;
+      }
+      details.sintaxis[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.sintaxis > summary:hover {
+        color: var(--texto-2);
+      }
+      details.sintaxis .cuenta {
+        margin-left: auto;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: var(--tenue);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.05em 0.55em;
+      }
+      ul.sintaxis-lista {
+        list-style: none;
+        margin-top: 0.5rem;
+      }
+      ul.sintaxis-lista li {
+        display: grid;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+        gap: 0.25rem 1.4rem;
+        align-items: baseline;
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--linea-suave);
+        font-size: 0.92rem;
+      }
+      ul.sintaxis-lista li {
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > code {
+        color: var(--acento);
+        background: var(--acento-suave);
+        border: 1px solid var(--acento-borde);
+        border-radius: 5px;
+        padding: 0.15em 0.5em;
+        font-size: 0.84rem;
+        /* Sin nowrap: hay símbolos largos (una f-string con formato, una
+           llamada con tres argumentos) que a 768px empujaban la página entera
+           a scroll horizontal. Partirlos es más feo que una línea; sacar la
+           página de cuadro lo es mucho más. */
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > span {
+        color: var(--texto-2);
+      }
+      ul.sintaxis-lista li > span code {
+        color: var(--texto);
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 4px;
+        padding: 0.08em 0.35em;
+        font-size: 0.86em;
+        overflow-wrap: anywhere;
+      }
+      /* En móvil el símbolo no cabe al lado: pasa arriba y el texto debajo. */
+      @media (max-width: 720px) {
+        ul.sintaxis-lista li {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0.5rem;
+        }
+        ul.sintaxis-lista li > code {
+          justify-self: start;
+        }
       }
       details.completo {
         border: 1px dashed var(--linea);
@@ -1275,6 +1450,10 @@ cd ~/talleres/sesion-01
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">mkdir</span> -p ~/talleres/sesion-01</span><span class="l"><span class="k">cd</span> ~/talleres/sesion-01</span><span class="l">python3 -m venv .venv</span><span class="l"><span class="k">source</span> .venv/bin/activate</span><span class="l"><span class="k">pip</span> install -r requirements.txt</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Cuando el prompt de tu terminal muestre <code>(.venv)</code>, estás dentro. Tendrás que repetir <code>source .venv/bin/activate</code> cada vez que abras una terminal nueva: es el olvido número uno de la semana.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>source: no such file or directory: .venv/bin/activate</code><span>En Windows el comando es <code>.venv\Scripts\activate</code>.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d1p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d1p2" data-paso="d1p2">
@@ -1291,6 +1470,10 @@ pip install -r requirements.txt"><div class="bloque-cab"><span class="ruta">term
         </header>
         <p>Cuatro de los cinco días llaman a la API. La llave se lee de una variable de entorno: nunca se escribe dentro del código.</p><div class="bloque" data-codigo="export ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   # tu llave real
 python -c &quot;import anthropic, chromadb; print(&#x27;entorno listo&#x27;)&quot;"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">export</span> ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   <span class="c"># tu llave real</span></span><span class="l"><span class="k">python</span> -c &quot;import anthropic, chromadb; print(&#x27;entorno listo&#x27;)&quot;</span></code></pre></div><div class="bloque salida" data-codigo="entorno listo"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">entorno listo</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>export</code> solo dura lo que dure esa terminal. Si vas a trabajar varios días, mete esa línea en tu <code>~/.zshrc</code>. Y nunca la subas a git.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>El gasto total de este taller es de menos de un centavo: los días 1 y 2 usan <code>count_tokens</code>, que no cuesta nada, y el día 5 corre en local.</p></div>
+        <button class="tick-fin" type="button" data-tick="d1p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       
@@ -1345,6 +1528,10 @@ client = anthropic.Anthropic()
 
 MODELO = &quot;claude-sonnet-4-6&quot;
 "><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 1–25</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1 · El modelo no ve letras: ve tokens</span></span><span class="l"></span><span class="l"><span class="s">Del deck: antes de llegar al modelo, tu texto se parte en TOKENS con un</span></span><span class="l"><span class="s">algoritmo llamado BPE (Byte Pair Encoding). El modelo nunca ve caracteres:</span></span><span class="l"><span class="s">ve una lista de números. Eso explica cosas que parecen bugs (por ejemplo</span></span><span class="l"><span class="s">que se equivoque contando cuántas erres tiene &quot;strawberry&quot;) y explica tu</span></span><span class="l"><span class="s">factura, porque los tokens son la unidad que se cobra.</span></span><span class="l"></span><span class="l"><span class="s">No hay que adivinar cuántos tokens tiene un texto: la API tiene un endpoint</span></span><span class="l"><span class="s">que los cuenta exacto, es GRATIS, y es específico de cada modelo.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo compara tres tipos de texto y mide cuántos caracteres cabe en</span></span><span class="l"><span class="s">un token en cada uno. La diferencia sorprende.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 00_tokens.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>count_tokens</code> es un endpoint aparte: <strong>no genera respuesta y no cuesta nada</strong>. Puedes llamarlo antes de cada petición para saber qué vas a gastar. Es la herramienta más subestimada de la API.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p2" data-paso="d2p2">
@@ -1378,6 +1565,10 @@ TEXTOS = {
 }
 
 "><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 26–44</span><span class="pill nuevo">+19 líneas nuevas</span></div><pre><code><span class="l"><span class="c"># Tres textos parecidos en longitud pero de naturaleza muy distinta.</span></span><span class="l">TEXTOS = {</span><span class="l">    <span class="s">&quot;español&quot;</span>: (</span><span class="l">        <span class="s">&quot;El cliente reporta que le cobraron dos veces el mismo producto &quot;</span></span><span class="l">        <span class="s">&quot;y solicita la devolución del importe duplicado lo antes posible.&quot;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;JSON&quot;</span>: (</span><span class="l">        <span class="s">&#x27;{&quot;order_id&quot;: &quot;ORD-8841&quot;, &quot;status&quot;: &quot;shipped&quot;, &quot;amount&quot;: 45000, &#x27;</span></span><span class="l">        <span class="s">&#x27;&quot;currency&quot;: &quot;COP&quot;, &quot;items&quot;: [{&quot;sku&quot;: &quot;A-12&quot;, &quot;qty&quot;: 2}]}&#x27;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;código&quot;</span>: (</span><span class="l">        <span class="s">&quot;def cobrar(order_id: str, monto: float) -&gt; dict:\n&quot;</span></span><span class="l">        <span class="s">&quot;    if order_id in procesados:\n&quot;</span></span><span class="l">        <span class="s">&quot;        return {&#x27;status&#x27;: &#x27;duplicado&#x27;}\n&quot;</span></span><span class="l">        <span class="s">&quot;    return {&#x27;status&#x27;: &#x27;ok&#x27;, &#x27;monto&#x27;: monto}&quot;</span></span><span class="l">    ),</span><span class="l">}</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Están elegidos para que tengan un número de caracteres similar. Si la tokenización fuera proporcional al texto, deberían costar casi lo mismo. Apuesta ahora cuál crees que gana, antes de correrlo.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p3" data-paso="d2p3">
@@ -1403,6 +1594,10 @@ TEXTOS = {
     return resp.input_tokens
 
 "><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 45–55</span><span class="pill nuevo">+11 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">contar</span>(texto):</span><span class="l">    <span class="c"># count_tokens NO genera respuesta ni consume tokens de salida: solo</span></span><span class="l">    <span class="c"># cuenta. Es gratis y no tiene rate limit agresivo, así que puedes</span></span><span class="l">    <span class="c"># llamarlo antes de cada petición para estimar costo.</span></span><span class="l">    resp = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=MODELO,  <span class="c"># El conteo depende del modelo: cada familia tokeniza distinto.</span></span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: texto}],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.input_tokens</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El conteo es <strong>específico del modelo</strong>: cada familia tokeniza distinto, así que el mismo texto puede dar números diferentes. Por eso <code>model</code> es obligatorio aquí y no un detalle.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p4" data-paso="d2p4">
@@ -1463,6 +1658,10 @@ cuesta más de lo que parece, y por eso importa el formato que eliges.
 &#x27;strawberry&#x27; son 9 token(s) para el modelo,
 pero 10 caracteres para ti. Él no ve las 3 erres:
 ve un puñado de números que representan pedazos de la palabra."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Contando tokens con claude-sonnet-4-6</span><span class="l"></span><span class="l">tipo        caracteres   tokens  car/token</span><span class="l">------------------------------------------</span><span class="l">español            127       39       3.26</span><span class="l">JSON               119       60       1.98</span><span class="l">código             162       64       2.53</span><span class="l"></span><span class="l">El español corriente es el más eficiente. El JSON y el código gastan</span><span class="l">más tokens por carácter: las llaves, comillas y sangrías son tokens</span><span class="l">que pagas igual que las palabras. Por eso pedirle JSON al modelo</span><span class="l">cuesta más de lo que parece, y por eso importa el formato que eliges.</span><span class="l"></span><span class="l">--- por qué se equivoca contando letras ---</span><span class="l">&#x27;strawberry&#x27; son 9 token(s) para el modelo,</span><span class="l">pero 10 caracteres para ti. Él no ve las 3 erres:</span><span class="l">ve un puñado de números que representan pedazos de la palabra.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El español rinde <strong>3.26 caracteres por token</strong>; el JSON, <strong>1.98</strong>. Las llaves, las comillas y las sangrías son tokens que pagas igual que las palabras. Ese dato debería cambiar cómo diseñas tus prompts: pedir JSON tiene un costo, y a veces no compensa. Y abajo, <code>strawberry</code>: 9 tokens para 10 caracteres. El modelo no ve las tres erres porque <strong>no ve letras</strong>: ve un puñado de números que representan pedazos de palabra. Todos los fallos de &quot;cuenta las letras de esta palabra&quot; salen de ahí, y ninguno se arregla con un prompt mejor.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Buen momento para preguntar: &quot;¿entonces cómo le pedirías que cuente letras?&quot;. La respuesta es una tool que lo cuente en Python, y eso es justo la sesión 03.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>00_tokens.py</code> completo (85 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -1617,6 +1816,10 @@ import anthropic
 client = anthropic.Anthropic()
 
 # Precios en dólares por MILLÓN de tokens, a agosto de 2026."><div class="bloque-cab"><span class="ruta">01_tokenometro.py · líneas 1–25</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 2 · El Token-ó-metro: ¿cuánto me va a costar esto?</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el ejercicio de la sesión. Un CLI que responde una pregunta que</span></span><span class="l"><span class="s">vas a hacerte en cada proyecto: &quot;¿cuánto cuesta esto, en cada modelo?&quot;.</span></span><span class="l"></span><span class="l"><span class="s">La idea de fondo: elegir modelo no es elegir &quot;el mejor&quot;. Es elegir el más</span></span><span class="l"><span class="s">barato que resuelve TU tarea con la calidad que necesitas. Y eso no se</span></span><span class="l"><span class="s">decide leyendo un blog: se decide midiendo tu propio prompt.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo mide un prompt real contra tres modelos y proyecta el gasto a</span></span><span class="l"><span class="s">100.000 peticiones al mes.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 01_tokenometro.py</span></span><span class="l"><span class="s">    python 01_tokenometro.py &quot;tu propio texto aquí&quot;</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> sys</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l"><span class="c"># Precios en dólares por MILLÓN de tokens, a agosto de 2026.</span></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Fíjate en la advertencia del comentario: <strong>esta tabla caduca</strong>. Los precios cambian y salen modelos nuevos cada pocos meses. La lección no es memorizarla, es tenerla en <strong>un solo lugar</strong> del código y saber dónde verificarla. Un precio hardcodeado en cinco archivos es una factura equivocada esperando su turno.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p2" data-paso="d3p2">
@@ -1650,6 +1853,10 @@ PETICIONES_MES = 100_000
 TOKENS_SALIDA_ESTIMADOS = 300
 
 "><div class="bloque-cab"><span class="ruta">01_tokenometro.py · líneas 26–44</span><span class="pill nuevo">+19 líneas nuevas</span></div><pre><code><span class="l"><span class="c"># OJO: esta tabla caduca. Los precios cambian y salen modelos nuevos, así</span></span><span class="l"><span class="c"># que la lección no es memorizarla, es tenerla en UN solo sitio del código</span></span><span class="l"><span class="c"># y saber dónde verificarla: platform.claude.com/docs/en/about-claude/models</span></span><span class="l">PRECIOS = {</span><span class="l">    <span class="c"># modelo                 entrada  salida   contexto</span></span><span class="l">    <span class="s">&quot;claude-haiku-4-5&quot;</span>:     (  1.00,   5.00,  <span class="s">&quot;200K&quot;</span>),</span><span class="l">    <span class="s">&quot;claude-sonnet-4-6&quot;</span>:    (  3.00,  15.00,  <span class="s">&quot;1M&quot;</span>),</span><span class="l">    <span class="s">&quot;claude-opus-4-8&quot;</span>:      (  5.00,  25.00,  <span class="s">&quot;1M&quot;</span>),</span><span class="l">}</span><span class="l"></span><span class="l"><span class="c"># Cuántas peticiones al mes esperas. Cambia este número por el tuyo: es la</span></span><span class="l"><span class="c"># diferencia entre &quot;da igual el modelo&quot; y &quot;esto no cabe en el presupuesto&quot;.</span></span><span class="l">PETICIONES_MES = 100_000</span><span class="l"></span><span class="l"><span class="c"># Cuántos tokens esperas que responda el modelo. La salida cuesta 5x la</span></span><span class="l"><span class="c"># entrada, así que estimarla mal es el error más caro de la tabla.</span></span><span class="l">TOKENS_SALIDA_ESTIMADOS = 300</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>TOKENS_SALIDA_ESTIMADOS</code> es el que más se equivoca y el que más duele: <strong>la salida cuesta 5 veces la entrada</strong>. Subestimarla es la forma más común de que un presupuesto se quede corto por un factor de tres. El día 4 lo vas a medir de verdad.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p3" data-paso="d3p3">
@@ -1683,6 +1890,10 @@ def costo(tokens_entrada, tokens_salida, precio_entrada, precio_salida):
     )
 
 "><div class="bloque-cab"><span class="ruta">01_tokenometro.py · líneas 45–63</span><span class="pill nuevo">+19 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">contar_entrada</span>(texto, modelo):</span><span class="l">    <span class="c"># El conteo es específico del modelo: el mismo texto puede dar números</span></span><span class="l">    <span class="c"># distintos en modelos distintos, así que se cuenta con cada uno.</span></span><span class="l">    resp = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=modelo,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: texto}],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.input_tokens</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">costo</span>(tokens_entrada, tokens_salida, precio_entrada, precio_salida):</span><span class="l">    <span class="c"># Los precios vienen por millón de tokens: dividimos entre 1.000.000</span></span><span class="l">    <span class="c"># para obtener el costo de UNA petición.</span></span><span class="l">    <span class="k">return</span> (</span><span class="l">        tokens_entrada * precio_entrada / 1_000_000</span><span class="l">        + tokens_salida * precio_salida / 1_000_000</span><span class="l">    )</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Los precios vienen &quot;por millón de tokens&quot; porque los números por token serían ilegibles. Dividir entre 1.000.000 es todo el misterio, pero es donde se cuelan los errores de tres ceros.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p4" data-paso="d3p4">
@@ -1749,6 +1960,10 @@ claude-sonnet-4-6         1M      63     0.004689        469
 claude-opus-4-8           1M      85     0.007925        792
 
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Prompt de 184 caracteres</span><span class="l">Proyección: 100,000 peticiones/mes, 300 tokens de salida estimados</span><span class="l"></span><span class="l">modelo                   ctx  tok_in   $/petición      $/mes</span><span class="l">------------------------------------------------------------</span><span class="l">claude-haiku-4-5        200K      63     0.001563        156</span><span class="l">claude-sonnet-4-6         1M      63     0.004689        469</span><span class="l">claude-opus-4-8           1M      85     0.007925        792</span><span class="l"></span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Mira la última columna: <strong>$156 contra $792 al mes</strong> por la misma tarea. Para clasificar un reclamo en cuatro categorías, el modelo caro no clasifica mejor, solo cuesta cinco veces más. Y mira la columna <code>tok_in</code>: el mismo texto son <strong>63 tokens en Haiku y Sonnet, pero 85 en Opus</strong>. No es un error del script: los modelos usan tokenizadores distintos. Por eso el conteo se hace con cada modelo y no se extrapola: un 35% de diferencia en la entrada es un 35% de diferencia en esa parte de la factura.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Aquí conviene que cada uno corra el script con un prompt de su propio trabajo. El número deja de ser un ejercicio en el momento en que sale de su propio proyecto.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>01_tokenometro.py</code> completo (105 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -1928,6 +2143,10 @@ MODELO = &quot;claude-sonnet-4-6&quot;
 PROMPT = &quot;Dame 3 nombres para una fintech de pagos en Latinoamérica. Solo los nombres.&quot;
 
 "><div class="bloque-cab"><span class="ruta">02_muestreo.py · líneas 1–30</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 3 · Muestreo: temperature, max_tokens y stop_reason</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el modelo no elige &quot;la&quot; siguiente palabra. Calcula una</span></span><span class="l"><span class="s">probabilidad para cada token posible y luego MUESTREA de esa distribución.</span></span><span class="l"><span class="s">Los parámetros de muestreo controlan ese sorteo:</span></span><span class="l"></span><span class="l"><span class="s">  temperature  escala la distribución antes de sortear. 0 = siempre el token</span></span><span class="l"><span class="s">               más probable (reproducible); 1 = más variedad.</span></span><span class="l"><span class="s">  max_tokens   es un tope DURO de salida. No es un objetivo: el modelo no</span></span><span class="l"><span class="s">               intenta llenarlo. Pero si lo toca, corta a media frase.</span></span><span class="l"></span><span class="l"><span class="s">Y stop_reason es el campo que te dice cuál de las dos cosas pasó.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo corre el mismo prompt tres veces con temperature 0 y tres con</span></span><span class="l"><span class="s">temperature 1, para que veas la diferencia con tus ojos. Después provoca un</span></span><span class="l"><span class="s">corte por max_tokens a propósito.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 02_muestreo.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l">PROMPT = <span class="s">&quot;Dame 3 nombres para una fintech de pagos en Latinoamérica. Solo los nombres.&quot;</span></span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Para ver el efecto de <code>temperature</code> hace falta una pregunta con muchas respuestas buenas. En una tarea determinista, temperature 0 y 1 se parecen, y de ahí sale la falsa impresión de que el parámetro &quot;no hace nada&quot;.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p2" data-paso="d4p2">
@@ -1953,6 +2172,10 @@ PROMPT = &quot;Dame 3 nombres para una fintech de pagos en Latinoamérica. Solo 
     return texto.strip(), resp.stop_reason, resp.usage.output_tokens
 
 "><div class="bloque-cab"><span class="ruta">02_muestreo.py · líneas 31–41</span><span class="pill nuevo">+11 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">generar</span>(temperature, max_tokens=200):</span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=max_tokens,</span><span class="l">        temperature=temperature,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: PROMPT}],</span><span class="l">    )</span><span class="l">    texto = <span class="s">&quot;&quot;</span>.<span class="f">join</span>(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">&quot;text&quot;</span>)</span><span class="l">    <span class="k">return</span> texto.<span class="f">strip</span>(), resp.stop_reason, resp.usage.output_tokens</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Devolver <code>stop_reason</code> junto al texto no es un detalle de estilo: es lo que hace que el paso final de este día sea posible. Un cliente de API que solo devuelve el texto te está escondiendo información que vas a necesitar.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p3" data-paso="d4p3">
@@ -2029,7 +2252,11 @@ GPU por lotes no es determinista. Diseña tests tolerantes.
   ↑ Ahí está el bug silencioso. La respuesta se cortó a media
   frase y NADA falló: no hay excepción, no hay error HTTP.
   Si no miras stop_reason, procesas una respuesta incompleta
-  como si estuviera entera. Por eso va en tus logs desde el día 1."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">=== temperature = 0 (conservador) ===</span><span class="l">  corrida 1: 1. **Fluxa**</span><span class="l">  corrida 2: 1. **Fluxa**</span><span class="l">  corrida 3: 1. **Fluxa**</span><span class="l"></span><span class="l">=== temperature = 1 (creativo) ===</span><span class="l">  corrida 1: 1. **Velo**</span><span class="l">  corrida 2: 1. **Fluxa**</span><span class="l">  corrida 3: 1. **Pagora**</span><span class="l"></span><span class="l">Con temperature 0 las tres corridas se parecen mucho; con 1 se</span><span class="l">separan. Para clasificar o extraer datos quieres 0: si cada corrida</span><span class="l">diera algo distinto no podrías medir si tu prompt mejoró.</span><span class="l">OJO: ni temperature=0 garantiza salidas idénticas. El cálculo en</span><span class="l">GPU por lotes no es determinista. Diseña tests tolerantes.</span><span class="l"></span><span class="l">=== max_tokens = 10 (a propósito, demasiado bajo) ===</span><span class="l">  respuesta   : &#x27;1. **Fluxa**\n2&#x27;</span><span class="l">  stop_reason : max_tokens</span><span class="l">  output_tokens: 10</span><span class="l"></span><span class="l">  ↑ Ahí está el bug silencioso. La respuesta se cortó a media</span><span class="l">  frase y NADA falló: no hay excepción, no hay error HTTP.</span><span class="l">  Si no miras stop_reason, procesas una respuesta incompleta</span><span class="l">  como si estuviera entera. Por eso va en tus logs desde el día 1.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Con <code>temperature=0</code> salió <strong>Fluxa las tres veces</strong>; con <code>1</code>, Velo, Fluxa y Pagora. Ahí está el sorteo. Para clasificar o extraer datos quieres 0: si cada corrida diera algo distinto, no podrías medir si tu prompt mejoró, y medir es todo lo que hacemos a partir de la sesión 02. Ojo con el matiz: <strong>ni <code>temperature=0</code> garantiza salidas idénticas</strong>. El cálculo en GPU por lotes no es determinista. Diseña tests tolerantes, no tests de igualdad exacta. Y abajo está el bug de la sesión: la respuesta se cortó en <code>&#x27;1. <strong>Fluxa</strong>\n2&#x27;</code> y <strong>nada falló</strong>. Sin excepción, sin error HTTP, con un HTTP 200 perfectamente normal. Solo <code>stop_reason: max_tokens</code> te lo dice. Si no lo miras, procesas media respuesta como si estuviera entera. Y ese bug aparece en producción tres semanas después, en el caso raro que genera una respuesta más larga.</p></div>
+  como si estuviera entera. Por eso va en tus logs desde el día 1."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">=== temperature = 0 (conservador) ===</span><span class="l">  corrida 1: 1. **Fluxa**</span><span class="l">  corrida 2: 1. **Fluxa**</span><span class="l">  corrida 3: 1. **Fluxa**</span><span class="l"></span><span class="l">=== temperature = 1 (creativo) ===</span><span class="l">  corrida 1: 1. **Velo**</span><span class="l">  corrida 2: 1. **Fluxa**</span><span class="l">  corrida 3: 1. **Pagora**</span><span class="l"></span><span class="l">Con temperature 0 las tres corridas se parecen mucho; con 1 se</span><span class="l">separan. Para clasificar o extraer datos quieres 0: si cada corrida</span><span class="l">diera algo distinto no podrías medir si tu prompt mejoró.</span><span class="l">OJO: ni temperature=0 garantiza salidas idénticas. El cálculo en</span><span class="l">GPU por lotes no es determinista. Diseña tests tolerantes.</span><span class="l"></span><span class="l">=== max_tokens = 10 (a propósito, demasiado bajo) ===</span><span class="l">  respuesta   : &#x27;1. **Fluxa**\n2&#x27;</span><span class="l">  stop_reason : max_tokens</span><span class="l">  output_tokens: 10</span><span class="l"></span><span class="l">  ↑ Ahí está el bug silencioso. La respuesta se cortó a media</span><span class="l">  frase y NADA falló: no hay excepción, no hay error HTTP.</span><span class="l">  Si no miras stop_reason, procesas una respuesta incompleta</span><span class="l">  como si estuviera entera. Por eso va en tus logs desde el día 1.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Con <code>temperature=0</code> salió <strong>Fluxa las tres veces</strong>; con <code>1</code>, Velo, Fluxa y Pagora. Ahí está el sorteo. Para clasificar o extraer datos quieres 0: si cada corrida diera algo distinto, no podrías medir si tu prompt mejoró, y medir es todo lo que hacemos a partir de la sesión 02. Ojo con el matiz: <strong>ni <code>temperature=0</code> garantiza salidas idénticas</strong>. El cálculo en GPU por lotes no es determinista. Diseña tests tolerantes, no tests de igualdad exacta. Y abajo está el bug de la sesión: la respuesta se cortó en <code>&#x27;1. **Fluxa**\n2&#x27;</code> y <strong>nada falló</strong>. Sin excepción, sin error HTTP, con un HTTP 200 perfectamente normal. Solo <code>stop_reason: max_tokens</code> te lo dice. Si no lo miras, procesas media respuesta como si estuviera entera. Y ese bug aparece en producción tres semanas después, en el caso raro que genera una respuesta más larga.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>02_muestreo.py</code> completo (80 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2209,6 +2436,10 @@ def main():
     print(f&quot;\nReal (resp.usage): {real_entrada} entrada / {real_salida} salida&quot;)
     print(f&quot;stop_reason: {resp.stop_reason}&quot;)
 "><div class="bloque-cab"><span class="ruta">03_estimado_vs_real.py · líneas 1–55</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 4 · El estimado contra la factura</span></span><span class="l"></span><span class="l"><span class="s">Del deck, paso 4 del Token-ó-metro: haz una llamada real y compara tu</span></span><span class="l"><span class="s">estimación con lo que de verdad reporta la API. ¿Qué tan cerca quedaste?</span></span><span class="l"></span><span class="l"><span class="s">Esto cierra el ciclo del día: contar (gratis) → estimar el costo → llamar →</span></span><span class="l"><span class="s">comparar. Es el mismo ciclo que vas a montar en producción, solo que allí</span></span><span class="l"><span class="s">el &quot;comparar&quot; vive en un dashboard.</span></span><span class="l"></span><span class="l"><span class="s">Aviso importante que se ve aquí: los tokens de ENTRADA son predecibles</span></span><span class="l"><span class="s">(count_tokens acierta casi exacto). Los de SALIDA no: no sabes cuánto va a</span></span><span class="l"><span class="s">escribir el modelo hasta que escribe. Por eso la salida es la parte</span></span><span class="l"><span class="s">peligrosa de un presupuesto.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 03_estimado_vs_real.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l">PRECIO_ENTRADA = 3.00  <span class="c"># USD por millón de tokens (sonnet-4-6, agosto 2026)</span></span><span class="l">PRECIO_SALIDA = 15.00  <span class="c"># USD por millón. Nota que la salida cuesta 5 veces más.</span></span><span class="l"></span><span class="l">PROMPT = (</span><span class="l">    <span class="s">&quot;Explica en un párrafo corto qué es un token en un modelo de lenguaje, &quot;</span></span><span class="l">    <span class="s">&quot;para alguien que nunca ha programado.&quot;</span></span><span class="l">)</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    <span class="c"># --- 1. Estimación previa (gratis) ------------------------------------</span></span><span class="l">    conteo = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=MODELO,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: PROMPT}],</span><span class="l">    )</span><span class="l">    estimado_entrada = conteo.input_tokens</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Estimación previa (count_tokens): {estimado_entrada} tokens de entrada&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Costo de entrada estimado: ${estimado_entrada * PRECIO_ENTRADA / 1_000_000:.6f}&quot;</span>)</span><span class="l"></span><span class="l">    <span class="c"># --- 2. La llamada real -----------------------------------------------</span></span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=MODELO,</span><span class="l">        max_tokens=1024,</span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: PROMPT}],</span><span class="l">    )</span><span class="l">    real_entrada = resp.usage.input_tokens</span><span class="l">    real_salida = resp.usage.output_tokens</span><span class="l"></span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\nReal (resp.usage): {real_entrada} entrada / {real_salida} salida&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;stop_reason: {resp.stop_reason}&quot;</span>)</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Ese orden importa: <strong>estimas antes de gastar</strong>. En un pipeline real este es el punto donde rechazas una petición demasiado cara, o eliges un modelo más barato para ese caso concreto, antes de haber pagado nada.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p2" data-paso="d5p2">
@@ -2267,6 +2498,10 @@ Esa es la lección del día: puedes estimar la entrada con precisión
 antes de gastar un centavo, pero la salida no la sabes hasta que
 ocurre, y suele ser la mayor parte de la factura. Controlarla es
 prompt (pedir respuestas cortas) y max_tokens, no suerte."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Estimación previa (count_tokens): 41 tokens de entrada</span><span class="l">Costo de entrada estimado: $0.000123</span><span class="l"></span><span class="l">Real (resp.usage): 41 entrada / 227 salida</span><span class="l">stop_reason: end_turn</span><span class="l"></span><span class="l">Diferencia en la entrada: +0 tokens</span><span class="l">  (una diferencia pequeña es normal: la API agrega unos pocos tokens</span><span class="l">   de estructura al armar el mensaje)</span><span class="l"></span><span class="l">Costo real de esta llamada: $0.003528</span><span class="l">De ese costo, la SALIDA fue el 97%</span><span class="l"></span><span class="l">Esa es la lección del día: puedes estimar la entrada con precisión</span><span class="l">antes de gastar un centavo, pero la salida no la sabes hasta que</span><span class="l">ocurre, y suele ser la mayor parte de la factura. Controlarla es</span><span class="l">prompt (pedir respuestas cortas) y max_tokens, no suerte.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><strong>La entrada se estimó exacta: +0 tokens de diferencia.</strong> Puedes confiar en <code>count_tokens</code> para presupuestar la mitad de tu factura sin gastar nada. La otra mitad es el problema: <strong>la salida fue el 97% del costo</strong> de esta llamada. Y no la sabes hasta que ocurre: no hay forma de contar por adelantado algo que aún no se ha escrito. Controlarla tiene solo dos palancas: pedir respuestas cortas en el prompt, y poner un <code>max_tokens</code> sensato. Adivinar no es una de ellas.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>03_estimado_vs_real.py</code> completo (83 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2429,6 +2664,10 @@ from chromadb.utils import embedding_functions
 embed = embedding_functions.DefaultEmbeddingFunction()
 
 "><div class="bloque-cab"><span class="ruta">04_embeddings.py · líneas 1–35</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 5 · Embeddings, similitud coseno, y por qué hay que medir</span></span><span class="l"></span><span class="l"><span class="s">Del deck: cambiamos de tema, no de herramienta. Un embedding es un vector</span></span><span class="l"><span class="s">(una lista de números, aquí 384) donde la DIRECCIÓN codifica el significado:</span></span><span class="l"><span class="s">dos frases que quieren decir lo mismo apuntan hacia el mismo lado, aunque no</span></span><span class="l"><span class="s">compartan ni una palabra.</span></span><span class="l"></span><span class="l"><span class="s">Para medir &quot;cuánto apuntan al mismo lado&quot; se usa la similitud coseno: el</span></span><span class="l"><span class="s">coseno del ángulo entre los dos vectores. 1 = misma dirección, 0 = sin</span></span><span class="l"><span class="s">relación. En código son tres operaciones: producto punto dividido entre el</span></span><span class="l"><span class="s">producto de las longitudes.</span></span><span class="l"></span><span class="l"><span class="s">Esto es la base de RAG, de la búsqueda semántica y de la deduplicación.</span></span><span class="l"><span class="s">Y lo vas a construir entero en la sesión 04.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo corre las MISMAS cuatro frases en inglés y en español, con un</span></span><span class="l"><span class="s">modelo de embeddings local, y compara. El resultado es incómodo a propósito:</span></span><span class="l"><span class="s">es la lección del día.</span></span><span class="l"></span><span class="l"><span class="s">La API de Anthropic no expone embeddings. Usamos el modelo local que trae</span></span><span class="l"><span class="s">Chroma (all-MiniLM-L6-v2): no necesita otra API key y corre en tu máquina.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 04_embeddings.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> math</span><span class="l"></span><span class="l"><span class="k">from</span> chromadb.utils <span class="k">import</span> embedding_functions</span><span class="l"></span><span class="l"><span class="c"># La primera vez descarga el modelo (~80 MB); después es instantáneo.</span></span><span class="l">embed = embedding_functions.<span class="f">DefaultEmbeddingFunction</span>()</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>La API de Anthropic no expone embeddings. El deck recomienda Voyage AI (su partner) o un modelo open source; aquí usamos el que trae Chroma para no pedirte otra llave. La primera corrida descarga ~80 MB.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p2" data-paso="d6p2">
@@ -2455,6 +2694,10 @@ embed = embedding_functions.DefaultEmbeddingFunction()
     return punto / (norma_a * norma_b)
 
 "><div class="bloque-cab"><span class="ruta">04_embeddings.py · líneas 36–47</span><span class="pill nuevo">+12 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">coseno</span>(a, b):</span><span class="l">    <span class="c"># Producto punto: suma de multiplicar los vectores elemento a elemento.</span></span><span class="l">    <span class="c"># Es grande cuando los dos apuntan hacia el mismo lado.</span></span><span class="l">    punto = <span class="f">sum</span>(x * y <span class="k">for</span> x, y <span class="k">in</span> <span class="f">zip</span>(a, b))</span><span class="l">    <span class="c"># La &quot;longitud&quot; (norma) de cada vector: la raíz de la suma de cuadrados.</span></span><span class="l">    norma_a = math.<span class="f">sqrt</span>(<span class="f">sum</span>(x * x <span class="k">for</span> x <span class="k">in</span> a))</span><span class="l">    norma_b = math.<span class="f">sqrt</span>(<span class="f">sum</span>(y * y <span class="k">for</span> y <span class="k">in</span> b))</span><span class="l">    <span class="c"># Dividir entre las longitudes deja solo el ÁNGULO: así una frase larga</span></span><span class="l">    <span class="c"># y una corta se pueden comparar de igual a igual.</span></span><span class="l">    <span class="k">return</span> punto / (norma_a * norma_b)</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>La división entre las normas es lo que hace útil la fórmula: elimina la <strong>magnitud</strong> y deja solo el <strong>ángulo</strong>. Por eso una frase de tres palabras y un párrafo de cien se pueden comparar de igual a igual. <code>1.0</code> es la misma dirección, <code>0.0</code> es sin relación, y sí, puede salir <strong>negativo</strong>: direcciones opuestas.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p3" data-paso="d6p3">
@@ -2488,6 +2731,10 @@ FRASES = {
 }
 
 "><div class="bloque-cab"><span class="ruta">04_embeddings.py · líneas 48–66</span><span class="pill nuevo">+19 líneas nuevas</span></div><pre><code><span class="l"><span class="c"># Las mismas cuatro ideas, en dos idiomas. La primera es la referencia; la</span></span><span class="l"><span class="c"># segunda significa lo mismo sin compartir palabras; la tercera es del mismo</span></span><span class="l"><span class="c"># mundo pero otra intención; la cuarta no tiene nada que ver.</span></span><span class="l">FRASES = {</span><span class="l">    <span class="s">&quot;inglés&quot;</span>: [</span><span class="l">        <span class="s">&quot;pay with a credit card&quot;</span>,</span><span class="l">        <span class="s">&quot;checkout with visa&quot;</span>,</span><span class="l">        <span class="s">&quot;charged twice for the same item&quot;</span>,</span><span class="l">        <span class="s">&quot;recipe for cheese arepas&quot;</span>,</span><span class="l">    ],</span><span class="l">    <span class="s">&quot;español&quot;</span>: [</span><span class="l">        <span class="s">&quot;pagar con tarjeta de crédito&quot;</span>,</span><span class="l">        <span class="s">&quot;checkout con visa&quot;</span>,</span><span class="l">        <span class="s">&quot;me cobraron dos veces&quot;</span>,</span><span class="l">        <span class="s">&quot;receta de arepas de queso&quot;</span>,</span><span class="l">    ],</span><span class="l">}</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El caso interesante es el segundo: <em>&quot;checkout con visa&quot;</em> no comparte <strong>ninguna palabra</strong> con <em>&quot;pagar con tarjeta de crédito&quot;</em>. Un buscador por palabras clave no encontraría nada. Si los embeddings sirven para algo, esa pareja tiene que puntuar alto.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p4" data-paso="d6p4">
@@ -2516,6 +2763,10 @@ FRASES = {
     return vectores
 
 "><div class="bloque-cab"><span class="ruta">04_embeddings.py · líneas 67–80</span><span class="pill nuevo">+14 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">comparar</span>(idioma, frases):</span><span class="l">    vectores = <span class="f">embed</span>(frases)</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;\n--- {idioma} ---&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">f&#x27;similitud contra &quot;{frases[0]}&quot;:\n&#x27;</span>)</span><span class="l">    <span class="k">for</span> frase, vector <span class="k">in</span> <span class="f">zip</span>(frases, vectores):</span><span class="l">        sim = <span class="f">coseno</span>(vectores[0], vector)</span><span class="l">        <span class="c"># Barra visual para ver la escala de un vistazo. Se recorta en 0</span></span><span class="l">        <span class="c"># porque el coseno puede salir negativo (vectores en direcciones</span></span><span class="l">        <span class="c"># opuestas) y una barra de largo negativo no existe.</span></span><span class="l">        barra = <span class="s">&quot;█&quot;</span> * <span class="f">max</span>(0, <span class="f">int</span>(sim * 30))</span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;  {sim:+.3f}  {barra:&lt;30}  {frase}&quot;</span>)</span><span class="l">    <span class="k">return</span> vectores</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>La barra no es decoración: los números sueltos se leen mal y las diferencias importantes se pierden entre decimales. Ver la escala hace que el resultado del paso siguiente salte a la vista.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p5" data-paso="d6p5">
@@ -2584,6 +2835,10 @@ similitud contra &quot;pagar con tarjeta de crédito&quot;:
   +0.449  █████████████                   receta de arepas de queso
 
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l"></span><span class="l">--- inglés ---</span><span class="l">similitud contra &quot;pay with a credit card&quot;:</span><span class="l"></span><span class="l">  +1.000  ██████████████████████████████  pay with a credit card</span><span class="l">  +0.353  ██████████                      checkout with visa</span><span class="l">  +0.230  ██████                          charged twice for the same item</span><span class="l">  -0.028                                  recipe for cheese arepas</span><span class="l"></span><span class="l">(cada frase es un vector de 384 números; los 5 primeros: [-0.001, 0.033, -0.027, 0.043, -0.02])</span><span class="l"></span><span class="l">--- español ---</span><span class="l">similitud contra &quot;pagar con tarjeta de crédito&quot;:</span><span class="l"></span><span class="l">  +1.000  ██████████████████████████████  pagar con tarjeta de crédito</span><span class="l">  +0.229  ██████                          checkout con visa</span><span class="l">  +0.199  █████                           me cobraron dos veces</span><span class="l">  +0.449  █████████████                   receta de arepas de queso</span><span class="l"></span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><strong>En inglés funciona.</strong> <code>checkout with visa</code> saca 0.353 sin compartir una palabra con la referencia, y las arepas caen a <strong>−0.028</strong>: casi perpendicular, sin relación. Justo lo que esperabas. <strong>En español se rompe.</strong> Las arepas sacan <strong>0.449</strong>, <em>más alto</em> que <code>checkout con visa</code> con 0.229. El orden queda al revés. Y no es un bug de tu código: <code>all-MiniLM-L6-v2</code> está entrenado en inglés, y con español devuelve números perfectamente válidos y perfectamente inútiles. Piensa en lo que eso significa. <strong>No falla, no avisa, no lanza ninguna excepción</strong>: miente en silencio. Si montaras un RAG en español sobre este modelo, recuperaría documentos casi al azar, el modelo respondería con esos documentos, y te costaría días entender por qué las respuestas son raras. Dos cosas que llevarte. La primera: <strong>el modelo de embeddings tiene que hablar tu idioma</strong>: para español, voyage-3.5, multilingual-e5 o bge-m3. La segunda, más importante: esto <strong>no se descubre leyendo la documentación</strong>. Se descubre midiendo, con cuatro frases que tú ya sabes cómo deberían ordenarse. Cinco minutos de esto ahorran una semana de depuración después.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Este es el momento del taller que más rinde. Vale la pena parar y preguntar: &quot;si no hubiéramos corrido la versión en inglés, ¿cómo habrías sabido que estaba roto?&quot;. La respuesta (no lo habrías sabido) es la razón por la que el curso entero es evals-first.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>04_embeddings.py</code> completo (115 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2752,9 +3007,11 @@ if __name__ == &quot;__main__&quot;:
           pasos.forEach((p) => {
             const ok = hechos.has(p.id);
             p.classList.toggle("hecho", ok);
-            const boton = p.querySelector("[data-tick]");
-            if (boton)
-              boton.setAttribute("aria-pressed", ok ? "true" : "false");
+            // Hay DOS controles por paso (el círculo del margen y el botón
+            // del cierre): los dos tienen que reflejar el mismo estado.
+            p.querySelectorAll("[data-tick]").forEach((boton) =>
+              boton.setAttribute("aria-pressed", ok ? "true" : "false"),
+            );
             const a = enlacesNav.get(p.id);
             if (a) a.classList.toggle("hecho", ok);
           });

@@ -75,6 +75,9 @@ dias:
           nuevo: true # muestra el badge "+N líneas nuevas"
         bloques: # bloques sueltos (comandos, ejemplos que no son de un archivo)
           - { lenguaje: bash, texto: "pip install -r requirements.txt" }
+        python: # opcional: glosario de sintaxis, plegado, va antes del "por qué"
+          - de: "**METADATA_DOCS[fuente]" # el símbolo, tal cual aparece
+            es: "Qué significa, para quien no domina Python."
         corre: "python 00_chunking.py"
         salida: { archivo: 00_chunking.txt, lineas: "1-12" }
         porque: "El razonamiento. Es lo que antes era la slide."
@@ -137,6 +140,25 @@ python talleres/build.py --estricto && python talleres/verificar.py
 Si un archivo se muestra solo como referencia y no se enseña línea por línea
 (por ejemplo un `.md` de datos), va en `archivo_completo` del día, no en
 `codigo` de un paso: no entra en la verificación.
+
+## Las notas de sintaxis
+
+Un paso puede llevar un glosario de **sintaxis de Python**, plegado, entre el
+código y el "por qué". Es un tipo de nota distinto y conviene no mezclarlos:
+
+| Nota      | Responde                                        |
+| --------- | ----------------------------------------------- |
+| `python`  | Qué **dice** el código: qué significa este símbolo |
+| `porque`  | Por qué está escrito **así**: la decisión detrás  |
+
+Va plegado a propósito: quien ya sabe Python no necesita ver el glosario en los
+41 pasos, y quien no sabe lo abre. Se escribe pensando en alguien que programa
+en otro lenguaje y no conoce la nomenclatura, así que explica el símbolo (`**`,
+`.extend()`, `[::-1]`) y no el dominio.
+
+Dos avisos prácticos: si el símbolo lleva comillas simples, hay que duplicarlas
+(`'f"{e[''x'']}"'`), que es como YAML las escapa. Y el símbolo entra literal, tal
+cual aparece en el archivo, para que se pueda buscar en la página con `Cmd+F`.
 
 ## El video del día
 

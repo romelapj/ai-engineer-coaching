@@ -526,6 +526,13 @@
         gap: 0.9rem;
         position: sticky;
         top: 2rem;
+        /* Sin esto el sticky no sirve de nada. Como celda de grid, por defecto
+           se estira a la altura de toda la fila (en un paso largo, 1800px), y
+           un elemento pegajoso tan alto como su contenedor no tiene recorrido:
+           su contenido se queda arriba y sale de pantalla al leer. Con
+           `start` mide lo que mide el número más el círculo, y entonces sí
+           acompaña la lectura. */
+        align-self: start;
       }
       .paso-cifra {
         font-size: 1.05rem;
@@ -570,6 +577,73 @@
       }
       .paso.hecho .tick::after {
         opacity: 1;
+      }
+      /* ---------- marcar como hecho, al cierre del paso ----------
+         El círculo del margen queda arriba, y en un paso largo hay que subir
+         a buscarlo justo cuando acabas de leer. Este repite la acción donde
+         termina la lectura, que es donde nace la intención de marcarla. */
+      .tick-fin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1.75rem;
+        padding: 0.5rem 1.05rem 0.5rem 0.75rem;
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        background: none;
+        color: var(--tenue);
+        font: 600 0.82rem/1 inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .tick-fin:hover {
+        border-color: var(--ok);
+        color: var(--texto-2);
+      }
+      .tick-fin-marca {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--linea);
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .tick-fin-marca::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 0.62rem;
+        font-weight: 900;
+        color: var(--fondo);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .tick-fin:hover .tick-fin-marca {
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin {
+        border-color: rgba(52, 211, 153, 0.3);
+        color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .paso.hecho .tick-fin-marca::after {
+        opacity: 1;
+      }
+      .paso.hecho .tick-fin-texto::after {
+        content: " ✓";
+      }
+      .paso.hecho .tick-fin-texto {
+        font-size: 0;
+      }
+      .paso.hecho .tick-fin-texto::before {
+        content: "Hecho";
+        font-size: 0.82rem;
       }
       .paso-cab {
         display: flex;
@@ -833,6 +907,107 @@
         background: var(--superficie);
         border-radius: 4px;
         padding: 0.08em 0.35em;
+      }
+      /* ---------- sintaxis de Python ----------
+         No es estado (ni atención ni verificado): es material de apoyo, así
+         que va en neutro. Plegado por defecto porque el alumno que ya sabe
+         Python no necesita ver esto 41 veces; el que no sabe lo abre. */
+      details.sintaxis {
+        margin-left: var(--margen-paso);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        padding: 0.85rem 1.3rem;
+      }
+      details.sintaxis > summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        transition: color 0.2s ease;
+      }
+      details.sintaxis > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.sintaxis > summary::before {
+        content: "▸";
+        font-size: 0.8rem;
+        letter-spacing: 0;
+        transition: transform 0.2s ease;
+      }
+      details.sintaxis[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.sintaxis > summary:hover {
+        color: var(--texto-2);
+      }
+      details.sintaxis .cuenta {
+        margin-left: auto;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: var(--tenue);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.05em 0.55em;
+      }
+      ul.sintaxis-lista {
+        list-style: none;
+        margin-top: 0.5rem;
+      }
+      ul.sintaxis-lista li {
+        display: grid;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+        gap: 0.25rem 1.4rem;
+        align-items: baseline;
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--linea-suave);
+        font-size: 0.92rem;
+      }
+      ul.sintaxis-lista li {
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > code {
+        color: var(--acento);
+        background: var(--acento-suave);
+        border: 1px solid var(--acento-borde);
+        border-radius: 5px;
+        padding: 0.15em 0.5em;
+        font-size: 0.84rem;
+        /* Sin nowrap: hay símbolos largos (una f-string con formato, una
+           llamada con tres argumentos) que a 768px empujaban la página entera
+           a scroll horizontal. Partirlos es más feo que una línea; sacar la
+           página de cuadro lo es mucho más. */
+        overflow-wrap: anywhere;
+      }
+      ul.sintaxis-lista li > span {
+        color: var(--texto-2);
+      }
+      ul.sintaxis-lista li > span code {
+        color: var(--texto);
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 4px;
+        padding: 0.08em 0.35em;
+        font-size: 0.86em;
+        overflow-wrap: anywhere;
+      }
+      /* En móvil el símbolo no cabe al lado: pasa arriba y el texto debajo. */
+      @media (max-width: 720px) {
+        ul.sintaxis-lista li {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0.5rem;
+        }
+        ul.sintaxis-lista li > code {
+          justify-self: start;
+        }
       }
       details.completo {
         border: 1px dashed var(--linea);
@@ -1275,6 +1450,10 @@ cd ~/talleres/sesion-03
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">mkdir</span> -p ~/talleres/sesion-03</span><span class="l"><span class="k">cd</span> ~/talleres/sesion-03</span><span class="l">python3 -m venv .venv</span><span class="l"><span class="k">source</span> .venv/bin/activate</span><span class="l"><span class="k">pip</span> install -r requirements.txt</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Cuando el prompt de tu terminal muestre <code>(.venv)</code>, estás dentro. Tendrás que repetir <code>source .venv/bin/activate</code> cada vez que abras una terminal nueva: es el olvido número uno de la semana.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>source: no such file or directory: .venv/bin/activate</code><span>En Windows el comando es <code>.venv\Scripts\activate</code>.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d1p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d1p2" data-paso="d1p2">
@@ -1291,6 +1470,10 @@ pip install -r requirements.txt"><div class="bloque-cab"><span class="ruta">term
         </header>
         <p>Cuatro de los nueve ejemplos llaman al modelo de verdad. La llave se lee de una variable de entorno: nunca se escribe dentro del código.</p><div class="bloque" data-codigo="export ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   # tu llave real
 python -c &quot;import anthropic, pydantic; print(&#x27;entorno listo&#x27;)&quot;"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">export</span> ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   <span class="c"># tu llave real</span></span><span class="l"><span class="k">python</span> -c &quot;import anthropic, pydantic; print(&#x27;entorno listo&#x27;)&quot;</span></code></pre></div><div class="bloque salida" data-codigo="entorno listo"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">entorno listo</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>export</code> solo dura lo que dure esa terminal. Si vas a trabajar varios días, mete esa línea en tu <code>~/.zshrc</code>. Y nunca la subas a git: una llave filtrada en un repo se explota en minutos.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Los días 1 y 5 no necesitan llave (todo está simulado). Si el alumno aún no la tiene, puede arrancar igual y conseguirla para el día 2.</p></div>
+        <button class="tick-fin" type="button" data-tick="d1p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       
@@ -1365,6 +1548,10 @@ def ejecutar_tool(peticion):
     return {&quot;error&quot;: &quot;tool no reconocida&quot;}
 
 "><div class="bloque-cab"><span class="ruta">00_round_trip.py · líneas 1–45</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 0: La anatomía del round-trip (4 fases)</span></span><span class="l"></span><span class="l"><span class="s">Del deck: sin herramientas, el modelo solo puede rendirse (&quot;no tengo acceso</span></span><span class="l"><span class="s">a tus órdenes&quot;) o alucinar (&quot;tu orden llega mañana&quot;). Tool use es el arreglo:</span></span><span class="l"><span class="s">el modelo DECIDE qué hacer, tu código LO HACE. El intercambio siempre tiene</span></span><span class="l"><span class="s">4 fases: pide -&gt; ejecutas -&gt; devuelves -&gt; respondes.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo NO llama a ningún modelo real ni necesita internet: es una</span></span><span class="l"><span class="s">simulación para entender la FORMA del proceso antes de ver la API de verdad</span></span><span class="l"><span class="s">en 02_el_loop.py.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 00_round_trip.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="k">class</span> Peticion:</span><span class="l">    <span class="c"># &quot;class&quot; crea una plantilla reutilizable. Aquí definimos cómo se ve</span></span><span class="l">    <span class="c"># &quot;lo que el modelo pide hacer&quot;: el nombre de la tool + los datos que quiere pasarle.</span></span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(self, nombre_tool, argumentos):</span><span class="l">        <span class="c"># Esta receta se ejecuta cada vez que creamos una Peticion nueva.</span></span><span class="l">        self.nombre_tool = nombre_tool  <span class="c"># Guardamos el nombre de la tool pedida, ej: &quot;get_order_status&quot;.</span></span><span class="l">        self.argumentos = argumentos    <span class="c"># Guardamos los datos que el modelo quiere entregarle a esa tool.</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">modelo_decide</span>(pregunta_usuario):</span><span class="l">    <span class="c"># Función que simula lo que haría el modelo de IA: decidir qué tool necesita, SIN ejecutar nada.</span></span><span class="l">    <span class="k">if</span> <span class="s">&quot;orden&quot;</span> <span class="k">in</span> pregunta_usuario:</span><span class="l">        <span class="c"># Si el usuario menciona la palabra &quot;orden&quot; en su pregunta...</span></span><span class="l">        <span class="k">return</span> <span class="f">Peticion</span>(<span class="s">&quot;get_order_status&quot;</span>, {<span class="s">&quot;order_id&quot;</span>: <span class="s">&quot;ORD-8841&quot;</span>})</span><span class="l">        <span class="c"># ...el modelo &quot;pide&quot; usar la tool de órdenes con ese identificador.</span></span><span class="l">    <span class="k">return</span> <span class="k">None</span></span><span class="l">    <span class="c"># Si no aplica ninguna tool, el modelo no pide nada especial.</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">ejecutar_tool</span>(peticion):</span><span class="l">    <span class="c"># Esta función representa a &quot;tu código&quot;: la única parte que de verdad ejecuta acciones.</span></span><span class="l">    <span class="k">if</span> peticion.nombre_tool == <span class="s">&quot;get_order_status&quot;</span>:</span><span class="l">        <span class="c"># Miramos qué tool pidió el modelo.</span></span><span class="l">        <span class="k">return</span> {<span class="s">&quot;status&quot;</span>: <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;eta&quot;</span>: <span class="s">&quot;2026-07-04&quot;</span>}</span><span class="l">        <span class="c"># Simulamos lo que traería una base de datos real: estado y fecha de entrega.</span></span><span class="l">    <span class="k">return</span> {<span class="s">&quot;error&quot;</span>: <span class="s">&quot;tool no reconocida&quot;</span>}</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Fíjate en el reparto de papeles. <code>modelo_decide</code> <strong>solo devuelve una intención</strong>: el nombre de una tool y unos argumentos. <code>ejecutar_tool</code> es tu código, y es el único que hace algo de verdad. Esa separación es todo tool use. El modelo nunca ejecuta nada, ni aquí, ni con la API real. Si algo pasa en tu sistema, lo hizo tu código porque tú lo escribiste.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p2" data-paso="d2p2">
@@ -1413,6 +1600,10 @@ FASE 1 (pide)     -&gt; get_order_status {&#x27;order_id&#x27;: &#x27;ORD-8841&#
 FASE 2 (ejecutas) -&gt; {&#x27;status&#x27;: &#x27;shipped&#x27;, &#x27;eta&#x27;: &#x27;2026-07-04&#x27;}
 FASE 3 (devuelves) -&gt; {&#x27;tool_use_id&#x27;: &#x27;abc123&#x27;, &#x27;content&#x27;: {&#x27;status&#x27;: &#x27;shipped&#x27;, &#x27;eta&#x27;: &#x27;2026-07-04&#x27;}}
 FASE 4 (responde) -&gt; Tu orden está &#x27;shipped&#x27; y llega el 2026-07-04."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Usuario pregunta: ¿Dónde va mi orden ORD-8841?</span><span class="l"></span><span class="l">FASE 1 (pide)     -&gt; get_order_status {&#x27;order_id&#x27;: &#x27;ORD-8841&#x27;}</span><span class="l">FASE 2 (ejecutas) -&gt; {&#x27;status&#x27;: &#x27;shipped&#x27;, &#x27;eta&#x27;: &#x27;2026-07-04&#x27;}</span><span class="l">FASE 3 (devuelves) -&gt; {&#x27;tool_use_id&#x27;: &#x27;abc123&#x27;, &#x27;content&#x27;: {&#x27;status&#x27;: &#x27;shipped&#x27;, &#x27;eta&#x27;: &#x27;2026-07-04&#x27;}}</span><span class="l">FASE 4 (responde) -&gt; Tu orden está &#x27;shipped&#x27; y llega el 2026-07-04.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>La fase 3 es la que se olvida. No basta con devolver el resultado: hay que devolverlo <strong>con el id de la petición</strong> (<code>tool_use_id</code>). Si el modelo pidió tres tools en un turno, ese id es lo único que le dice qué resultado corresponde a cuál. Aquí el id es <code>&quot;abc123&quot;</code> inventado. En la API real lo genera el modelo y tú lo copias tal cual. El día 2 lo vas a ver.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p3" data-paso="d2p3">
@@ -1460,6 +1651,10 @@ def get_order_status(order_id: str) -&gt; dict:
     # .get busca la llave en el diccionario. Si existe, la devuelve;
     # si no, devuelve un mensaje de error en su lugar.
 "><div class="bloque-cab"><span class="ruta">01_la_tool.py · líneas 1–33</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1/4 (Acto 1). La tool: &quot;la descripción ES el prompt&quot;</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el modelo solo ve tres cosas de cada tool: name, description e</span></span><span class="l"><span class="s">input_schema. La calidad de sus decisiones depende más de qué tan buena es</span></span><span class="l"><span class="s">la descripción que del código detrás. input_schema es JSON Schema: la firma</span></span><span class="l"><span class="s">de la función traducida a un formato que el modelo entiende.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo NO llama a ningún modelo: solo arma la &quot;ficha&quot; que se le</span></span><span class="l"><span class="s">enviaría, y prueba que la función real funciona. La llamada real ocurre en</span></span><span class="l"><span class="s">02_el_loop.py.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 01_la_tool.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> json</span><span class="l"></span><span class="l"><span class="c"># Creamos un diccionario: una tabla de dos columnas en memoria.</span></span><span class="l"><span class="c"># La llave es el código de orden, el valor es su información.</span></span><span class="l">ORDERS = {</span><span class="l">    <span class="s">&quot;ORD-8841&quot;</span>: {<span class="s">&quot;status&quot;</span>: <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;eta&quot;</span>: <span class="s">&quot;2026-07-04&quot;</span>},</span><span class="l">    <span class="s">&quot;ORD-9200&quot;</span>: {<span class="s">&quot;status&quot;</span>: <span class="s">&quot;processing&quot;</span>, <span class="s">&quot;eta&quot;</span>: <span class="s">&quot;2026-07-12&quot;</span>},</span><span class="l">}</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">get_order_status</span>(order_id: str) -&gt; dict:</span><span class="l">    <span class="c"># Definimos una función normal de Python.</span></span><span class="l">    <span class="c"># &quot;order_id: str&quot; avisa que espera texto; &quot;-&gt; dict&quot; avisa que devuelve un diccionario.</span></span><span class="l">    <span class="k">return</span> ORDERS.<span class="f">get</span>(order_id, {<span class="s">&quot;error&quot;</span>: <span class="s">&quot;orden no existe&quot;</span>})</span><span class="l">    <span class="c"># .get busca la llave en el diccionario. Si existe, la devuelve;</span></span><span class="l">    <span class="c"># si no, devuelve un mensaje de error en su lugar.</span></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>No tiene nada de especial, y ese es el punto: una tool es <strong>una función que ya tenías</strong>. Lo único que se agrega es la ficha del siguiente paso.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p4" data-paso="d2p4">
@@ -1506,6 +1701,10 @@ tools = [
         },
     }
 ]"><div class="bloque-cab"><span class="ruta">01_la_tool.py · líneas 34–65</span><span class="pill nuevo">+32 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"><span class="c"># Creamos una lista con una &quot;ficha&quot; que describe la tool para el modelo.</span></span><span class="l"><span class="c"># Esto no ejecuta nada por sí solo: es solo texto descriptivo (metadata).</span></span><span class="l">tools = [</span><span class="l">    {</span><span class="l">        <span class="s">&quot;name&quot;</span>: <span class="s">&quot;get_order_status&quot;</span>,</span><span class="l">        <span class="c"># El nombre exacto que el modelo usará para pedir esta tool.</span></span><span class="l">        <span class="c"># Debe coincidir con el nombre real de la función de arriba.</span></span><span class="l">        <span class="s">&quot;description&quot;</span>: (</span><span class="l">            <span class="s">&quot;Consulta el estado de una orden y su &quot;</span></span><span class="l">            <span class="s">&quot;fecha estimada de entrega. Úsala siempre &quot;</span></span><span class="l">            <span class="s">&quot;que el usuario pregunte por una orden. &quot;</span></span><span class="l">            <span class="s">&quot;ID formato ORD-NNNN, p. ej. ORD-8841.&quot;</span></span><span class="l">        ),</span><span class="l">        <span class="c"># Este texto es EL PROMPT que realmente lee el modelo: explica</span></span><span class="l">        <span class="c"># qué hace, cuándo usarla y da un ejemplo concreto del formato.</span></span><span class="l">        <span class="s">&quot;input_schema&quot;</span>: {</span><span class="l">            <span class="c"># Describimos, en formato estándar JSON Schema, qué datos debe</span></span><span class="l">            <span class="c"># mandar el modelo si decide usar esta tool.</span></span><span class="l">            <span class="s">&quot;type&quot;</span>: <span class="s">&quot;object&quot;</span>,</span><span class="l">            <span class="c"># Los datos de entrada vienen agrupados como un &quot;objeto&quot;</span></span><span class="l">            <span class="c"># (parecido a un diccionario de Python).</span></span><span class="l">            <span class="s">&quot;properties&quot;</span>: {</span><span class="l">                <span class="s">&quot;order_id&quot;</span>: {<span class="s">&quot;type&quot;</span>: <span class="s">&quot;string&quot;</span>},</span><span class="l">                <span class="c"># Existe un campo llamado &quot;order_id&quot; y su valor debe ser texto.</span></span><span class="l">            },</span><span class="l">            <span class="s">&quot;required&quot;</span>: [<span class="s">&quot;order_id&quot;</span>],</span><span class="l">            <span class="c"># Marcamos &quot;order_id&quot; como obligatorio: el modelo no puede</span></span><span class="l">            <span class="c"># omitirlo al usar la tool.</span></span><span class="l">        },</span><span class="l">    }</span><span class="l">]</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Lee la <code>description</code> como lo que es: <strong>un prompt</strong>. Dice qué hace, <em>cuándo</em> usarla (&quot;siempre que el usuario pregunte por una orden&quot;) y da un ejemplo del formato (&quot;ORD-NNNN, p. ej. ORD-8841&quot;). Sin ese &quot;cuándo&quot;, el modelo la usa a destiempo; sin el ejemplo, se inventa el formato del id. El <code>input_schema</code> es JSON Schema: la firma de tu función traducida a algo que el modelo entiende. <code>required</code> no es decorativo: es lo que impide que llame la tool sin el <code>order_id</code>.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d2p5" data-paso="d2p5">
@@ -1555,6 +1754,10 @@ if __name__ == &quot;__main__&quot;:
 Probemos que la función real funciona, sin ningún modelo de por medio:
 get_order_status(&#x27;ORD-8841&#x27;) -&gt; {&#x27;status&#x27;: &#x27;shipped&#x27;, &#x27;eta&#x27;: &#x27;2026-07-04&#x27;}
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Esto es exactamente lo que el modelo &#x27;ve&#x27; de la tool:</span><span class="l"></span><span class="l">[</span><span class="l">  {</span><span class="l">    &quot;name&quot;: &quot;get_order_status&quot;,</span><span class="l">    &quot;description&quot;: &quot;Consulta el estado de una orden y su fecha estimada de entrega. Úsala siempre que el usuario pregunte por una orden. ID formato ORD-NNNN, p. ej. ORD-8841.&quot;,</span><span class="l">    &quot;input_schema&quot;: {</span><span class="l">      &quot;type&quot;: &quot;object&quot;,</span><span class="l">      &quot;properties&quot;: {</span><span class="l">        &quot;order_id&quot;: {</span><span class="l">          &quot;type&quot;: &quot;string&quot;</span><span class="l">        }</span><span class="l">      },</span><span class="l">      &quot;required&quot;: [</span><span class="l">        &quot;order_id&quot;</span><span class="l">      ]</span><span class="l">    }</span><span class="l">  }</span><span class="l">]</span><span class="l"></span><span class="l">Probemos que la función real funciona, sin ningún modelo de por medio:</span><span class="l">get_order_status(&#x27;ORD-8841&#x27;) -&gt; {&#x27;status&#x27;: &#x27;shipped&#x27;, &#x27;eta&#x27;: &#x27;2026-07-04&#x27;}</span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Eso, literalmente, es todo lo que el modelo sabe de tu sistema. Ni el cuerpo de la función, ni la base de datos, ni tus nombres de variables. Cuando una tool se usa mal, el problema casi siempre está en estas líneas y no en el código de abajo.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Buen ejercicio en vivo: borrar la frase &quot;Úsala siempre que el usuario pregunte por una orden&quot; y correr el día 2. El cambio de comportamiento se nota de inmediato.</p></div>
+        <button class="tick-fin" type="button" data-tick="d2p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>00_round_trip.py</code> completo (74 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -1786,6 +1989,10 @@ def get_order_status(order_id: str) -&gt; dict:
 # real de Python que hay que correr cuando el modelo la pida.
 TOOLS = {&quot;get_order_status&quot;: get_order_status}
 "><div class="bloque-cab"><span class="ruta">02_el_loop.py · líneas 1–36</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 2/4 (Acto 1). El loop: tool_use -&gt; tool_result</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el modelo responde con un bloque tool_use cuando quiere ejecutar</span></span><span class="l"><span class="s">algo (stop_reason == &quot;tool_use&quot;). Tu código corre la función real y</span></span><span class="l"><span class="s">devuelve el resultado como tool_result, enlazado por tool_use_id. El ciclo</span></span><span class="l"><span class="s">se repite hasta que el modelo responde con texto normal.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo SÍ llama al modelo de verdad (usa tu ANTHROPIC_API_KEY del</span></span><span class="l"><span class="s">entorno). Vas a ver impreso, paso a paso, cada fase del round-trip real.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 02_el_loop.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> json</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l"><span class="c"># Creamos un &quot;cliente&quot;: el objeto que sabe enviar y recibir mensajes</span></span><span class="l"><span class="c"># del servicio de Anthropic. Lee la API key de la variable de entorno</span></span><span class="l"><span class="c"># ANTHROPIC_API_KEY automáticamente.</span></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l"><span class="c"># Nuestra &quot;base de datos&quot; falsa en memoria.</span></span><span class="l">ORDERS = {<span class="s">&quot;ORD-8841&quot;</span>: {<span class="s">&quot;status&quot;</span>: <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;eta&quot;</span>: <span class="s">&quot;2026-07-04&quot;</span>}}</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">get_order_status</span>(order_id: str) -&gt; dict:</span><span class="l">    <span class="k">return</span> ORDERS.<span class="f">get</span>(order_id, {<span class="s">&quot;error&quot;</span>: <span class="s">&quot;orden no existe&quot;</span>})</span><span class="l"></span><span class="l"></span><span class="l"><span class="c"># Diccionario que conecta el NOMBRE de la tool (texto) con la FUNCIÓN</span></span><span class="l"><span class="c"># real de Python que hay que correr cuando el modelo la pida.</span></span><span class="l">TOOLS = {<span class="s">&quot;get_order_status&quot;</span>: get_order_status}</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>TOOLS</code> es la pieza que muchos improvisan con un <code>if/elif</code> gigante. Un diccionario <code>nombre → función</code> escala, se testea solo y hace obvio qué está expuesto al modelo y qué no. <code>anthropic.Anthropic()</code> sin argumentos lee <code>ANTHROPIC_API_KEY</code> del entorno.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p2" data-paso="d3p2">
@@ -1817,6 +2024,10 @@ TOOLS = {&quot;get_order_status&quot;: get_order_status}
     }
 ]
 "><div class="bloque-cab"><span class="ruta">02_el_loop.py · líneas 37–53</span><span class="pill nuevo">+17 líneas nuevas</span></div><pre><code><span class="l">tools = [</span><span class="l">    {</span><span class="l">        <span class="s">&quot;name&quot;</span>: <span class="s">&quot;get_order_status&quot;</span>,</span><span class="l">        <span class="s">&quot;description&quot;</span>: (</span><span class="l">            <span class="s">&quot;Consulta el estado de una orden y su &quot;</span></span><span class="l">            <span class="s">&quot;fecha estimada de entrega. Úsala siempre &quot;</span></span><span class="l">            <span class="s">&quot;que el usuario pregunte por una orden. &quot;</span></span><span class="l">            <span class="s">&quot;ID formato ORD-NNNN, p. ej. ORD-8841.&quot;</span></span><span class="l">        ),</span><span class="l">        <span class="s">&quot;input_schema&quot;</span>: {</span><span class="l">            <span class="s">&quot;type&quot;</span>: <span class="s">&quot;object&quot;</span>,</span><span class="l">            <span class="s">&quot;properties&quot;</span>: {<span class="s">&quot;order_id&quot;</span>: {<span class="s">&quot;type&quot;</span>: <span class="s">&quot;string&quot;</span>}},</span><span class="l">            <span class="s">&quot;required&quot;</span>: [<span class="s">&quot;order_id&quot;</span>],</span><span class="l">        },</span><span class="l">    }</span><span class="l">]</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Aparece repetida a propósito: cada archivo del taller corre solo. En un proyecto de verdad esto vive en un módulo aparte y se importa.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p3" data-paso="d3p3">
@@ -1845,6 +2056,10 @@ def run_tool(name: str, args: dict) -&gt; str:
     # resultado a texto JSON para poder enviarlo de vuelta al modelo.
 
 "><div class="bloque-cab"><span class="ruta">02_el_loop.py · líneas 54–67</span><span class="pill nuevo">+14 líneas nuevas</span></div><pre><code><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">run_tool</span>(name: str, args: dict) -&gt; str:</span><span class="l">    <span class="c"># Recibe el nombre de una tool pedida y sus argumentos, y decide</span></span><span class="l">    <span class="c"># qué función de Python ejecutar de verdad.</span></span><span class="l">    fn = TOOLS.<span class="f">get</span>(name)</span><span class="l">    <span class="k">if</span> fn <span class="k">is</span> <span class="k">None</span>:</span><span class="l">        <span class="c"># Si el modelo se inventó una tool que no existe, no tumbamos</span></span><span class="l">        <span class="c"># el programa: devolvemos un error en texto JSON.</span></span><span class="l">        <span class="k">return</span> json.<span class="f">dumps</span>({<span class="s">&quot;error&quot;</span>: <span class="s">f&quot;tool desconocida: {name}&quot;</span>})</span><span class="l">    <span class="k">return</span> json.<span class="f">dumps</span>(<span class="f">fn</span>(**args), ensure_ascii=<span class="k">False</span>)</span><span class="l">    <span class="c"># Ejecutamos la función real con sus argumentos y convertimos el</span></span><span class="l">    <span class="c"># resultado a texto JSON para poder enviarlo de vuelta al modelo.</span></span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El <code>if fn is None</code> no es paranoia: el modelo puede inventarse el nombre de una tool que no existe. Si eso tumba tu programa, un error del modelo se convierte en una caída tuya. Devolver el error <strong>como texto JSON</strong> deja que el modelo lo lea y se corrija en el turno siguiente. Y <code>json.dumps</code> al final: el <code>content</code> de un <code>tool_result</code> viaja como texto, nunca como diccionario de Python.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p4" data-paso="d3p4">
@@ -1886,6 +2101,10 @@ def run_tool(name: str, args: dict) -&gt; str:
         # en el historial, tal cual vino (error clásico #1: olvidar esto).
         messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: resp.content})
 "><div class="bloque-cab"><span class="ruta">02_el_loop.py · líneas 68–94</span><span class="pill nuevo">+27 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    <span class="c"># El historial de la conversación arranca con un solo mensaje:</span></span><span class="l">    <span class="c"># la pregunta de la persona usuaria.</span></span><span class="l">    messages = [{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: <span class="s">&quot;¿Dónde va mi orden ORD-8841?&quot;</span>}]</span><span class="l"></span><span class="l">    <span class="k">for</span> turno <span class="k">in</span> <span class="f">range</span>(10):</span><span class="l">        <span class="c"># Repetimos hasta 10 veces como máximo, para no quedar atrapados</span></span><span class="l">        <span class="c"># en un ciclo infinito si algo sale mal. &quot;El presupuesto va en</span></span><span class="l">        <span class="c"># el código, no en un TODO&quot; (regla del deck).</span></span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;\n--- turno {turno}: llamando al modelo real ---&quot;</span>)</span><span class="l"></span><span class="l">        resp = client.messages.<span class="f">create</span>(</span><span class="l">            model=<span class="s">&quot;claude-sonnet-4-6&quot;</span>,</span><span class="l">            max_tokens=1024,</span><span class="l">            tools=tools,</span><span class="l">            messages=messages,</span><span class="l">        )</span><span class="l">        <span class="f">print</span>(<span class="s">&quot;stop_reason:&quot;</span>, resp.stop_reason)</span><span class="l"></span><span class="l">        <span class="k">if</span> resp.stop_reason != <span class="s">&quot;tool_use&quot;</span>:</span><span class="l">            <span class="c"># El modelo terminó con una respuesta normal, sin pedir tool.</span></span><span class="l">            <span class="k">break</span></span><span class="l"></span><span class="l">        <span class="c"># Si SÍ pidió una tool, guardamos ese turno completo del modelo</span></span><span class="l">        <span class="c"># en el historial, tal cual vino (error clásico #1: olvidar esto).</span></span><span class="l">        messages.<span class="f">append</span>({<span class="s">&quot;role&quot;</span>: <span class="s">&quot;assistant&quot;</span>, <span class="s">&quot;content&quot;</span>: resp.content})</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Tres decisiones en 27 líneas. <strong><code>range(10)</code></strong>: el presupuesto va en el código, no en un TODO: sin tope, un modelo confundido te deja un bucle infinito facturando tokens. <strong><code>stop_reason</code></strong> es el semáforo: si no es <code>tool_use</code>, el modelo terminó y sales. Y el error clásico número uno está en la última línea: guardar el turno del modelo <strong>entero y tal cual vino</strong> (<code>resp.content</code>) antes de responderle. Si lo reconstruyes a mano o te lo saltas, el siguiente turno da 400.</p></div>
+        <button class="tick-fin" type="button" data-tick="d3p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d3p5" data-paso="d3p5">
@@ -1935,6 +2154,10 @@ stop_reason: tool_use
 --- turno 1: llamando al modelo real ---
 stop_reason: end_turn
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l"></span><span class="l">--- turno 0: llamando al modelo real ---</span><span class="l">stop_reason: tool_use</span><span class="l">  el modelo PIDE -&gt; get_order_status({&#x27;order_id&#x27;: &#x27;ORD-8841&#x27;})</span><span class="l">  tu código EJECUTA y responde -&gt; {&quot;status&quot;: &quot;shipped&quot;, &quot;eta&quot;: &quot;2026-07-04&quot;}</span><span class="l"></span><span class="l">--- turno 1: llamando al modelo real ---</span><span class="l">stop_reason: end_turn</span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Que los resultados de las tools vayan con <code>role: &quot;user&quot;</code> desconcierta a todo el mundo la primera vez. La API modela la conversación como &quot;quien no es el modelo, es el usuario&quot;, y tu código está de ese lado. Mira la salida: turno 0 <code>stop_reason: tool_use</code>, turno 1 <code>end_turn</code>. Ese es el ciclo completo, y es el mismo que vas a ver en cualquier agente por complicado que parezca.</p></div><details class="nota falla"><summary>Si te falla</summary><ul class="fallas"><li><code>anthropic.AuthenticationError: invalid x-api-key</code><span>Revisa la variable con <code>echo $ANTHROPIC_API_KEY</code>.</span></li><li><code>BadRequestError: messages: unexpected role</code><span>Los <code>tool_result</code> van en un mensaje con <code>role: &quot;user&quot;</code>, no <code>assistant</code>.</span></li></ul></details>
+        <button class="tick-fin" type="button" data-tick="d3p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>02_el_loop.py</code> completo (121 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2139,6 +2362,10 @@ def get_order_status(order_id: str) -&gt; dict:
 
 TOOLS = {&quot;get_order_status&quot;: get_order_status}
 "><div class="bloque-cab"><span class="ruta">03_paralelo.py · líneas 1–39</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 3/4 (Acto 1): Tool calls en paralelo</span></span><span class="l"></span><span class="l"><span class="s">Del deck: &quot;Compara mis órdenes ORD-8841 y ORD-9200&quot; trae dos bloques</span></span><span class="l"><span class="s">tool_use en un solo turno. Regla de oro: responde TODOS en un solo mensaje</span></span><span class="l"><span class="s">user. Ejecuta las tools de forma concurrente (ThreadPoolExecutor o</span></span><span class="l"><span class="s">asyncio.gather): 3 tools de 2s -&gt; ~2s total, no 6s. Si una falla, no</span></span><span class="l"><span class="s">rompas el lote: devuélvela marcada con is_error.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo llama al modelo real y pide algo que dispara DOS tool_use al</span></span><span class="l"><span class="s">mismo tiempo. Cada tool simulada tarda 2 segundos (time.sleep) para que se</span></span><span class="l"><span class="s">note la diferencia entre ejecutar en serie vs en paralelo.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 03_paralelo.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> json</span><span class="l"><span class="k">import</span> time</span><span class="l"><span class="k">from</span> collections <span class="k">import</span> namedtuple</span><span class="l"><span class="k">from</span> concurrent.futures <span class="k">import</span> ThreadPoolExecutor</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">ORDERS = {</span><span class="l">    <span class="s">&quot;ORD-8841&quot;</span>: {<span class="s">&quot;status&quot;</span>: <span class="s">&quot;shipped&quot;</span>, <span class="s">&quot;eta&quot;</span>: <span class="s">&quot;2026-07-04&quot;</span>},</span><span class="l">    <span class="s">&quot;ORD-9200&quot;</span>: {<span class="s">&quot;status&quot;</span>: <span class="s">&quot;processing&quot;</span>, <span class="s">&quot;eta&quot;</span>: <span class="s">&quot;2026-07-12&quot;</span>},</span><span class="l">}</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">get_order_status</span>(order_id: str) -&gt; dict:</span><span class="l">    time.<span class="f">sleep</span>(2)  <span class="c"># Simulamos una consulta lenta (ej. una base de datos real).</span></span><span class="l">    <span class="k">return</span> ORDERS.<span class="f">get</span>(order_id, {<span class="s">&quot;error&quot;</span>: <span class="s">&quot;orden no existe&quot;</span>})</span><span class="l"></span><span class="l"></span><span class="l">TOOLS = {<span class="s">&quot;get_order_status&quot;</span>: get_order_status}</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El <code>time.sleep(2)</code> está para que el ahorro se <strong>vea</strong>. Con tools instantáneas el paralelismo es invisible y parece una optimización teórica; con dos segundos cada una, la diferencia entre 4s y 2s la nota cualquiera.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p2" data-paso="d4p2">
@@ -2174,6 +2401,10 @@ TOOLS = {&quot;get_order_status&quot;: get_order_status}
 ToolOut = namedtuple(&quot;ToolOut&quot;, [&quot;content&quot;, &quot;failed&quot;])
 
 "><div class="bloque-cab"><span class="ruta">03_paralelo.py · líneas 40–60</span><span class="pill nuevo">+21 líneas nuevas</span></div><pre><code><span class="l">tools = [</span><span class="l">    {</span><span class="l">        <span class="s">&quot;name&quot;</span>: <span class="s">&quot;get_order_status&quot;</span>,</span><span class="l">        <span class="s">&quot;description&quot;</span>: (</span><span class="l">            <span class="s">&quot;Consulta el estado de una orden y su fecha estimada de &quot;</span></span><span class="l">            <span class="s">&quot;entrega. Úsala siempre que el usuario pregunte por una &quot;</span></span><span class="l">            <span class="s">&quot;orden. ID formato ORD-NNNN, p. ej. ORD-8841.&quot;</span></span><span class="l">        ),</span><span class="l">        <span class="s">&quot;input_schema&quot;</span>: {</span><span class="l">            <span class="s">&quot;type&quot;</span>: <span class="s">&quot;object&quot;</span>,</span><span class="l">            <span class="s">&quot;properties&quot;</span>: {<span class="s">&quot;order_id&quot;</span>: {<span class="s">&quot;type&quot;</span>: <span class="s">&quot;string&quot;</span>}},</span><span class="l">            <span class="s">&quot;required&quot;</span>: [<span class="s">&quot;order_id&quot;</span>],</span><span class="l">        },</span><span class="l">    }</span><span class="l">]</span><span class="l"></span><span class="l"><span class="c"># Empaquetamos el resultado de una tool junto con si falló o no,</span></span><span class="l"><span class="c"># para poder marcar &quot;is_error&quot; sin romper el resto del lote.</span></span><span class="l">ToolOut = <span class="f">namedtuple</span>(<span class="s">&quot;ToolOut&quot;</span>, [<span class="s">&quot;content&quot;</span>, <span class="s">&quot;failed&quot;</span>])</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Un <code>namedtuple</code> en vez de una tupla suelta: <code>out.content</code> y <code>out.failed</code> se leen, <code>out[0]</code> y <code>out[1]</code> no. Ese <code>failed</code> es lo que en un momento se convierte en <code>is_error</code>.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p3" data-paso="d4p3">
@@ -2199,6 +2430,10 @@ ToolOut = namedtuple(&quot;ToolOut&quot;, [&quot;content&quot;, &quot;failed&quo
         return ToolOut(json.dumps({&quot;error&quot;: str(e)}), True)
 
 "><div class="bloque-cab"><span class="ruta">03_paralelo.py · líneas 61–71</span><span class="pill nuevo">+11 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">run_tool_safe</span>(block) -&gt; ToolOut:</span><span class="l">    <span class="c"># Versión segura: si la tool lanza cualquier error inesperado, lo</span></span><span class="l">    <span class="c"># atrapamos en vez de tumbar el programa entero.</span></span><span class="l">    <span class="k">try</span>:</span><span class="l">        fn = TOOLS[block.name]</span><span class="l">        resultado = <span class="f">fn</span>(**block.input)</span><span class="l">        <span class="k">return</span> <span class="f">ToolOut</span>(json.<span class="f">dumps</span>(resultado, ensure_ascii=<span class="k">False</span>), <span class="k">False</span>)</span><span class="l">    <span class="k">except</span> Exception <span class="k">as</span> e:</span><span class="l">        <span class="k">return</span> <span class="f">ToolOut</span>(json.<span class="f">dumps</span>({<span class="s">&quot;error&quot;</span>: <span class="f">str</span>(e)}), <span class="k">True</span>)</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>except Exception</code> es agresivo, y aquí es correcto: estás en la frontera entre tu código y una petición del modelo. Un fallo de una tool debe volverse <strong>un dato</strong> que el modelo pueda leer y no una excepción que tumbe el turno entero.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p4" data-paso="d4p4">
@@ -2245,6 +2480,10 @@ ToolOut = namedtuple(&quot;ToolOut&quot;, [&quot;content&quot;, &quot;failed&quo
     print(f&quot;Tiempo en paralelo: {elapsed_parallel:.1f}s &quot;
           f&quot;(en serie habría tardado ~{2 * len(calls)}s)&quot;)
 "><div class="bloque-cab"><span class="ruta">03_paralelo.py · líneas 72–103</span><span class="pill nuevo">+32 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    messages = [</span><span class="l">        {</span><span class="l">            <span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>,</span><span class="l">            <span class="s">&quot;content&quot;</span>: <span class="s">&quot;Compara mis órdenes ORD-8841 y ORD-9200, ¿cuál llega primero?&quot;</span>,</span><span class="l">        }</span><span class="l">    ]</span><span class="l"></span><span class="l">    resp = client.messages.<span class="f">create</span>(</span><span class="l">        model=<span class="s">&quot;claude-sonnet-4-6&quot;</span>,</span><span class="l">        max_tokens=1024,</span><span class="l">        tools=tools,</span><span class="l">        messages=messages,</span><span class="l">    )</span><span class="l"></span><span class="l">    <span class="c"># De la respuesta del modelo, nos quedamos solo con los pedazos que</span></span><span class="l">    <span class="c"># son peticiones de tool. Puede haber más de una en la misma respuesta.</span></span><span class="l">    calls = [b <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">&quot;tool_use&quot;</span>]</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;El modelo pidió {len(calls)} tool(s) en un solo turno:&quot;</span>)</span><span class="l">    <span class="k">for</span> b <span class="k">in</span> calls:</span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;  -&gt; {b.name}({b.input})  [id={b.id}]&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">print</span>(<span class="s">&quot;\nEjecutando en PARALELO con ThreadPoolExecutor...&quot;</span>)</span><span class="l">    t0 = time.<span class="f">monotonic</span>()</span><span class="l">    <span class="k">with</span> <span class="f">ThreadPoolExecutor</span>() <span class="k">as</span> ex:</span><span class="l">        <span class="c"># Le pedimos al grupo de hilos que ejecute run_tool_safe sobre</span></span><span class="l">        <span class="c"># cada petición, todas a la vez en paralelo.</span></span><span class="l">        outs = <span class="f">list</span>(ex.<span class="f">map</span>(run_tool_safe, calls))</span><span class="l">    elapsed_parallel = time.<span class="f">monotonic</span>() - t0</span><span class="l">    <span class="f">print</span>(<span class="s">f&quot;Tiempo en paralelo: {elapsed_parallel:.1f}s &quot;</span></span><span class="l">          <span class="s">f&quot;(en serie habría tardado ~{2 * len(calls)}s)&quot;</span>)</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>ex.map</code> mantiene el orden de entrada, y de eso depende el <code>zip</code> del paso siguiente: cada resultado tiene que volver emparejado con <strong>su</strong> petición. Hilos y no <code>asyncio</code> porque la espera es de entrada/salida: mientras una consulta duerme, la otra avanza. Tres tools de 2 segundos son ~2 segundos, no 6.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d4p5" data-paso="d4p5">
@@ -2295,6 +2534,10 @@ Ejecutando en PARALELO con ThreadPoolExecutor...
 Tiempo en paralelo: 2.0s (en serie habría tardado ~4s)
 
 …"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">El modelo pidió 2 tool(s) en un solo turno:</span><span class="l">  -&gt; get_order_status({&#x27;order_id&#x27;: &#x27;ORD-8841&#x27;})  [id=toolu_01YKEifPBK9Xvvsam4Ge3EGL]</span><span class="l">  -&gt; get_order_status({&#x27;order_id&#x27;: &#x27;ORD-9200&#x27;})  [id=toolu_01SibxaHiLoTgNpHro6qiXom]</span><span class="l"></span><span class="l">Ejecutando en PARALELO con ThreadPoolExecutor...</span><span class="l">Tiempo en paralelo: 2.0s (en serie habría tardado ~4s)</span><span class="l"></span><span class="l">…</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><strong>TODOS los <code>tool_use</code> de un turno se responden en UN solo mensaje <code>user</code>.</strong> No uno por mensaje, y no dejando ninguno sin responder: si falta uno, la siguiente llamada da 400 y el error no dice claramente por qué. Fíjate también en <code>is_error</code>. Marcar un fallo así permite que el modelo lo lea y decida: pedir de nuevo, avisar al usuario, seguir con lo que sí tiene. Un fallo silencioso le hace creer que todo salió bien.</p></div>
+        <button class="tick-fin" type="button" data-tick="d4p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>03_paralelo.py</code> completo (132 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2493,6 +2736,10 @@ from pydantic import BaseModel, ValidationError
 client = anthropic.Anthropic()
 
 "><div class="bloque-cab"><span class="ruta">04_json_garantizado.py · líneas 1–22</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 4/4 (Acto 1): JSON garantizado con tool_choice + Pydantic</span></span><span class="l"></span><span class="l"><span class="s">Del deck: antes se extraía JSON con prompts, parsing tolerante y &quot;rezos&quot;.</span></span><span class="l"><span class="s">Ahora tool_choice OBLIGA al modelo a llamar una tool específica: el input</span></span><span class="l"><span class="s">de esa tool ES tu JSON. Pydantic valida además reglas de negocio (tipos,</span></span><span class="l"><span class="s">campos). Con 2-3 reintentos reinyectando el error, se corrige la mayoría</span></span><span class="l"><span class="s">de outputs inválidos.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo llama al modelo real, lo obliga a usar la tool</span></span><span class="l"><span class="s">&quot;save_case_summary&quot; y valida su respuesta con Pydantic.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 04_json_garantizado.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"><span class="k">from</span> pydantic <span class="k">import</span> BaseModel, ValidationError</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Pydantic hace algo que un <code>json.loads</code> no: comprobar que los datos <strong>significan</strong> lo que esperas. Que exista el campo, que sea del tipo correcto, que cumpla tus reglas.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p2" data-paso="d5p2">
@@ -2525,6 +2772,10 @@ summary_tool = {
 }
 
 "><div class="bloque-cab"><span class="ruta">04_json_garantizado.py · líneas 23–40</span><span class="pill nuevo">+18 líneas nuevas</span></div><pre><code><span class="l"><span class="k">class</span> <span class="f">CaseSummary</span>(BaseModel):</span><span class="l">    <span class="c"># Definimos la forma exacta del resumen final, heredando de BaseModel</span></span><span class="l">    <span class="c"># (la clase base de Pydantic que sabe validar tipos y campos).</span></span><span class="l">    order_id: str  <span class="c"># Debe existir y debe ser texto.</span></span><span class="l">    status: str  <span class="c"># Debe existir y debe ser texto.</span></span><span class="l">    next_action: str  <span class="c"># Debe existir y debe ser texto.</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="c"># Armamos una tool cuyo único propósito es &quot;guardar&quot; datos con esa forma.</span></span><span class="l"><span class="c"># input_schema se genera automáticamente a partir de la clase de arriba:</span></span><span class="l"><span class="c"># no hace falta escribir el JSON Schema a mano.</span></span><span class="l">summary_tool = {</span><span class="l">    <span class="s">&quot;name&quot;</span>: <span class="s">&quot;save_case_summary&quot;</span>,</span><span class="l">    <span class="s">&quot;description&quot;</span>: <span class="s">&quot;Guarda el resumen final del caso de soporte.&quot;</span>,</span><span class="l">    <span class="s">&quot;input_schema&quot;</span>: CaseSummary.<span class="f">model_json_schema</span>(),</span><span class="l">}</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>CaseSummary.model_json_schema()</code> es el detalle que ahorra los bugs más tontos. Escribir el JSON Schema a mano significa mantener dos verdades: la clase y el esquema. Se separan en el primer cambio de campo, y el síntoma aparece lejos, cuando el modelo manda algo que tu código no espera.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p3" data-paso="d5p3">
@@ -2572,6 +2823,10 @@ summary_tool = {
         block = next(b for b in resp.content if b.type == &quot;tool_use&quot;)
         print(&quot;  el modelo mandó este input:&quot;, block.input)
 "><div class="bloque-cab"><span class="ruta">04_json_garantizado.py · líneas 41–73</span><span class="pill nuevo">+33 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    messages = [</span><span class="l">        {</span><span class="l">            <span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>,</span><span class="l">            <span class="s">&quot;content&quot;</span>: (</span><span class="l">                <span class="s">&quot;Resume este caso de soporte: la orden ORD-8841 ya fue &quot;</span></span><span class="l">                <span class="s">&quot;enviada y llega el 2026-07-04. El cliente pregunta si &quot;</span></span><span class="l">                <span class="s">&quot;necesita hacer algo más. Guarda el resumen del caso.&quot;</span></span><span class="l">            ),</span><span class="l">        }</span><span class="l">    ]</span><span class="l"></span><span class="l">    summary = <span class="k">None</span></span><span class="l">    <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(3):</span><span class="l">        <span class="c"># Intentamos hasta 3 veces conseguir un resumen válido, por si</span></span><span class="l">        <span class="c"># el modelo se equivoca en el formato la primera vez.</span></span><span class="l">        <span class="f">print</span>(<span class="s">f&quot;intento {attempt}: llamando al modelo (tool_choice forzado)...&quot;</span>)</span><span class="l"></span><span class="l">        resp = client.messages.<span class="f">create</span>(</span><span class="l">            model=<span class="s">&quot;claude-sonnet-4-6&quot;</span>,</span><span class="l">            max_tokens=1024,</span><span class="l">            tools=[summary_tool],</span><span class="l">            <span class="c"># Con esto OBLIGAMOS al modelo a usar exactamente esta tool:</span></span><span class="l">            <span class="c"># no puede responder con texto libre.</span></span><span class="l">            tool_choice={<span class="s">&quot;type&quot;</span>: <span class="s">&quot;tool&quot;</span>, <span class="s">&quot;name&quot;</span>: <span class="s">&quot;save_case_summary&quot;</span>},</span><span class="l">            messages=messages,</span><span class="l">        )</span><span class="l"></span><span class="l">        <span class="c"># Buscamos el primer pedazo de la respuesta que sea una petición</span></span><span class="l">        <span class="c"># de tool (sabemos que va a existir, por el tool_choice forzado).</span></span><span class="l">        block = <span class="f">next</span>(b <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">&quot;tool_use&quot;</span>)</span><span class="l">        <span class="f">print</span>(<span class="s">&quot;  el modelo mandó este input:&quot;</span>, block.input)</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>tool_choice={&quot;type&quot;: &quot;tool&quot;, &quot;name&quot;: ...}</code> cambia el juego: el modelo <strong>tiene</strong> que llamar esa tool. Ya no hay que rogarle &quot;responde solo JSON, sin explicaciones&quot;, ni recortar los ``<code>json que a veces envuelve la respuesta. El transporte ya es estructurado. Por eso el </code>next(...)<code> puede asumir sin miedo que hay un bloque </code>tool_use<code>: el </code>tool_choice` lo garantiza.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d5p4" data-paso="d5p4">
@@ -2630,6 +2885,10 @@ order_id=&#x27;ORD-8841&#x27; status=&#x27;Enviada&#x27; next_action=&#x27;Esper
 order_id  : ORD-8841
 status    : Enviada
 next_action: Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">intento 0: llamando al modelo (tool_choice forzado)...</span><span class="l">  el modelo mandó este input: {&#x27;order_id&#x27;: &#x27;ORD-8841&#x27;, &#x27;status&#x27;: &#x27;Enviada&#x27;, &#x27;next_action&#x27;: &#x27;Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente.&#x27;}</span><span class="l">  ✓ validación OK</span><span class="l"></span><span class="l">=== RESUMEN VALIDADO (objeto Python real, no texto suelto) ===</span><span class="l">order_id=&#x27;ORD-8841&#x27; status=&#x27;Enviada&#x27; next_action=&#x27;Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente.&#x27;</span><span class="l">order_id  : ORD-8841</span><span class="l">status    : Enviada</span><span class="l">next_action: Esperar la entrega programada para el 2026-07-04. No se requiere ninguna acción adicional por parte del cliente.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Este es el patrón que hay que llevarse: <strong>el mensaje de error de Pydantic es un prompt de corrección gratis</strong>. Dice qué campo falla y por qué, en un lenguaje que el modelo entiende. Devolverlo con <code>is_error: True</code> arregla la mayoría de los casos en el segundo intento. En esta corrida validó a la primera. Para ver el reintento en acción, agrega un campo imposible de adivinar a <code>CaseSummary</code> y vuelve a correrlo.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Aquí conviene romperlo en vivo: añadir <code>eta: int</code> a <code>CaseSummary</code>. El modelo mandará una fecha en texto, Pydantic protestará, y se verá el ciclo de corrección completo.</p></div>
+        <button class="tick-fin" type="button" data-tick="d5p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>04_json_garantizado.py</code> completo (109 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -2828,6 +3087,10 @@ def llamada_inestable():
     return {&quot;texto&quot;: &quot;¡respuesta exitosa del modelo!&quot;}
 
 "><div class="bloque-cab"><span class="ruta">05_retries.py · líneas 1–45</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1/4 (Acto 2, Pilar de robustez). Retries: backoff exponencial + jitter</span></span><span class="l"></span><span class="l"><span class="s">Del deck: trata al LLM como cualquier servicio externo: toda llamada de</span></span><span class="l"><span class="s">red va a fallar tarde o temprano. Cien clientes fallando juntos y</span></span><span class="l"><span class="s">reintentando exactamente a los 2 segundos crean una &quot;retry storm&quot;; el</span></span><span class="l"><span class="s">jitter (aleatoriedad) los dispersa. NUNCA reintentes un 400 (tu request</span></span><span class="l"><span class="s">está mal) ni un 401/403 (credenciales): solo hace el bug más caro.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo simula una llamada &quot;inestable&quot; que falla las primeras 2 veces</span></span><span class="l"><span class="s">y responde bien a la tercera, para que veas con tus propios ojos los</span></span><span class="l"><span class="s">tiempos de espera crecientes (backoff) y el hecho de que nunca son</span></span><span class="l"><span class="s">exactamente iguales (jitter).</span></span><span class="l"></span><span class="l"><span class="s">No necesita internet ni API key: la &quot;llamada al modelo&quot; está simulada</span></span><span class="l"><span class="s">a propósito para poder provocar fallos a demanda.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 05_retries.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> random</span><span class="l"><span class="k">import</span> time</span><span class="l"><span class="k">from</span> collections <span class="k">import</span> namedtuple</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">class</span> <span class="f">ErrorTransitorio</span>(Exception):</span><span class="l">    <span class="c"># Un tipo de error propio para simular anthropic.RateLimitError /</span></span><span class="l">    <span class="c"># InternalServerError / APITimeoutError sin depender de la librería real.</span></span><span class="l">    <span class="k">pass</span></span><span class="l"></span><span class="l"></span><span class="l">intentos_realizados = {<span class="s">&quot;n&quot;</span>: 0}</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">llamada_inestable</span>():</span><span class="l">    <span class="c"># Simulamos una llamada al modelo que falla las primeras 2 veces</span></span><span class="l">    <span class="c"># (como un 529 &quot;overloaded_error&quot; que se resuelve solo) y responde</span></span><span class="l">    <span class="c"># bien en el tercer intento.</span></span><span class="l">    intentos_realizados[<span class="s">&quot;n&quot;</span>] += 1</span><span class="l">    <span class="k">if</span> intentos_realizados[<span class="s">&quot;n&quot;</span>] &lt; 3:</span><span class="l">        <span class="k">raise</span> <span class="f">ErrorTransitorio</span>(<span class="s">f&quot;servidor sobrecargado (intento {intentos_realizados[&#x27;n&#x27;]})&quot;</span>)</span><span class="l">    <span class="k">return</span> {<span class="s">&quot;texto&quot;</span>: <span class="s">&quot;¡respuesta exitosa del modelo!&quot;</span>}</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>ErrorTransitorio</code> hace de <code>RateLimitError</code>, <code>InternalServerError</code> y <code>APITimeoutError</code> sin depender de la red. La palabra clave es <strong>transitorio</strong>: un error que se arregla solo con esperar. Los otros no se reintentan nunca, y eso es el paso siguiente.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p2" data-paso="d6p2">
@@ -2866,7 +3129,11 @@ def llamada_inestable():
             # evita que muchos clientes esperen exactamente lo mismo.
             print(f&quot;    esperando {espera:.2f}s antes de reintentar...&quot;)
             time.sleep(espera)
-"><div class="bloque-cab"><span class="ruta">05_retries.py · líneas 46–70</span><span class="pill nuevo">+25 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">with_backoff</span>(fn, max_retries=5):</span><span class="l">    <span class="c"># Función &quot;envoltorio&quot;: recibe OTRA función (fn) y la ejecuta con</span></span><span class="l">    <span class="c"># reintentos automáticos si falla por un error transitorio.</span></span><span class="l">    <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(max_retries):</span><span class="l">        <span class="c"># Intentamos como máximo max_retries veces (0, 1, 2, 3, 4...).</span></span><span class="l">        <span class="k">try</span>:</span><span class="l">            <span class="k">return</span> <span class="f">fn</span>()</span><span class="l">            <span class="c"># Si fn() no lanza ningún error, devolvemos su resultado y</span></span><span class="l">            <span class="c"># terminamos aquí mismo.</span></span><span class="l">        <span class="k">except</span> ErrorTransitorio <span class="k">as</span> e:</span><span class="l">            <span class="c"># Solo atrapamos errores transitorios: un 400 o 401 real</span></span><span class="l">            <span class="c"># NO debería atraparse aquí, se debe dejar propagar siempre.</span></span><span class="l">            <span class="f">print</span>(<span class="s">f&quot;  intento {attempt}: falló ({e})&quot;</span>)</span><span class="l">            <span class="k">if</span> attempt == max_retries - 1:</span><span class="l">                <span class="c"># Si este ya era el último intento permitido, dejamos</span></span><span class="l">                <span class="c"># que el error se propague de verdad.</span></span><span class="l">                <span class="k">raise</span></span><span class="l">            espera = <span class="f">min</span>(60, 2**attempt) * random.<span class="f">random</span>()</span><span class="l">            <span class="c"># 2**attempt duplica la espera &quot;base&quot; en cada vuelta</span></span><span class="l">            <span class="c"># (1s, 2s, 4s, 8s...) sin pasar nunca de 60 segundos.</span></span><span class="l">            <span class="c"># Multiplicar por random.random() (0.0 a 1.0) es el &quot;jitter&quot;:</span></span><span class="l">            <span class="c"># evita que muchos clientes esperen exactamente lo mismo.</span></span><span class="l">            <span class="f">print</span>(<span class="s">f&quot;    esperando {espera:.2f}s antes de reintentar...&quot;</span>)</span><span class="l">            time.<span class="f">sleep</span>(espera)</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Una sola línea contiene las tres ideas: <code>min(60, 2**attempt) * random.random()</code>. <strong><code>2</strong>attempt</code><strong> duplica la espera cada vuelta (1, 2, 4, 8…): darle tiempo real a que el servicio se recupere. </strong><code>min(60, …)</code><strong> pone techo, o el sexto intento espera un minuto largo. Y </strong><code>random.random()</code><strong> es el jitter: si cien clientes fallan a la vez y todos reintentan exactamente a los 2 segundos, vuelven a tumbar el servicio juntos. La aleatoriedad los dispersa. Lo que </strong>no** hace también importa: solo atrapa <code>ErrorTransitorio</code>. Un 400 o un 401 se propagan. Reintentar un bug propio solo lo hace más caro.</p></div>
+"><div class="bloque-cab"><span class="ruta">05_retries.py · líneas 46–70</span><span class="pill nuevo">+25 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">with_backoff</span>(fn, max_retries=5):</span><span class="l">    <span class="c"># Función &quot;envoltorio&quot;: recibe OTRA función (fn) y la ejecuta con</span></span><span class="l">    <span class="c"># reintentos automáticos si falla por un error transitorio.</span></span><span class="l">    <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(max_retries):</span><span class="l">        <span class="c"># Intentamos como máximo max_retries veces (0, 1, 2, 3, 4...).</span></span><span class="l">        <span class="k">try</span>:</span><span class="l">            <span class="k">return</span> <span class="f">fn</span>()</span><span class="l">            <span class="c"># Si fn() no lanza ningún error, devolvemos su resultado y</span></span><span class="l">            <span class="c"># terminamos aquí mismo.</span></span><span class="l">        <span class="k">except</span> ErrorTransitorio <span class="k">as</span> e:</span><span class="l">            <span class="c"># Solo atrapamos errores transitorios: un 400 o 401 real</span></span><span class="l">            <span class="c"># NO debería atraparse aquí, se debe dejar propagar siempre.</span></span><span class="l">            <span class="f">print</span>(<span class="s">f&quot;  intento {attempt}: falló ({e})&quot;</span>)</span><span class="l">            <span class="k">if</span> attempt == max_retries - 1:</span><span class="l">                <span class="c"># Si este ya era el último intento permitido, dejamos</span></span><span class="l">                <span class="c"># que el error se propague de verdad.</span></span><span class="l">                <span class="k">raise</span></span><span class="l">            espera = <span class="f">min</span>(60, 2**attempt) * random.<span class="f">random</span>()</span><span class="l">            <span class="c"># 2**attempt duplica la espera &quot;base&quot; en cada vuelta</span></span><span class="l">            <span class="c"># (1s, 2s, 4s, 8s...) sin pasar nunca de 60 segundos.</span></span><span class="l">            <span class="c"># Multiplicar por random.random() (0.0 a 1.0) es el &quot;jitter&quot;:</span></span><span class="l">            <span class="c"># evita que muchos clientes esperen exactamente lo mismo.</span></span><span class="l">            <span class="f">print</span>(<span class="s">f&quot;    esperando {espera:.2f}s antes de reintentar...&quot;</span>)</span><span class="l">            time.<span class="f">sleep</span>(espera)</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Una sola línea contiene las tres ideas: <code>min(60, 2**attempt) * random.random()</code>. <strong><code>2**attempt</code></strong> duplica la espera cada vuelta (1, 2, 4, 8…): darle tiempo real a que el servicio se recupere. <strong><code>min(60, …)</code></strong> pone techo, o el sexto intento espera un minuto largo. Y <strong><code>random.random()</code></strong> es el jitter: si cien clientes fallan a la vez y todos reintentan exactamente a los 2 segundos, vuelven a tumbar el servicio juntos. La aleatoriedad los dispersa. Lo que <strong>no</strong> hace también importa: solo atrapa <code>ErrorTransitorio</code>. Un 400 o un 401 se propagan. Reintentar un bug propio solo lo hace más caro.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p3" data-paso="d6p3">
@@ -2923,6 +3190,10 @@ Resultado final: {&#x27;texto&#x27;: &#x27;¡respuesta exitosa del modelo!&#x27;
 
 --- Bonus: run_tool_safe no tumba el programa ante un error ---
 salida: ToolOut(content={&#x27;error&#x27;: &#x27;algo salió mal dentro de la tool&#x27;}, failed=True)"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Simulando una llamada que falla 2 veces y responde bien a la 3ra:</span><span class="l"></span><span class="l">  intento 0: falló (servidor sobrecargado (intento 1))</span><span class="l">    esperando 0.50s antes de reintentar...</span><span class="l">  intento 1: falló (servidor sobrecargado (intento 2))</span><span class="l">    esperando 1.91s antes de reintentar...</span><span class="l"></span><span class="l">Resultado final: {&#x27;texto&#x27;: &#x27;¡respuesta exitosa del modelo!&#x27;}</span><span class="l"></span><span class="l">--- Bonus: run_tool_safe no tumba el programa ante un error ---</span><span class="l">salida: ToolOut(content={&#x27;error&#x27;: &#x27;algo salió mal dentro de la tool&#x27;}, failed=True)</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Mira los dos tiempos de espera de la salida: no son 1.00s y 2.00s exactos. Eso es el jitter trabajando. Corre el script otra vez y van a ser distintos: esa es precisamente la propiedad que necesitas.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p4" data-paso="d6p4">
@@ -2980,6 +3251,10 @@ def deberia_reintentar(codigo_http: int) -&gt; bool:
     return False
 
 "><div class="bloque-cab"><span class="ruta">06_rate_limits.py · líneas 1–43</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 2/4 (Acto 2, Pilar de robustez). Rate limits: 429 vs 529 vs 500 vs 400</span></span><span class="l"></span><span class="l"><span class="s">Del deck: &quot;¿Es culpa tuya? No reintentes. ¿Es transitorio? Backoff.&quot;</span></span><span class="l"><span class="s">Lee el encabezado anthropic-ratelimit-requests-remaining y frena antes del</span></span><span class="l"><span class="s">429: el throttling proactivo gana al reactivo.</span></span><span class="l"></span><span class="l"><span class="s">Tabla de decisión del deck:</span></span><span class="l"><span class="s">    429 rate_limit_error     -&gt; espera retry-after, luego backoff</span></span><span class="l"><span class="s">    529 overloaded_error     -&gt; backoff + jitter; degrada si persiste</span></span><span class="l"><span class="s">    500 api_error            -&gt; reintentar con backoff</span></span><span class="l"><span class="s">    400 invalid_request_error -&gt; NO reintentar, loguear y arreglar</span></span><span class="l"></span><span class="l"><span class="s">Este archivo convierte esa tabla en código real y corre casos de prueba</span></span><span class="l"><span class="s">para cada código, sin necesitar internet.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 06_rate_limits.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> time</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">deberia_reintentar</span>(codigo_http: int) -&gt; bool:</span><span class="l">    <span class="c"># Dado un código de error HTTP, decide si vale la pena reintentar la</span></span><span class="l">    <span class="c"># llamada o si hay que rendirse de inmediato.</span></span><span class="l">    <span class="k">if</span> codigo_http == 429:</span><span class="l">        <span class="c"># Superaste tu cuota (peticiones o tokens por minuto).</span></span><span class="l">        <span class="k">return</span> <span class="k">True</span>  <span class="c"># Sí, pero respetando primero el retry-after del servidor.</span></span><span class="l">    <span class="k">if</span> codigo_http == 529:</span><span class="l">        <span class="c"># La API está sobrecargada en general: no es culpa tuya.</span></span><span class="l">        <span class="k">return</span> <span class="k">True</span>  <span class="c"># Sí, con espera creciente y aleatoriedad.</span></span><span class="l">    <span class="k">if</span> codigo_http == 500:</span><span class="l">        <span class="c"># Error interno transitorio, normalmente se resuelve solo.</span></span><span class="l">        <span class="k">return</span> <span class="k">True</span>  <span class="c"># Sí, suele resolverse en 1 o 2 intentos.</span></span><span class="l">    <span class="k">if</span> codigo_http == 400:</span><span class="l">        <span class="c"># Tu petición está mal armada (falta un campo, JSON incorrecto...).</span></span><span class="l">        <span class="k">return</span> <span class="k">False</span>  <span class="c"># NO: reintentar un bug propio solo lo hace más caro.</span></span><span class="l">    <span class="c"># Para cualquier otro código no contemplado, por seguridad no</span></span><span class="l">    <span class="c"># reintentamos automáticamente.</span></span><span class="l">    <span class="k">return</span> <span class="k">False</span></span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Cuatro códigos, dos categorías. <strong>429</strong> (superaste tu cuota), <strong>529</strong> (la API está sobrecargada) y <strong>500</strong> (fallo interno) son transitorios: se reintentan. <strong>400</strong> significa que tu petición está mal armada: reintentarla la va a rechazar exactamente igual, mil veces. Y el default es <code>return False</code>. Ante un código que no conoces, no reintentar es la opción segura: peor que fallar es fallar en bucle.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d6p5" data-paso="d6p5">
@@ -3045,6 +3320,10 @@ caso A: quedan 20 peticiones
 caso B: quedan 3 peticiones
   peticiones restantes según el servidor: 3
   -&gt; quedan pocas: frenamos 1s de forma preventiva (throttling proactivo)"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Tabla de decisión (código HTTP -&gt; ¿reintentar?):</span><span class="l"></span><span class="l">  429 -&gt; SÍ reintentar</span><span class="l">  529 -&gt; SÍ reintentar</span><span class="l">  500 -&gt; SÍ reintentar</span><span class="l">  400 -&gt; NO reintentar</span><span class="l">  404 -&gt; NO reintentar</span><span class="l"></span><span class="l">Throttling proactivo con headers simulados:</span><span class="l">caso A: quedan 20 peticiones</span><span class="l">  peticiones restantes según el servidor: 20</span><span class="l">  -&gt; hay margen de sobra, seguimos sin frenar</span><span class="l">caso B: quedan 3 peticiones</span><span class="l">  peticiones restantes según el servidor: 3</span><span class="l">  -&gt; quedan pocas: frenamos 1s de forma preventiva (throttling proactivo)</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>anthropic-ratelimit-requests-remaining</code> viene en cada respuesta y casi nadie lo mira. El throttling <strong>proactivo</strong> (frenar cuando quedan pocas) gana siempre al reactivo: esperar el 429 significa que ya perdiste esa petición y que arrancas el backoff desde cero.</p></div>
+        <button class="tick-fin" type="button" data-tick="d6p5">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>05_retries.py</code> completo (102 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -3302,6 +3581,10 @@ print(&quot;Cliente configurado:&quot;)
 print(&quot;  timeout     =&quot;, client.timeout)
 print(&quot;  max_retries =&quot;, client.max_retries)
 "><div class="bloque-cab"><span class="ruta">07_timeouts_idempotencia.py · líneas 1–32</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 3/4 (Acto 2, Pilar de robustez): Timeouts e idempotencia</span></span><span class="l"></span><span class="l"><span class="s">Del deck: el default del SDK es 10 minutos de espera, una eternidad para</span></span><span class="l"><span class="s">un chat interactivo. Pero un timeout NO garantiza que la petición falló:</span></span><span class="l"><span class="s">pudo completarse igual en segundo plano. Reintentar una tool que cobra</span></span><span class="l"><span class="s">dinero o envía un correo puede duplicar el efecto. Diseña primero: tools</span></span><span class="l"><span class="s">de solo lectura cuando se pueda, y separa &quot;proponer&quot; de &quot;confirmar&quot;.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo (1) construye un cliente real de Anthropic con timeout y</span></span><span class="l"><span class="s">max_retries configurados (sin llamar a la red, solo para mostrar la</span></span><span class="l"><span class="s">configuración), y (2) simula, sin necesitar internet, cómo una guarda de</span></span><span class="l"><span class="s">idempotencia evita cobrar dos veces por un reintento.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 07_timeouts_idempotencia.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l"><span class="c"># --- Parte 1: el cliente bien configurado ---</span></span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)</span><span class="l"><span class="c"># timeout=30.0  -&gt; si una llamada no responde en 30 segundos, se cancela</span></span><span class="l"><span class="c">#                  sola (el default son 10 minutos, demasiado para un chat).</span></span><span class="l"><span class="c"># max_retries=4 -&gt; el propio SDK reintentará hasta 4 veces solo, además</span></span><span class="l"><span class="c">#                  de cualquier with_backoff propio que le pongamos encima.</span></span><span class="l"></span><span class="l"><span class="f">print</span>(<span class="s">&quot;Cliente configurado:&quot;</span>)</span><span class="l"><span class="f">print</span>(<span class="s">&quot;  timeout     =&quot;</span>, client.timeout)</span><span class="l"><span class="f">print</span>(<span class="s">&quot;  max_retries =&quot;</span>, client.max_retries)</span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El default es <strong>10 minutos</strong>. Para un usuario esperando en una pantalla, eso no es un timeout: es un cuelgue. 30 segundos es un punto de partida razonable. <code>max_retries=4</code> los hace el propio SDK, por debajo de cualquier <code>with_backoff</code> que le pongas encima. Vale la pena saberlo: si pones los dos, los reintentos se multiplican, no se suman.</p></div>
+        <button class="tick-fin" type="button" data-tick="d7p1">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d7p2" data-paso="d7p2">
@@ -3365,6 +3648,10 @@ intento 2 (reintento por timeout, MISMO operacion_id):
   {&#x27;status&#x27;: &#x27;ya procesado, no se repite el cobro&#x27;, &#x27;monto&#x27;: 0}
 
 Sin esta guarda, el segundo intento habría cobrado 49.90 de nuevo."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Cliente configurado:</span><span class="l">  timeout     = 30.0</span><span class="l">  max_retries = 4</span><span class="l"></span><span class="l">Simulando: la llamada al modelo tardó y tu código reintentó,</span><span class="l">pero la tool &#x27;cobrar&#x27; ya se había ejecutado en el intento anterior.</span><span class="l"></span><span class="l">intento 1 (llamada original):</span><span class="l">  {&#x27;status&#x27;: &#x27;cobro realizado&#x27;, &#x27;monto&#x27;: 49.9}</span><span class="l">intento 2 (reintento por timeout, MISMO operacion_id):</span><span class="l">  {&#x27;status&#x27;: &#x27;ya procesado, no se repite el cobro&#x27;, &#x27;monto&#x27;: 0}</span><span class="l"></span><span class="l">Sin esta guarda, el segundo intento habría cobrado 49.90 de nuevo.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Esta es la idea incómoda de la sesión: <strong>tu código no sabe si la operación se ejecutó</strong>. Se agotó la espera, nada más. Si esa tool cobra dinero o manda un correo, el reintento duplica el efecto. La guarda son cinco líneas, pero la decisión importante es de diseño: tools de solo lectura siempre que se pueda, y cuando haya efectos, separar <em>proponer</em> de <em>confirmar</em>.</p></div>
+        <button class="tick-fin" type="button" data-tick="d7p2">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d7p3" data-paso="d7p3">
@@ -3427,6 +3714,10 @@ def with_backoff(fn, max_retries=5):
             time.sleep(min(60, 2**attempt) * random.random())
 
 "><div class="bloque-cab"><span class="ruta">08_logging.py · líneas 1–48</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 4/4 (Acto 2, Pilar de robustez): Logging exhaustivo</span></span><span class="l"></span><span class="l"><span class="s">Del deck: mínimo por llamada: request_id (lo que soporte de Anthropic pide</span></span><span class="l"><span class="s">para investigar), tokens de entrada/salida (ahí vive la factura),</span></span><span class="l"><span class="s">stop_reason (si es &quot;max_tokens&quot;, la respuesta quedó truncada en silencio),</span></span><span class="l"><span class="s">latencia y número de intentos. En DEBUG puedes guardar el payload</span></span><span class="l"><span class="s">completo (sin PII); en INFO solo las métricas. Eso es lo que va a prod.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo hace UNA llamada real al modelo (barata, max_tokens chico),</span></span><span class="l"><span class="s">envuelta en el with_backoff del pilar 1, y registra en el log exactamente</span></span><span class="l"><span class="s">los datos que el deck pide.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 08_logging.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> logging</span><span class="l"><span class="k">import</span> random</span><span class="l"><span class="k">import</span> time</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l"><span class="c"># Configuramos el sistema de logs para que muestre, como mínimo, mensajes</span></span><span class="l"><span class="c"># de nivel INFO (información general, no solo errores).</span></span><span class="l">logging.<span class="f">basicConfig</span>(level=logging.INFO, format=<span class="s">&quot;%(name)s | %(message)s&quot;</span>)</span><span class="l">log = logging.<span class="f">getLogger</span>(<span class="s">&quot;tool_loop&quot;</span>)</span><span class="l"><span class="c"># Creamos un &quot;registrador&quot; con nombre propio, para identificar de dónde</span></span><span class="l"><span class="c"># vienen estos mensajes si el programa tiene más partes.</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">with_backoff</span>(fn, max_retries=5):</span><span class="l">    <span class="c"># El mismo wrapper de reintentos del Pilar 1 (backoff exponencial + jitter).</span></span><span class="l">    <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(max_retries):</span><span class="l">        <span class="k">try</span>:</span><span class="l">            <span class="k">return</span> <span class="f">fn</span>()</span><span class="l">        <span class="k">except</span> (</span><span class="l">            anthropic.RateLimitError,</span><span class="l">            anthropic.InternalServerError,</span><span class="l">            anthropic.APITimeoutError,</span><span class="l">        ):</span><span class="l">            <span class="k">if</span> attempt == max_retries - 1:</span><span class="l">                <span class="k">raise</span></span><span class="l">            time.<span class="f">sleep</span>(<span class="f">min</span>(60, 2**attempt) * random.<span class="f">random</span>())</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Fíjate en el <code>except</code>: <code>RateLimitError</code>, <code>InternalServerError</code>, <code>APITimeoutError</code>. Esos son los transitorios de verdad. <code>BadRequestError</code> no está en la lista, y esa ausencia es deliberada.</p></div>
+        <button class="tick-fin" type="button" data-tick="d7p3">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
     <article class="paso" id="d7p4" data-paso="d7p4">
@@ -3484,6 +3775,10 @@ tool_loop | llm_call request_id=req_011Ce4gnq6RtAkQmfZVMzGBT model=claude-sonnet
 
 Texto de la respuesta (esto sí iría en DEBUG, no en INFO):
 **Tool use** es la capacidad de un modelo de IA para invocar funciones o herramientas externas (como búsquedas web, calculadoras o APIs) para obtener información o ejecutar acciones y así responder mejor a una solicitud."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">httpx | HTTP Request: POST https://api.anthropic.com/v1/messages &quot;HTTP/1.1 200 OK&quot;</span><span class="l">tool_loop | llm_call request_id=req_011Ce4gnq6RtAkQmfZVMzGBT model=claude-sonnet-4-6 stop_reason=end_turn in_tok=26 out_tok=63 latency_s=2.41</span><span class="l"></span><span class="l">Texto de la respuesta (esto sí iría en DEBUG, no en INFO):</span><span class="l">**Tool use** es la capacidad de un modelo de IA para invocar funciones o herramientas externas (como búsquedas web, calculadoras o APIs) para obtener información o ejecutar acciones y así responder mejor a una solicitud.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Campo por campo: <strong><code>request_id</code></strong> es lo primero que pide soporte de Anthropic para investigar: sin él no hay conversación. <strong><code>input_tokens</code>/<code>output_tokens</code></strong> es donde vive la factura. <strong><code>latency_s</code></strong> es lo que te deja detectar una degradación antes de que la reporte un usuario. Y <strong><code>stop_reason</code></strong> es el que se pasa por alto: si vale <code>max_tokens</code>, la respuesta se cortó a media frase y nadie se enteró. Por eso hay un <code>log.warning</code> explícito para ese caso. El texto de la respuesta va a <code>print</code>, no al log de INFO. En producción eso sería DEBUG: los logs de INFO son métricas, no contenido, y ahí es donde se filtra la información personal de tus usuarios.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Cierre de la sesión: preguntar cuál de los cuatro pilares quitarían si tuvieran que entregar mañana. La respuesta correcta es ninguno, pero el debate saca a la luz qué entendieron de cada uno.</p></div>
+        <button class="tick-fin" type="button" data-tick="d7p4">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>
       <details class='completo'><summary>Ver <code>07_timeouts_idempotencia.py</code> completo (69 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
@@ -3676,9 +3971,11 @@ if __name__ == &quot;__main__&quot;:
           pasos.forEach((p) => {
             const ok = hechos.has(p.id);
             p.classList.toggle("hecho", ok);
-            const boton = p.querySelector("[data-tick]");
-            if (boton)
-              boton.setAttribute("aria-pressed", ok ? "true" : "false");
+            // Hay DOS controles por paso (el círculo del margen y el botón
+            // del cierre): los dos tienen que reflejar el mismo estado.
+            p.querySelectorAll("[data-tick]").forEach((boton) =>
+              boton.setAttribute("aria-pressed", ok ? "true" : "false"),
+            );
             const a = enlacesNav.get(p.id);
             if (a) a.classList.toggle("hecho", ok);
           });

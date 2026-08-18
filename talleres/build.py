@@ -233,13 +233,25 @@ def parrafos(texto):
 
 
 def marcado(texto):
-    """Markdown mínimo: **negrita**, *cursiva*, `código`, [texto](url)."""
+    """Markdown mínimo: **negrita**, *cursiva*, `código`, [texto](url).
+
+    Los tramos de código se apartan ANTES de aplicar énfasis y vuelven al
+    final. Sin eso, un `*` dentro de código se empareja con otro más adelante y
+    pone en cursiva todo lo que hay en medio: es justo lo que pasaba al
+    explicar qué significa el `*` de un patrón de archivos."""
     t = html.escape(texto).replace("\n", " ")
-    t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
+
+    apartados = []
+
+    def guardar(m):
+        apartados.append(f"<code>{m.group(1)}</code>")
+        return f"\x00{len(apartados) - 1}\x00"
+
+    t = re.sub(r"`([^`]+)`", guardar, t)
     t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
     t = re.sub(r"(?<![*\w])\*([^*\n]+)\*(?![*\w])", r"<em>\1</em>", t)
     t = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2" target="_blank" rel="noopener">\1</a>', t)
-    return t
+    return re.sub(r"\x00(\d+)\x00", lambda m: apartados[int(m.group(1))], t)
 
 
 # ---------------------------------------------------------------------------
@@ -420,6 +432,21 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
     elif paso.get("salida_texto"):
         piezas.append(bloque_salida(paso["salida_texto"]))
 
+    # Sintaxis de Python. Va ANTES del "por qué" a propósito: primero entiendes
+    # qué dice el código, después por qué está escrito así. Plegado, porque a
+    # quien ya sabe Python le estorbaría en los 41 pasos.
+    sintaxis = paso.get("python") or []
+    if sintaxis:
+        filas = "".join(
+            f'<li><code>{html.escape(s["de"])}</code><span>{marcado(s["es"])}</span></li>'
+            for s in sintaxis
+        )
+        piezas.append(
+            '<details class="nota sintaxis"><summary>Sintaxis de Python '
+            f'<span class="cuenta">{len(sintaxis)}</span></summary>'
+            f'<ul class="sintaxis-lista">{filas}</ul></details>'
+        )
+
     if paso.get("porque"):
         piezas.append(
             '<div class="nota porque"><div class="nota-cab">Por qué</div>'
@@ -467,6 +494,10 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
           {minutos}
         </header>
         {"".join(piezas)}
+        <button class="tick-fin" type="button" data-tick="{pid}">
+          <span class="tick-fin-marca" aria-hidden="true"></span>
+          <span class="tick-fin-texto">Marcar como hecho</span>
+        </button>
       </div>
     </article>"""
 

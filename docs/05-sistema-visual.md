@@ -84,6 +84,20 @@ Los días llevan una cifra grande en contorno, en el mismo margen.
 - **Movimiento reducido**: `prefers-reduced-motion` anula transiciones y el
   scroll suave.
 
+### El control de "hecho" vive donde termina la lectura
+
+Cada paso tiene **dos** controles para marcarlo, y no es redundancia: el círculo
+del margen izquierdo y un botón al cierre del paso. El del margen sirve para
+ver el estado de un vistazo; el del cierre, para marcarlo en el momento en que
+de verdad terminas de leer, sin subir a buscarlo.
+
+Además, el marcador del margen lleva `align-self: start`. Sin eso su
+`position: sticky` era decorativo: como celda de grid se estiraba a la altura de
+toda la fila (1800px en un paso largo), y un elemento pegajoso tan alto como su
+contenedor no tiene recorrido, así que su contenido se quedaba arriba y salía de
+pantalla. Con `start` mide lo que ocupa el número más el círculo, y acompaña la
+lectura de verdad.
+
 ### Nada flotando encima del contenido
 
 En pantallas anchas los controles viven en la barra lateral. Por debajo de

@@ -147,6 +147,42 @@ dias:
         codigo:
           archivo: base.py
           lineas: "1-33"
+        python:
+          - de: '"""..."""'
+            es: >-
+              Las triple comillas al principio de un archivo son un
+              **docstring**: la documentación del módulo. No es un comentario,
+              es un texto que queda guardado en el programa y que puedes leer
+              con `help(base)`. Los `#` sí son comentarios y desaparecen al
+              ejecutar.
+          - de: 'import json'
+            es: >-
+              Trae un módulo entero. A partir de ahí lo usas con su nombre
+              delante: `json.loads(...)`. Es la forma más común y la más fácil
+              de rastrear, porque siempre se ve de dónde sale cada función.
+          - de: 'from pathlib import Path'
+            es: >-
+              Trae **solo** una pieza del módulo, y la usas sin prefijo:
+              `Path(...)` en vez de `pathlib.Path(...)`. Úsalo cuando vas a
+              repetir mucho ese nombre.
+          - de: 'Path(__file__).parent'
+            es: >-
+              `__file__` es una variable que Python rellena solo con la ruta del
+              archivo que se está ejecutando. `.parent` sube un nivel, a la
+              carpeta que lo contiene. Juntos dan "la carpeta donde vivo yo",
+              que no cambia aunque ejecutes el script desde otro sitio.
+          - de: 'METADATA_DOCS = {...}'
+            es: >-
+              Un **diccionario**: pares de clave y valor entre llaves. Aquí la
+              clave es el nombre del archivo y el valor es otro diccionario. Se
+              lee con corchetes: `METADATA_DOCS["errores.md"]` devuelve
+              `{"tipo": "referencia", "anio": 2026}`.
+          - de: 'MAYÚSCULAS'
+            es: >-
+              Por convención, un nombre en mayúsculas señala una **constante**:
+              algo que se define una vez y no se vuelve a tocar. Python no lo
+              impide, es un acuerdo entre programadores para que se lea de un
+              vistazo.
         porque: >-
           `METADATA_DOCS` no hace nada hoy y no lo va a hacer hasta el día 9.
           Está aquí porque el metadata filtering solo funciona si la metadata
@@ -166,6 +202,58 @@ dias:
           archivo: base.py
           lineas: "34-72"
           nuevo: true
+        python:
+          - de: '.glob("*.md")'
+            es: >-
+              Busca archivos que encajen con un patrón. El `*` significa
+              "cualquier cosa", así que `*.md` son todos los archivos que
+              terminan en `.md`. Va envuelto en `sorted(...)` para que el orden
+              sea siempre el mismo en cualquier máquina.
+          - de: 'docs.append((texto, nombre))'
+            es: >-
+              `.append()` añade **un** elemento al final de una lista. Fíjate en
+              el doble paréntesis: el elemento que añadimos es una **tupla**,
+              dos valores pegados. Una tupla es como una lista pero no se puede
+              modificar.
+          - de: 'chunks.extend(otra_lista)'
+            es: >-
+              Aquí está la diferencia que más confunde. `.append(lista)` mete la
+              lista entera como **un solo elemento** (te queda una lista de
+              listas). `.extend(lista)` mete **sus elementos uno por uno**. Como
+              `chunk_markdown` devuelve varios chunks, queremos `extend` para
+              acabar con una lista plana.
+          - de: 're.split(r"\n(?=#{2,3} )", texto)'
+            es: >-
+              Corta el texto donde encuentre el patrón. La `r` antes de las
+              comillas es una *raw string*: hace que `\n` se entienda tal cual,
+              sin interpretarlo. Y `(?=...)` es un **lookahead**: comprueba que
+              ahí viene un título pero **no se lo come**, así el título se queda
+              dentro del chunk.
+          - de: 'sec.splitlines()[0]'
+            es: >-
+              `.splitlines()` parte un texto en una lista de líneas. El `[0]`
+              toma la primera. En Python se empieza a contar desde cero,
+              siempre.
+          - de: '.lstrip("# ")'
+            es: >-
+              Quita del **inicio** cualquiera de esos caracteres, aquí `#` y
+              espacio. La `l` es de *left*. Existen `.rstrip()` para el final y
+              `.strip()` para los dos lados.
+          - de: 'f"{fuente} § {titulo}"'
+            es: >-
+              Una **f-string**: la `f` antes de las comillas permite meter
+              variables dentro del texto usando llaves. Sin la `f`, saldría
+              literalmente `{fuente} § {titulo}`.
+          - de: '**METADATA_DOCS[fuente]'
+            es: >-
+              Esta es la que preguntabas. Los dos asteriscos **desempaquetan**
+              un diccionario dentro de otro. Sin ellos tendrías una clave
+              llamada `METADATA_DOCS` con un diccionario dentro; con ellos, las
+              claves `tipo` y `anio` entran **al mismo nivel** que `id`, `texto`
+              y `seccion`. Es la forma corta de escribir `"tipo": ..., "anio":
+              ...` sin repetirlo en cada chunk. El mismo símbolo aparece en las
+              funciones (`def f(**kwargs)`), donde hace lo contrario: recoge
+              argumentos sueltos y los mete en un diccionario.
         porque: >-
           Ese id, `archivo § sección`, es la pieza que hace posible todo el
           taller. El golden set apunta a estos ids, así que **si cambias el
@@ -182,6 +270,44 @@ dias:
           archivo: base.py
           lineas: "73-113"
           nuevo: true
+        python:
+          - de: 'try: ... except Exception: pass'
+            es: >-
+              Intenta ejecutar algo y, si revienta, no hace nada. `pass` es la
+              instrucción vacía de Python: existe porque el lenguaje necesita
+              **algo** ahí dentro. Aquí es correcto porque la primera vez la
+              colección no existe y borrarla falla, pero ojo: `except Exception`
+              también se traga errores de verdad.
+          - de: '[c["id"] for c in chunks]'
+            es: >-
+              Una **comprensión de lista**: construye una lista nueva
+              recorriendo otra. Se lee de dentro afuera: "para cada `c` en
+              `chunks`, quédate con `c["id"]`". Equivale a un bucle `for` de
+              tres líneas, en una.
+          - de: 'textos if textos is not None else [...]'
+            es: >-
+              El **operador ternario**, un `if` que cabe en una línea y devuelve
+              un valor. Se lee: "usa `textos`, si no es `None`; si lo es, usa la
+              lista de después". El orden es raro al principio porque la
+              condición va en medio.
+          - de: 'is not None'
+            es: >-
+              Para comparar con `None` se usa `is` y no `==`. `is` pregunta
+              "¿son el mismo objeto?" y `None` es único en todo el programa.
+              Además, `if textos:` no serviría aquí: una lista vacía también es
+              falsa, y no es lo mismo que no haber pasado nada.
+          - de: 'json.loads(texto)'
+            es: >-
+              Convierte un texto en JSON a estructuras de Python (diccionarios y
+              listas). La `s` final es de *string*. Sin ella,
+              `json.load(archivo)` lee de un archivo abierto. Y `dumps`/`dump`
+              hacen el camino inverso.
+          - de: 're.findall(r"[a-z0-9áéíóúüñ_-]+", texto)'
+            es: >-
+              Devuelve **todas** las coincidencias del patrón como una lista.
+              Los corchetes son un conjunto de caracteres permitidos y el `+`
+              significa "uno o más seguidos". El guion va al final a propósito:
+              en medio significaría un rango, como `a-z`.
         porque: >-
           Las dos lecciones de la sesión 04 siguen aquí: borrar antes de crear
           (porque `collection.add` salta ids repetidos en silencio) y fijar la
@@ -216,6 +342,13 @@ dias:
         codigo:
           archivo: rag.py
           lineas: "1-21"
+        python:
+          - de: 'def responder(pregunta, recuperar)'
+            es: >-
+              La **firma** de una función es su nombre y sus parámetros. Aquí lo
+              importante es que `recuperar` no es un dato: es **otra función**.
+              En Python las funciones son valores como cualquier otro, así que
+              se pueden guardar en variables y pasar como argumento.
         porque: >-
           `responder(pregunta, recuperar)` recibe la función de recuperación
           como **parámetro**. Eso convierte el retrieval en una pieza
@@ -236,6 +369,23 @@ dias:
           archivo: rag.py
           lineas: "22-41"
           nuevo: true
+        python:
+          - de: 'client = anthropic.Anthropic()'
+            es: >-
+              Crea un **objeto** de esa clase, es decir una instancia lista para
+              usar. Los paréntesis vacíos significan que no le pasamos
+              configuración: la librería busca sola la clave en la variable de
+              entorno.
+          - de: 'SYSTEM_GENERACION = (
+  "..."
+  "..."
+)'
+            es: >-
+              Varios textos seguidos dentro de un paréntesis se **pegan
+              automáticamente** en uno solo. Es la forma habitual de escribir un
+              texto largo repartido en varias líneas sin llenarlo de `+`.
+              Cuidado con olvidar un espacio al final de cada trozo: quedarían
+              dos palabras pegadas.
         porque: >-
           El `UMBRAL = 0.40` es el mismo de la sesión 04 y hace bien su trabajo:
           evita que basura poco parecida entre al contexto.
@@ -253,6 +403,34 @@ dias:
           archivo: rag.py
           lineas: "42-64"
           nuevo: true
+        python:
+          - de: 'def recuperar_vectorial(collection, pregunta, k=4, umbral=UMBRAL)'
+            es: >-
+              Los parámetros con `=` tienen **valor por defecto**: si no los
+              pasas, se usa ese. Por eso puedes llamar a la función con dos
+              argumentos o con cuatro. Los que no tienen valor por defecto van
+              siempre primero.
+          - de: 'zip(a, b, c)'
+            es: >-
+              Recorre varias listas **a la vez**, dando un elemento de cada una
+              en cada vuelta. Aquí Chroma devuelve los ids, los textos y las
+              distancias en listas separadas, y `zip` las vuelve a juntar por
+              posición. Si tienen distinta longitud, se para en la más corta.
+          - de: 'res["ids"][0]'
+            es: >-
+              Dos accesos encadenados: primero la clave `"ids"` del diccionario,
+              después el elemento `0` de la lista que hay dentro. Ese `[0]` está
+              porque se puede preguntar por varias consultas a la vez y Chroma
+              devuelve un resultado por cada una; nosotros mandamos una sola.
+          - de: 'round(similitud, 3)'
+            es: >-
+              Redondea a los decimales que le digas. Es solo presentación, para
+              que la salida se lea; el cálculo se hizo con todos los decimales.
+          - de: '"pasa_umbral": similitud >= umbral'
+            es: >-
+              Una comparación **es** un valor, no solo algo que va dentro de un
+              `if`. `similitud >= umbral` produce `True` o `False`, y eso es lo
+              que se guarda en el diccionario.
         porque: >-
           Nada nuevo respecto a la sesión 04: top-k por coseno y filtro por
           umbral. Lo que cambia es su estatus: a partir de mañana esto deja de
@@ -266,6 +444,41 @@ dias:
           archivo: rag.py
           lineas: "65-93"
           nuevo: true
+        python:
+          - de: 'if not evidencias:'
+            es: >-
+              En Python una lista vacía cuenta como falsa, así que `not
+              evidencias` significa "si la lista está vacía". Es más idiomático
+              que `len(evidencias) == 0`, y hace lo mismo.
+          - de: '"\n\n".join(...)'
+            es: >-
+              Junta los elementos de una lista en un solo texto, poniendo entre
+              ellos el texto sobre el que llamas al método. Se lee al revés de
+              como suena: el separador va delante. `"\n\n"` son dos saltos de
+              línea, o sea una línea en blanco entre chunk y chunk.
+          - de: 'enumerate(evidencias)'
+            es: >-
+              Recorre una lista dando **la posición y el elemento** a la vez, en
+              vez de solo el elemento. Evita el clásico contador manual. Empieza
+              en 0, por eso el `i + 1` para numerar las citas de cara al
+              usuario.
+          - de: 'f"[{i + 1}] ..." for i, e in enumerate(...)'
+            es: >-
+              Una **expresión generadora**: como una comprensión de lista pero
+              sin corchetes, y va directamente dentro del `join`. Va produciendo
+              los elementos de uno en uno en vez de construir la lista entera en
+              memoria.
+          - de: 'resp.content[0].text'
+            es: >-
+              Se navega por la respuesta del SDK: `content` es una lista de
+              bloques (un mensaje puede traer texto, uso de herramientas, etc.),
+              tomamos el primero y le pedimos su `.text`.
+          - de: '[e for e in recuperar(pregunta) if e.get("pasa_umbral", True)]'
+            es: >-
+              Una comprensión de lista **con filtro**: el `if` del final decide
+              qué entra. Y `.get(clave, valor_por_defecto)` lee del diccionario
+              sin reventar si la clave no existe; con `e["pasa_umbral"]` daría
+              `KeyError` en los buscadores que no ponen esa clave.
         porque: >-
           Igual que en la sesión 04: si nada supera el umbral, ni se llama al
           modelo. La respuesta honesta sale gratis.
@@ -317,6 +530,24 @@ dias:
           archivo: 00_punto_de_partida.py
           lineas: "33-58"
           nuevo: true
+        python:
+          - de: 'import base'
+            es: >-
+              Importa **tu propio archivo** `base.py`, que está en la misma
+              carpeta. Python no distingue entre módulos tuyos y de terceros: si
+              el archivo está donde él puede verlo, se importa igual que `json`.
+          - de: 'PREGUNTAS = [ (…, …), … ]'
+            es: >-
+              Una lista de tuplas. Cada elemento tiene dos partes, la pregunta y
+              dónde estaba la respuesta, y luego se desempaquetan de golpe en el
+              bucle: `for pregunta, donde in PREGUNTAS`. Python reparte los
+              valores por posición.
+          - de: 'None'
+            es: >-
+              El valor "aquí no hay nada". No es cero ni texto vacío: es un
+              valor propio que significa ausencia. Aquí marca las preguntas que
+              sí se responden bien y por tanto no necesitan la nota de dónde
+              estaba la respuesta.
         porque: >-
           Fíjate en que cada pregunta que falla trae anotado **dónde estaba la
           respuesta**. Eso no es decoración: es lo que convierte una demo en un
@@ -331,6 +562,29 @@ dias:
           archivo: 00_punto_de_partida.py
           lineas: "59-75"
           nuevo: true
+        python:
+          - de: '"=" * 72'
+            es: >-
+              Multiplicar un texto por un número lo **repite**. Es la forma
+              corta de dibujar una línea separadora sin escribir 72 iguales.
+          - de: 'enumerate(evidencias, 1)'
+            es: >-
+              El segundo argumento dice desde qué número empezar a contar. Por
+              defecto empieza en 0; aquí queremos numerar de cara al lector, así
+              que empieza en 1 y nos ahorramos el `i + 1`.
+          - de: 'f"{e[''similitud'']:.3f}"'
+            es: >-
+              Los dos puntos dentro de las llaves abren el **formato**. `.3f`
+              significa "decimal con 3 cifras". Sin él saldría
+              `0.38700000000000001`. Fíjate en las comillas simples dentro de la
+              f-string de comillas dobles: no se pueden repetir las mismas por
+              dentro y por fuera.
+          - de: 'lambda p: evidencias'
+            es: >-
+              Una función anónima de una línea. `lambda p: evidencias` es una
+              función que recibe `p` y devuelve siempre `evidencias`, ignorando
+              lo que le pasen. Sirve para reutilizar la recuperación que ya
+              hicimos en vez de repetirla.
         porque: >-
           Marcar `pasa` o `CORTA` al lado de cada similitud es lo que hace
           visible el fallo del paso siguiente. Con solo la respuesta final
@@ -349,6 +603,20 @@ dias:
         salida:
           archivo: 00_punto_de_partida.txt
           lineas: "52-80"
+        python:
+          - de: 'if __name__ == "__main__":'
+            es: >-
+              La línea más críptica de Python y la más útil. `__name__` vale
+              `"__main__"` cuando ejecutas el archivo directamente, y el nombre
+              del módulo cuando otro archivo lo importa. Traducido: **"ejecuta
+              esto solo si me estás corriendo a mí, no si me están
+              importando"**. Sin ella, importar este archivo dispararía todo el
+              pipeline sin querer.
+          - de: 'if donde_estaba:'
+            es: >-
+              Comprobar un valor sin comparar nada. En Python, `None`, el cero,
+              el texto vacío y las listas vacías cuentan como falsos; casi todo
+              lo demás como verdadero. Así que esto significa "si hay algo ahí".
         porque: >-
           Mira la pregunta de `sk_test_`. El chunk correcto (`api-pagos.md §
           Autenticación`) **sí se recuperó**, quedó de cuarto con similitud
@@ -401,6 +669,33 @@ dias:
           archivo: metricas.py
           lineas: "31-55"
           nuevo: true
+        python:
+          - de: 'sum(1 for q in golden if …)'
+            es: >-
+              Cuenta cuántos elementos cumplen la condición: produce un `1` por
+              cada uno que pasa el filtro y los suma. Es el modo idiomático de
+              contar sin escribir un contador a mano.
+          - de: 'results[q][:k]'
+            es: >-
+              **Rebanada** (*slice*): toma los primeros `k` elementos de la
+              lista. Los dos puntos separan inicio y fin; si omites el inicio,
+              empieza desde el principio. Nunca falla aunque la lista sea más
+              corta que `k`.
+          - de: 'golden[q] in results[q][:k]'
+            es: >-
+              `in` pregunta si un elemento está dentro de una colección, y
+              devuelve `True` o `False`. En listas recorre elemento por
+              elemento; en diccionarios busca entre las claves y es instantáneo.
+          - de: '.index(valor)'
+            es: >-
+              Devuelve **la posición** de la primera aparición de ese valor.
+              Cuidado: si no está, lanza `ValueError` en vez de devolver `None`,
+              y por eso el código siempre comprueba antes con `in`.
+          - de: 'total = 0.0'
+            es: >-
+              El punto cero no sobra. Arrancar en `0.0` deja claro que la
+              variable acumula decimales, no enteros. Python lo resolvería
+              igual, pero se lee mejor.
         porque: >-
           **Recall@k** responde "¿está el chunk correcto entre los primeros k?".
           Es un sí o un no, promediado sobre todas las queries.
@@ -419,6 +714,25 @@ dias:
           archivo: metricas.py
           lineas: "56-83"
           nuevo: true
+        python:
+          - de: 'def sintoma(golden, results, q, k=K_UTIL)'
+            es: >-
+              El valor por defecto puede ser una constante definida antes. Se
+              evalúa **una sola vez**, cuando Python lee la definición de la
+              función, no en cada llamada. Para números y textos da igual; con
+              listas o diccionarios como valor por defecto ese detalle causa
+              errores célebres.
+          - de: 'if pos is None or pos > k:'
+            es: >-
+              El `or` corta en cuanto puede: si `pos` es `None`, ya no evalúa
+              `pos > k`. Eso importa aquí, porque comparar `None > 4`
+              reventaría. El orden de las dos condiciones no es casual.
+          - de: 'conteo[sintoma(...)] += 1'
+            es: >-
+              Usar un diccionario como contador. La función devuelve el nombre
+              del síntoma, ese nombre es la clave, y `+= 1` suma uno a lo que
+              hubiera. Funciona porque las tres claves ya existen inicializadas
+              en cero.
         porque: >-
           Aquí está la bisagra de toda la sesión, y merece leerse dos veces.
 
@@ -442,6 +756,28 @@ dias:
           archivo: metricas.py
           lineas: "84-110"
           nuevo: true
+        python:
+          - de: '{q: buscar(q) for q in golden}'
+            es: >-
+              Una **comprensión de diccionario**: como la de lista pero produce
+              pares de clave y valor. Se lee "para cada `q`, guarda `buscar(q)`
+              bajo la clave `q`". Recorrer un diccionario da sus claves, no sus
+              valores.
+          - de: 'def evaluar(golden, buscar)'
+            es: >-
+              Otra vez una función recibida como parámetro. `buscar` puede ser
+              cualquier cosa que se pueda llamar con una query: eso es lo que
+              permite medir las cuatro variantes con este mismo código.
+          - de: 'f"{nombre:<26}"'
+            es: >-
+              Formato de alineación: `<` a la izquierda, `>` a la derecha, `^`
+              centrado, y el número es el ancho mínimo en caracteres. Es lo que
+              hace que las columnas de la tabla queden cuadradas en la terminal.
+          - de: 'f"{valor:>8.2f}"'
+            es: >-
+              Se pueden combinar: alineado a la derecha en 8 caracteres, con 2
+              decimales. Sin la alineación los números bailarían y la tabla
+              sería ilegible.
         porque: >-
           `evaluar()` recibe la función de búsqueda como argumento, igual que
           `responder()` en `rag.py`. Ese patrón se repite en toda la sesión
@@ -582,6 +918,19 @@ dias:
           archivo: retrieval.py
           lineas: "41-57"
           nuevo: true
+        python:
+          - de: '[base.tokenizar(c["texto"]) for c in chunks]'
+            es: >-
+              Una comprensión que devuelve **listas dentro de una lista**: cada
+              chunk se convierte en su lista de tokens. BM25 espera exactamente
+              eso, un documento ya partido en palabras.
+          - de: 'scores.argsort()[::-1]'
+            es: >-
+              Dos cosas juntas. `argsort()` no ordena los valores: devuelve
+              **las posiciones** que los ordenarían de menor a mayor. Y `[::-1]`
+              es una rebanada con paso `-1`, o sea "la misma lista al revés".
+              Juntos dan las posiciones de mayor a menor, que es el ranking que
+              queremos.
         porque: >-
           BM25 cuenta palabras: cuántas veces aparece cada término de la query en
           cada documento, penalizando los términos comunes y los documentos
@@ -599,6 +948,24 @@ dias:
           archivo: retrieval.py
           lineas: "58-84"
           nuevo: true
+        python:
+          - de: 'scores.get(doc_id, 0)'
+            es: >-
+              Lee del diccionario y, si la clave no existe, devuelve el valor
+              por defecto en vez de reventar. Es el patrón estándar para
+              acumular: la primera vez devuelve 0, y a partir de ahí el
+              acumulado.
+          - de: 'for rank, doc_id in enumerate(ranking)'
+            es: >-
+              Desempaquetado directo en el bucle: `enumerate` entrega pares y
+              las dos variables los recogen. Aquí `rank` es la posición, que es
+              justo lo que RRF necesita.
+          - de: 'sorted(scores, key=scores.get, reverse=True)'
+            es: >-
+              Ordenar un diccionario recorre sus **claves**. `key=` recibe una
+              función que dice por qué valor ordenar cada clave, y aquí le
+              pasamos `scores.get` sin paréntesis: **la función en sí**, no su
+              resultado. `reverse=True` la pone de mayor a menor.
         porque: >-
           El problema: un coseno de 0.62 y un BM25 de 14.2 **no son
           comparables**. Están en escalas distintas, con distribuciones
@@ -620,6 +987,27 @@ dias:
           archivo: retrieval.py
           lineas: "85-122"
           nuevo: true
+        python:
+          - de: 're.findall(r"\d+", texto)'
+            es: >-
+              `\d` es "cualquier dígito" y `+` es "uno o más". Sobre `"3,1,7,2"`
+              devuelve `["3","1","7","2"]`. Ojo: son textos, no números; por eso
+              el `int(n)` de después.
+          - de: '[int(n) - 1 for n in …]'
+            es: >-
+              El `- 1` traduce de la numeración humana (que empieza en 1, la que
+              ve el modelo) a la de Python (que empieza en 0). Ese desajuste es
+              una fuente clásica de errores de un elemento.
+          - de: 'if 0 <= i < len(candidatos_ids)'
+            es: >-
+              Una **comparación encadenada**, que en Python se escribe tal cual
+              se lee en matemáticas. Equivale a `0 <= i and i < len(...)`. Está
+              aquí porque el modelo puede inventarse un número fuera de rango.
+          - de: '(reordenados + faltantes)[:top]'
+            es: >-
+              Sumar listas las **concatena** (no suma sus elementos), y la
+              rebanada corta el resultado. En una línea: pega los que faltaban
+              al final y quédate con los `top` primeros.
         porque: >-
           La diferencia técnica importa: el vector search convierte query y
           documento en embeddings **por separado** y compara los vectores. El
@@ -639,6 +1027,18 @@ dias:
           archivo: retrieval.py
           lineas: "123-140"
           nuevo: true
+        python:
+          - de: '{"nombre": lambda q: …}'
+            es: >-
+              Un diccionario cuyos valores son **funciones**. Permite elegir la
+              variante por su nombre y llamarla después. Es lo que hace que
+              añadir una quinta estrategia sea una línea más.
+          - de: 'lambda q: buscar_vectores(collection, q)'
+            es: >-
+              La lambda **captura** las variables de alrededor: aunque
+              `collection` no sea un parámetro, queda dentro y disponible cuando
+              se llame más tarde. A eso se le llama *closure*, y es lo que deja
+              todas las variantes con la misma firma de un solo argumento.
         porque: >-
           Devolver las variantes ya construidas evita que cada script repita el
           montaje, y garantiza que todos midan exactamente lo mismo. Si el
