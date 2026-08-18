@@ -1047,6 +1047,145 @@
         margin-top: 0.6rem;
       }
 
+      /* ---------- la historia del taller ----------
+         Va antes del primer día, en la portada. Tres actos con su número
+         grande: el mismo recurso editorial que la cifra del día, para que se
+         lea como parte del mismo sistema y no como un cartel pegado. */
+      .historia {
+        margin: clamp(2.5rem, 5vw, 4rem) 0;
+        padding: clamp(1.75rem, 3vw, 2.5rem) 0;
+        border-top: 1px solid var(--linea);
+        border-bottom: 1px solid var(--linea);
+      }
+      .historia-cab {
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--acento);
+        margin-bottom: 1.1rem;
+      }
+      .historia > p {
+        color: var(--texto-2);
+        font-size: 1.03rem;
+        margin-bottom: 1rem;
+      }
+      .historia > p strong {
+        color: var(--texto);
+      }
+      .actos {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      .acto {
+        min-width: 0;
+        padding-top: 1rem;
+        border-top: 2px solid var(--linea);
+        transition: border-color 0.2s ease;
+      }
+      .acto:hover {
+        border-top-color: var(--acento-borde);
+      }
+      .acto-num {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        color: var(--tenue);
+        font-variant-numeric: tabular-nums;
+      }
+      .acto h3 {
+        font-size: 1.06rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0.45rem 0 0.6rem;
+        color: var(--texto);
+      }
+      .acto p {
+        font-size: 0.93rem;
+        color: var(--texto-2);
+        margin-bottom: 0.6rem;
+      }
+      .acto-dias {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: var(--tenue);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.1em 0.6em;
+      }
+      .historia-cierre {
+        margin-top: 1.8rem;
+        color: var(--texto-2);
+        font-size: 1.02rem;
+      }
+      .historia-cierre strong {
+        color: var(--texto);
+      }
+
+      /* ---------- de dónde vienes / qué queda abierto ---------- */
+      .dia-vienes {
+        font-size: 0.9rem;
+        color: var(--tenue);
+        margin-bottom: 0.7rem;
+        padding-left: 0.9rem;
+        border-left: 2px solid var(--linea);
+      }
+      .dia-deja {
+        margin-left: var(--margen-paso);
+        margin-top: 1.75rem;
+        padding: 1.4rem 1.6rem;
+        border: 1px solid var(--linea);
+        border-left: 2px solid var(--acento-borde);
+        border-radius: 0 var(--radio) var(--radio) 0;
+        background: var(--fondo-2);
+      }
+      .dia-deja-cab {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--acento);
+        margin-bottom: 0.6rem;
+      }
+      .dia-deja p {
+        color: var(--texto-2);
+      }
+      .dia-deja p + p {
+        margin-top: 0.6rem;
+      }
+
+      /* ---------- definiciones de dominio ---------- */
+      .nota.define {
+        margin-left: var(--margen-paso);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        padding: 1.3rem 1.6rem;
+        background: var(--fondo-2);
+      }
+      ul.define-lista {
+        list-style: none;
+        display: grid;
+        gap: 0.9rem;
+        margin-top: 0.8rem;
+      }
+      ul.define-lista li {
+        display: grid;
+        gap: 0.2rem;
+        font-size: 0.94rem;
+      }
+      ul.define-lista li b {
+        color: var(--texto);
+        font-weight: 700;
+      }
+      ul.define-lista li span {
+        color: var(--texto-2);
+      }
       /* ---------- tarjeta de video, al cierre del día ----------
          Va después del checkpoint a propósito: primero cierras el día, y solo
          entonces se te ofrece ampliar. Antes competiría con el código.
@@ -1415,6 +1554,7 @@
             <a class="enlace" href="../sesiones/sesion-03-tool-use-robustez.html">📊 Deck de la sesión</a><a class="enlace" href="../gym/index.html">🏋️ Reto 02 del AI Gym</a><a class="enlace" href="../index.html">← Portal</a>
           </div>
           <div class="como"><p><strong>Un día = 30 minutos = un archivo que corre.</strong> No leas el taller entero de corrido: haz un día, ciérralo, y vuelve mañana. Cada paso trae el código completo (botón <code>Copiar</code>), el comando para correrlo y la salida real que deberías ver: esa salida es tu criterio de &quot;me funcionó&quot;, sin tener que preguntarle a nadie.</p><p>El taller tiene <strong>dos actos</strong>. Los días 1 a 4 son <em>haz que funcione</em>: el modelo pide, tu código ejecuta. Los días 5 y 6 son <em>haz que sobreviva</em>: lo mismo, pero aguantando errores de red, rate limits y timeouts.</p><p>Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en este navegador. Atajos: <code>j</code> / <code>k</code> para saltar entre pasos, <code>w</code> para ajustar líneas, <code>c</code> para las notas del coach.</p></div>
+          <section class="historia"><div class="historia-cab">La historia de esta sesión</div><p>Sin herramientas, un modelo solo tiene dos salidas ante algo que no sabe: rendirse o inventárselo. Dándole herramientas cambia de categoría: pasa de escribir texto a <strong>hacer cosas</strong>.</p><p>Y ahí aparece el problema nuevo. En cuanto tu código llama a un servicio de verdad, hereda todo lo que le pasa a los servicios de verdad: se caen, tardan, te limitan el ritmo y a veces cobran dos veces. Por eso esta sesión tiene dos actos muy distintos.</p><div class="actos"><div class="acto"><span class="acto-num">1</span><h3>Que funcione</h3><p>La forma del intercambio, siempre la misma cuatro fases, y la ficha de la tool, que es lo único que el modelo ve de tu función. Después el loop real, dos herramientas en un turno, y JSON garantizado sin parsing tolerante ni fe.</p><span class="acto-dias">días 1 a 4</span></div><div class="acto"><span class="acto-num">2</span><h3>Que sobreviva</h3><p>Ahora rómpelo. Reintentos con espera creciente, respeto al rate limit, timeouts, y la clave de idempotencia que impide que un reintento cobre dos veces.</p><span class="acto-dias">días 5 y 6</span></div><div class="acto"><span class="acto-num">3</span><h3>Que se pueda depurar</h3><p>Logs pensados para las tres de la mañana: los que te dejan reconstruir qué pasó sin tener que reproducir el fallo.</p><span class="acto-dias">día 6</span></div></div><p class="historia-cierre">La diferencia entre una demo y algo que aguanta cabe en dos páginas de código, y son las del acto 2. <strong>La demo la hace cualquiera; lo que se paga es que no se caiga.</strong> </p></section>
         </header>
 
         
@@ -1424,6 +1564,7 @@
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 0 · Antes de empezar
             <span class="dia-min">10 min</span></div>
+          
           <h2>Preparar el entorno</h2>
           <p>Diez minutos y una sola vez. Si esto no queda funcionando, el día 1 se te va en instalar cosas en vez de en entender el round-trip.</p>
         </div>
@@ -1479,6 +1620,7 @@ python -c &quot;import anthropic, pydantic; print(&#x27;entorno listo&#x27;)&quo
       
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p><code>python -c &quot;import anthropic, pydantic&quot;</code> no da error y <code>ANTHROPIC_API_KEY</code> está en tu shell.</p></div>
       
+      
     </section>
     <section class="dia" id="dia-2">
       <header class="dia-cab">
@@ -1486,6 +1628,7 @@ python -c &quot;import anthropic, pydantic; print(&#x27;entorno listo&#x27;)&quo
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 1
             <span class="dia-min">30 min</span></div>
+          <p class="dia-vienes">Ayer dejaste el entorno listo para no perder el día 1 instalando cosas.</p>
           <h2>La forma del round-trip, y la ficha que ve el modelo</h2>
           <p>Antes de tocar la API, dos cosas: la <strong>forma</strong> del intercambio (cuatro fases, siempre las mismas) y la <strong>ficha</strong> de la tool, que es lo único que el modelo llega a ver de tu código. Hoy no se llama a ningún modelo.</p>
         </div>
@@ -1929,6 +2072,7 @@ if __name__ == &quot;__main__&quot;:
           <span class="vt-porque">Sobre el diseño de la ficha que acabas de escribir: qué nombres y qué descripciones entiende de verdad el modelo. El schema es prompt, y aquí se ve por qué.</span>
         </span>
       </a>
+      <div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span><p>Ya sabes qué forma tiene el intercambio y qué ve el modelo de tu función: solo la ficha. Mañana dejas la teoría y lo corres de verdad, con los dos errores clásicos señalados donde se cometen.</p></div>
     </section>
     <section class="dia" id="dia-3">
       <header class="dia-cab">
@@ -1936,6 +2080,7 @@ if __name__ == &quot;__main__&quot;:
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 2
             <span class="dia-min">30 min</span></div>
+          <p class="dia-vienes">Ayer escribiste la ficha de la tool y viste las cuatro fases del intercambio.</p>
           <h2>El loop de verdad: tool_use → tool_result</h2>
           <p>Hoy sí llamas al modelo. Vas a ver el ciclo real, turno por turno, con los dos errores clásicos señalados en el sitio exacto donde se cometen.</p>
         </div>
@@ -2299,6 +2444,7 @@ if __name__ == &quot;__main__&quot;:
           <span class="vt-porque">El mismo loop de hoy, escrito por otra persona y en otro orden. Verlo dos veces es lo que hace que deje de parecer magia.</span>
         </span>
       </a>
+      <div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span><p>El loop ya funciona con una herramienta. Mañana llega el caso que rompe la mitad de las implementaciones caseras: dos herramientas pedidas en el mismo turno.</p></div>
     </section>
     <section class="dia" id="dia-4">
       <header class="dia-cab">
@@ -2306,6 +2452,7 @@ if __name__ == &quot;__main__&quot;:
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 3
             <span class="dia-min">30 min</span></div>
+          <p class="dia-vienes">Ayer corriste el loop completo y viste los dos errores que casi todo el mundo comete.</p>
           <h2>Dos tools en un turno: la regla de oro y el paralelismo</h2>
           <p>Una pregunta que toca dos órdenes trae dos <code>tool_use</code> en el mismo turno. Hoy los respondes bien, y de paso conviertes 4 segundos en 2.</p>
         </div>
@@ -2690,6 +2837,7 @@ if __name__ == &quot;__main__&quot;:
           <span class="vt-porque">Function calling paso a paso en español. Ojo: usa la Assistants API, hoy en deprecación, así que quédate con los conceptos y no con las llamadas.</span>
         </span>
       </a>
+      <div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span><p>Ya respondes varias herramientas en un turno, y de paso recortaste el tiempo a la mitad. Mañana cierras el acto 1 con la técnica que elimina el parsing frágil.</p></div>
     </section>
     <section class="dia" id="dia-5">
       <header class="dia-cab">
@@ -2697,6 +2845,7 @@ if __name__ == &quot;__main__&quot;:
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 4
             <span class="dia-min">30 min</span></div>
+          <p class="dia-vienes">Ayer resolviste dos herramientas en paralelo respetando la regla de oro.</p>
           <h2>JSON garantizado: tool_choice + Pydantic</h2>
           <p>Extraer datos estructurados de un LLM solía ser prompt, parsing tolerante y fe. Hoy se hace obligando al modelo a llamar una tool: su input <strong>es</strong> tu JSON, y Pydantic verifica que cumple.</p>
         </div>
@@ -3018,6 +3167,7 @@ if __name__ == &quot;__main__&quot;:
           <span class="vt-porque">La charla canónica sobre structured outputs, y explica por qué lo que hiciste hoy no es un truco de formato sino un cambio en cómo se construye con LLMs.</span>
         </span>
       </a>
+      <div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span><p>Con esto, el acto 1 está completo: funciona. Y aquí es donde la mayoría de los tutoriales termina. Mañana empieza la parte que separa una demo de algo que puedes dejar corriendo.</p></div>
     </section>
     <section class="dia" id="dia-6">
       <header class="dia-cab">
@@ -3025,6 +3175,7 @@ if __name__ == &quot;__main__&quot;:
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 5 · Acto 2
             <span class="dia-min">40 min</span></div>
+          <p class="dia-vienes">Ayer cerraste el acto 1: tu modelo tiene manos y devuelve JSON garantizado.</p>
           <h2>Que sobreviva: reintentos y rate limits</h2>
           <p>Ya funciona. Ahora rómpelo. Toda llamada de red falla tarde o temprano, y la diferencia entre un demo y algo que aguanta está en estas dos páginas de código. Hoy no se llama al modelo: los fallos están simulados a propósito para poder provocarlos.</p>
         </div>
@@ -3525,6 +3676,7 @@ if __name__ == &quot;__main__&quot;:
           <span class="vt-porque">La secuela, con lecciones de producción: qué hacer cuando la validación falla y cómo son los reintentos que de verdad sirven. Es el tema de hoy.</span>
         </span>
       </a>
+      <div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span><p>Ya aguanta fallos y respeta el rate limit. Falta lo que evita el peor error de todos, que es cobrar dos veces por reintentar, y lo que te permite averiguar qué pasó cuando ya pasó.</p></div>
     </section>
     <section class="dia" id="dia-7">
       <header class="dia-cab">
@@ -3532,6 +3684,7 @@ if __name__ == &quot;__main__&quot;:
         <div class="dia-texto">
           <div class="dia-etiqueta">Día 6 · Acto 2
             <span class="dia-min">35 min</span></div>
+          <p class="dia-vienes">Ayer añadiste reintentos con espera creciente y respeto al rate limit.</p>
           <h2>Timeouts, idempotencia y logs que sirven a las 3 a.m.</h2>
           <p>Los dos últimos pilares. El primero evita que un reintento cobre dos veces. El segundo hace que, cuando algo se rompa en producción, puedas averiguar qué pasó en vez de adivinar.</p>
         </div>
@@ -3938,6 +4091,7 @@ if __name__ == &quot;__main__&quot;:
     main()"><div class="bloque-cab"><span class="ruta">08_logging.py · archivo completo (87 líneas)</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 4/4 (Acto 2, Pilar de robustez): Logging exhaustivo</span></span><span class="l"></span><span class="l"><span class="s">Del deck: mínimo por llamada: request_id (lo que soporte de Anthropic pide</span></span><span class="l"><span class="s">para investigar), tokens de entrada/salida (ahí vive la factura),</span></span><span class="l"><span class="s">stop_reason (si es &quot;max_tokens&quot;, la respuesta quedó truncada en silencio),</span></span><span class="l"><span class="s">latencia y número de intentos. En DEBUG puedes guardar el payload</span></span><span class="l"><span class="s">completo (sin PII); en INFO solo las métricas. Eso es lo que va a prod.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo hace UNA llamada real al modelo (barata, max_tokens chico),</span></span><span class="l"><span class="s">envuelta en el with_backoff del pilar 1, y registra en el log exactamente</span></span><span class="l"><span class="s">los datos que el deck pide.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 08_logging.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> logging</span><span class="l"><span class="k">import</span> random</span><span class="l"><span class="k">import</span> time</span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l"><span class="c"># Configuramos el sistema de logs para que muestre, como mínimo, mensajes</span></span><span class="l"><span class="c"># de nivel INFO (información general, no solo errores).</span></span><span class="l">logging.<span class="f">basicConfig</span>(level=logging.INFO, format=<span class="s">&quot;%(name)s | %(message)s&quot;</span>)</span><span class="l">log = logging.<span class="f">getLogger</span>(<span class="s">&quot;tool_loop&quot;</span>)</span><span class="l"><span class="c"># Creamos un &quot;registrador&quot; con nombre propio, para identificar de dónde</span></span><span class="l"><span class="c"># vienen estos mensajes si el programa tiene más partes.</span></span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">with_backoff</span>(fn, max_retries=5):</span><span class="l">    <span class="c"># El mismo wrapper de reintentos del Pilar 1 (backoff exponencial + jitter).</span></span><span class="l">    <span class="k">for</span> attempt <span class="k">in</span> <span class="f">range</span>(max_retries):</span><span class="l">        <span class="k">try</span>:</span><span class="l">            <span class="k">return</span> <span class="f">fn</span>()</span><span class="l">        <span class="k">except</span> (</span><span class="l">            anthropic.RateLimitError,</span><span class="l">            anthropic.InternalServerError,</span><span class="l">            anthropic.APITimeoutError,</span><span class="l">        ):</span><span class="l">            <span class="k">if</span> attempt == max_retries - 1:</span><span class="l">                <span class="k">raise</span></span><span class="l">            time.<span class="f">sleep</span>(<span class="f">min</span>(60, 2**attempt) * random.<span class="f">random</span>())</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">main</span>():</span><span class="l">    t0 = time.<span class="f">monotonic</span>()</span><span class="l">    <span class="c"># Guardamos el instante exacto (un reloj que solo avanza) justo</span></span><span class="l">    <span class="c"># antes de hacer la llamada, para poder medir la latencia real después.</span></span><span class="l"></span><span class="l">    resp = <span class="f">with_backoff</span>(</span><span class="l">        <span class="k">lambda</span>: client.messages.<span class="f">create</span>(</span><span class="l">            model=<span class="s">&quot;claude-sonnet-4-6&quot;</span>,</span><span class="l">            max_tokens=100,</span><span class="l">            messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: <span class="s">&quot;Responde en una sola frase: ¿qué es tool use?&quot;</span>}],</span><span class="l">        )</span><span class="l">    )</span><span class="l"></span><span class="l">    latencia = time.<span class="f">monotonic</span>() - t0</span><span class="l"></span><span class="l">    <span class="c"># Registramos en el log todo lo que necesitaríamos para investigar un</span></span><span class="l">    <span class="c"># problema a las 3 a.m., SIN el contenido completo de la respuesta</span></span><span class="l">    <span class="c"># (eso iría solo en DEBUG, no en INFO).</span></span><span class="l">    log.<span class="f">info</span>(</span><span class="l">        <span class="s">&quot;llm_call request_id=%s model=%s stop_reason=%s in_tok=%d out_tok=%d latency_s=%.2f&quot;</span>,</span><span class="l">        resp._request_id,</span><span class="l">        resp.model,</span><span class="l">        resp.stop_reason,</span><span class="l">        resp.usage.input_tokens,</span><span class="l">        resp.usage.output_tokens,</span><span class="l">        latencia,</span><span class="l">    )</span><span class="l"></span><span class="l">    <span class="k">if</span> resp.stop_reason == <span class="s">&quot;max_tokens&quot;</span>:</span><span class="l">        <span class="c"># Si esto pasa, la respuesta quedó truncada en silencio: el</span></span><span class="l">        <span class="c"># deck insiste en vigilar este caso porque es fácil de pasar por alto.</span></span><span class="l">        log.<span class="f">warning</span>(<span class="s">&quot;¡la respuesta se truncó por max_tokens! considera subir el límite&quot;</span>)</span><span class="l"></span><span class="l">    <span class="f">print</span>(<span class="s">&quot;\nTexto de la respuesta (esto sí iría en DEBUG, no en INFO):&quot;</span>)</span><span class="l">    <span class="f">print</span>(<span class="s">&quot;&quot;</span>.<span class="f">join</span>(b.text <span class="k">for</span> b <span class="k">in</span> resp.content <span class="k">if</span> b.type == <span class="s">&quot;text&quot;</span>))</span><span class="l"></span><span class="l"></span><span class="l"><span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:</span><span class="l">    <span class="f">main</span>()</span></code></pre></div></details>
       <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p>El segundo cobro con el mismo id devuelve &quot;ya procesado&quot; y monto 0. Y el log de <code>08_logging.py</code> trae <code>request_id</code>, tokens, <code>stop_reason</code> y latencia en una sola línea.</p></div>
       
+      <div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span><p>Con esto tienes las cinco piezas del acto 2. La sesión 04 cambia de tema: el modelo dejará de necesitar que tú le des los datos y aprenderá a ir a buscarlos.</p></div>
     </section> 
     <section class="cierre" id="cierre">
       <div class="marca-cierre">✓ Taller terminado</div>

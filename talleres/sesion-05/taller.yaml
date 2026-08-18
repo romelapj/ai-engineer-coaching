@@ -43,6 +43,52 @@ como_funciona: |
   este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
   líneas, `c` para las notas del coach.
 
+historia:
+  cab: "La historia de esta sesión"
+  entrada: |
+    Terminaste la sesión 04 con un RAG que funciona: parte tus documentos, los
+    guarda como vectores, busca los más parecidos a la pregunta y responde
+    citando sus fuentes. Lo probaste, contestó bien, y te fuiste tranquilo.
+
+    **Esta sesión existe porque esa tranquilidad no está justificada.** Tu RAG
+    tiene un fallo que no produce ningún error: cuando no encuentra la
+    información correcta, responde educadamente que no tiene evidencia. Se ve
+    exactamente igual que un sistema que se porta bien. No hay excepción, no hay
+    log rojo, no hay nada que te avise. Y la respuesta estaba en tus documentos.
+
+    Durante diez días vas a hacer tres cosas, en este orden, porque el orden es
+    la mitad de la lección.
+  actos:
+    - titulo: "Verlo fallar"
+      texto: >-
+        Montas el corpus, recuperas el RAG de la sesión 04 sin tocarle una coma,
+        y le haces cuatro preguntas cuya respuesta está en los documentos. Dos
+        fallan. Vas a ver el chunk correcto quedar de cuarto, con similitud
+        0.387, y al umbral cortarlo por trece milésimas mientras deja pasar dos
+        chunks irrelevantes.
+      dias: "días 1 a 3"
+    - titulo: "Poder medirlo"
+      texto: >-
+        Cuatro ejemplos elegidos a mano no demuestran nada: con ejemplos
+        escogidos puedes probar lo que quieras. Así que construyes el
+        instrumento: un conjunto de preguntas con su respuesta correcta, dos
+        métricas y un diagnóstico que separa "no llegó" de "llegó mal
+        ordenado". Ahí aparece el primer número honesto de la sesión.
+      dias: "días 4 y 5"
+    - titulo: "Arreglarlo, y demostrar que lo arreglaste"
+      texto: >-
+        Dos mejoras, cada una elegida porque el diagnóstico la pidió, no porque
+        la técnica suene bien. Cada una se mide contra el número anterior. Y una
+        de las dos, la más vistosa, es también la más lenta: vas a verlo en la
+        misma tabla.
+      dias: "días 6 a 10"
+  cierre: |
+    Al final tendrás el mismo RAG respondiendo mejor. Pero lo que de verdad te
+    llevas es otra cosa: **la capacidad de responder "¿y cómo sabes que
+    mejoró?" con una tabla en vez de con una opinión.** Esa pregunta es la que
+    separa a alguien que usa modelos de alguien que construye sistemas con
+    ellos.
+
 cierre:
   titulo: "Ya no crees que tu retrieval funciona: lo demuestras"
   texto: |
@@ -126,6 +172,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 1"
+    vienes_de: >-
+       Ayer preparaste el entorno. Hoy empieza el trabajo de verdad, y empieza
+       por lo aburrido: el corpus.
     titulo: "El corpus compartido: chunking, ingesta y el golden set"
     minutos: 30
     meta: >-
@@ -139,11 +188,28 @@ dias:
     checkpoint: >-
       Puedes explicar por qué el id de un chunk es `archivo § sección` y qué
       pasa con el golden set si cambias el chunking.
+    te_deja: >-
+       Ya tienes los documentos partidos e identificados. Todavía no has buscado
+       nada, y ya hay dos piezas colocadas que no vas a usar hasta el día 9: la
+       metadata y el tokenizador. Mañana recuperas el RAG de la sesión 04 y
+       descubres qué le falta.
     pasos:
       - titulo: "La metadata que todavía no usas"
         minutos: 9
         objetivo: >-
           Archivo nuevo, `base.py`. No se ejecuta solo: los demás lo importan.
+        define:
+          - termino: 'Chunk'
+            es: >-
+              Un trozo de documento, del tamaño que decidas al partirlo. Es la
+              unidad con la que trabaja todo el sistema: se indexa un chunk, se
+              recupera un chunk, y lo que se le entrega al modelo son chunks. Si
+              el corte está mal hecho, todo lo demás hereda el problema.
+          - termino: 'Metadata'
+            es: >-
+              Datos **sobre** el documento, no dentro de él: de qué año es, de
+              qué tipo, quién lo escribió. No se usa para buscar por
+              significado, sino para **descartar** antes de buscar.
         codigo:
           archivo: base.py
           lineas: "1-33"
@@ -266,6 +332,23 @@ dias:
         objetivo: >-
           Crear la colección desde cero, cargar el golden set, y un tokenizador
           que parece trivial pero no lo es.
+        define:
+          - termino: 'Ingesta'
+            es: >-
+              El proceso de leer tus documentos, convertirlos en vectores y
+              guardarlos. Se hace una vez (y se repite cuando cambian los
+              documentos), no en cada pregunta.
+          - termino: 'Idempotente'
+            es: >-
+              Que ejecutarlo dos veces deja el mismo resultado que ejecutarlo
+              una. Aquí importa porque `add` no sobreescribe: sin borrar antes,
+              la segunda corrida mediría el índice viejo creyendo que mide el
+              nuevo.
+          - termino: 'Golden set'
+            es: >-
+              El conjunto de preguntas reales con la respuesta correcta anotada
+              a mano. Es la vara de medir de toda la sesión: sin él no hay forma
+              de saber si un cambio mejoró o empeoró.
         codigo:
           archivo: base.py
           lineas: "73-113"
@@ -322,6 +405,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 2"
+    vienes_de: >-
+       Ayer construiste el corpus compartido y cada chunk quedó con un id
+       estable.
     titulo: "El RAG de la sesión 04, con una firma que lo cambia todo"
     minutos: 30
     meta: >-
@@ -333,6 +419,10 @@ dias:
     checkpoint: >-
       Puedes explicar por qué `responder()` recibe la función de recuperación
       como parámetro, y qué te permite hacer eso que antes no podías.
+    te_deja: >-
+       El RAG de la sesión 04 está intacto y listo. No has cambiado nada suyo, y
+       ese es el punto: cuando mañana lo veas fallar, no habrá dudas sobre a
+       quién culpar. El generador es correcto; el problema está antes.
     pasos:
       - titulo: "La tesis, en la firma de una función"
         minutos: 8
@@ -365,6 +455,18 @@ dias:
         objetivo: >-
           La configuración: cliente, modelo, umbral calibrado y las reglas de
           grounding.
+        define:
+          - termino: 'Similitud de coseno'
+            es: >-
+              Un número entre -1 y 1 que dice cuánto se parecen dos vectores por
+              su **dirección**, sin importar su tamaño. Cuanto más cerca de 1,
+              más parecido el significado. Es lo que devuelve la búsqueda
+              vectorial.
+          - termino: 'Umbral'
+            es: >-
+              El corte mínimo de similitud para que un chunk se considere
+              evidencia válida. Por debajo de él, se descarta. Es lo que permite
+              que el sistema diga que no sabe en vez de inventar.
         codigo:
           archivo: rag.py
           lineas: "22-41"
@@ -489,6 +591,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 3"
+    vienes_de: >-
+       Ayer dejaste el RAG de la sesión 04 montado, con la recuperación entrando
+       por parámetro.
     titulo: "Hacerlo fallar: cuando parecido no significa correcto"
     minutos: 30
     meta: >-
@@ -501,6 +606,12 @@ dias:
       Ves dos "No tengo evidencia para responder" cuya evidencia sí estaba en el
       corpus. Puedes explicar la diferencia entre "no se recuperó" y "se
       recuperó pero el umbral lo cortó".
+    te_deja: >-
+       Acabas de ver el fallo con tus propios ojos: el chunk correcto recuperado
+       de cuarto y cortado por trece milésimas. Pero fallaron dos de cuatro
+       preguntas que **tú elegiste**, y ese 50% no significa nada. Con ejemplos
+       escogidos a mano se demuestra cualquier cosa. Mañana empieza lo que
+       convierte esto en una medición.
     pasos:
       - titulo: "Dos problemas que parecen uno"
         minutos: 9
@@ -635,6 +746,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 4"
+    vienes_de: >-
+       Ayer viste fallar el RAG con cuatro preguntas elegidas a mano, y quedó
+       claro que cuatro anécdotas no son una medición.
     titulo: "El instrumento: recall@k, MRR y el diagnóstico por síntoma"
     minutos: 30
     meta: >-
@@ -646,6 +760,10 @@ dias:
     checkpoint: >-
       Puedes explicar qué mide recall@k, qué mide MRR, y por qué el diagnóstico
       se hace en top-4 y no en top-10.
+    te_deja: >-
+       Ya tienes el instrumento, pero todavía no lo has apuntado a nada. Mañana
+       lo usas sobre 15 preguntas reales y sale el primer número honesto de la
+       sesión: el que vas a tener que superar.
     pasos:
       - titulo: "La convención que hace comparables las variantes"
         minutos: 6
@@ -665,6 +783,20 @@ dias:
         minutos: 8
         objetivo: >-
           Las dos métricas del deck, en unas pocas líneas cada una.
+        define:
+          - termino: 'recall@k'
+            es: >-
+              De todas tus preguntas, en qué fracción el chunk correcto apareció
+              entre los primeros **k** resultados. Es un sí o un no por
+              pregunta, promediado. `recall@1 = 0.60` significa que en el 60% de
+              los casos lo correcto salió de primero.
+          - termino: 'MRR'
+            es: >-
+              *Mean Reciprocal Rank*. Igual que el recall, pero premia que lo
+              correcto salga **arriba**: de primero suma 1, de segundo 0.5, de
+              tercero 0.33. Dos sistemas con el mismo recall pueden tener MRR
+              muy distinto, y el que ordena mejor le pone el trabajo más fácil
+              al generador.
         codigo:
           archivo: metricas.py
           lineas: "31-55"
@@ -710,6 +842,17 @@ dias:
         objetivo: >-
           Clasificar cada query fallida en dos tipos: no llegó, o llegó mal
           ordenada.
+        define:
+          - termino: 'Fallo de recuperación'
+            es: >-
+              El chunk correcto no llegó a estar entre los que el RAG entrega al
+              modelo. Da igual cómo lo reordenes después: lo que no está no se
+              rescata.
+          - termino: 'Fallo de orden'
+            es: >-
+              El chunk correcto sí llegó, pero enterrado bajo ruido. Este sí se
+              arregla reordenando, y por eso conviene distinguirlo del anterior
+              antes de elegir la herramienta.
         codigo:
           archivo: metricas.py
           lineas: "56-83"
@@ -786,6 +929,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 5"
+    vienes_de: >-
+       Ayer construiste las métricas y el diagnóstico. Hoy los usas por primera
+       vez.
     titulo: "El baseline: poner un número donde había una impresión"
     minutos: 30
     meta: >-
@@ -797,6 +943,11 @@ dias:
       Tienes el baseline (recall@1 0.60, MRR 0.71) y el reparto de fallos: 9
       correctas, 3 de orden, 3 de recuperación. Puedes decir qué patrón comparten
       las que fallan.
+    te_deja: >-
+       Tienes el baseline y, más importante, sabes **qué tipo** de error tienes:
+       3 fallos de recuperación por términos literales. Eso no es una intuición,
+       es un conteo. Y un fallo de recuperación por términos literales tiene una
+       herramienta con nombre propio, que es lo que construyes mañana.
     pasos:
       - titulo: "Por qué 15 queries y no cuatro"
         minutos: 8
@@ -866,6 +1017,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 6"
+    vienes_de: >-
+       Ayer el diagnóstico dijo que tres queries fallan porque el embedding
+       suaviza los términos literales.
     titulo: "Las cuatro estrategias de búsqueda, con una firma común"
     minutos: 40
     meta: >-
@@ -883,6 +1037,10 @@ dias:
         Sparse, dense e híbrido en corto y bien explicado: exactamente las
         tres funciones que acabas de escribir. Míralo con `retrieval.py` al
         lado.
+    te_deja: >-
+       Ya tienes escritas las cuatro formas de buscar, todas con la misma firma.
+       Todavía no sabes cuál es mejor: eso no se opina, se mide, y es lo que
+       pasa mañana.
     pasos:
       - titulo: "La firma común, otra vez"
         minutos: 5
@@ -914,6 +1072,19 @@ dias:
         minutos: 8
         objetivo: >-
           Búsqueda léxica, exacta donde el embedding es difuso.
+        define:
+          - termino: 'BM25'
+            es: >-
+              Un algoritmo de búsqueda **léxica**: cuenta cuántas veces aparece
+              cada palabra de la pregunta en cada documento, penalizando las
+              palabras comunes y los documentos largos. No entiende de
+              significado, y por eso acierta donde el embedding falla: para BM25
+              `E-4012` es `E-4012`, no un código parecido.
+          - termino: 'Búsqueda léxica y búsqueda densa'
+            es: >-
+              Dos familias. La léxica compara palabras (BM25); la densa compara
+              significados a través de vectores (lo de la sesión 04). Sus fallos
+              son distintos, y de ahí sale la idea de usar las dos.
         codigo:
           archivo: retrieval.py
           lineas: "41-57"
@@ -944,6 +1115,18 @@ dias:
         minutos: 9
         objetivo: >-
           Reciprocal Rank Fusion, que resuelve un problema que parece imposible.
+        define:
+          - termino: 'RRF'
+            es: >-
+              *Reciprocal Rank Fusion*. Una forma de mezclar dos rankings **sin
+              comparar sus puntuaciones**: ignora los números y suma puntos por
+              posición. Existe porque un coseno de 0.62 y un BM25 de 14.2 no son
+              comparables, y normalizarlos es un problema en sí mismo.
+          - termino: 'Búsqueda híbrida'
+            es: >-
+              Correr la búsqueda léxica y la densa por separado sobre todo el
+              corpus, y fusionar los dos rankings. No es un buscador nuevo: son
+              los dos que ya tienes, mezclados.
         codigo:
           archivo: retrieval.py
           lineas: "58-84"
@@ -983,6 +1166,18 @@ dias:
         minutos: 9
         objetivo: >-
           Releer query y documento juntos para producir una relevancia real.
+        define:
+          - termino: 'Reranking'
+            es: >-
+              Reordenar por relevancia real los pocos candidatos que ya
+              recuperaste. No busca: solo cambia el orden de lo que le das.
+          - termino: 'Cross-encoder'
+            es: >-
+              El modelo que hace ese trabajo. La diferencia con un embedding es
+              de fondo: el embedding convierte pregunta y documento en vectores
+              **por separado** y luego los compara; el cross-encoder los lee
+              **juntos**, en la misma pasada. Mucho más preciso y mucho más
+              caro, y por eso va al final y sobre pocos candidatos.
         codigo:
           archivo: retrieval.py
           lineas: "85-122"
@@ -1046,6 +1241,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 7"
+    vienes_de: >-
+       Ayer escribiste las cuatro estrategias de búsqueda. Hoy las pones a
+       competir.
     titulo: "El híbrido, medido contra el baseline"
     minutos: 30
     meta: >-
@@ -1062,6 +1260,11 @@ dias:
         Una comparativa medida de BM25 contra embeddings, que es lo mismo que
         acabas de hacer pero en otro corpus. Compara sus números con los
         tuyos: si difieren, la pregunta interesante es por qué.
+    te_deja: >-
+       El híbrido ganó, pero la tabla trae una trampa que conviene no tragarse:
+       BM25 solo empata en recall@1 y gana en recall@5. Si te quedas ahí,
+       concluyes que el vector search sobra. La columna que lo desmiente es
+       recall@10, y también es la que hace posible el paso de mañana.
     pasos:
       - titulo: "La regla: no asumir que mejora"
         minutos: 8
@@ -1111,6 +1314,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 8"
+    vienes_de: >-
+       Ayer el híbrido dejó el chunk correcto siempre entre los candidatos:
+       recall@10 = 1.00.
     titulo: "El reranker, ahora que los datos lo justifican"
     minutos: 30
     meta: >-
@@ -1128,6 +1334,11 @@ dias:
         Reranking hands-on con cross-encoders de verdad, no con un modelo
         generalista como el nuestro. Es el paso natural cuando el reranker
         deje de ser una demo.
+    te_deja: >-
+       Llegaste a 1.00, y al lado tienes 1.63 segundos por query. Las dos cosas
+       son el resultado. A partir de aquí ya no hay diagnóstico que arreglar en
+       este corpus, así que el día 9 cambia de pregunta: ¿qué haces cuando el
+       síntoma es otro?
     pasos:
       - titulo: "Por qué hoy y no en el día 6"
         minutos: 8
@@ -1177,6 +1388,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 9"
+    vienes_de: >-
+       Ayer cerraste el caso de este corpus: recall@1 de 1.00, y el costo medido
+       al lado.
     titulo: "Mapa de palancas: un menú por síntoma, no una lista de pasos"
     minutos: 45
     meta: >-
@@ -1194,6 +1408,11 @@ dias:
         El contextual retrieval de la palanca C, con las cifras de Anthropic
         (49% y 67% menos fallos). Buen ejemplo de una mejora publicada con su
         medición al lado.
+    te_deja: >-
+       Ahora tienes el mapa completo: cuatro palancas más, cada una con el
+       síntoma que la justifica. Ninguna se activa porque sí. Mañana entregas
+       todo esto a la sesión 06, y ahí el modelo deja de ejecutar tu pipeline y
+       empieza a decidir.
     pasos:
       - titulo: "La tabla síntoma a palanca"
         minutos: 7
@@ -1304,6 +1523,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 10"
+    vienes_de: >-
+       Ayer recorriste las cuatro palancas restantes y su síntoma
+       correspondiente.
     titulo: "El traspaso: de pipeline a herramienta"
     minutos: 35
     meta: >-
@@ -1316,6 +1538,10 @@ dias:
       Ves la misma pregunta responder "no tengo evidencia" con el retrieval de la
       sesión 04 y responder bien con el de la 05. Y ves al modelo decidir buscar
       dos veces, con dos queries que él mismo escribió.
+    te_deja: >-
+       Este es el final del camino de la sesión 05 y el principio del de la 06.
+       Te llevas un retrieval que sabes medir, que es exactamente lo que hace
+       falta antes de dejar que un agente lo use por su cuenta.
     pasos:
       - titulo: "Dónde encaja esta sesión"
         minutos: 6

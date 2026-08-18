@@ -38,6 +38,41 @@ como_funciona: |
   este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
   líneas, `c` para las notas del coach.
 
+historia:
+  cab: "La historia de esta sesión"
+  entrada: |
+    "Mejoré el prompt." Es la frase más común y la menos verificable del oficio.
+    ¿Mejoró cuánto? ¿En qué casos? ¿Y cómo sabes que no empeoró en otros?
+
+    Esta sesión tiene dos mitades. La primera desarma la API para que dejes de
+    tener sorpresas: qué decide cada parte de un request, y el hecho que explica
+    la mitad de los problemas con LLMs, que **la API no recuerda nada**. La
+    segunda convierte tus prompts en algo que se puede defender con una tabla.
+  actos:
+    - titulo: "La API por dentro"
+      texto: >-
+         Las piezas de una llamada, y por qué tu chatbot "olvida": no hay
+         memoria, la conversación entera se reenvía cada vez. Después,
+         streaming: no acelera nada y aun así cambia la experiencia por
+         completo.
+      dias: "días 1 y 2"
+    - titulo: "Las dos técnicas que más rinden"
+      texto: >-
+         Ejemplos en vez de explicaciones, y etiquetas que separan tus
+         instrucciones de los datos del usuario. Las dos se miden después, y una
+         de ellas es además tu primera defensa contra la inyección de prompts.
+      dias: "días 3 y 4"
+    - titulo: "Dejar de opinar"
+      texto: >-
+         Escribes a mano los casos con su respuesta correcta, construyes el
+         evaluador y corres dos versiones del prompt sobre los mismos casos.
+         Sale un número, y con él una conversación distinta.
+      dias: "días 5 y 6"
+  cierre: |
+    Terminas con dos versiones de un prompt, 16 casos y una diferencia medida. Y
+    con algo que vale más: **un prompt es código**, vive en el repo, tiene versión
+    y cuando lo cambias lo demuestras.
+
 cierre:
   titulo: "Ya no opinas sobre prompts: los mides"
   texto: |
@@ -120,6 +155,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 1"
+    vienes_de: >-
+       Ayer instalaste la única librería que hace falta. Hoy desarmas una
+       llamada.
     titulo: "La anatomía de un request, y una API que no recuerda nada"
     minutos: 35
     meta: >-
@@ -138,6 +176,10 @@ dias:
         La base niveladora: zero-shot, few-shot y por qué el modelo alucina.
         Si el request de hoy te resultó nuevo, empieza por aquí antes de
         seguir.
+    te_deja: >-
+       Ya sabes que la API no recuerda nada y que la conversación entera viaja
+       en cada turno. Mañana, la otra sorpresa del transporte: por qué el
+       streaming no acelera nada y aun así lo cambia todo.
     pasos:
       - titulo: "El cliente"
         minutos: 4
@@ -245,6 +287,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 2"
+    vienes_de: >-
+       Ayer viste que cada llamada reenvía la conversación completa, porque la
+       API no tiene memoria.
     titulo: "Streaming: la respuesta no llega antes, pero se ve antes"
     minutos: 25
     meta: >-
@@ -256,6 +301,10 @@ dias:
     checkpoint: >-
       Tienes dos números tuyos: TTFT y total. Puedes explicar por qué el
       streaming no baja el segundo y por qué aun así vale la pena.
+    te_deja: >-
+       Terminas la primera mitad: ya no te van a sorprender los fundamentos del
+       transporte. Mañana empieza el prompting, y la primera técnica es la que
+       más rinde por línea escrita.
     pasos:
       - titulo: "El reloj correcto"
         minutos: 5
@@ -316,6 +365,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 3"
+    vienes_de: >-
+       Ayer mediste las dos latencias del streaming y viste por qué la percibida
+       es la que importa.
     titulo: "Few-shot: los ejemplos mandan más que las instrucciones"
     minutos: 30
     meta: >-
@@ -333,6 +385,9 @@ dias:
         El taller oficial de Anthropic, y mapea casi 1:1 con estos dos días:
         few-shot hoy, etiquetas XML mañana. Si solo vas a ver un video de la
         sesión, es este.
+    te_deja: >-
+       Los ejemplos ganaron a las instrucciones. Mañana, la segunda técnica, y
+       esta además te protege de que los datos del usuario se lean como órdenes.
     pasos:
       - titulo: "El montaje de la comparación"
         minutos: 4
@@ -403,6 +458,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 4"
+    vienes_de: >-
+       Ayer comprobaste que dos ejemplos pesan más que tres párrafos de
+       explicación.
     titulo: "Estructura con etiquetas XML"
     minutos: 30
     meta: >-
@@ -421,6 +479,10 @@ dias:
         La misma idea de hoy contada en español: instrucciones claras,
         contexto y formato explícito. Útil para explicárselo a alguien que no
         programa.
+    te_deja: >-
+       Ya tienes las dos técnicas que más rinden. Pero todo lo dicho hasta aquí,
+       incluido lo de ayer, sigue siendo opinión. Mañana construyes lo que lo
+       convierte en dato.
     pasos:
       - titulo: "Un texto que viene de fuera"
         minutos: 5
@@ -497,6 +559,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 5"
+    vienes_de: >-
+       Ayer estructuraste el prompt con etiquetas, y aun así no puedes demostrar
+       que sea mejor.
     titulo: "Un prompt sin medir es una opinión"
     minutos: 30
     meta: >-
@@ -514,6 +579,10 @@ dias:
         Los prompt engineers de Anthropic sobre cuándo el chain-of-thought
         ayuda y cuándo no. Justo el tipo de pregunta que tu golden set puede
         responder con números.
+    te_deja: >-
+       Tienes casos y tienes evaluador. Mañana lo apuntas a las dos versiones
+       del prompt y sale el número que te permite defender el cambio o
+       descartarlo.
     pasos:
       - titulo: "El golden set y la v1 del prompt"
         minutos: 8
@@ -572,6 +641,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 6"
+    vienes_de: >-
+       Ayer construiste el golden set y el evaluador. Hoy los usas para zanjar
+       la discusión.
     titulo: "v1 contra v2, con números"
     minutos: 35
     meta: >-
@@ -589,6 +661,10 @@ dias:
         Otra perspectiva sobre cuándo combinar cada técnica. Léelo contra tu
         tabla de v1 y v2: verás cuántas de sus recomendaciones tu propio eval
         confirma o desmiente.
+    te_deja: >-
+       Sales con dos versiones medidas sobre los mismos casos. Fíjate en el caso
+       que fallan las dos: ahí el problema no es el prompt, y saber distinguir
+       eso es la mitad del oficio.
     pasos:
       - titulo: "Las dos versiones en el mismo archivo"
         minutos: 4

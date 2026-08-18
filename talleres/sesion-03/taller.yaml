@@ -38,6 +38,41 @@ como_funciona: |
   este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
   líneas, `c` para las notas del coach.
 
+historia:
+  cab: "La historia de esta sesión"
+  entrada: |
+    Sin herramientas, un modelo solo tiene dos salidas ante algo que no sabe:
+    rendirse o inventárselo. Dándole herramientas cambia de categoría: pasa de
+    escribir texto a **hacer cosas**.
+
+    Y ahí aparece el problema nuevo. En cuanto tu código llama a un servicio de
+    verdad, hereda todo lo que le pasa a los servicios de verdad: se caen, tardan,
+    te limitan el ritmo y a veces cobran dos veces. Por eso esta sesión tiene dos
+    actos muy distintos.
+  actos:
+    - titulo: "Que funcione"
+      texto: >-
+         La forma del intercambio, siempre la misma cuatro fases, y la ficha de
+         la tool, que es lo único que el modelo ve de tu función. Después el
+         loop real, dos herramientas en un turno, y JSON garantizado sin parsing
+         tolerante ni fe.
+      dias: "días 1 a 4"
+    - titulo: "Que sobreviva"
+      texto: >-
+         Ahora rómpelo. Reintentos con espera creciente, respeto al rate limit,
+         timeouts, y la clave de idempotencia que impide que un reintento cobre
+         dos veces.
+      dias: "días 5 y 6"
+    - titulo: "Que se pueda depurar"
+      texto: >-
+         Logs pensados para las tres de la mañana: los que te dejan reconstruir
+         qué pasó sin tener que reproducir el fallo.
+      dias: "día 6"
+  cierre: |
+    La diferencia entre una demo y algo que aguanta cabe en dos páginas de código,
+    y son las del acto 2. **La demo la hace cualquiera; lo que se paga es que no se
+    caiga.**
+
 cierre:
   titulo: "Tu modelo ya tiene manos, y ya no se cae solo"
   texto: |
@@ -122,6 +157,8 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 1"
+    vienes_de: >-
+       Ayer dejaste el entorno listo para no perder el día 1 instalando cosas.
     titulo: "La forma del round-trip, y la ficha que ve el modelo"
     minutos: 30
     meta: >-
@@ -141,6 +178,10 @@ dias:
         Sobre el diseño de la ficha que acabas de escribir: qué nombres y qué
         descripciones entiende de verdad el modelo. El schema es prompt, y
         aquí se ve por qué.
+    te_deja: >-
+       Ya sabes qué forma tiene el intercambio y qué ve el modelo de tu función:
+       solo la ficha. Mañana dejas la teoría y lo corres de verdad, con los dos
+       errores clásicos señalados donde se cometen.
     pasos:
       - titulo: "Las tres piezas del intercambio"
         minutos: 8
@@ -239,6 +280,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 2"
+    vienes_de: >-
+       Ayer escribiste la ficha de la tool y viste las cuatro fases del
+       intercambio.
     titulo: "El loop de verdad: tool_use → tool_result"
     minutos: 30
     meta: >-
@@ -255,6 +299,10 @@ dias:
       porque: >-
         El mismo loop de hoy, escrito por otra persona y en otro orden. Verlo
         dos veces es lo que hace que deje de parecer magia.
+    te_deja: >-
+       El loop ya funciona con una herramienta. Mañana llega el caso que rompe
+       la mitad de las implementaciones caseras: dos herramientas pedidas en el
+       mismo turno.
     pasos:
       - titulo: "El cliente y el puente nombre → función"
         minutos: 6
@@ -355,6 +403,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 3"
+    vienes_de: >-
+       Ayer corriste el loop completo y viste los dos errores que casi todo el
+       mundo comete.
     titulo: "Dos tools en un turno: la regla de oro y el paralelismo"
     minutos: 30
     meta: >-
@@ -372,6 +423,10 @@ dias:
         Function calling paso a paso en español. Ojo: usa la Assistants API,
         hoy en deprecación, así que quédate con los conceptos y no con las
         llamadas.
+    te_deja: >-
+       Ya respondes varias herramientas en un turno, y de paso recortaste el
+       tiempo a la mitad. Mañana cierras el acto 1 con la técnica que elimina el
+       parsing frágil.
     pasos:
       - titulo: "Una tool deliberadamente lenta"
         minutos: 6
@@ -458,6 +513,8 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 4"
+    vienes_de: >-
+       Ayer resolviste dos herramientas en paralelo respetando la regla de oro.
     titulo: "JSON garantizado: tool_choice + Pydantic"
     minutos: 30
     meta: >-
@@ -476,6 +533,10 @@ dias:
         La charla canónica sobre structured outputs, y explica por qué lo que
         hiciste hoy no es un truco de formato sino un cambio en cómo se
         construye con LLMs.
+    te_deja: >-
+       Con esto, el acto 1 está completo: funciona. Y aquí es donde la mayoría
+       de los tutoriales termina. Mañana empieza la parte que separa una demo de
+       algo que puedes dejar corriendo.
     pasos:
       - titulo: "El cliente, y una dependencia nueva"
         minutos: 4
@@ -552,6 +613,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 5 · Acto 2"
+    vienes_de: >-
+       Ayer cerraste el acto 1: tu modelo tiene manos y devuelve JSON
+       garantizado.
     titulo: "Que sobreviva: reintentos y rate limits"
     minutos: 40
     meta: >-
@@ -571,6 +635,10 @@ dias:
         La secuela, con lecciones de producción: qué hacer cuando la
         validación falla y cómo son los reintentos que de verdad sirven. Es el
         tema de hoy.
+    te_deja: >-
+       Ya aguanta fallos y respeta el rate limit. Falta lo que evita el peor
+       error de todos, que es cobrar dos veces por reintentar, y lo que te
+       permite averiguar qué pasó cuando ya pasó.
     pasos:
       - titulo: "Un error transitorio y una llamada que falla dos veces"
         minutos: 6
@@ -663,6 +731,8 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 6 · Acto 2"
+    vienes_de: >-
+       Ayer añadiste reintentos con espera creciente y respeto al rate limit.
     titulo: "Timeouts, idempotencia y logs que sirven a las 3 a.m."
     minutos: 35
     meta: >-
@@ -676,6 +746,10 @@ dias:
       El segundo cobro con el mismo id devuelve "ya procesado" y monto 0. Y el
       log de `08_logging.py` trae `request_id`, tokens, `stop_reason` y
       latencia en una sola línea.
+    te_deja: >-
+       Con esto tienes las cinco piezas del acto 2. La sesión 04 cambia de tema:
+       el modelo dejará de necesitar que tú le des los datos y aprenderá a ir a
+       buscarlos.
     pasos:
       - titulo: "Un cliente con timeout de verdad"
         minutos: 6

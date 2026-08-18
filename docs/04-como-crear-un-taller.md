@@ -141,6 +141,53 @@ Si un archivo se muestra solo como referencia y no se enseña línea por línea
 (por ejemplo un `.md` de datos), va en `archivo_completo` del día, no en
 `codigo` de un paso: no entra en la verificación.
 
+## La narrativa: el arco, los enlaces y las definiciones
+
+Un taller que solo explica pasos enseña la mecánica y no la historia. Se midió
+en el taller 05 antes de tocar nada: **0 de 11 días miraban hacia adelante**, y
+había 2692 palabras de razonamiento repartidas en los `porque` de cada paso
+contra 361 de contexto de día. Una proporción de 7,5 a 1. El arco existía, pero
+solo se leía cuando ya estabas dentro del paso mirando el código.
+
+Tres campos lo suben a la superficie:
+
+```yaml
+historia: # nivel taller: el arco, antes del primer día
+  entrada: |
+    Dónde estás, qué se rompe, y qué vas a hacer al respecto.
+  actos:
+    - titulo: "Verlo fallar"
+      texto: "Qué pasa en este tramo."
+      dias: "días 1 a 3"
+  cierre: "Qué te llevas de verdad, más allá del código."
+
+dias:
+  - etiqueta: "Día 3"
+    vienes_de: "Una o dos frases que enlazan con ayer." # va ARRIBA del título
+    te_deja: "Qué queda abierto, y por qué eso lleva a mañana." # al final del día
+    pasos:
+      - titulo: "..."
+        define: # términos de dominio, ANTES del código que los usa
+          - termino: "recall@k"
+            es: "En qué fracción de tus preguntas el correcto salió en el top-k."
+```
+
+**La regla que evita que esto se vuelva relleno.** Cada frase que añadas tiene
+que hacer una de tres cosas:
+
+| | |
+| --------- | ------------------------------------------------ |
+| Anticipar | Qué vas a ver, en concreto y verificable         |
+| Definir   | Qué significa este término, antes de usarlo      |
+| Conectar  | Por qué esto viene después de aquello            |
+
+Si no hace ninguna, se borra. El código sigue siendo el protagonista de la
+página, y el texto está para que se entienda, no para acompañarlo.
+
+**`define` no es lo mismo que `python`.** El primero explica el dominio
+(`recall@k`, `BM25`, `cross-encoder`); el segundo, el lenguaje (`**`,
+`.extend()`). Un alumno puede necesitar uno y no el otro.
+
 ## Las notas de sintaxis
 
 Un paso puede llevar un glosario de **sintaxis de Python**, plegado, entre el

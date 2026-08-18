@@ -35,6 +35,42 @@ como_funciona: |
   **↩ Ajustar líneas** en la barra de la izquierda. Atajos: `j` / `k` para
   saltar entre pasos, `w` para ajustar líneas, `c` para las notas del coach.
 
+historia:
+  cab: "La historia de esta sesión"
+  entrada: |
+    Tu asistente responde con seguridad sobre documentos que nunca ha visto, y no
+    tienes forma de auditar de dónde salió cada afirmación. Reentrenar el modelo
+    con tus datos cuesta una fortuna y, aun así, no resolvería el problema de
+    fondo: **tus documentos internos no están en el corpus de entrenamiento de
+    nadie**.
+
+    RAG es la respuesta, y es más simple de lo que suena: antes de contestar, ve a
+    buscar en tus documentos y responde solo con lo que encuentres. En cinco días
+    lo construyes entero, pieza por pieza.
+  actos:
+    - titulo: "Preparar los documentos"
+      texto: >-
+         Partirlos por su estructura sin romper el sentido, convertirlos en
+         vectores y guardarlos en disco. Es la mitad del trabajo y la que menos
+         se ve.
+      dias: "días 1 y 2"
+    - titulo: "Buscar, y saber decir que no"
+      texto: >-
+         Recuperar los más parecidos, y descubrir que "los más parecidos" no es
+         lo mismo que "parecidos de verdad". De ahí sale el umbral, que es lo
+         que permite que tu sistema admita que no sabe.
+      dias: "día 3"
+    - titulo: "Responder con citas"
+      texto: >-
+         Conectas el modelo y cierras el pipeline: cada afirmación con su
+         marcador, o una negativa honesta. Y un día extra que mejora la
+         recuperación con tres ideas de un paper reciente.
+      dias: "días 4 y 5"
+  cierre: |
+    Sales con un RAG que **cita sus fuentes y sabe callarse**. Las dos cosas, no
+    una: un sistema que siempre responde es tan poco fiable como uno que nunca
+    acierta, solo que se nota menos.
+
 cierre:
   titulo: "Ya tienes un RAG que cita sus fuentes, y que sabe callarse"
   texto: |
@@ -137,6 +173,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 1"
+    vienes_de: >-
+       Ayer dejaste el entorno listo. Hoy empieza el pipeline, y empieza por el
+       principio.
     titulo: "Chunking: partir el documento sin romper el sentido"
     minutos: 30
     meta: >-
@@ -156,6 +195,9 @@ dias:
         EL video de chunking. Tu corte por títulos es uno de sus cinco
         niveles; el video te muestra los otros cuatro y cuándo cada uno paga
         su complejidad.
+    te_deja: >-
+       Ya tienes los documentos partidos por su estructura. Todavía son texto:
+       mañana se convierten en números y ahí empieza la parte que cuesta dinero.
     pasos:
       - titulo: "La base de conocimiento"
         minutos: 6
@@ -258,6 +300,8 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 2"
+    vienes_de: >-
+       Ayer partiste los documentos en chunks respetando sus títulos.
     titulo: "Ingesta: de texto a vectores guardados en disco"
     minutos: 30
     meta: >-
@@ -276,6 +320,10 @@ dias:
         Cuatro minutos sobre lo que Chroma acaba de hacer por dentro: cómo se
         guarda un embedding y cómo se busca el más parecido sin comparar
         contra todos.
+    te_deja: >-
+       El corpus ya está indexado y en disco. Mañana lo consultas por primera
+       vez, y descubres que traer "los más parecidos" no es lo mismo que traer
+       los correctos.
     pasos:
       - titulo: "Reusar el chunking del día 1"
         minutos: 7
@@ -363,6 +411,8 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 3"
+    vienes_de: >-
+       Ayer convertiste los chunks en vectores y los guardaste en disco.
     titulo: "Retrieval: buscar con criterio y saber decir que no"
     minutos: 30
     meta: >-
@@ -382,6 +432,9 @@ dias:
         La intro canónica de RAG, en seis minutos y por una investigadora de
         IBM. Fíjate en que sus dos ventajas son exactamente las dos que hoy
         programaste: datos frescos y fuentes citables.
+    te_deja: >-
+       Ya sabes recuperar, y sobre todo ya sabes cuándo NO deberías. Mañana
+       conectas el modelo y el pipeline queda cerrado de punta a punta.
     pasos:
       - titulo: "El umbral, y por qué es un número tuyo"
         minutos: 7
@@ -465,6 +518,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 4"
+    vienes_de: >-
+       Ayer añadiste el umbral, que es lo que permite que el sistema admita que
+       no sabe.
     titulo: "Generación con citas: el RAG completo (v0.3)"
     minutos: 30
     meta: >-
@@ -482,6 +538,10 @@ dias:
       porque: >-
         El flujo completo con código y en español. Buen contraste con el tuyo:
         mismas piezas, decisiones distintas.
+    te_deja: >-
+       Tienes el RAG completo y es el entregable del reto. El día extra de
+       mañana lo mejora con tres ideas de un paper reciente, y deja planteada la
+       pregunta que abre la sesión 05.
     pasos:
       - titulo: "Configuración y el cliente de Anthropic"
         minutos: 5
@@ -592,6 +652,8 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 5 · Extra"
+    vienes_de: >-
+       Ayer cerraste el pipeline: recuperación, umbral, generación con citas.
     titulo: "v0.4: cuando parecerse no es lo mismo que servir"
     minutos: 40
     meta: >-
@@ -610,6 +672,10 @@ dias:
       porque: >-
         Dos horas y media construyendo un RAG a mano. Para cuando quieras ver
         el pipeline entero otra vez, con otra voz y sin prisa.
+    te_deja: >-
+       Mejoraste la recuperación, pero fíjate en algo: cada mejora la juzgaste
+       leyendo las respuestas. En la sesión 05 lo primero que harás es dejar de
+       juzgar a ojo.
     pasos:
       - titulo: "El diagnóstico del paper, aplicado a tu código"
         minutos: 8

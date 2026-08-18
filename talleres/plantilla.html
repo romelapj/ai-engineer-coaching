@@ -1047,6 +1047,145 @@
         margin-top: 0.6rem;
       }
 
+      /* ---------- la historia del taller ----------
+         Va antes del primer día, en la portada. Tres actos con su número
+         grande: el mismo recurso editorial que la cifra del día, para que se
+         lea como parte del mismo sistema y no como un cartel pegado. */
+      .historia {
+        margin: clamp(2.5rem, 5vw, 4rem) 0;
+        padding: clamp(1.75rem, 3vw, 2.5rem) 0;
+        border-top: 1px solid var(--linea);
+        border-bottom: 1px solid var(--linea);
+      }
+      .historia-cab {
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--acento);
+        margin-bottom: 1.1rem;
+      }
+      .historia > p {
+        color: var(--texto-2);
+        font-size: 1.03rem;
+        margin-bottom: 1rem;
+      }
+      .historia > p strong {
+        color: var(--texto);
+      }
+      .actos {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      .acto {
+        min-width: 0;
+        padding-top: 1rem;
+        border-top: 2px solid var(--linea);
+        transition: border-color 0.2s ease;
+      }
+      .acto:hover {
+        border-top-color: var(--acento-borde);
+      }
+      .acto-num {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        color: var(--tenue);
+        font-variant-numeric: tabular-nums;
+      }
+      .acto h3 {
+        font-size: 1.06rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0.45rem 0 0.6rem;
+        color: var(--texto);
+      }
+      .acto p {
+        font-size: 0.93rem;
+        color: var(--texto-2);
+        margin-bottom: 0.6rem;
+      }
+      .acto-dias {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: var(--tenue);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.1em 0.6em;
+      }
+      .historia-cierre {
+        margin-top: 1.8rem;
+        color: var(--texto-2);
+        font-size: 1.02rem;
+      }
+      .historia-cierre strong {
+        color: var(--texto);
+      }
+
+      /* ---------- de dónde vienes / qué queda abierto ---------- */
+      .dia-vienes {
+        font-size: 0.9rem;
+        color: var(--tenue);
+        margin-bottom: 0.7rem;
+        padding-left: 0.9rem;
+        border-left: 2px solid var(--linea);
+      }
+      .dia-deja {
+        margin-left: var(--margen-paso);
+        margin-top: 1.75rem;
+        padding: 1.4rem 1.6rem;
+        border: 1px solid var(--linea);
+        border-left: 2px solid var(--acento-borde);
+        border-radius: 0 var(--radio) var(--radio) 0;
+        background: var(--fondo-2);
+      }
+      .dia-deja-cab {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--acento);
+        margin-bottom: 0.6rem;
+      }
+      .dia-deja p {
+        color: var(--texto-2);
+      }
+      .dia-deja p + p {
+        margin-top: 0.6rem;
+      }
+
+      /* ---------- definiciones de dominio ---------- */
+      .nota.define {
+        margin-left: var(--margen-paso);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        padding: 1.3rem 1.6rem;
+        background: var(--fondo-2);
+      }
+      ul.define-lista {
+        list-style: none;
+        display: grid;
+        gap: 0.9rem;
+        margin-top: 0.8rem;
+      }
+      ul.define-lista li {
+        display: grid;
+        gap: 0.2rem;
+        font-size: 0.94rem;
+      }
+      ul.define-lista li b {
+        color: var(--texto);
+        font-weight: 700;
+      }
+      ul.define-lista li span {
+        color: var(--texto-2);
+      }
       /* ---------- tarjeta de video, al cierre del día ----------
          Va después del checkpoint a propósito: primero cierras el día, y solo
          entonces se te ofrece ampliar. Antes competiría con el código.
@@ -1415,6 +1554,7 @@
             {{ENLACES}}
           </div>
           <div class="como">{{COMO_FUNCIONA}}</div>
+          {{HISTORIA}}
         </header>
 
         {{CUERPO}} {{CIERRE}}

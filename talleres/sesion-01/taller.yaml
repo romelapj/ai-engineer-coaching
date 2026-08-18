@@ -37,6 +37,42 @@ como_funciona: |
   este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
   líneas, `c` para las notas del coach.
 
+historia:
+  cab: "La historia de esta sesión"
+  entrada: |
+    Sabes usar un modelo: le escribes, te responde. Esta sesión va de lo que
+    pasa **antes** de que te responda, y de lo que aparece después en la factura.
+
+    Hay tres cosas que casi nadie mira hasta que le duelen. Que el modelo no lee
+    letras, lee **tokens**, y por eso no sabe contar las erres de "strawberry".
+    Que esos tokens son literalmente dinero, y que puedes contarlos **antes** de
+    gastar. Y que hay una respuesta cortada a media frase esperándote en
+    producción sin lanzar ningún error.
+  actos:
+    - titulo: "Lo que el modelo ve"
+      texto: >-
+         Partes un texto en tokens y descubres que el mismo texto cuesta
+         distinto en cada modelo. De ahí sale el Token-ó-metro: una herramienta
+         tuya que responde "cuánto cuesta esto" sin gastar un centavo.
+      dias: "días 1 y 2"
+    - titulo: "Lo que el modelo decide"
+      texto: >-
+         El modelo no elige la siguiente palabra: sortea. Vas a ver ese sorteo
+         con tus ojos moviendo `temperature`, y a provocar el bug más silencioso
+         de todos: una respuesta cortada que devuelve HTTP 200 y parece
+         completa.
+      dias: "días 3 y 4"
+    - titulo: "Lo que sostiene todo lo demás"
+      texto: >-
+         Un embedding convierte significado en dirección. Es la base de la
+         búsqueda semántica y de todo el RAG de las sesiones 04 y 05, y hoy lo
+         tocas con las manos. Con una sorpresa incómoda esperando en español.
+      dias: "día 5"
+  cierre: |
+    Al final de la semana no sabrás "usar mejor" el modelo: sabrás **qué estás
+    pagando y por qué se comporta como se comporta**. Todo lo que viene después
+    en el curso se apoya en eso.
+
 cierre:
   titulo: "Ya sabes qué estás pagando y por qué se comporta así"
   texto: |
@@ -122,6 +158,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 1"
+    vienes_de: >-
+       Ayer instalaste las dos librerías. Hoy empieza lo que de verdad hay
+       debajo del modelo.
     titulo: "El modelo no ve letras: ve tokens"
     minutos: 30
     meta: >-
@@ -140,6 +179,10 @@ dias:
         El video empieza justo donde termina hoy: qué hace el modelo con esos
         tokens una vez los tiene. Verás la tabla de embeddings de entrada que
         tu script imprime, dibujada.
+    te_deja: >-
+       Ya sabes que el modelo ve tokens y no letras. Mañana conviertes ese
+       conocimiento en una herramienta: contar tokens es contar dinero, y se
+       puede hacer antes de gastar.
     pasos:
       - titulo: "El contador que es gratis"
         minutos: 6
@@ -212,6 +255,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 2"
+    vienes_de: >-
+       Ayer viste que el mismo texto se parte en distinto número de tokens según
+       el modelo.
     titulo: "El Token-ó-metro: ¿cuánto me va a costar esto?"
     minutos: 30
     meta: >-
@@ -230,6 +276,10 @@ dias:
         En español y sin matemáticas: qué es un LLM y de dónde sale su costo.
         Buen respiro después de una sesión de contar tokens y multiplicar por
         precios.
+    te_deja: >-
+       Tienes el Token-ó-metro y ya puedes presupuestar la entrada. Pero la
+       salida no se puede contar por adelantado, y eso es la mitad de tu
+       factura. Mañana entras en lo que la controla.
     pasos:
       - titulo: "La tabla de precios, en un solo sitio"
         minutos: 8
@@ -304,6 +354,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 3"
+    vienes_de: >-
+       Ayer contaste tokens y viste que la salida es la parte que no puedes
+       predecir.
     titulo: "Muestreo: temperature, max_tokens y el corte silencioso"
     minutos: 30
     meta: >-
@@ -322,6 +375,10 @@ dias:
         `temperature` reparte probabilidad sobre la distribución de salida.
         Este video muestra de dónde sale esa distribución, que es lo que hoy
         estuviste moviendo a ciegas.
+    te_deja: >-
+       Ya sabes por qué el modelo no da siempre la misma respuesta, y viste el
+       corte silencioso: HTTP 200, sin excepción, media respuesta. Mañana
+       cierras el ciclo comparando tu estimación contra la factura real.
     pasos:
       - titulo: "Un prompt que da para variar"
         minutos: 6
@@ -384,6 +441,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 4"
+    vienes_de: >-
+       Ayer provocaste el corte silencioso y viste que `stop_reason` es el único
+       que te avisa.
     titulo: "El estimado contra la factura"
     minutos: 25
     meta: >-
@@ -401,6 +461,10 @@ dias:
         La pieza de fondo, para cuando quieras entender qué estás pagando:
         tokenización, pretraining y por qué el modelo alucina. Son 3 horas y
         media, no es para hoy.
+    te_deja: >-
+       El ciclo queda cerrado: contar, estimar, llamar, comparar. Mañana
+       cambiamos de tema pero no de herramienta, y tocamos la pieza que sostiene
+       las sesiones 04 y 05.
     pasos:
       - titulo: "Estimar y llamar"
         minutos: 12
@@ -441,6 +505,9 @@ dias:
 
   # =========================================================================
   - etiqueta: "Día 5"
+    vienes_de: >-
+       Ayer cerraste el ciclo del costo. Hoy es otro tema: cómo se representa el
+       significado.
     titulo: "Embeddings: significado convertido en dirección"
     minutos: 35
     meta: >-
@@ -459,6 +526,10 @@ dias:
       porque: >-
         Corto y directo sobre lo que acabas de construir: por qué un texto se
         vuelve un vector y qué significa que dos vectores estén cerca.
+    te_deja: >-
+       Acabas de ver un embedding fallar en español mientras acierta en inglés,
+       sin avisar de nada. Guárdalo: en la sesión 04 vas a construir un buscador
+       entero encima de esta pieza.
     pasos:
       - titulo: "El modelo de embeddings local"
         minutos: 5

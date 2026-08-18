@@ -432,6 +432,20 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
     elif paso.get("salida_texto"):
         piezas.append(bloque_salida(paso["salida_texto"]))
 
+    # Definiciones de dominio. Van ANTES del código: un término que aparece en
+    # el código sin haberse definido obliga a deducirlo del contexto, y el que
+    # no puede deducirlo se queda fuera del resto del taller.
+    define = paso.get("define") or []
+    if define:
+        filas = "".join(
+            f'<li><b>{marcado(x["termino"])}</b><span>{marcado(x["es"])}</span></li>'
+            for x in define
+        )
+        piezas.append(
+            '<div class="nota define"><div class="nota-cab">Antes de seguir</div>'
+            f'<ul class="define-lista">{filas}</ul></div>'
+        )
+
     # Sintaxis de Python. Va ANTES del "por qué" a propósito: primero entiendes
     # qué dice el código, después por qué está escrito así. Plegado, porque a
     # quien ya sabe Python le estorbaría en los 41 pasos.
@@ -525,6 +539,21 @@ def render_dia(dia, num_dia, base, salidas, uso, id_taller=""):
             + "</div>"
         )
 
+    # De dónde vienes: una o dos frases que enlazan con el día anterior. Va
+    # ARRIBA del título, porque orienta antes de que empieces a leer.
+    vienes = ""
+    if dia.get("vienes_de"):
+        vienes = f'<p class="dia-vienes">{marcado(dia["vienes_de"])}</p>'
+
+    # Y qué queda abierto. Va al final del todo: es el gancho al día siguiente.
+    deja = ""
+    if dia.get("te_deja"):
+        deja = (
+            '<div class="dia-deja"><span class="dia-deja-cab">Lo que queda abierto</span>'
+            + parrafos(dia["te_deja"])
+            + "</div>"
+        )
+
     etiqueta = dia.get("etiqueta", f"Día {num_dia}")
     # La cifra grande sale de la etiqueta ("Día 0 · Antes de empezar" → 0), no
     # del índice: el guion manda sobre la numeración.
@@ -538,6 +567,7 @@ def render_dia(dia, num_dia, base, salidas, uso, id_taller=""):
         <div class="dia-texto">
           <div class="dia-etiqueta">{html.escape(etiqueta)}
             <span class="dia-min">{dia.get("minutos", 30)} min</span></div>
+          {vienes}
           <h2>{marcado(dia.get("titulo", ""))}</h2>
           {parrafos(dia.get("meta"))}
         </div>
@@ -546,7 +576,33 @@ def render_dia(dia, num_dia, base, salidas, uso, id_taller=""):
       {completos}
       {cierre}
       {render_video(dia, id_taller, num_dia)}
+      {deja}
     </section>"""
+
+
+def render_historia(taller):
+    """El arco del taller, antes del primer día.
+
+    Sin esto el alumno entra al día 1 sin saber a dónde va: el razonamiento
+    existe, pero repartido en los `porque` de cada paso, y esos solo se leen
+    cuando ya estás dentro del paso mirando el código."""
+    h = taller.get("historia")
+    if not h:
+        return ""
+    actos = "".join(
+        f'<div class="acto"><span class="acto-num">{i}</span>'
+        f'<h3>{marcado(a["titulo"])}</h3>{parrafos(a["texto"])}'
+        f'<span class="acto-dias">{marcado(a.get("dias", ""))}</span></div>'
+        for i, a in enumerate(h.get("actos", []), start=1)
+    )
+    return (
+        '<section class="historia">'
+        f'<div class="historia-cab">{html.escape(h.get("cab", "La historia de esta sesión"))}</div>'
+        + parrafos(h.get("entrada", ""))
+        + f'<div class="actos">{actos}</div>'
+        + (f'<p class="historia-cierre">{marcado(h["cierre"])}</p>' if h.get("cierre") else "")
+        + "</section>"
+    )
 
 
 def render_cierre(taller, dir_taller):
@@ -744,6 +800,7 @@ def construir(dir_taller, estricto=False):
         .replace("{{TOTAL_DIAS}}", str(len(dias)))
         .replace("{{TOTAL_MIN}}", str(total_min))
         .replace("{{COMO_FUNCIONA}}", parrafos(taller.get("como_funciona", "")))
+        .replace("{{HISTORIA}}", render_historia(taller))
     )
 
     destino = dir_taller.parent / f"{dir_taller.name}.html"
