@@ -277,9 +277,8 @@ dias:
         Buen respiro después de una sesión de contar tokens y multiplicar por
         precios.
     te_deja: >-
-       Tienes el Token-ó-metro y ya puedes presupuestar la entrada. Pero la
-       salida no se puede contar por adelantado, y eso es la mitad de tu
-       factura. Mañana entras en lo que la controla.
+       Tienes el Token-ó-metro y ya puedes presupuestar la entrada. Pero la salida no la puedes contar por adelantado, y casi siempre cuesta
+       más que la entrada. Mañana entras en lo que la controla.
     pasos:
       - titulo: "La tabla de precios, en un solo sitio"
         minutos: 8

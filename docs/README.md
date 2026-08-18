@@ -15,6 +15,7 @@ el rastro del razonamiento. La tercera vez queda escrita.
 | [04 · Cómo crear un taller](04-como-crear-un-taller.md)        | Guía operativa del generador: estructura, `taller.yaml`, verificación                          |
 | [05 · Sistema visual](05-sistema-visual.md)                    | Las reglas de diseño de los talleres, qué se midió antes de cambiarlas, y cómo se verifican    |
 | [06 · Videos de los talleres](06-videos.md)                    | La tarjeta al cierre del día, la página propia de cada video y qué resúmenes están pendientes  |
+| [07 · Panel de revisión](07-panel-de-revision.md)               | Seis perfiles expertos auditan el curso: 27 recomendaciones verificadas y 12 descartadas       |
 
 ## La regla que resume todo
 

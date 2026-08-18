@@ -516,7 +516,8 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
     </article>"""
 
 
-def render_dia(dia, num_dia, base, salidas, uso, id_taller=""):
+def render_dia(dia, num_dia, base, salidas, uso, id_taller="", entregados=None):
+    entregados = entregados if entregados is not None else set()
     pasos = "".join(
         render_paso(p, num_dia, i, base, salidas, uso)
         for i, p in enumerate(dia.get("pasos", []), start=1)
@@ -525,6 +526,10 @@ def render_dia(dia, num_dia, base, salidas, uso, id_taller=""):
     completos = ""
     for archivo in dia.get("archivo_completo", []):
         frag = leer_fragmento(base, {"archivo": archivo}, f"día {num_dia} (archivo completo)")
+        # Mostrarlo entero cuenta como entregarlo, pero NO entra en `uso`: ese
+        # controla el solapamiento línea a línea, y este panel repite a
+        # propósito lo que los pasos ya enseñaron.
+        entregados.add(archivo)
         completos += (
             f"<details class='completo'><summary>Ver <code>{html.escape(archivo)}</code> "
             f"completo ({frag['total']} líneas), para comparar con el tuyo</summary>"
@@ -689,7 +694,7 @@ def render_nav(dias, con_cierre=False):
 # ---------------------------------------------------------------------------
 
 
-def revisar_cobertura(uso, base, taller):
+def revisar_cobertura(uso, base, taller, entregados=frozenset()):
     """El chequeo que existe este generador: ¿queda código sin explicar?
 
     Si un archivo del taller tiene líneas que ningún paso muestra, el alumno
@@ -697,6 +702,22 @@ def revisar_cobertura(uso, base, taller):
     tenían los decks."""
     problemas = []
     omitir = {o["archivo"]: o.get("razon", "") for o in taller.get("omitir", [])}
+
+    # Un archivo que NINGÚN paso nombra era invisible para este chequeo, porque
+    # `uso` solo se llena con lo que algún paso referencia. Así el taller 05 se
+    # publicó sin entregar su corpus: el alumno acababa con cero chunks y un RAG
+    # que contestaba "no tengo evidencia" a todo, sin un solo error. Justo el
+    # fallo silencioso que esa sesión enseña a detectar.
+    ignorar = {"__pycache__", "rag_db", ".venv", ".DS_Store"}
+    for ruta in sorted(base.rglob("*")):
+        if not ruta.is_file():
+            continue
+        if any(parte in ignorar for parte in ruta.parts):
+            continue
+        rel = str(ruta.relative_to(base))
+        if rel not in uso and rel not in entregados and rel not in omitir:
+            problemas.append((rel, "existe en codigo/ pero ningún paso lo entrega"))
+
     for archivo, rangos in sorted(uso.items()):
         total = len((base / archivo).read_text(encoding="utf-8").splitlines())
         cubierto = set()
@@ -742,9 +763,10 @@ def construir(dir_taller, estricto=False):
     salidas = dir_taller / taller.get("salidas", "salidas")
 
     uso = {}
+    entregados = set()
     dias = taller["dias"]
     cuerpo = "".join(
-        render_dia(d, i, base, salidas, uso, taller["id"])
+        render_dia(d, i, base, salidas, uso, taller["id"], entregados)
         for i, d in enumerate(dias, start=1)
     )
 
@@ -766,12 +788,15 @@ def construir(dir_taller, estricto=False):
                 "volver_url": f"../{taller['id']}.html#dia-{i}",
                 "volver_texto": d.get("etiqueta", f"Día {i}"),
                 "volver_nota": d.get("titulo", ""),
-                "inicio": "../" + taller.get("inicio", "../index.html").lstrip("./"),
+                # Las páginas de video viven un nivel más abajo (talleres/videos/), así
+                # que el destino sube un nivel más. Con lstrip("./") se comía los
+                # dos puntos y las 24 páginas apuntaban a talleres/index.html.
+                "inicio": "../" + taller.get("inicio", "../index.html"),
             },
         )
         n_videos += 1
 
-    problemas = revisar_cobertura(uso, base, taller)
+    problemas = revisar_cobertura(uso, base, taller, entregados)
     for archivo, detalle in problemas:
         print(f"  ⚠ hueco en {archivo}: {detalle}")
     if problemas and estricto:

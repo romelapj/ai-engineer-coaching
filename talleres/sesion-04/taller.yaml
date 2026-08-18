@@ -97,6 +97,13 @@ cierre:
     - texto: "← Volver al portal"
       url: "../index.html"
 
+# Archivos de codigo/ que a propósito NO se enseñan paso a paso.
+omitir:
+  - archivo: README.md
+    razon: >-
+      Es la portada de la carpeta para quien llega por GitHub, no material del
+      taller. Explica que el orden de aprendizaje es el de la página.
+
 dias:
   # =========================================================================
   - etiqueta: "Día 0 · Antes de empezar"
@@ -226,8 +233,8 @@ dias:
           archivo: 00_chunking.py
           lineas: "1-20"
         porque: >-
-          El *docstring* de arriba no es decoración: cada archivo del taller
-          empieza diciendo qué explica y cómo se corre. Cuando vuelvas en tres
+          Todos los archivos del taller abren con un *docstring* que dice qué
+          explica el archivo y cómo se corre. Cuando vuelvas en tres
           meses, eso es lo que te salva.
 
       - titulo: "split_max_tokens: tamaño máximo con solape"

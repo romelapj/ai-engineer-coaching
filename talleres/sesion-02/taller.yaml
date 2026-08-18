@@ -45,8 +45,8 @@ historia:
     ¿Mejoró cuánto? ¿En qué casos? ¿Y cómo sabes que no empeoró en otros?
 
     Esta sesión tiene dos mitades. La primera desarma la API para que dejes de
-    tener sorpresas: qué decide cada parte de un request, y el hecho que explica
-    la mitad de los problemas con LLMs, que **la API no recuerda nada**. La
+    tener sorpresas: qué decide cada parte de un request, y algo que conviene saber
+    antes de depurar nada: **la API no recuerda nada**. La
     segunda convierte tus prompts en algo que se puede defender con una tabla.
   actos:
     - titulo: "La API por dentro"
@@ -257,8 +257,8 @@ dias:
           lineas: "28-40"
           nuevo: true
         porque: >-
-          Devolver `input_tokens` no es decoración: es la prueba del paso
-          siguiente. Sin ese número, "la conversación se encarece" es una frase
+          `input_tokens` se devuelve porque el paso siguiente lo necesita
+          como prueba. Sin ese número, "la conversación se encarece" es una frase
           de blog.
 
       - titulo: "La API no recuerda: se lo mandas todo otra vez"

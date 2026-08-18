@@ -151,7 +151,8 @@ dias:
         minutos: 5
         objetivo: >-
           Seis de los diez días llaman al modelo. Y el corpus de ejemplo son
-          cinco documentos Markdown que ya vienen en `docs/`.
+          cinco documentos Markdown que vas a crear en `docs/` al empezar el
+          día 1.
         bloques:
           - lenguaje: bash
             texto: |
@@ -162,6 +163,12 @@ dias:
           entorno listo
           api-pagos.md	changelog-2025.md	changelog-2026.md	errores.md	webhooks.md
         porque: >-
+          Los cinco documentos no aparecen solos: los copias del día 1, donde están
+          completos y listos para pegar. Créalos antes de correr nada, porque
+          `base.py` lee esa carpeta con `glob` y una carpeta que no existe
+          devuelve una lista vacía **sin dar error**: acabarías con cero chunks
+          y un RAG que contesta "no tengo evidencia" a todo.
+
           Fíjate en los dos changelogs, de 2025 y 2026. No están por casualidad:
           son el caso que necesitas para entender el metadata filtering del
           día 9, donde un documento viejo compite con el nuevo y gana.
@@ -185,6 +192,15 @@ dias:
     archivo_completo:
       - base.py
       - golden.json
+      # El corpus. Sin estos cinco archivos, base.py devuelve cero chunks y el
+      # taller entero contesta "no tengo evidencia" a todo, sin lanzar un solo
+      # error. Es exactamente el fallo que esta sesión enseña a detectar, así
+      # que aquí no puede pasar: se entregan.
+      - docs/api-pagos.md
+      - docs/errores.md
+      - docs/webhooks.md
+      - docs/changelog-2025.md
+      - docs/changelog-2026.md
     checkpoint: >-
       Puedes explicar por qué el id de un chunk es `archivo § sección` y qué
       pasa con el golden set si cambias el chunking.
@@ -939,6 +955,10 @@ dias:
       el diagnóstico dice algo muy concreto sobre qué arreglar primero.
     archivo_completo:
       - 01_medir_el_baseline.py
+      # El script de hoy importa retrieval.py, que se escribe entero mañana.
+      # Se entrega aquí para que el día 5 corra: hoy solo usas su primera
+      # función, buscar_vectores, y mañana lo lees línea por línea.
+      - retrieval.py
     checkpoint: >-
       Tienes el baseline (recall@1 0.60, MRR 0.71) y el reparto de fallos: 9
       correctas, 3 de orden, 3 de recuperación. Puedes decir qué patrón comparten
@@ -946,8 +966,8 @@ dias:
     te_deja: >-
        Tienes el baseline y, más importante, sabes **qué tipo** de error tienes:
        3 fallos de recuperación por términos literales. Eso no es una intuición,
-       es un conteo. Y un fallo de recuperación por términos literales tiene una
-       herramienta con nombre propio, que es lo que construyes mañana.
+       es un conteo. Y contra un fallo de recuperación por términos literales existe una
+       técnica concreta, la búsqueda léxica, que es lo que escribes mañana.
     pasos:
       - titulo: "Por qué 15 queries y no cuatro"
         minutos: 8
@@ -990,6 +1010,17 @@ dias:
           nuevo: true
         corre: |
           python 01_medir_el_baseline.py
+        si_falla:
+          - error: "ModuleNotFoundError: No module named 'retrieval'"
+            arreglo: >-
+              Hoy usas una función de `retrieval.py`, que escribes mañana
+              entero. Cópialo del panel plegable que hay al final de este día;
+              mañana lo recorres línea por línea.
+          - error: "Corpus: 0 chunks · Golden set: 15 queries"
+            arreglo: >-
+              La carpeta `docs/` está vacía o no existe. `glob` no falla cuando
+              no encuentra nada, así que el script sigue con cero chunks. Copia
+              los cinco documentos del día 1.
         salida:
           archivo: 01_medir_el_baseline.txt
           lineas: "1-43"
@@ -1443,7 +1474,7 @@ dias:
           vocabulario que espera encontrar.
 
           Es la misma idea de la expansión de consulta que hiciste en la v0.4 del
-          taller 04, ahora con nombre propio y su lugar en el mapa.
+          taller 04, ahora con su nombre técnico y su sitio en el mapa.
 
       - titulo: "B · Metadata filtering y self-query"
         minutos: 12
