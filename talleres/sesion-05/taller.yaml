@@ -9,7 +9,7 @@ titulo: "Taller 05 · Retrieval avanzado: medir, diagnosticar y mejorar"
 kicker: "AI Engineer Coaching · Fase 2: Patrones · Sesión 05"
 subtitulo: >-
   Tu RAG ya funciona. La pregunta ahora es otra: ¿recupera el contexto
-  correcto, y cómo lo sabes? En 10 días de 30 minutos, más el día 0 de preparación, construyes el
+  correcto, y cómo lo sabes? En 6 días de 30 a 45 minutos, más el día 0 de preparación, construyes el
   instrumento que lo mide y usas sus números para decidir qué arreglar.
 
 codigo: codigo
@@ -30,13 +30,13 @@ como_funciona: |
   deberías ver: esa salida es tu criterio de "me funcionó", sin tener que
   preguntarle a nadie.
 
-  **Este es el taller más largo del curso: el día 0 de setup y 10 días de 30
+  **Este es el taller más largo del curso: el día 0 de setup y 6 días de 30 a 45
   minutos.** La sesión 05 tiene más del
   doble de código que la 04, y por una buena razón: aquí no se construye otro
   RAG, se construye el **instrumento** que dice si el que ya tienes sirve. Los
-  días 1 a 3 montan el punto de partida y lo hacen fallar. Los días 4 y 5
-  construyen la medición. Los días 6 a 8 aplican dos mejoras, cada una
-  justificada por un número. El día 9 abre el resto del mapa y el 10 lo
+  día 1 montan el punto de partida y lo hacen fallar. Los día 1
+  construyen la medición. Los días 3 y 4 aplican dos mejoras, cada una
+  justificada por un número. El día 5 abre el resto del mapa y el 10 lo
   entrega todo a la sesión 06.
 
   Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en
@@ -56,7 +56,7 @@ historia:
     exactamente igual que un sistema que se porta bien. No hay excepción, no hay
     log rojo, no hay nada que te avise. Y la respuesta estaba en tus documentos.
 
-    Durante diez días vas a hacer tres cosas, en este orden, porque el orden es
+    Durante seis días vas a hacer tres cosas, en este orden, porque el orden es
     la mitad de la lección.
   actos:
     - titulo: "Verlo fallar"
@@ -66,7 +66,7 @@ historia:
         fallan. Vas a ver el chunk correcto quedar de cuarto, con similitud
         0.387, y al umbral cortarlo por trece milésimas mientras deja pasar dos
         chunks irrelevantes.
-      dias: "días 1 a 3"
+      dias: "día 1"
     - titulo: "Poder medirlo"
       texto: >-
         Cuatro ejemplos elegidos a mano no demuestran nada: con ejemplos
@@ -74,14 +74,14 @@ historia:
         instrumento: un conjunto de preguntas con su respuesta correcta, dos
         métricas y un diagnóstico que separa "no llegó" de "llegó mal
         ordenado". Ahí aparece el primer número honesto de la sesión.
-      dias: "días 4 y 5"
+      dias: "día 1"
     - titulo: "Arreglarlo, y demostrar que lo arreglaste"
       texto: >-
         Dos mejoras, cada una elegida porque el diagnóstico la pidió, no porque
         la técnica suene bien. Cada una se mide contra el número anterior. Y una
         de las dos, la más vistosa, es también la más lenta: vas a verlo en la
         misma tabla.
-      dias: "días 6 a 10"
+      dias: "días 3 a 6"
   cierre: |
     Al final tendrás el mismo RAG respondiendo mejor. Pero lo que de verdad te
     llevas es otra cosa: **la capacidad de responder "¿y cómo sabes que
@@ -145,7 +145,7 @@ dias:
         porque: >-
           `rank_bm25` es Python puro y pesa nada: no descarga modelos ni pide
           llaves. BM25 es un algoritmo de 1994, y esa es parte de la lección
-          del día 6.
+          del día 3.
 
       - titulo: "Tu API key y los documentos"
         minutos: 5
@@ -171,24 +171,25 @@ dias:
 
           Fíjate en los dos changelogs, de 2025 y 2026. No están por casualidad:
           son el caso que necesitas para entender el metadata filtering del
-          día 9, donde un documento viejo compite con el nuevo y gana.
+          día 5, donde un documento viejo compite con el nuevo y gana.
         nota_coach: >-
           Los días 4, 5 y 6 no gastan nada: BM25, RRF y las métricas son cálculo
-          local. El día 8 es el más caro (el reranker hace una llamada por
+          local. El día 4 es el más caro (el reranker hace una llamada por
           query, 15 en total).
 
   # =========================================================================
   - etiqueta: "Día 1"
     vienes_de: >-
-       Ayer preparaste el entorno. Hoy empieza el trabajo de verdad, y empieza
-       por lo aburrido: el corpus.
-    titulo: "El corpus compartido: chunking, ingesta y el golden set"
-    minutos: 30
+       Ayer preparaste el entorno. Hoy montas todo lo que la sesión necesita y
+       lo ves romperse.
+    titulo: "El punto de partida: monta el RAG de la 04 y hazlo fallar"
+    minutos: 35
     meta: >-
-      Todos los scripts de la sesión trabajan sobre el mismo corpus y el mismo
-      golden set, así que lo común vive en un módulo. Hoy lo construyes. Es el
-      chunking de la sesión 04 más dos cosas nuevas: metadata por documento y un
-      tokenizador que BM25 va a necesitar.
+       Tres archivos y una corrida. El corpus compartido con su chunking, el RAG
+       de la sesión 04 intacto, y cuatro preguntas cuya respuesta está en los
+       documentos. Dos van a fallar, y cómo fallan es la sesión entera. Es el
+       día con más código para copiar del taller y el que menos tienes que
+       entender línea a línea: casi todo lo viste en la sesión 04.
     archivo_completo:
       - base.py
       - golden.json
@@ -201,14 +202,18 @@ dias:
       - docs/webhooks.md
       - docs/changelog-2025.md
       - docs/changelog-2026.md
+      - rag.py
+      - 00_punto_de_partida.py
     checkpoint: >-
-      Puedes explicar por qué el id de un chunk es `archivo § sección` y qué
-      pasa con el golden set si cambias el chunking.
+      Ves dos "No tengo evidencia para responder" cuya evidencia sí estaba en el
+      corpus. Puedes explicar la diferencia entre "no se recuperó" y "se
+      recuperó pero el umbral lo cortó".
     te_deja: >-
-       Ya tienes los documentos partidos e identificados. Todavía no has buscado
-       nada, y ya hay dos piezas colocadas que no vas a usar hasta el día 9: la
-       metadata y el tokenizador. Mañana recuperas el RAG de la sesión 04 y
-       descubres qué le falta.
+       Acabas de ver el fallo con tus propios ojos: el chunk correcto recuperado
+       de cuarto y cortado por trece milésimas. Pero fallaron dos de cuatro
+       preguntas que **tú elegiste**, y ese 50% no significa nada. Con ejemplos
+       escogidos a mano se demuestra cualquier cosa. Mañana empieza lo que
+       convierte esto en una medición.
     pasos:
       - titulo: "La metadata que todavía no usas"
         minutos: 9
@@ -266,7 +271,7 @@ dias:
               impide, es un acuerdo entre programadores para que se lea de un
               vistazo.
         porque: >-
-          `METADATA_DOCS` no hace nada hoy y no lo va a hacer hasta el día 9.
+          `METADATA_DOCS` no hace nada hoy y no lo va a hacer hasta el día 5.
           Está aquí porque el metadata filtering solo funciona si la metadata
           existe **desde la ingesta**, y a eso no se llega retroactivamente sin
           reindexar todo el corpus.
@@ -419,27 +424,6 @@ dias:
           letras, números y guiones deja `e-4012` como un token limpio. Un
           detalle de cinco líneas que decide si BM25 sirve o no.
 
-  # =========================================================================
-  - etiqueta: "Día 2"
-    vienes_de: >-
-       Ayer construiste el corpus compartido y cada chunk quedó con un id
-       estable.
-    titulo: "El RAG de la sesión 04, con una firma que lo cambia todo"
-    minutos: 30
-    meta: >-
-      Esta sesión no construye otro RAG: construye encima del que ya tienes. El
-      pipeline de la sesión 04 vive intacto en `rag.py`, con un único cambio de
-      diseño que es toda la tesis del taller.
-    archivo_completo:
-      - rag.py
-    checkpoint: >-
-      Puedes explicar por qué `responder()` recibe la función de recuperación
-      como parámetro, y qué te permite hacer eso que antes no podías.
-    te_deja: >-
-       El RAG de la sesión 04 está intacto y listo. No has cambiado nada suyo, y
-       ese es el punto: cuando mañana lo veas fallar, no habrá dudas sobre a
-       quién culpar. El generador es correcto; el problema está antes.
-    pasos:
       - titulo: "La tesis, en la firma de una función"
         minutos: 8
         objetivo: >-
@@ -510,8 +494,7 @@ dias:
 
           Lee con cuidado el comentario que lo acompaña, porque es el problema
           de toda la sesión: **el umbral filtra por similitud, así que cuando la
-          similitud se equivoca, el umbral se equivoca con ella**. Mañana lo vas
-          a ver cortar exactamente el chunk correcto.
+          similitud se equivoca, el umbral se equivoca con ella**. Al final de hoy lo vas a ver cortar exactamente el chunk correcto.
 
       - titulo: "La recuperación vectorial"
         minutos: 7
@@ -551,8 +534,8 @@ dias:
               que se guarda en el diccionario.
         porque: >-
           Nada nuevo respecto a la sesión 04: top-k por coseno y filtro por
-          umbral. Lo que cambia es su estatus: a partir de mañana esto deja de
-          ser *el* buscador y pasa a ser *una* de las variantes que vas a medir.
+          umbral. Lo que cambia es su estatus: a partir del día 3 esto deja de ser *el* buscador y pasa a ser *una*
+           de las cuatro variantes que vas a medir.
 
       - titulo: "Generar con citas, y el corto-circuito"
         minutos: 8
@@ -601,34 +584,10 @@ dias:
           Igual que en la sesión 04: si nada supera el umbral, ni se llama al
           modelo. La respuesta honesta sale gratis.
 
-          Guarda ese comportamiento en la cabeza, porque mañana lo vas a ver
-          desde el otro lado: un *"no tengo evidencia"* cuando la evidencia
+          Guarda ese comportamiento en la cabeza, porque en unos pasos lo vas a
+           ver desde el otro lado: un *"no tengo evidencia"* cuando la evidencia
           **sí** existe.
 
-  # =========================================================================
-  - etiqueta: "Día 3"
-    vienes_de: >-
-       Ayer dejaste el RAG de la sesión 04 montado, con la recuperación entrando
-       por parámetro.
-    titulo: "Hacerlo fallar: cuando parecido no significa correcto"
-    minutos: 30
-    meta: >-
-      Hoy no construyes nada: corres el RAG de la sesión 04 sobre cuatro
-      preguntas cuya respuesta está en el corpus, y dos de ellas fallan. Cómo
-      fallan es la sesión entera.
-    archivo_completo:
-      - 00_punto_de_partida.py
-    checkpoint: >-
-      Ves dos "No tengo evidencia para responder" cuya evidencia sí estaba en el
-      corpus. Puedes explicar la diferencia entre "no se recuperó" y "se
-      recuperó pero el umbral lo cortó".
-    te_deja: >-
-       Acabas de ver el fallo con tus propios ojos: el chunk correcto recuperado
-       de cuarto y cortado por trece milésimas. Pero fallaron dos de cuatro
-       preguntas que **tú elegiste**, y ese 50% no significa nada. Con ejemplos
-       escogidos a mano se demuestra cualquier cosa. Mañana empieza lo que
-       convierte esto en una medición.
-    pasos:
       - titulo: "Dos problemas que parecen uno"
         minutos: 9
         objetivo: >-
@@ -761,25 +720,39 @@ dias:
           empieza la medición.
 
   # =========================================================================
-  - etiqueta: "Día 4"
+  - etiqueta: "Día 2"
     vienes_de: >-
-       Ayer viste fallar el RAG con cuatro preguntas elegidas a mano, y quedó
+       Ayer viste fallar el RAG con cuatro preguntas que elegiste tú, y quedó
        claro que cuatro anécdotas no son una medición.
-    titulo: "El instrumento: recall@k, MRR y el diagnóstico por síntoma"
+    titulo: "El instrumento, y el primer número honesto"
     minutos: 30
     meta: >-
-      Antes de arreglar nada hay que poder medir. Hoy construyes el módulo que
-      convierte "creo que mejoró" en un número, y le añades algo que el deck no
-      tiene: la clasificación de cada fallo por su tipo.
+       Hoy construyes lo que convierte esa impresión en un dato: dos métricas,
+       un diagnóstico que separa los fallos por tipo, y la primera corrida
+       contra 15 preguntas reales. Sale el número que vas a tener que superar el
+       resto de la semana.
     archivo_completo:
       - metricas.py
+      - 01_medir_el_baseline.py
+      # El script de hoy importa retrieval.py, que se escribe entero mañana.
+      # Se entrega aquí para que el día 2 corra: hoy solo usas su primera
+      # función, buscar_vectores, y mañana lo lees línea por línea.
+      - retrieval.py
     checkpoint: >-
-      Puedes explicar qué mide recall@k, qué mide MRR, y por qué el diagnóstico
-      se hace en top-4 y no en top-10.
+      Tienes el baseline (recall@1 0.60, MRR 0.71) y el reparto de fallos: 9
+      correctas, 3 de orden, 3 de recuperación. Puedes decir qué patrón comparten
+      las que fallan.
     te_deja: >-
-       Ya tienes el instrumento, pero todavía no lo has apuntado a nada. Mañana
-       lo usas sobre 15 preguntas reales y sale el primer número honesto de la
-       sesión: el que vas a tener que superar.
+       Tienes el baseline y, más importante, sabes **qué tipo** de error tienes:
+       3 fallos de recuperación por términos literales. Eso no es una intuición,
+       es un conteo. Y contra un fallo de recuperación por términos literales existe una
+       técnica concreta, la búsqueda léxica, que es lo que escribes mañana.
+    video:
+      id: 9QJXvNiJIG8
+      porque: >-
+        Una comparativa medida de BM25 contra embeddings, que es lo mismo que
+        acabas de hacer tú pero sobre otro corpus. Compara sus números con los
+        tuyos: si difieren, la pregunta interesante es por qué.
     pasos:
       - titulo: "La convención que hace comparables las variantes"
         minutos: 6
@@ -905,7 +878,7 @@ dias:
           Y esa distinción fija el orden de trabajo, que **no es negociable**:
           reordenar no rescata un chunk que nunca se recuperó. Primero
           recuperación, después orden. Es la razón por la que el reranking, que
-          es la técnica más vistosa, llega en el día 8 y no en el 6.
+          es la técnica más vistosa, llega en el día 4 y no en el 6.
 
       - titulo: "El evaluador y la tabla"
         minutos: 7
@@ -943,32 +916,6 @@ dias:
           porque es lo que permite agregar una variante nueva con una línea, en
           vez de duplicar el evaluador.
 
-  # =========================================================================
-  - etiqueta: "Día 5"
-    vienes_de: >-
-       Ayer construiste las métricas y el diagnóstico. Hoy los usas por primera
-       vez.
-    titulo: "El baseline: poner un número donde había una impresión"
-    minutos: 30
-    meta: >-
-      Hoy mides el RAG de la sesión 04 contra 15 queries reales y descubres que
-      el diagnóstico dice algo muy concreto sobre qué arreglar primero.
-    archivo_completo:
-      - 01_medir_el_baseline.py
-      # El script de hoy importa retrieval.py, que se escribe entero mañana.
-      # Se entrega aquí para que el día 5 corra: hoy solo usas su primera
-      # función, buscar_vectores, y mañana lo lees línea por línea.
-      - retrieval.py
-    checkpoint: >-
-      Tienes el baseline (recall@1 0.60, MRR 0.71) y el reparto de fallos: 9
-      correctas, 3 de orden, 3 de recuperación. Puedes decir qué patrón comparten
-      las que fallan.
-    te_deja: >-
-       Tienes el baseline y, más importante, sabes **qué tipo** de error tienes:
-       3 fallos de recuperación por términos literales. Eso no es una intuición,
-       es un conteo. Y contra un fallo de recuperación por términos literales existe una
-       técnica concreta, la búsqueda léxica, que es lo que escribes mañana.
-    pasos:
       - titulo: "Por qué 15 queries y no cuatro"
         minutos: 8
         objetivo: >-
@@ -1040,38 +987,40 @@ dias:
           Eso es exactamente la slide *"dónde se rompe el vector search puro"*:
           brilla en paráfrasis, falla en lo exacto. Y "fallo de recuperación por
           términos literales" tiene una palanca con nombre propio, que es el
-          día 6.
+          día 3.
         nota_coach: >-
           Vale la pena parar aquí y preguntar qué harían con estos números antes
           de seguir. Si alguien propone el reranker, es el momento perfecto para
           señalar los 3 fallos de recuperación: reordenar no los arregla.
 
   # =========================================================================
-  - etiqueta: "Día 6"
+  - etiqueta: "Día 3"
     vienes_de: >-
-       Ayer el diagnóstico dijo que tres queries fallan porque el embedding
-       suaviza los términos literales.
-    titulo: "Las cuatro estrategias de búsqueda, con una firma común"
-    minutos: 40
+       Ayer el diagnóstico dijo algo muy concreto: tres queries fallan porque el
+       embedding suaviza los términos literales.
+    titulo: "Las cuatro formas de buscar, y la primera medida"
+    minutos: 35
     meta: >-
-      Hoy construyes el módulo con las cuatro formas de buscar: vectorial, BM25,
-      híbrido con RRF y reranking. Todas devuelven lo mismo, así que todas se
-      pueden medir con el evaluador de ayer.
-    archivo_completo:
-      - retrieval.py
-    checkpoint: >-
-      Puedes explicar por qué RRF fusiona usando posiciones y no puntuaciones, y
-      por qué el reranker recibe candidatos en vez del corpus entero.
+       Escribes las cuatro estrategias de búsqueda con una firma común y de
+       inmediato pones tres a competir sobre el mismo golden set. La tabla que
+       sale trae una trampa que conviene no tragarse.
     video:
       id: r0Dciuq0knU
       porque: >-
         Sparse, dense e híbrido en corto y bien explicado: exactamente las
         tres funciones que acabas de escribir. Míralo con `retrieval.py` al
         lado.
+    archivo_completo:
+      - retrieval.py
+      - 02_hibrido_bm25_rrf.py
+    checkpoint: >-
+      Tienes tres filas comparadas. Puedes explicar por qué el híbrido es mejor
+      que "solo BM25" aunque empate en recall@1.
     te_deja: >-
-       Ya tienes escritas las cuatro formas de buscar, todas con la misma firma.
-       Todavía no sabes cuál es mejor: eso no se opina, se mide, y es lo que
-       pasa mañana.
+       El híbrido ganó, pero la tabla trae una trampa que conviene no tragarse:
+       BM25 solo empata en recall@1 y gana en recall@5. Si te quedas ahí,
+       concluyes que el vector search sobra. La columna que lo desmiente es
+       recall@10, y también es la que hace posible el paso de mañana.
     pasos:
       - titulo: "La firma común, otra vez"
         minutos: 5
@@ -1191,7 +1140,7 @@ dias:
           primeros puestos, de modo que un documento que sale segundo en ambos
           rankings puede ganarle a uno que sale primero en uno solo.
 
-          Ese `k` es una perilla, y el día 7 vas a ver que tiene consecuencias.
+          Ese `k` es una perilla, y el día 3 vas a ver que tiene consecuencias.
 
       - titulo: "Reranking: caro, preciso, al final"
         minutos: 9
@@ -1270,33 +1219,6 @@ dias:
           montaje, y garantiza que todos midan exactamente lo mismo. Si el
           montaje viviera en cada script, en dos semanas divergirían.
 
-  # =========================================================================
-  - etiqueta: "Día 7"
-    vienes_de: >-
-       Ayer escribiste las cuatro estrategias de búsqueda. Hoy las pones a
-       competir.
-    titulo: "El híbrido, medido contra el baseline"
-    minutos: 30
-    meta: >-
-      El diagnóstico dijo "fallo de recuperación por términos literales". BM25 es
-      la herramienta para eso. Hoy lo mides, y la tabla trae una trampa.
-    archivo_completo:
-      - 02_hibrido_bm25_rrf.py
-    checkpoint: >-
-      Tienes tres filas comparadas. Puedes explicar por qué el híbrido es mejor
-      que "solo BM25" aunque empate en recall@1.
-    video:
-      id: 9QJXvNiJIG8
-      porque: >-
-        Una comparativa medida de BM25 contra embeddings, que es lo mismo que
-        acabas de hacer pero en otro corpus. Compara sus números con los
-        tuyos: si difieren, la pregunta interesante es por qué.
-    te_deja: >-
-       El híbrido ganó, pero la tabla trae una trampa que conviene no tragarse:
-       BM25 solo empata en recall@1 y gana en recall@5. Si te quedas ahí,
-       concluyes que el vector search sobra. La columna que lo desmiente es
-       recall@10, y también es la que hace posible el paso de mañana.
-    pasos:
       - titulo: "La regla: no asumir que mejora"
         minutos: 8
         objetivo: >-
@@ -1344,7 +1266,7 @@ dias:
           se puede mover, y entonces se vuelve a medir.
 
   # =========================================================================
-  - etiqueta: "Día 8"
+  - etiqueta: "Día 4"
     vienes_de: >-
        Ayer el híbrido dejó el chunk correcto siempre entre los candidatos:
        recall@10 = 1.00.
@@ -1368,10 +1290,10 @@ dias:
     te_deja: >-
        Llegaste a 1.00, y al lado tienes 1.63 segundos por query. Las dos cosas
        son el resultado. A partir de aquí ya no hay diagnóstico que arreglar en
-       este corpus, así que el día 9 cambia de pregunta: ¿qué haces cuando el
+       este corpus, así que el día 5 cambia de pregunta: ¿qué haces cuando el
        síntoma es otro?
     pasos:
-      - titulo: "Por qué hoy y no en el día 6"
+      - titulo: "Por qué hoy y no en el día 3"
         minutos: 8
         objetivo: >-
           Archivo nuevo, `03_reranking.py`.
@@ -1418,7 +1340,7 @@ dias:
           del paso anterior es el que manda**.
 
   # =========================================================================
-  - etiqueta: "Día 9"
+  - etiqueta: "Día 5"
     vienes_de: >-
        Ayer cerraste el caso de este corpus: recall@1 de 1.00, y el costo medido
        al lado.
@@ -1553,7 +1475,7 @@ dias:
           que cada una necesita su síntoma.
 
   # =========================================================================
-  - etiqueta: "Día 10"
+  - etiqueta: "Día 6"
     vienes_de: >-
        Ayer recorriste las cuatro palancas restantes y su síntoma
        correspondiente.
@@ -1601,7 +1523,7 @@ dias:
           nuevo: true
         porque: >-
           Fíjate en lo que **no** cambia: la firma. Todo el trabajo de los nueve
-          días de trabajo entran al RAG por el mismo hueco que dejamos el día 2. Esa es la
+          días de trabajo entran al RAG por el mismo hueco que dejamos el día 1. Esa es la
           recompensa de haber parametrizado `responder()`.
 
       - titulo: "La misma pregunta, otra respuesta"

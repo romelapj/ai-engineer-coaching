@@ -281,6 +281,49 @@ esto y que hasta ahora no usaba nadie.
 
 ---
 
+## v4.5 · El taller 05 pasa de 11 días a 7
+
+**19 de agosto de 2026**
+
+Romel, dando el taller, notó que los días cundían poco: "el día 0, 1, 2 y 3 se
+podría hacer en un solo día". Medido, tenía razón y el problema era peor de lo
+que parecía: **cinco de los once días no ejecutaban nada**. Los cuatro primeros
+sumaban 100 minutos declarados y solo uno terminaba en algo que el alumno pudiera
+ver correr.
+
+Eso viola la regla que este mismo documento fijó en `docs/04`: *un día es 30
+minutos y un archivo que corre; si no termina en algo ejecutable, está mal
+partido*.
+
+**La causa fue una decisión de la v4.2 que esta bitácora celebró.** El 05 es el
+único taller con módulos compartidos (`base.py`, `rag.py`, `metricas.py`,
+`retrieval.py`) y se le dio un día a cada uno. Un módulo no se ejecuta solo, así
+que esos días terminaban sin recompensa. Los otros cuatro talleres no tienen el
+problema: solo su día 0 no ejecuta, y es el setup.
+
+**El error de fondo al estimar los minutos** fue contar como si el alumno
+escribiera el código. El formato es copiar, pegar y correr, y hay botón de
+copiar: las 309 líneas de los antiguos días 1 a 3 son unos cuatro minutos de
+teclado. El tiempo real está en leer y entender.
+
+**La reestructuración:** cada módulo se funde con el script que lo usa.
+
+| Antes                                    | Ahora                        |
+| ---------------------------------------- | ---------------------------- |
+| D1 `base.py` + D2 `rag.py` + D3 `00_...` | **D1** · verlo fallar        |
+| D4 `metricas.py` + D5 `01_medir`         | **D2** · el primer número    |
+| D6 `retrieval.py` + D7 `02_hibrido`      | **D3** · las cuatro búsquedas |
+| D8, D9, D10                              | **D4, D5, D6**               |
+
+De 11 días y 340 minutos a **7 días y 220**, con los mismos 41 pasos y las mismas
+1.376 líneas. Ahora **todos los días de trabajo terminan ejecutando algo**.
+
+Queda pendiente una consecuencia: el día 1 acumula 11 pasos, y `docs/04` recomienda
+de 4 a 6. Los pasos son cortos y el día cierra viendo el fallo, así que se deja
+así y se revisa con el alumno delante.
+
+---
+
 ## Ideas evaluadas y descartadas
 
 Se registran para no volver a discutirlas desde cero:
