@@ -137,9 +137,19 @@ dias:
     meta: >-
       Este taller reutiliza lo de la sesión 04 y añade una librería nueva:
       `rank_bm25`, el buscador léxico que vas a fusionar con los vectores.
+    archivo_completo:
+      # El corpus vive aquí, en el día 0, porque el `ls docs/` del segundo paso
+      # promete verlo. Sin estos cinco archivos, base.py devuelve cero chunks y
+      # el taller entero contesta "no tengo evidencia" a todo, sin lanzar un
+      # solo error: justo el fallo que esta sesión enseña a detectar.
+      - docs/api-pagos.md
+      - docs/errores.md
+      - docs/webhooks.md
+      - docs/changelog-2025.md
+      - docs/changelog-2026.md
     checkpoint: >-
-      `python -c "import anthropic, chromadb, rank_bm25"` no da error y
-      `ANTHROPIC_API_KEY` está en tu shell.
+      `python -c "import anthropic, chromadb, rank_bm25"` no da error, tu llave
+      está en el shell, y `ls docs/` te devuelve los cinco documentos.
     pasos:
       - titulo: "Carpeta, entorno virtual y dependencias"
         minutos: 5
@@ -164,23 +174,29 @@ dias:
         minutos: 5
         objetivo: >-
           Seis de los diez días llaman al modelo. Y el corpus de ejemplo son
-          cinco documentos Markdown que vas a crear en `docs/` al empezar el
-          día 1.
+          cinco documentos Markdown que vas a crear ahora mismo, en `docs/`.
+           Los tienes completos al final de este día, listos para copiar.
         bloques:
           - lenguaje: bash
             texto: |
               export ANTHROPIC_API_KEY="sk-ant-..."   # tu llave real
               python -c "import anthropic, chromadb, rank_bm25; print('entorno listo')"
+
+              # Crea la carpeta y pega dentro los cinco documentos que tienes
+              # al final de este día, uno por archivo. Después comprueba:
+              mkdir -p docs
               ls docs/
         salida_texto: |
           entorno listo
           api-pagos.md	changelog-2025.md	changelog-2026.md	errores.md	webhooks.md
         porque: >-
-          Los cinco documentos no aparecen solos: los copias del día 1, donde están
-          completos y listos para pegar. Créalos antes de correr nada, porque
-          `base.py` lee esa carpeta con `glob` y una carpeta que no existe
-          devuelve una lista vacía **sin dar error**: acabarías con cero chunks
-          y un RAG que contesta "no tengo evidencia" a todo.
+          Los cinco documentos no aparecen solos: los tienes al final de este
+           día, en el panel plegable, y hay que crearlos a mano antes de correr
+           nada. Te insisto porque el fallo es traicionero: `base.py` lee esa
+           carpeta con `glob`, y una carpeta vacía o inexistente devuelve una
+           lista vacía **sin dar ningún error**. Acabarías con cero chunks y un
+           RAG contestando "no tengo evidencia" a todo, sin saber por qué. Sí,
+           es el mismo fallo silencioso que vamos a estudiar toda la semana.
 
           Fíjate en los dos changelogs, de 2025 y 2026. No están por casualidad:
           son el caso que necesitas para entender el metadata filtering del
@@ -208,15 +224,6 @@ dias:
     archivo_completo:
       - base.py
       - golden.json
-      # El corpus. Sin estos cinco archivos, base.py devuelve cero chunks y el
-      # taller entero contesta "no tengo evidencia" a todo, sin lanzar un solo
-      # error. Es exactamente el fallo que esta sesión enseña a detectar, así
-      # que aquí no puede pasar: se entregan.
-      - docs/api-pagos.md
-      - docs/errores.md
-      - docs/webhooks.md
-      - docs/changelog-2025.md
-      - docs/changelog-2026.md
       - rag.py
       - 00_punto_de_partida.py
     checkpoint: >-

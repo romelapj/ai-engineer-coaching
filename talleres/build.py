@@ -696,6 +696,55 @@ def render_nav(dias, con_cierre=False):
 # ---------------------------------------------------------------------------
 
 
+def revisar_orden(taller, base):
+    """Ningún paso puede ejecutar un script que importe algo aún no entregado.
+
+    Es la clase de fallo que dejó el taller 05 sin arrancar: su día 5 corría un
+    script que importaba `retrieval`, y `retrieval.py` se enseñaba el día 6. El
+    alumno que va en orden se estrella con un ModuleNotFoundError en el único
+    paso ejecutable del día, y ni el chequeo de cobertura ni verificar.py se
+    enteran: los dos miran el conjunto, no la secuencia."""
+    import ast
+
+    locales = {r.stem for r in base.glob("*.py")}
+    disponibles, problemas = set(), []
+
+    for i, dia in enumerate(taller.get("dias", []), start=1):
+        # lo que este día entrega, disponible ya para sus propios pasos
+        for a in dia.get("archivo_completo", []) or []:
+            disponibles.add(Path(a).stem)
+        for paso in dia.get("pasos", []):
+            c = paso.get("codigo")
+            if c:
+                disponibles.add(Path(c["archivo"]).stem)
+
+        for j, paso in enumerate(dia.get("pasos", []), start=1):
+            corre = paso.get("corre")
+            if not corre:
+                continue
+            for token in re.findall(r"([\w/]+\.py)\b", corre):
+                ruta = base / Path(token).name
+                if not ruta.exists():
+                    continue
+                try:
+                    arbol = ast.parse(ruta.read_text(encoding="utf-8"))
+                except SyntaxError:
+                    continue
+                for nodo in ast.walk(arbol):
+                    nombres = []
+                    if isinstance(nodo, ast.Import):
+                        nombres = [a.name.split(".")[0] for a in nodo.names]
+                    elif isinstance(nodo, ast.ImportFrom) and nodo.module:
+                        nombres = [nodo.module.split(".")[0]]
+                    for n in nombres:
+                        if n in locales and n not in disponibles:
+                            problemas.append(
+                                f"día {i} · paso {j}: corre {token}, que importa "
+                                f"`{n}`, pero {n}.py todavía no se ha entregado"
+                            )
+    return problemas
+
+
 def revisar_cobertura(uso, base, taller, entregados=frozenset()):
     """El chequeo que existe este generador: ¿queda código sin explicar?
 
@@ -852,8 +901,10 @@ def construir(dir_taller, estricto=False):
         n_videos += 1
 
     problemas = revisar_cobertura(uso, base, taller, entregados)
+    problemas += [("orden", d) for d in revisar_orden(taller, base)]
     for archivo, detalle in problemas:
-        print(f"  ⚠ hueco en {archivo}: {detalle}")
+        etiqueta = "orden de entrega" if archivo == "orden" else f"hueco en {archivo}"
+        print(f"  ⚠ {etiqueta}: {detalle}")
     if problemas and estricto:
         raise ErrorTaller(f"{len(problemas)} hueco(s) sin explicar. Corrige taller.yaml.")
 

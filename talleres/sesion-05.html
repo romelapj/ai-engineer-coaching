@@ -1610,18 +1610,176 @@ pip install -r requirements.txt"><div class="bloque-cab"><span class="ruta">term
           <h3>Tu API key y los documentos</h3>
           <span class="paso-min">5 min</span>
         </header>
-        <p>Seis de los diez días llaman al modelo. Y el corpus de ejemplo son cinco documentos Markdown que vas a crear en <code>docs/</code> al empezar el día 1.</p><div class="bloque" data-codigo="export ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   # tu llave real
+        <p>Seis de los diez días llaman al modelo. Y el corpus de ejemplo son cinco documentos Markdown que vas a crear ahora mismo, en <code>docs/</code>.  Los tienes completos al final de este día, listos para copiar.</p><div class="bloque" data-codigo="export ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   # tu llave real
 python -c &quot;import anthropic, chromadb, rank_bm25; print(&#x27;entorno listo&#x27;)&quot;
-ls docs/"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">export</span> ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   <span class="c"># tu llave real</span></span><span class="l"><span class="k">python</span> -c &quot;import anthropic, chromadb, rank_bm25; print(&#x27;entorno listo&#x27;)&quot;</span><span class="l">ls docs/</span></code></pre></div><div class="bloque salida" data-codigo="entorno listo
-api-pagos.md	changelog-2025.md	changelog-2026.md	errores.md	webhooks.md"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">entorno listo</span><span class="l">api-pagos.md	changelog-2025.md	changelog-2026.md	errores.md	webhooks.md</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Los cinco documentos no aparecen solos: los copias del día 1, donde están completos y listos para pegar. Créalos antes de correr nada, porque <code>base.py</code> lee esa carpeta con <code>glob</code> y una carpeta que no existe devuelve una lista vacía <strong>sin dar error</strong>: acabarías con cero chunks y un RAG que contesta &quot;no tengo evidencia&quot; a todo. Fíjate en los dos changelogs, de 2025 y 2026. No están por casualidad: son el caso que necesitas para entender el metadata filtering del día 5, donde un documento viejo compite con el nuevo y gana.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Los días 4, 5 y 6 no gastan nada: BM25, RRF y las métricas son cálculo local. El día 4 es el más caro (el reranker hace una llamada por query, 15 en total).</p></div>
+
+# Crea la carpeta y pega dentro los cinco documentos que tienes
+# al final de este día, uno por archivo. Después comprueba:
+mkdir -p docs
+ls docs/"><div class="bloque-cab"><span class="ruta">terminal</span></div><pre><code><span class="l"><span class="k">export</span> ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;   <span class="c"># tu llave real</span></span><span class="l"><span class="k">python</span> -c &quot;import anthropic, chromadb, rank_bm25; print(&#x27;entorno listo&#x27;)&quot;</span><span class="l"></span><span class="l"><span class="c"># Crea la carpeta y pega dentro los cinco documentos que tienes</span></span><span class="l"><span class="c"># al final de este día, uno por archivo. Después comprueba:</span></span><span class="l"><span class="k">mkdir</span> -p docs</span><span class="l">ls docs/</span></code></pre></div><div class="bloque salida" data-codigo="entorno listo
+api-pagos.md	changelog-2025.md	changelog-2026.md	errores.md	webhooks.md"><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">entorno listo</span><span class="l">api-pagos.md	changelog-2025.md	changelog-2026.md	errores.md	webhooks.md</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Los cinco documentos no aparecen solos: los tienes al final de este  día, en el panel plegable, y hay que crearlos a mano antes de correr  nada. Te insisto porque el fallo es traicionero: <code>base.py</code> lee esa  carpeta con <code>glob</code>, y una carpeta vacía o inexistente devuelve una  lista vacía <strong>sin dar ningún error</strong>. Acabarías con cero chunks y un  RAG contestando &quot;no tengo evidencia&quot; a todo, sin saber por qué. Sí,  es el mismo fallo silencioso que vamos a estudiar toda la semana.</p><p>Fíjate en los dos changelogs, de 2025 y 2026. No están por casualidad: son el caso que necesitas para entender el metadata filtering del día 5, donde un documento viejo compite con el nuevo y gana.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Los días 4, 5 y 6 no gastan nada: BM25, RRF y las métricas son cálculo local. El día 4 es el más caro (el reranker hace una llamada por query, 15 en total).</p></div>
         <button class="tick-fin" type="button" data-tick="d1p2">
           <span class="tick-fin-marca" aria-hidden="true"></span>
           <span class="tick-fin-texto">Marcar como hecho</span>
         </button>
       </div>
     </article>
-      
-      <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p><code>python -c &quot;import anthropic, chromadb, rank_bm25&quot;</code> no da error y <code>ANTHROPIC_API_KEY</code> está en tu shell.</p></div>
+      <details class='completo'><summary>Ver <code>docs/api-pagos.md</code> completo (31 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Guía de la API de Pagos
+
+Documentación interna de la API de pagos de la empresa ficticia &quot;PagosYa&quot;.
+Misma base de conocimiento de la sesión 04, ampliada para esta sesión.
+
+## Autenticación
+
+Todas las peticiones a la API de PagosYa requieren una API key en el header
+`X-Api-Key`. Las API keys se generan desde el dashboard, en la sección
+Configuración &gt; Credenciales. Existen dos tipos de llaves: las de sandbox
+(prefijo `sk_test_`) y las de producción (prefijo `sk_live_`). Nunca uses
+llaves de producción en ambientes de prueba. Si una llave se filtra, puedes
+rotarla desde el dashboard sin downtime: la llave anterior sigue siendo
+válida durante 24 horas después de la rotación.
+
+## Timeouts y reintentos
+
+El timeout default de la API es de 30 segundos por petición. Si tu cliente
+necesita un límite más corto, puedes enviar el header `X-Timeout-Ms` con un
+valor entre 1000 y 30000 milisegundos. Para operaciones de creación de pago
+recomendamos configurar reintentos con backoff exponencial: máximo 3
+reintentos, empezando con una espera de 2 segundos. Todas las operaciones
+de escritura aceptan el header `Idempotency-Key` para evitar cobros
+duplicados cuando reintentas una petición.
+
+## Límites de tasa
+
+El rate limit es de 100 peticiones por minuto por API key. Si lo superas,
+la API responde con un código HTTP 429 y el header `Retry-After` indica
+cuántos segundos debes esperar antes del siguiente intento. Los límites se
+calculan por ventana deslizante de 60 segundos, no por minuto de reloj."><div class="bloque-cab"><span class="ruta">docs/api-pagos.md · archivo completo (31 líneas)</span></div><pre><code><span class="l"><span class="k"># Guía de la API de Pagos</span></span><span class="l"></span><span class="l">Documentación interna de la API de pagos de la empresa ficticia &quot;PagosYa&quot;.</span><span class="l">Misma base de conocimiento de la sesión 04, ampliada para esta sesión.</span><span class="l"></span><span class="l"><span class="k">## Autenticación</span></span><span class="l"></span><span class="l">Todas las peticiones a la API de PagosYa requieren una API key en el header</span><span class="l"><span class="s">`X-Api-Key`</span>. Las API keys se generan desde el dashboard, en la sección</span><span class="l">Configuración &gt; Credenciales. Existen dos tipos de llaves: las de sandbox</span><span class="l">(prefijo <span class="s">`sk_test_`</span>) y las de producción (prefijo <span class="s">`sk_live_`</span>). Nunca uses</span><span class="l">llaves de producción en ambientes de prueba. Si una llave se filtra, puedes</span><span class="l">rotarla desde el dashboard sin downtime: la llave anterior sigue siendo</span><span class="l">válida durante 24 horas después de la rotación.</span><span class="l"></span><span class="l"><span class="k">## Timeouts y reintentos</span></span><span class="l"></span><span class="l">El timeout default de la API es de 30 segundos por petición. Si tu cliente</span><span class="l">necesita un límite más corto, puedes enviar el header <span class="s">`X-Timeout-Ms`</span> con un</span><span class="l">valor entre 1000 y 30000 milisegundos. Para operaciones de creación de pago</span><span class="l">recomendamos configurar reintentos con backoff exponencial: máximo 3</span><span class="l">reintentos, empezando con una espera de 2 segundos. Todas las operaciones</span><span class="l">de escritura aceptan el header <span class="s">`Idempotency-Key`</span> para evitar cobros</span><span class="l">duplicados cuando reintentas una petición.</span><span class="l"></span><span class="l"><span class="k">## Límites de tasa</span></span><span class="l"></span><span class="l">El rate limit es de 100 peticiones por minuto por API key. Si lo superas,</span><span class="l">la API responde con un código HTTP 429 y el header <span class="s">`Retry-After`</span> indica</span><span class="l">cuántos segundos debes esperar antes del siguiente intento. Los límites se</span><span class="l">calculan por ventana deslizante de 60 segundos, no por minuto de reloj.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/errores.md</code> completo (62 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Catálogo de errores de PagosYa
+
+Cada error de negocio tiene un código propio con formato `E-XXXX`. Este
+catálogo existe a propósito en esta sesión: ocho secciones que hablan casi
+de lo mismo (errores de pago) son el terreno donde el vector search puro se
+confunde y la búsqueda léxica (BM25) brilla.
+
+## Error E-1001: petición malformada
+
+El error `E-1001` indica que el cuerpo de la petición no cumple el esquema:
+falta un campo obligatorio o un tipo de dato es incorrecto. El detalle
+exacto viene en el campo `error.message`. No tiene sentido reintentar la
+misma petición sin corregirla primero.
+
+## Error E-2004: moneda no soportada
+
+El error `E-2004` aparece cuando la moneda del pago no está habilitada para
+tu cuenta. Las monedas activas se consultan en el dashboard, en la sección
+Configuración &gt; Monedas. Para habilitar una moneda nueva debes abrir un
+ticket con el equipo de operaciones.
+
+## Error E-3010: monto excede el límite
+
+El error `E-3010` significa que el monto del pago supera el límite máximo
+configurado para tu cuenta. El límite default es de 10.000 USD por
+transacción y puede ampliarse con una verificación adicional de identidad
+del comercio.
+
+## Error E-4012: fondos insuficientes
+
+El error `E-4012` es un rechazo del banco emisor por fondos insuficientes
+en la cuenta del pagador. No es un error de tu integración. La práctica
+recomendada es mostrarle al usuario un mensaje claro y ofrecerle pagar con
+otro método; reintentar de inmediato casi siempre vuelve a fallar.
+
+## Error E-4019: tarjeta vencida
+
+El error `E-4019` indica que la tarjeta usada está vencida. Pide al usuario
+una tarjeta vigente u otro método de pago. Este rechazo lo emite el banco
+emisor, así que reintentar con la misma tarjeta siempre devuelve el mismo
+error.
+
+## Error E-4020: CVV inválido
+
+El error `E-4020` significa que el código de seguridad (CVV) no coincide.
+Permite al usuario reintentar escribiéndolo de nuevo, pero bloquea el
+formulario después de 3 intentos fallidos: más intentos disparan las reglas
+antifraude del emisor.
+
+## Error E-5001: timeout del emisor
+
+El error `E-5001` ocurre cuando el banco emisor no respondió a tiempo. Es
+un error transitorio: es seguro reintentar la operación usando la misma
+`Idempotency-Key` para no duplicar el cobro. Recomendamos máximo 2
+reintentos con espera de 5 segundos.
+
+## Error E-7777: rechazo por riesgo
+
+El error `E-7777` es un bloqueo del motor antifraude de PagosYa. Por
+seguridad no se informa el motivo específico. NO debes reintentar la
+operación: reintentos repetidos de un pago bloqueado por riesgo pueden
+llevar a la suspensión temporal de la cuenta del comercio."><div class="bloque-cab"><span class="ruta">docs/errores.md · archivo completo (62 líneas)</span></div><pre><code><span class="l"><span class="k"># Catálogo de errores de PagosYa</span></span><span class="l"></span><span class="l">Cada error de negocio tiene un código propio con formato <span class="s">`E-XXXX`</span>. Este</span><span class="l">catálogo existe a propósito en esta sesión: ocho secciones que hablan casi</span><span class="l">de lo mismo (errores de pago) son el terreno donde el vector search puro se</span><span class="l">confunde y la búsqueda léxica (BM25) brilla.</span><span class="l"></span><span class="l"><span class="k">## Error E-1001: petición malformada</span></span><span class="l"></span><span class="l">El error <span class="s">`E-1001`</span> indica que el cuerpo de la petición no cumple el esquema:</span><span class="l">falta un campo obligatorio o un tipo de dato es incorrecto. El detalle</span><span class="l">exacto viene en el campo <span class="s">`error.message`</span>. No tiene sentido reintentar la</span><span class="l">misma petición sin corregirla primero.</span><span class="l"></span><span class="l"><span class="k">## Error E-2004: moneda no soportada</span></span><span class="l"></span><span class="l">El error <span class="s">`E-2004`</span> aparece cuando la moneda del pago no está habilitada para</span><span class="l">tu cuenta. Las monedas activas se consultan en el dashboard, en la sección</span><span class="l">Configuración &gt; Monedas. Para habilitar una moneda nueva debes abrir un</span><span class="l">ticket con el equipo de operaciones.</span><span class="l"></span><span class="l"><span class="k">## Error E-3010: monto excede el límite</span></span><span class="l"></span><span class="l">El error <span class="s">`E-3010`</span> significa que el monto del pago supera el límite máximo</span><span class="l">configurado para tu cuenta. El límite default es de 10.000 USD por</span><span class="l">transacción y puede ampliarse con una verificación adicional de identidad</span><span class="l">del comercio.</span><span class="l"></span><span class="l"><span class="k">## Error E-4012: fondos insuficientes</span></span><span class="l"></span><span class="l">El error <span class="s">`E-4012`</span> es un rechazo del banco emisor por fondos insuficientes</span><span class="l">en la cuenta del pagador. No es un error de tu integración. La práctica</span><span class="l">recomendada es mostrarle al usuario un mensaje claro y ofrecerle pagar con</span><span class="l">otro método; reintentar de inmediato casi siempre vuelve a fallar.</span><span class="l"></span><span class="l"><span class="k">## Error E-4019: tarjeta vencida</span></span><span class="l"></span><span class="l">El error <span class="s">`E-4019`</span> indica que la tarjeta usada está vencida. Pide al usuario</span><span class="l">una tarjeta vigente u otro método de pago. Este rechazo lo emite el banco</span><span class="l">emisor, así que reintentar con la misma tarjeta siempre devuelve el mismo</span><span class="l">error.</span><span class="l"></span><span class="l"><span class="k">## Error E-4020: CVV inválido</span></span><span class="l"></span><span class="l">El error <span class="s">`E-4020`</span> significa que el código de seguridad (CVV) no coincide.</span><span class="l">Permite al usuario reintentar escribiéndolo de nuevo, pero bloquea el</span><span class="l">formulario después de 3 intentos fallidos: más intentos disparan las reglas</span><span class="l">antifraude del emisor.</span><span class="l"></span><span class="l"><span class="k">## Error E-5001: timeout del emisor</span></span><span class="l"></span><span class="l">El error <span class="s">`E-5001`</span> ocurre cuando el banco emisor no respondió a tiempo. Es</span><span class="l">un error transitorio: es seguro reintentar la operación usando la misma</span><span class="l"><span class="s">`Idempotency-Key`</span> para no duplicar el cobro. Recomendamos máximo 2</span><span class="l">reintentos con espera de 5 segundos.</span><span class="l"></span><span class="l"><span class="k">## Error E-7777: rechazo por riesgo</span></span><span class="l"></span><span class="l">El error <span class="s">`E-7777`</span> es un bloqueo del motor antifraude de PagosYa. Por</span><span class="l">seguridad no se informa el motivo específico. NO debes reintentar la</span><span class="l">operación: reintentos repetidos de un pago bloqueado por riesgo pueden</span><span class="l">llevar a la suspensión temporal de la cuenta del comercio.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/webhooks.md</code> completo (29 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Guía de Webhooks
+
+Cómo funcionan las notificaciones asíncronas (webhooks) que PagosYa envía
+a tu servidor.
+
+## Configuración de webhooks
+
+Los webhooks se configuran en el dashboard, en la sección Desarrolladores &gt;
+Webhooks. Debes registrar una URL HTTPS pública; las URLs HTTP sin
+certificado son rechazadas. Puedes registrar hasta 5 endpoints distintos
+por cuenta, y elegir para cada uno qué eventos quieres recibir (por ejemplo
+`payment.approved`, `payment.declined` o `refund.completed`).
+
+## Verificación de firma
+
+Cada webhook incluye el header `X-Signature` con un HMAC-SHA256 del cuerpo
+de la petición, firmado con tu webhook secret. Siempre verifica esta firma
+antes de procesar el evento: es la única forma de garantizar que la
+notificación realmente viene de PagosYa y no de un atacante. El webhook
+secret es distinto de tu API key y se muestra una sola vez al crear el
+endpoint.
+
+## Reintentos de entrega
+
+Si tu servidor no responde con un código 2xx en menos de 10 segundos,
+PagosYa reintenta la entrega del webhook hasta 8 veces durante las
+siguientes 24 horas, con esperas crecientes entre intentos. Después del
+octavo intento fallido el evento se marca como no entregado y puedes
+recuperarlo manualmente desde el dashboard durante los siguientes 30 días."><div class="bloque-cab"><span class="ruta">docs/webhooks.md · archivo completo (29 líneas)</span></div><pre><code><span class="l"><span class="k"># Guía de Webhooks</span></span><span class="l"></span><span class="l">Cómo funcionan las notificaciones asíncronas (webhooks) que PagosYa envía</span><span class="l">a tu servidor.</span><span class="l"></span><span class="l"><span class="k">## Configuración de webhooks</span></span><span class="l"></span><span class="l">Los webhooks se configuran en el dashboard, en la sección Desarrolladores &gt;</span><span class="l">Webhooks. Debes registrar una URL HTTPS pública; las URLs HTTP sin</span><span class="l">certificado son rechazadas. Puedes registrar hasta 5 endpoints distintos</span><span class="l">por cuenta, y elegir para cada uno qué eventos quieres recibir (por ejemplo</span><span class="l"><span class="s">`payment.approved`</span>, <span class="s">`payment.declined`</span> o <span class="s">`refund.completed`</span>).</span><span class="l"></span><span class="l"><span class="k">## Verificación de firma</span></span><span class="l"></span><span class="l">Cada webhook incluye el header <span class="s">`X-Signature`</span> con un HMAC-SHA256 del cuerpo</span><span class="l">de la petición, firmado con tu webhook secret. Siempre verifica esta firma</span><span class="l">antes de procesar el evento: es la única forma de garantizar que la</span><span class="l">notificación realmente viene de PagosYa y no de un atacante. El webhook</span><span class="l">secret es distinto de tu API key y se muestra una sola vez al crear el</span><span class="l">endpoint.</span><span class="l"></span><span class="l"><span class="k">## Reintentos de entrega</span></span><span class="l"></span><span class="l">Si tu servidor no responde con un código 2xx en menos de 10 segundos,</span><span class="l">PagosYa reintenta la entrega del webhook hasta 8 veces durante las</span><span class="l">siguientes 24 horas, con esperas crecientes entre intentos. Después del</span><span class="l">octavo intento fallido el evento se marca como no entregado y puedes</span><span class="l">recuperarlo manualmente desde el dashboard durante los siguientes 30 días.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/changelog-2025.md</code> completo (20 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Changelog 2025
+
+Cambios publicados en la plataforma PagosYa durante 2025. Este documento y
+su gemelo de 2026 existen para la demo de metadata filtering: la misma
+pregunta (&quot;¿qué TLS exige la API?&quot;) tiene respuestas DISTINTAS según el
+año, y solo el filtro de metadata garantiza recuperar la correcta.
+
+## Cambios de seguridad 2025
+
+Desde marzo de 2025 la API exige TLS 1.2 como versión mínima; las
+conexiones con TLS 1.1 o inferior son rechazadas con un error de handshake.
+Además, las API keys de producción comprometidas ahora se pueden revocar de
+inmediato desde el dashboard sin esperar el periodo de gracia.
+
+## Nuevos endpoints 2025
+
+En 2025 se lanzó la versión v2 del endpoint de Checkout, que unifica la
+creación del pago y la sesión de checkout en una sola llamada. La versión
+v1 quedó marcada como obsoleta y dejará de recibir mejoras, aunque seguirá
+funcionando hasta nuevo aviso."><div class="bloque-cab"><span class="ruta">docs/changelog-2025.md · archivo completo (20 líneas)</span></div><pre><code><span class="l"><span class="k"># Changelog 2025</span></span><span class="l"></span><span class="l">Cambios publicados en la plataforma PagosYa durante 2025. Este documento y</span><span class="l">su gemelo de 2026 existen para la demo de metadata filtering: la misma</span><span class="l">pregunta (&quot;¿qué TLS exige la API?&quot;) tiene respuestas DISTINTAS según el</span><span class="l">año, y solo el filtro de metadata garantiza recuperar la correcta.</span><span class="l"></span><span class="l"><span class="k">## Cambios de seguridad 2025</span></span><span class="l"></span><span class="l">Desde marzo de 2025 la API exige TLS 1.2 como versión mínima; las</span><span class="l">conexiones con TLS 1.1 o inferior son rechazadas con un error de handshake.</span><span class="l">Además, las API keys de producción comprometidas ahora se pueden revocar de</span><span class="l">inmediato desde el dashboard sin esperar el periodo de gracia.</span><span class="l"></span><span class="l"><span class="k">## Nuevos endpoints 2025</span></span><span class="l"></span><span class="l">En 2025 se lanzó la versión v2 del endpoint de Checkout, que unifica la</span><span class="l">creación del pago y la sesión de checkout en una sola llamada. La versión</span><span class="l">v1 quedó marcada como obsoleta y dejará de recibir mejoras, aunque seguirá</span><span class="l">funcionando hasta nuevo aviso.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/changelog-2026.md</code> completo (17 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Changelog 2026
+
+Cambios publicados en la plataforma PagosYa durante 2026.
+
+## Cambios de seguridad 2026
+
+Desde enero de 2026 la versión mínima de TLS es 1.3; las conexiones TLS 1.2
+entran en periodo de deprecación y serán rechazadas a partir de julio.
+Además, las llaves de sandbox (`sk_test_`) ahora expiran automáticamente a
+los 90 días de su creación para reducir el riesgo de llaves olvidadas.
+
+## Nuevos endpoints 2026
+
+En 2026 se lanzó el endpoint v3 de Checkout Lite, una versión reducida del
+checkout pensada para integraciones móviles: menos campos, respuesta más
+liviana y soporte nativo para Apple Pay y Google Pay. El endpoint v2
+completo sigue siendo la opción recomendada para web."><div class="bloque-cab"><span class="ruta">docs/changelog-2026.md · archivo completo (17 líneas)</span></div><pre><code><span class="l"><span class="k"># Changelog 2026</span></span><span class="l"></span><span class="l">Cambios publicados en la plataforma PagosYa durante 2026.</span><span class="l"></span><span class="l"><span class="k">## Cambios de seguridad 2026</span></span><span class="l"></span><span class="l">Desde enero de 2026 la versión mínima de TLS es 1.3; las conexiones TLS 1.2</span><span class="l">entran en periodo de deprecación y serán rechazadas a partir de julio.</span><span class="l">Además, las llaves de sandbox (<span class="s">`sk_test_`</span>) ahora expiran automáticamente a</span><span class="l">los 90 días de su creación para reducir el riesgo de llaves olvidadas.</span><span class="l"></span><span class="l"><span class="k">## Nuevos endpoints 2026</span></span><span class="l"></span><span class="l">En 2026 se lanzó el endpoint v3 de Checkout Lite, una versión reducida del</span><span class="l">checkout pensada para integraciones móviles: menos campos, respuesta más</span><span class="l">liviana y soporte nativo para Apple Pay y Google Pay. El endpoint v2</span><span class="l">completo sigue siendo la opción recomendada para web.</span></code></pre></div></details>
+      <div class="checkpoint"><div class="nota-cab">✓ Checkpoint del día</div><p><code>python -c &quot;import anthropic, chromadb, rank_bm25&quot;</code> no da error, tu llave está en el shell, y <code>ls docs/</code> te devuelve los cinco documentos.</p></div>
       
       
     </section>
@@ -2300,161 +2458,7 @@ def tokenizar(texto):
   &quot;¿Cómo verifico que un webhook realmente viene de PagosYa?&quot;: &quot;webhooks.md § Verificación de firma&quot;,
   &quot;¿cómo firmo mis webhooks?&quot;: &quot;webhooks.md § Verificación de firma&quot;,
   &quot;¿cuánto tiempo tengo para responder un webhook?&quot;: &quot;webhooks.md § Reintentos de entrega&quot;
-}"><div class="bloque-cab"><span class="ruta">golden.json · archivo completo (17 líneas)</span></div><pre><code><span class="l">{</span><span class="l">  &quot;¿Cuál es el timeout default de la API?&quot;: &quot;api-pagos.md § Timeouts y reintentos&quot;,</span><span class="l">  &quot;¿Cómo autentico mis peticiones a la API?&quot;: &quot;api-pagos.md § Autenticación&quot;,</span><span class="l">  &quot;Superé el rate limit, ¿cuánto debo esperar?&quot;: &quot;api-pagos.md § Límites de tasa&quot;,</span><span class="l">  &quot;¿Cuántas veces se reintenta la entrega de un webhook?&quot;: &quot;webhooks.md § Reintentos de entrega&quot;,</span><span class="l">  &quot;¿Qué significa el error E-4012?&quot;: &quot;errores.md § Error E-4012: fondos insuficientes&quot;,</span><span class="l">  &quot;código E-5001&quot;: &quot;errores.md § Error E-5001: timeout del emisor&quot;,</span><span class="l">  &quot;¿Puedo reintentar un pago que devolvió E-7777?&quot;: &quot;errores.md § Error E-7777: rechazo por riesgo&quot;,</span><span class="l">  &quot;¿Qué hago si el cliente paga con una tarjeta vencida?&quot;: &quot;errores.md § Error E-4019: tarjeta vencida&quot;,</span><span class="l">  &quot;endpoint v3 de Checkout Lite&quot;: &quot;changelog-2026.md § Nuevos endpoints 2026&quot;,</span><span class="l">  &quot;¿Qué versión mínima de TLS exige la API actualmente?&quot;: &quot;changelog-2026.md § Cambios de seguridad 2026&quot;,</span><span class="l">  &quot;¿Cómo evito cobros duplicados cuando reintento un pago?&quot;: &quot;api-pagos.md § Timeouts y reintentos&quot;,</span><span class="l">  &quot;¿puedo usar sk_test_ en producción?&quot;: &quot;api-pagos.md § Autenticación&quot;,</span><span class="l">  &quot;¿Cómo verifico que un webhook realmente viene de PagosYa?&quot;: &quot;webhooks.md § Verificación de firma&quot;,</span><span class="l">  &quot;¿cómo firmo mis webhooks?&quot;: &quot;webhooks.md § Verificación de firma&quot;,</span><span class="l">  &quot;¿cuánto tiempo tengo para responder un webhook?&quot;: &quot;webhooks.md § Reintentos de entrega&quot;</span><span class="l">}</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/api-pagos.md</code> completo (31 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Guía de la API de Pagos
-
-Documentación interna de la API de pagos de la empresa ficticia &quot;PagosYa&quot;.
-Misma base de conocimiento de la sesión 04, ampliada para esta sesión.
-
-## Autenticación
-
-Todas las peticiones a la API de PagosYa requieren una API key en el header
-`X-Api-Key`. Las API keys se generan desde el dashboard, en la sección
-Configuración &gt; Credenciales. Existen dos tipos de llaves: las de sandbox
-(prefijo `sk_test_`) y las de producción (prefijo `sk_live_`). Nunca uses
-llaves de producción en ambientes de prueba. Si una llave se filtra, puedes
-rotarla desde el dashboard sin downtime: la llave anterior sigue siendo
-válida durante 24 horas después de la rotación.
-
-## Timeouts y reintentos
-
-El timeout default de la API es de 30 segundos por petición. Si tu cliente
-necesita un límite más corto, puedes enviar el header `X-Timeout-Ms` con un
-valor entre 1000 y 30000 milisegundos. Para operaciones de creación de pago
-recomendamos configurar reintentos con backoff exponencial: máximo 3
-reintentos, empezando con una espera de 2 segundos. Todas las operaciones
-de escritura aceptan el header `Idempotency-Key` para evitar cobros
-duplicados cuando reintentas una petición.
-
-## Límites de tasa
-
-El rate limit es de 100 peticiones por minuto por API key. Si lo superas,
-la API responde con un código HTTP 429 y el header `Retry-After` indica
-cuántos segundos debes esperar antes del siguiente intento. Los límites se
-calculan por ventana deslizante de 60 segundos, no por minuto de reloj."><div class="bloque-cab"><span class="ruta">docs/api-pagos.md · archivo completo (31 líneas)</span></div><pre><code><span class="l"><span class="k"># Guía de la API de Pagos</span></span><span class="l"></span><span class="l">Documentación interna de la API de pagos de la empresa ficticia &quot;PagosYa&quot;.</span><span class="l">Misma base de conocimiento de la sesión 04, ampliada para esta sesión.</span><span class="l"></span><span class="l"><span class="k">## Autenticación</span></span><span class="l"></span><span class="l">Todas las peticiones a la API de PagosYa requieren una API key en el header</span><span class="l"><span class="s">`X-Api-Key`</span>. Las API keys se generan desde el dashboard, en la sección</span><span class="l">Configuración &gt; Credenciales. Existen dos tipos de llaves: las de sandbox</span><span class="l">(prefijo <span class="s">`sk_test_`</span>) y las de producción (prefijo <span class="s">`sk_live_`</span>). Nunca uses</span><span class="l">llaves de producción en ambientes de prueba. Si una llave se filtra, puedes</span><span class="l">rotarla desde el dashboard sin downtime: la llave anterior sigue siendo</span><span class="l">válida durante 24 horas después de la rotación.</span><span class="l"></span><span class="l"><span class="k">## Timeouts y reintentos</span></span><span class="l"></span><span class="l">El timeout default de la API es de 30 segundos por petición. Si tu cliente</span><span class="l">necesita un límite más corto, puedes enviar el header <span class="s">`X-Timeout-Ms`</span> con un</span><span class="l">valor entre 1000 y 30000 milisegundos. Para operaciones de creación de pago</span><span class="l">recomendamos configurar reintentos con backoff exponencial: máximo 3</span><span class="l">reintentos, empezando con una espera de 2 segundos. Todas las operaciones</span><span class="l">de escritura aceptan el header <span class="s">`Idempotency-Key`</span> para evitar cobros</span><span class="l">duplicados cuando reintentas una petición.</span><span class="l"></span><span class="l"><span class="k">## Límites de tasa</span></span><span class="l"></span><span class="l">El rate limit es de 100 peticiones por minuto por API key. Si lo superas,</span><span class="l">la API responde con un código HTTP 429 y el header <span class="s">`Retry-After`</span> indica</span><span class="l">cuántos segundos debes esperar antes del siguiente intento. Los límites se</span><span class="l">calculan por ventana deslizante de 60 segundos, no por minuto de reloj.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/errores.md</code> completo (62 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Catálogo de errores de PagosYa
-
-Cada error de negocio tiene un código propio con formato `E-XXXX`. Este
-catálogo existe a propósito en esta sesión: ocho secciones que hablan casi
-de lo mismo (errores de pago) son el terreno donde el vector search puro se
-confunde y la búsqueda léxica (BM25) brilla.
-
-## Error E-1001: petición malformada
-
-El error `E-1001` indica que el cuerpo de la petición no cumple el esquema:
-falta un campo obligatorio o un tipo de dato es incorrecto. El detalle
-exacto viene en el campo `error.message`. No tiene sentido reintentar la
-misma petición sin corregirla primero.
-
-## Error E-2004: moneda no soportada
-
-El error `E-2004` aparece cuando la moneda del pago no está habilitada para
-tu cuenta. Las monedas activas se consultan en el dashboard, en la sección
-Configuración &gt; Monedas. Para habilitar una moneda nueva debes abrir un
-ticket con el equipo de operaciones.
-
-## Error E-3010: monto excede el límite
-
-El error `E-3010` significa que el monto del pago supera el límite máximo
-configurado para tu cuenta. El límite default es de 10.000 USD por
-transacción y puede ampliarse con una verificación adicional de identidad
-del comercio.
-
-## Error E-4012: fondos insuficientes
-
-El error `E-4012` es un rechazo del banco emisor por fondos insuficientes
-en la cuenta del pagador. No es un error de tu integración. La práctica
-recomendada es mostrarle al usuario un mensaje claro y ofrecerle pagar con
-otro método; reintentar de inmediato casi siempre vuelve a fallar.
-
-## Error E-4019: tarjeta vencida
-
-El error `E-4019` indica que la tarjeta usada está vencida. Pide al usuario
-una tarjeta vigente u otro método de pago. Este rechazo lo emite el banco
-emisor, así que reintentar con la misma tarjeta siempre devuelve el mismo
-error.
-
-## Error E-4020: CVV inválido
-
-El error `E-4020` significa que el código de seguridad (CVV) no coincide.
-Permite al usuario reintentar escribiéndolo de nuevo, pero bloquea el
-formulario después de 3 intentos fallidos: más intentos disparan las reglas
-antifraude del emisor.
-
-## Error E-5001: timeout del emisor
-
-El error `E-5001` ocurre cuando el banco emisor no respondió a tiempo. Es
-un error transitorio: es seguro reintentar la operación usando la misma
-`Idempotency-Key` para no duplicar el cobro. Recomendamos máximo 2
-reintentos con espera de 5 segundos.
-
-## Error E-7777: rechazo por riesgo
-
-El error `E-7777` es un bloqueo del motor antifraude de PagosYa. Por
-seguridad no se informa el motivo específico. NO debes reintentar la
-operación: reintentos repetidos de un pago bloqueado por riesgo pueden
-llevar a la suspensión temporal de la cuenta del comercio."><div class="bloque-cab"><span class="ruta">docs/errores.md · archivo completo (62 líneas)</span></div><pre><code><span class="l"><span class="k"># Catálogo de errores de PagosYa</span></span><span class="l"></span><span class="l">Cada error de negocio tiene un código propio con formato <span class="s">`E-XXXX`</span>. Este</span><span class="l">catálogo existe a propósito en esta sesión: ocho secciones que hablan casi</span><span class="l">de lo mismo (errores de pago) son el terreno donde el vector search puro se</span><span class="l">confunde y la búsqueda léxica (BM25) brilla.</span><span class="l"></span><span class="l"><span class="k">## Error E-1001: petición malformada</span></span><span class="l"></span><span class="l">El error <span class="s">`E-1001`</span> indica que el cuerpo de la petición no cumple el esquema:</span><span class="l">falta un campo obligatorio o un tipo de dato es incorrecto. El detalle</span><span class="l">exacto viene en el campo <span class="s">`error.message`</span>. No tiene sentido reintentar la</span><span class="l">misma petición sin corregirla primero.</span><span class="l"></span><span class="l"><span class="k">## Error E-2004: moneda no soportada</span></span><span class="l"></span><span class="l">El error <span class="s">`E-2004`</span> aparece cuando la moneda del pago no está habilitada para</span><span class="l">tu cuenta. Las monedas activas se consultan en el dashboard, en la sección</span><span class="l">Configuración &gt; Monedas. Para habilitar una moneda nueva debes abrir un</span><span class="l">ticket con el equipo de operaciones.</span><span class="l"></span><span class="l"><span class="k">## Error E-3010: monto excede el límite</span></span><span class="l"></span><span class="l">El error <span class="s">`E-3010`</span> significa que el monto del pago supera el límite máximo</span><span class="l">configurado para tu cuenta. El límite default es de 10.000 USD por</span><span class="l">transacción y puede ampliarse con una verificación adicional de identidad</span><span class="l">del comercio.</span><span class="l"></span><span class="l"><span class="k">## Error E-4012: fondos insuficientes</span></span><span class="l"></span><span class="l">El error <span class="s">`E-4012`</span> es un rechazo del banco emisor por fondos insuficientes</span><span class="l">en la cuenta del pagador. No es un error de tu integración. La práctica</span><span class="l">recomendada es mostrarle al usuario un mensaje claro y ofrecerle pagar con</span><span class="l">otro método; reintentar de inmediato casi siempre vuelve a fallar.</span><span class="l"></span><span class="l"><span class="k">## Error E-4019: tarjeta vencida</span></span><span class="l"></span><span class="l">El error <span class="s">`E-4019`</span> indica que la tarjeta usada está vencida. Pide al usuario</span><span class="l">una tarjeta vigente u otro método de pago. Este rechazo lo emite el banco</span><span class="l">emisor, así que reintentar con la misma tarjeta siempre devuelve el mismo</span><span class="l">error.</span><span class="l"></span><span class="l"><span class="k">## Error E-4020: CVV inválido</span></span><span class="l"></span><span class="l">El error <span class="s">`E-4020`</span> significa que el código de seguridad (CVV) no coincide.</span><span class="l">Permite al usuario reintentar escribiéndolo de nuevo, pero bloquea el</span><span class="l">formulario después de 3 intentos fallidos: más intentos disparan las reglas</span><span class="l">antifraude del emisor.</span><span class="l"></span><span class="l"><span class="k">## Error E-5001: timeout del emisor</span></span><span class="l"></span><span class="l">El error <span class="s">`E-5001`</span> ocurre cuando el banco emisor no respondió a tiempo. Es</span><span class="l">un error transitorio: es seguro reintentar la operación usando la misma</span><span class="l"><span class="s">`Idempotency-Key`</span> para no duplicar el cobro. Recomendamos máximo 2</span><span class="l">reintentos con espera de 5 segundos.</span><span class="l"></span><span class="l"><span class="k">## Error E-7777: rechazo por riesgo</span></span><span class="l"></span><span class="l">El error <span class="s">`E-7777`</span> es un bloqueo del motor antifraude de PagosYa. Por</span><span class="l">seguridad no se informa el motivo específico. NO debes reintentar la</span><span class="l">operación: reintentos repetidos de un pago bloqueado por riesgo pueden</span><span class="l">llevar a la suspensión temporal de la cuenta del comercio.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/webhooks.md</code> completo (29 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Guía de Webhooks
-
-Cómo funcionan las notificaciones asíncronas (webhooks) que PagosYa envía
-a tu servidor.
-
-## Configuración de webhooks
-
-Los webhooks se configuran en el dashboard, en la sección Desarrolladores &gt;
-Webhooks. Debes registrar una URL HTTPS pública; las URLs HTTP sin
-certificado son rechazadas. Puedes registrar hasta 5 endpoints distintos
-por cuenta, y elegir para cada uno qué eventos quieres recibir (por ejemplo
-`payment.approved`, `payment.declined` o `refund.completed`).
-
-## Verificación de firma
-
-Cada webhook incluye el header `X-Signature` con un HMAC-SHA256 del cuerpo
-de la petición, firmado con tu webhook secret. Siempre verifica esta firma
-antes de procesar el evento: es la única forma de garantizar que la
-notificación realmente viene de PagosYa y no de un atacante. El webhook
-secret es distinto de tu API key y se muestra una sola vez al crear el
-endpoint.
-
-## Reintentos de entrega
-
-Si tu servidor no responde con un código 2xx en menos de 10 segundos,
-PagosYa reintenta la entrega del webhook hasta 8 veces durante las
-siguientes 24 horas, con esperas crecientes entre intentos. Después del
-octavo intento fallido el evento se marca como no entregado y puedes
-recuperarlo manualmente desde el dashboard durante los siguientes 30 días."><div class="bloque-cab"><span class="ruta">docs/webhooks.md · archivo completo (29 líneas)</span></div><pre><code><span class="l"><span class="k"># Guía de Webhooks</span></span><span class="l"></span><span class="l">Cómo funcionan las notificaciones asíncronas (webhooks) que PagosYa envía</span><span class="l">a tu servidor.</span><span class="l"></span><span class="l"><span class="k">## Configuración de webhooks</span></span><span class="l"></span><span class="l">Los webhooks se configuran en el dashboard, en la sección Desarrolladores &gt;</span><span class="l">Webhooks. Debes registrar una URL HTTPS pública; las URLs HTTP sin</span><span class="l">certificado son rechazadas. Puedes registrar hasta 5 endpoints distintos</span><span class="l">por cuenta, y elegir para cada uno qué eventos quieres recibir (por ejemplo</span><span class="l"><span class="s">`payment.approved`</span>, <span class="s">`payment.declined`</span> o <span class="s">`refund.completed`</span>).</span><span class="l"></span><span class="l"><span class="k">## Verificación de firma</span></span><span class="l"></span><span class="l">Cada webhook incluye el header <span class="s">`X-Signature`</span> con un HMAC-SHA256 del cuerpo</span><span class="l">de la petición, firmado con tu webhook secret. Siempre verifica esta firma</span><span class="l">antes de procesar el evento: es la única forma de garantizar que la</span><span class="l">notificación realmente viene de PagosYa y no de un atacante. El webhook</span><span class="l">secret es distinto de tu API key y se muestra una sola vez al crear el</span><span class="l">endpoint.</span><span class="l"></span><span class="l"><span class="k">## Reintentos de entrega</span></span><span class="l"></span><span class="l">Si tu servidor no responde con un código 2xx en menos de 10 segundos,</span><span class="l">PagosYa reintenta la entrega del webhook hasta 8 veces durante las</span><span class="l">siguientes 24 horas, con esperas crecientes entre intentos. Después del</span><span class="l">octavo intento fallido el evento se marca como no entregado y puedes</span><span class="l">recuperarlo manualmente desde el dashboard durante los siguientes 30 días.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/changelog-2025.md</code> completo (20 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Changelog 2025
-
-Cambios publicados en la plataforma PagosYa durante 2025. Este documento y
-su gemelo de 2026 existen para la demo de metadata filtering: la misma
-pregunta (&quot;¿qué TLS exige la API?&quot;) tiene respuestas DISTINTAS según el
-año, y solo el filtro de metadata garantiza recuperar la correcta.
-
-## Cambios de seguridad 2025
-
-Desde marzo de 2025 la API exige TLS 1.2 como versión mínima; las
-conexiones con TLS 1.1 o inferior son rechazadas con un error de handshake.
-Además, las API keys de producción comprometidas ahora se pueden revocar de
-inmediato desde el dashboard sin esperar el periodo de gracia.
-
-## Nuevos endpoints 2025
-
-En 2025 se lanzó la versión v2 del endpoint de Checkout, que unifica la
-creación del pago y la sesión de checkout en una sola llamada. La versión
-v1 quedó marcada como obsoleta y dejará de recibir mejoras, aunque seguirá
-funcionando hasta nuevo aviso."><div class="bloque-cab"><span class="ruta">docs/changelog-2025.md · archivo completo (20 líneas)</span></div><pre><code><span class="l"><span class="k"># Changelog 2025</span></span><span class="l"></span><span class="l">Cambios publicados en la plataforma PagosYa durante 2025. Este documento y</span><span class="l">su gemelo de 2026 existen para la demo de metadata filtering: la misma</span><span class="l">pregunta (&quot;¿qué TLS exige la API?&quot;) tiene respuestas DISTINTAS según el</span><span class="l">año, y solo el filtro de metadata garantiza recuperar la correcta.</span><span class="l"></span><span class="l"><span class="k">## Cambios de seguridad 2025</span></span><span class="l"></span><span class="l">Desde marzo de 2025 la API exige TLS 1.2 como versión mínima; las</span><span class="l">conexiones con TLS 1.1 o inferior son rechazadas con un error de handshake.</span><span class="l">Además, las API keys de producción comprometidas ahora se pueden revocar de</span><span class="l">inmediato desde el dashboard sin esperar el periodo de gracia.</span><span class="l"></span><span class="l"><span class="k">## Nuevos endpoints 2025</span></span><span class="l"></span><span class="l">En 2025 se lanzó la versión v2 del endpoint de Checkout, que unifica la</span><span class="l">creación del pago y la sesión de checkout en una sola llamada. La versión</span><span class="l">v1 quedó marcada como obsoleta y dejará de recibir mejoras, aunque seguirá</span><span class="l">funcionando hasta nuevo aviso.</span></code></pre></div></details><details class='completo'><summary>Ver <code>docs/changelog-2026.md</code> completo (17 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="# Changelog 2026
-
-Cambios publicados en la plataforma PagosYa durante 2026.
-
-## Cambios de seguridad 2026
-
-Desde enero de 2026 la versión mínima de TLS es 1.3; las conexiones TLS 1.2
-entran en periodo de deprecación y serán rechazadas a partir de julio.
-Además, las llaves de sandbox (`sk_test_`) ahora expiran automáticamente a
-los 90 días de su creación para reducir el riesgo de llaves olvidadas.
-
-## Nuevos endpoints 2026
-
-En 2026 se lanzó el endpoint v3 de Checkout Lite, una versión reducida del
-checkout pensada para integraciones móviles: menos campos, respuesta más
-liviana y soporte nativo para Apple Pay y Google Pay. El endpoint v2
-completo sigue siendo la opción recomendada para web."><div class="bloque-cab"><span class="ruta">docs/changelog-2026.md · archivo completo (17 líneas)</span></div><pre><code><span class="l"><span class="k"># Changelog 2026</span></span><span class="l"></span><span class="l">Cambios publicados en la plataforma PagosYa durante 2026.</span><span class="l"></span><span class="l"><span class="k">## Cambios de seguridad 2026</span></span><span class="l"></span><span class="l">Desde enero de 2026 la versión mínima de TLS es 1.3; las conexiones TLS 1.2</span><span class="l">entran en periodo de deprecación y serán rechazadas a partir de julio.</span><span class="l">Además, las llaves de sandbox (<span class="s">`sk_test_`</span>) ahora expiran automáticamente a</span><span class="l">los 90 días de su creación para reducir el riesgo de llaves olvidadas.</span><span class="l"></span><span class="l"><span class="k">## Nuevos endpoints 2026</span></span><span class="l"></span><span class="l">En 2026 se lanzó el endpoint v3 de Checkout Lite, una versión reducida del</span><span class="l">checkout pensada para integraciones móviles: menos campos, respuesta más</span><span class="l">liviana y soporte nativo para Apple Pay y Google Pay. El endpoint v2</span><span class="l">completo sigue siendo la opción recomendada para web.</span></code></pre></div></details><details class='completo'><summary>Ver <code>rag.py</code> completo (93 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
+}"><div class="bloque-cab"><span class="ruta">golden.json · archivo completo (17 líneas)</span></div><pre><code><span class="l">{</span><span class="l">  &quot;¿Cuál es el timeout default de la API?&quot;: &quot;api-pagos.md § Timeouts y reintentos&quot;,</span><span class="l">  &quot;¿Cómo autentico mis peticiones a la API?&quot;: &quot;api-pagos.md § Autenticación&quot;,</span><span class="l">  &quot;Superé el rate limit, ¿cuánto debo esperar?&quot;: &quot;api-pagos.md § Límites de tasa&quot;,</span><span class="l">  &quot;¿Cuántas veces se reintenta la entrega de un webhook?&quot;: &quot;webhooks.md § Reintentos de entrega&quot;,</span><span class="l">  &quot;¿Qué significa el error E-4012?&quot;: &quot;errores.md § Error E-4012: fondos insuficientes&quot;,</span><span class="l">  &quot;código E-5001&quot;: &quot;errores.md § Error E-5001: timeout del emisor&quot;,</span><span class="l">  &quot;¿Puedo reintentar un pago que devolvió E-7777?&quot;: &quot;errores.md § Error E-7777: rechazo por riesgo&quot;,</span><span class="l">  &quot;¿Qué hago si el cliente paga con una tarjeta vencida?&quot;: &quot;errores.md § Error E-4019: tarjeta vencida&quot;,</span><span class="l">  &quot;endpoint v3 de Checkout Lite&quot;: &quot;changelog-2026.md § Nuevos endpoints 2026&quot;,</span><span class="l">  &quot;¿Qué versión mínima de TLS exige la API actualmente?&quot;: &quot;changelog-2026.md § Cambios de seguridad 2026&quot;,</span><span class="l">  &quot;¿Cómo evito cobros duplicados cuando reintento un pago?&quot;: &quot;api-pagos.md § Timeouts y reintentos&quot;,</span><span class="l">  &quot;¿puedo usar sk_test_ en producción?&quot;: &quot;api-pagos.md § Autenticación&quot;,</span><span class="l">  &quot;¿Cómo verifico que un webhook realmente viene de PagosYa?&quot;: &quot;webhooks.md § Verificación de firma&quot;,</span><span class="l">  &quot;¿cómo firmo mis webhooks?&quot;: &quot;webhooks.md § Verificación de firma&quot;,</span><span class="l">  &quot;¿cuánto tiempo tengo para responder un webhook?&quot;: &quot;webhooks.md § Reintentos de entrega&quot;</span><span class="l">}</span></code></pre></div></details><details class='completo'><summary>Ver <code>rag.py</code> completo (93 líneas), para comparar con el tuyo</summary><div class="bloque" data-codigo="&quot;&quot;&quot;
 rag.py: EL RAG DE LA SESIÓN 04, sin cambios de fondo
 
 Esta sesión NO construye otro RAG. Construye encima del que ya funciona.
