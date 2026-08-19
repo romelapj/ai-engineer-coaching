@@ -8,9 +8,10 @@ id: sesion-03
 titulo: "Taller 03 · Tool use: haz que funcione, luego que sobreviva"
 kicker: "AI Engineer Coaching · Fase 1: Fundamentos · Sesión 03"
 subtitulo: >-
-  Sin herramientas, el modelo solo puede rendirse o inventarse la respuesta.
-  En 6 días de 30 minutos, más el día 0 de preparación, le das manos, y después las blindas para que
-  no se te caigan a las 3 de la mañana.
+  Sin herramientas, el modelo solo puede rendirse o inventarse la respuesta. En
+   6 días de 30 minutos, más el día 0 de preparación, le damos manos. Y después
+   las blindamos, porque una demo que funciona el martes y se cae el sábado a
+   las 3 de la mañana no le sirve a nadie.
 
 codigo: codigo
 salidas: salidas
@@ -24,19 +25,28 @@ enlaces:
     url: "../index.html"
 
 como_funciona: |
-  **Un día = 30 minutos = un archivo que corre.** No leas el taller entero de
-  corrido: haz un día, ciérralo, y vuelve mañana. Cada paso trae el código
-  completo (botón `Copiar`), el comando para correrlo y la salida real que
-  deberías ver: esa salida es tu criterio de "me funcionó", sin tener que
-  preguntarle a nadie.
+  **Un día es una sentada, y termina con algo corriendo en tu máquina.** No te
+  leas el taller entero de una: haz un día, ciérralo, y vuelve mañana. Lo digo
+  en serio, aunque te sientas con cuerda para seguir. Esto se aprende durmiendo
+  entre sesión y sesión.
+
+  Cada paso trae el código completo (botón `Copiar`), el comando para correrlo
+  y la salida real que deberías ver. Esa salida es tu criterio de "me
+  funcionó": si lo tuyo se parece, sigue; si no, ahí tienes por dónde empezar a
+  mirar, y no necesitas preguntarme.
 
   El taller tiene **dos actos**. Los días 1 a 4 son *haz que funcione*: el
   modelo pide, tu código ejecuta. Los días 5 y 6 son *haz que sobreviva*: lo
   mismo, pero aguantando errores de red, rate limits y timeouts.
 
-  Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en
-  este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
+  Marca cada paso conforme lo termines, con el círculo de la izquierda o con el
+  botón del final: tu progreso queda guardado en este navegador, así que puedes
+  cerrar y volver mañana sin perder el hilo. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
   líneas, `c` para las notas del coach.
+
+
+  Una última cosa antes de empezar. Si algo no te cuadra, no sigas adelante
+  esperando que se aclare solo: casi nunca pasa. Anótalo y lo vemos.
 
 historia:
   cab: "La historia de esta sesión"
@@ -45,10 +55,11 @@ historia:
     rendirse o inventárselo. Dándole herramientas cambia de categoría: pasa de
     escribir texto a **hacer cosas**.
 
-    Y ahí aparece el problema nuevo. En cuanto tu código llama a un servicio de
-    verdad, hereda todo lo que le pasa a los servicios de verdad: se caen, tardan,
-    te limitan el ritmo y a veces cobran dos veces. Por eso esta sesión tiene dos
-    actos muy distintos.
+    Y ahí aparece el problema nuevo, que es el que de verdad te va a ocupar
+     tiempo. En cuanto tu código llama a un servicio real, hereda todo lo que
+     les pasa a los servicios reales: se caen, tardan, te limitan el ritmo y a
+     veces cobran dos veces. Por eso parto esta sesión en dos actos, y te pido
+     que no te saltes el segundo.
   actos:
     - titulo: "Que funcione"
       texto: >-
@@ -69,9 +80,10 @@ historia:
          qué pasó sin tener que reproducir el fallo.
       dias: "día 6"
   cierre: |
-    La diferencia entre una demo y algo que aguanta cabe en dos páginas de código,
-    y son las del acto 2. **La demo la hace cualquiera; lo que se paga es que no se
-    caiga.**
+    La diferencia entre una demo y algo que aguanta cabe en dos páginas de
+     código, y son las del acto 2. Si te quedas con una frase mía de esta
+     semana, que sea esta: **la demo la hace cualquiera; lo que se paga es que
+     no se caiga.**
 
 cierre:
   titulo: "Tu modelo ya tiene manos, y ya no se cae solo"
@@ -158,13 +170,16 @@ dias:
   # =========================================================================
   - etiqueta: "Día 1"
     vienes_de: >-
-       Ayer dejaste el entorno listo para no perder el día 1 instalando cosas.
+       Ayer dejaste el entorno listo. Hoy no vamos a llamar a ningún modelo
+       todavía, y es a propósito.
     titulo: "La forma del round-trip, y la ficha que ve el modelo"
     minutos: 30
     meta: >-
-      Antes de tocar la API, dos cosas: la **forma** del intercambio (cuatro
-      fases, siempre las mismas) y la **ficha** de la tool, que es lo único que
-      el modelo llega a ver de tu código. Hoy no se llama a ningún modelo.
+      Antes de tocar la API quiero que tengas claras dos cosas: la **forma**
+       del intercambio, que son cuatro fases y siempre las mismas, y la
+       **ficha** de la tool, que es lo único que el modelo llega a ver de tu
+       código. Ese detalle es el que más gente pasa por alto, y luego se
+       pregunta por qué el modelo no usa bien su función.
     archivo_completo:
       - 00_round_trip.py
       - 01_la_tool.py
@@ -301,8 +316,8 @@ dias:
         dos veces es lo que hace que deje de parecer magia.
     te_deja: >-
        El loop ya funciona con una herramienta. Mañana llega el caso que rompe
-       la mitad de las implementaciones caseras: dos herramientas pedidas en el
-       mismo turno.
+       la mitad de las implementaciones caseras que he visto: dos herramientas
+       pedidas en el mismo turno.
     pasos:
       - titulo: "El cliente y el puente nombre → función"
         minutos: 6
@@ -534,9 +549,10 @@ dias:
         hiciste hoy no es un truco de formato sino un cambio en cómo se
         construye con LLMs.
     te_deja: >-
-       Con esto, el acto 1 está completo: funciona. Y aquí es donde la mayoría
-       de los tutoriales termina. Mañana empieza la parte que separa una demo de
-       algo que puedes dejar corriendo.
+       Acto 1 completo: funciona. Y aquí, justo aquí, es donde termina la
+       mayoría de los tutoriales que vas a encontrar. Mañana empieza la parte
+       por la que te van a pagar: la que separa una demo de algo que puedes
+       dejar corriendo sin vigilarlo.
     pasos:
       - titulo: "El cliente, y una dependencia nueva"
         minutos: 4
@@ -619,10 +635,10 @@ dias:
     titulo: "Que sobreviva: reintentos y rate limits"
     minutos: 40
     meta: >-
-      Ya funciona. Ahora rómpelo. Toda llamada de red falla tarde o temprano, y
-      la diferencia entre un demo y algo que aguanta está en estas dos páginas
-      de código. Hoy no se llama al modelo: los fallos están simulados a
-      propósito para poder provocarlos.
+      Ya funciona. Ahora vamos a romperlo a propósito. Toda llamada de red
+       falla tarde o temprano, y prefiero que veas el fallo aquí, provocado por
+       ti, que en producción a una hora mala. Hoy no llamamos al modelo: los
+       fallos están simulados para que puedas provocarlos cuando quieras.
     archivo_completo:
       - 05_retries.py
       - 06_rate_limits.py
@@ -636,9 +652,10 @@ dias:
         validación falla y cómo son los reintentos que de verdad sirven. Es el
         tema de hoy.
     te_deja: >-
-       Ya aguanta fallos y respeta el rate limit. Falta lo que evita el peor
-       error de todos, que es cobrar dos veces por reintentar, y lo que te
-       permite averiguar qué pasó cuando ya pasó.
+       Ya aguanta fallos y respeta el rate limit. Mañana va lo que evita el peor
+       error de todos, cobrarle dos veces a un cliente por reintentar, y lo que
+       te deja averiguar qué pasó cuando ya pasó. Si trabajas cerca de pagos,
+       mañana es tu día.
     pasos:
       - titulo: "Un error transitorio y una llamada que falla dos veces"
         minutos: 6
@@ -747,8 +764,9 @@ dias:
       log de `08_logging.py` trae `request_id`, tokens, `stop_reason` y
       latencia en una sola línea.
     te_deja: >-
-       Con esto tienes las cinco piezas del acto 2. La sesión 04 cambia de tema:
-       el modelo dejará de necesitar que tú le des los datos y aprenderá a ir a
+       Con esto tienes las cinco piezas del acto 2, y con ellas algo que puedes
+       defender en una revisión de diseño. La sesión 04 cambia de tema: el
+       modelo deja de necesitar que tú le pases los datos y aprende a ir a
        buscarlos.
     pasos:
       - titulo: "Un cliente con timeout de verdad"

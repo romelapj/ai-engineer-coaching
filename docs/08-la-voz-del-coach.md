@@ -66,6 +66,23 @@ historias reales**. Los sitios donde el material las pide a gritos:
 
 Van en `nota_coach` y se cuentan en vivo. El material deja el hueco preparado.
 
+## Cobertura
+
+Aplicada a los cinco talleres el 19 de agosto de 2026.
+
+| Taller | Marcas de voz, antes | Después |
+| ------ | -------------------: | ------: |
+| 01 · Tokens, dinero y vectores | 0 | 10 |
+| 02 · La API por dentro | 0 | 5 |
+| 03 · Tool use | 0 | 7 |
+| 04 · RAG desde cero | 0 | 8 |
+| 05 · Retrieval avanzado | 20 | 20 |
+
+Lo reescrito son las piezas donde el alumno oye al coach: subtítulo, cómo
+funciona, la historia, y el recap, la meta y el gancho de cada día. Los `porque`
+de cada paso siguen en registro técnico a propósito: ahí el que manda es el
+código, y una voz demasiado presente estorbaría.
+
 ## Cómo se mide
 
 Sobre la prosa de un `taller.yaml`, contando marcas de primera persona del coach
