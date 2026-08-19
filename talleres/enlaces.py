@@ -20,7 +20,9 @@ def main():
     rotos = []
     revisados = 0
     for pagina in sorted(REPO.rglob("*.html")):
-        if any(p in {".git", "node_modules"} for p in pagina.parts):
+        # .diseno guarda los archivos de trabajo del canvas de diseño, que no
+        # forman parte del sitio: sus "enlaces" son placeholders del editor.
+        if any(p in {".git", "node_modules", ".diseno"} for p in pagina.parts):
             continue
         # Las plantillas no son páginas: sus enlaces son placeholders {{...}}
         # que build.py rellena al generar.

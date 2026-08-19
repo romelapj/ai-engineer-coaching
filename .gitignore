@@ -12,3 +12,6 @@ _template.html
 talleres/*/codigo/rag_db/
 talleres/*/codigo/.venv/
 __pycache__/
+
+# Archivos de trabajo del canvas de diseño (el canvas vive en un artifact).
+.diseno/
