@@ -8,9 +8,10 @@ id: sesion-05
 titulo: "Taller 05 · Retrieval avanzado: medir, diagnosticar y mejorar"
 kicker: "AI Engineer Coaching · Fase 2: Patrones · Sesión 05"
 subtitulo: >-
-  Tu RAG ya funciona. La pregunta ahora es otra: ¿recupera el contexto
-  correcto, y cómo lo sabes? En 6 días de 30 a 45 minutos, más el día 0 de preparación, construyes el
-  instrumento que lo mide y usas sus números para decidir qué arreglar.
+  Tu RAG ya funciona, y justo por eso quiero que empieces a desconfiar de él.
+   Esta semana te voy a enseñar a hacerle una pregunta que todavía no sabes
+   responder: ¿está recuperando lo correcto, y cómo lo demuestras? Son 6 días de
+   30 a 45 minutos, más el día 0 para dejar el entorno listo.
 
 codigo: codigo
 salidas: salidas
@@ -24,11 +25,15 @@ enlaces:
     url: "../index.html"
 
 como_funciona: |
-  **Un día = 30 minutos = un archivo que corre.** No leas el taller entero de
-  corrido: haz un día, ciérralo, y vuelve mañana. Cada paso trae el código
-  completo (botón `Copiar`), el comando para correrlo y la salida real que
-  deberías ver: esa salida es tu criterio de "me funcionó", sin tener que
-  preguntarle a nadie.
+  **Un día es una sentada, y termina con algo corriendo en tu máquina.** No te
+  leas el taller entero de una: haz un día, ciérralo, y vuelve mañana. Lo digo
+  en serio, aunque te sientas con cuerda para seguir. Esto se aprende
+  durmiendo entre sesión y sesión.
+
+  Cada paso trae el código completo (botón `Copiar`), el comando para correrlo
+  y la salida real que deberías ver. Esa salida es tu criterio de "me
+  funcionó": si lo tuyo se parece, sigue; si no, ahí tienes por dónde empezar a
+  mirar, y no necesitas preguntarme.
 
   **Este es el taller más largo del curso: el día 0 de setup y 6 días de 30 a 45
   minutos.** La sesión 05 tiene más del
@@ -39,25 +44,32 @@ como_funciona: |
   justificada por un número. El día 5 abre el resto del mapa y el 10 lo
   entrega todo a la sesión 06.
 
-  Marca cada paso con el círculo de la izquierda: tu progreso queda guardado en
-  este navegador. Atajos: `j` / `k` para saltar entre pasos, `w` para ajustar
-  líneas, `c` para las notas del coach.
+  Marca cada paso conforme lo termines, con el círculo de la izquierda o con el
+  botón del final: tu progreso queda guardado en este navegador, así que puedes
+  cerrar y volver mañana sin perder el hilo. Atajos: `j` y `k` para saltar entre
+  pasos, `w` para ajustar líneas largas, `c` para ver mis notas.
+
+  Una última cosa antes de empezar. Si algo no te cuadra, no sigas adelante
+  esperando que se aclare solo: casi nunca pasa. Anótalo y lo vemos.
 
 historia:
   cab: "La historia de esta sesión"
   entrada: |
     Terminaste la sesión 04 con un RAG que funciona: parte tus documentos, los
-    guarda como vectores, busca los más parecidos a la pregunta y responde
-    citando sus fuentes. Lo probaste, contestó bien, y te fuiste tranquilo.
+     guarda como vectores, busca los más parecidos a la pregunta y responde
+     citando sus fuentes. Lo probaste, contestó bien, y te fuiste tranquilo. Es
+     lo que hace todo el mundo, y es exactamente donde te quiero agarrar.
 
     **Esta sesión existe porque esa tranquilidad no está justificada.** Tu RAG
-    tiene un fallo que no produce ningún error: cuando no encuentra la
-    información correcta, responde educadamente que no tiene evidencia. Se ve
-    exactamente igual que un sistema que se porta bien. No hay excepción, no hay
-    log rojo, no hay nada que te avise. Y la respuesta estaba en tus documentos.
+     tiene un fallo que no produce ningún error: cuando no encuentra la
+     información correcta, responde educadamente que no tiene evidencia. Se ve
+     idéntico a un sistema que se porta bien. No hay excepción, no hay log rojo,
+     no hay nada que te avise. Y la respuesta estaba en tus documentos. Si te
+     preguntas por qué insisto tanto con esto: porque es el tipo de fallo que
+     descubres en una demo, delante de alguien, y no antes.
 
-    Durante seis días vas a hacer tres cosas, en este orden, porque el orden es
-    la mitad de la lección.
+    Durante seis días vamos a hacer tres cosas, y te pido que respetes el orden
+     aunque tengas prisa. El orden es la mitad de la lección.
   actos:
     - titulo: "Verlo fallar"
       texto: >-
@@ -83,11 +95,12 @@ historia:
         misma tabla.
       dias: "días 3 a 6"
   cierre: |
-    Al final tendrás el mismo RAG respondiendo mejor. Pero lo que de verdad te
-    llevas es otra cosa: **la capacidad de responder "¿y cómo sabes que
-    mejoró?" con una tabla en vez de con una opinión.** Esa pregunta es la que
-    separa a alguien que usa modelos de alguien que construye sistemas con
-    ellos.
+    Al final tendrás el mismo RAG respondiendo mejor. Pero si me preguntas qué
+     es lo que de verdad quiero que te lleves, no son los 15 puntos de recall:
+     es que puedas responder **\"¿y cómo sabes que mejoró?\" con una tabla en
+     vez de con una opinión.** Esa pregunta es la que separa a alguien que usa
+     modelos de alguien que construye sistemas con ellos, y te la van a hacer en
+     cada entrevista y en cada revisión de diseño que tengas.
 
 cierre:
   titulo: "Ya no crees que tu retrieval funciona: lo demuestras"
@@ -180,16 +193,18 @@ dias:
   # =========================================================================
   - etiqueta: "Día 1"
     vienes_de: >-
-       Ayer preparaste el entorno. Hoy montas todo lo que la sesión necesita y
-       lo ves romperse.
+       Ayer dejaste el entorno listo. Hoy montamos todo lo que la sesión
+       necesita, y te aviso desde ya: acaba rompiéndose. A propósito.
     titulo: "El punto de partida: monta el RAG de la 04 y hazlo fallar"
     minutos: 35
     meta: >-
-       Tres archivos y una corrida. El corpus compartido con su chunking, el RAG
-       de la sesión 04 intacto, y cuatro preguntas cuya respuesta está en los
-       documentos. Dos van a fallar, y cómo fallan es la sesión entera. Es el
-       día con más código para copiar del taller y el que menos tienes que
-       entender línea a línea: casi todo lo viste en la sesión 04.
+       Tres archivos y una corrida. El corpus con su chunking, el RAG de la
+       sesión 04 sin tocarle una coma, y cuatro preguntas cuya respuesta está en
+       los documentos. Dos van a fallar, y cómo fallan es la sesión entera. No
+       te asustes con la cantidad de código: es el día que más hay que copiar y
+       el que menos hay que entender línea a línea, porque casi todo ya lo
+       viste. Copia con confianza y guarda la energía para el final, que es
+       donde está lo interesante.
     archivo_completo:
       - base.py
       - golden.json
@@ -209,11 +224,12 @@ dias:
       corpus. Puedes explicar la diferencia entre "no se recuperó" y "se
       recuperó pero el umbral lo cortó".
     te_deja: >-
-       Acabas de ver el fallo con tus propios ojos: el chunk correcto recuperado
-       de cuarto y cortado por trece milésimas. Pero fallaron dos de cuatro
-       preguntas que **tú elegiste**, y ese 50% no significa nada. Con ejemplos
-       escogidos a mano se demuestra cualquier cosa. Mañana empieza lo que
-       convierte esto en una medición.
+       Acabas de verlo con tus propios ojos: el chunk correcto recuperado de
+       cuarto y cortado por trece milésimas. Ahora te voy a quitar el gusto del
+       hallazgo. Fallaron dos de cuatro preguntas que **elegí yo**, y ese 50% no
+       significa absolutamente nada: con ejemplos escogidos a mano se demuestra
+       lo que uno quiera, en la dirección que quiera. Yo lo acabo de hacer
+       contigo. Mañana empezamos a medir en serio.
     pasos:
       - titulo: "La metadata que todavía no usas"
         minutos: 9
@@ -722,15 +738,16 @@ dias:
   # =========================================================================
   - etiqueta: "Día 2"
     vienes_de: >-
-       Ayer viste fallar el RAG con cuatro preguntas que elegiste tú, y quedó
-       claro que cuatro anécdotas no son una medición.
+       Ayer te enseñé cuatro preguntas escogidas a dedo y te dije que no valían
+       como prueba. Hoy te doy la prueba de verdad.
     titulo: "El instrumento, y el primer número honesto"
     minutos: 30
     meta: >-
-       Hoy construyes lo que convierte esa impresión en un dato: dos métricas,
-       un diagnóstico que separa los fallos por tipo, y la primera corrida
-       contra 15 preguntas reales. Sale el número que vas a tener que superar el
-       resto de la semana.
+       Construyes dos métricas, un diagnóstico que separa los fallos por tipo, y
+       corres todo contra 15 preguntas reales. De ahí sale un número que no te
+       va a gustar, y que vas a tener que superar el resto de la semana. Presta
+       atención al diagnóstico más que al número: es la parte que casi nadie
+       hace y la que decide todo lo que viene después.
     archivo_completo:
       - metricas.py
       - 01_medir_el_baseline.py
@@ -996,14 +1013,15 @@ dias:
   # =========================================================================
   - etiqueta: "Día 3"
     vienes_de: >-
-       Ayer el diagnóstico dijo algo muy concreto: tres queries fallan porque el
-       embedding suaviza los términos literales.
+       Ayer el diagnóstico no dijo \"va mal\": dijo exactamente qué va mal y
+       cuántas veces. Hoy actuamos sobre eso, y solo sobre eso.
     titulo: "Las cuatro formas de buscar, y la primera medida"
     minutos: 35
     meta: >-
-       Escribes las cuatro estrategias de búsqueda con una firma común y de
-       inmediato pones tres a competir sobre el mismo golden set. La tabla que
-       sale trae una trampa que conviene no tragarse.
+       Escribes las cuatro formas de buscar con una firma común y pones tres a
+       competir sobre el mismo golden set. Te adelanto que la tabla que sale
+       trae una trampa, y que si la lees rápido vas a sacar la conclusión
+       equivocada. Quiero ver si la pillas antes de que te la señale.
     video:
       id: r0Dciuq0knU
       porque: >-
@@ -1017,10 +1035,11 @@ dias:
       Tienes tres filas comparadas. Puedes explicar por qué el híbrido es mejor
       que "solo BM25" aunque empate en recall@1.
     te_deja: >-
-       El híbrido ganó, pero la tabla trae una trampa que conviene no tragarse:
-       BM25 solo empata en recall@1 y gana en recall@5. Si te quedas ahí,
-       concluyes que el vector search sobra. La columna que lo desmiente es
-       recall@10, y también es la que hace posible el paso de mañana.
+       ¿La pillaste? BM25 solo empata en recall@1 y gana en recall@5, así que
+       leyendo por encima concluirías que el vector search sobra. La columna que
+       lo desmiente es recall@10. Si te dejaste engañar, no pasa nada: es la
+       lectura que hace casi todo el mundo, y por eso te puse la fila ahí. Esa
+       columna es además la que hace posible lo de mañana.
     pasos:
       - titulo: "La firma común, otra vez"
         minutos: 5
@@ -1268,8 +1287,9 @@ dias:
   # =========================================================================
   - etiqueta: "Día 4"
     vienes_de: >-
-       Ayer el híbrido dejó el chunk correcto siempre entre los candidatos:
-       recall@10 = 1.00.
+       Ayer dejaste el chunk correcto siempre entre los candidatos. Hoy toca la
+       técnica más vistosa del taller, y quiero que la mires con el reloj en la
+       mano.
     titulo: "El reranker, ahora que los datos lo justifican"
     minutos: 30
     meta: >-
@@ -1288,10 +1308,11 @@ dias:
         generalista como el nuestro. Es el paso natural cuando el reranker
         deje de ser una demo.
     te_deja: >-
-       Llegaste a 1.00, y al lado tienes 1.63 segundos por query. Las dos cosas
-       son el resultado. A partir de aquí ya no hay diagnóstico que arreglar en
-       este corpus, así que el día 5 cambia de pregunta: ¿qué haces cuando el
-       síntoma es otro?
+       Llegaste a 1.00. Y al lado tienes 1.63 segundos por consulta. Quiero que
+       te lleves las dos cifras juntas, porque el día que propongas esto en tu
+       equipo la segunda es la que te van a preguntar. Aquí ya no queda
+       diagnóstico que arreglar en este corpus, así que mañana cambiamos de
+       pregunta: ¿y cuando el síntoma es otro?
     pasos:
       - titulo: "Por qué hoy y no en el día 3"
         minutos: 8
@@ -1342,8 +1363,9 @@ dias:
   # =========================================================================
   - etiqueta: "Día 5"
     vienes_de: >-
-       Ayer cerraste el caso de este corpus: recall@1 de 1.00, y el costo medido
-       al lado.
+       Ayer cerramos el caso de este corpus. Hoy abro el mapa completo, y te
+       pido una cosa: no te lleves ninguna de estas técnicas por lo bien que
+       suena.
     titulo: "Mapa de palancas: un menú por síntoma, no una lista de pasos"
     minutos: 45
     meta: >-
@@ -1362,10 +1384,11 @@ dias:
         (49% y 67% menos fallos). Buen ejemplo de una mejora publicada con su
         medición al lado.
     te_deja: >-
-       Ahora tienes el mapa completo: cuatro palancas más, cada una con el
-       síntoma que la justifica. Ninguna se activa porque sí. Mañana entregas
-       todo esto a la sesión 06, y ahí el modelo deja de ejecutar tu pipeline y
-       empieza a decidir.
+       Ya tienes el mapa entero: cuatro palancas más, cada una con el síntoma
+       que la justifica. Si te acuerdas de una sola frase de este taller, que
+       sea esta: ninguna se activa porque sí. Mañana le entregamos todo esto a
+       la sesión 06, donde el modelo deja de ejecutar tu pipeline y empieza a
+       decidir por su cuenta.
     pasos:
       - titulo: "La tabla síntoma a palanca"
         minutos: 7
@@ -1477,8 +1500,8 @@ dias:
   # =========================================================================
   - etiqueta: "Día 6"
     vienes_de: >-
-       Ayer recorriste las cuatro palancas restantes y su síntoma
-       correspondiente.
+       Último día. Ayer viste el mapa completo; hoy entregas el trabajo de la
+       semana a la sesión que viene.
     titulo: "El traspaso: de pipeline a herramienta"
     minutos: 35
     meta: >-
@@ -1492,9 +1515,11 @@ dias:
       sesión 04 y responder bien con el de la 05. Y ves al modelo decidir buscar
       dos veces, con dos queries que él mismo escribió.
     te_deja: >-
-       Este es el final del camino de la sesión 05 y el principio del de la 06.
-       Te llevas un retrieval que sabes medir, que es exactamente lo que hace
-       falta antes de dejar que un agente lo use por su cuenta.
+       Hasta aquí la sesión 05. Te llevas un retrieval que sabes medir, que es
+       justamente lo que hace falta antes de dejar que un agente lo use solo. Y
+       ahora la pregunta que te voy a hacer en la próxima sesión, para que la
+       vayas pensando: ¿confiarías en darle esta herramienta a un agente
+       autónomo? Antes de esta semana no tenías forma de contestar.
     pasos:
       - titulo: "Dónde encaja esta sesión"
         minutos: 6

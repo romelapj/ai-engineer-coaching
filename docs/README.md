@@ -16,6 +16,7 @@ el rastro del razonamiento. La tercera vez queda escrita.
 | [05 · Sistema visual](05-sistema-visual.md)                    | Las reglas de diseño de los talleres, qué se midió antes de cambiarlas, y cómo se verifican    |
 | [06 · Videos de los talleres](06-videos.md)                    | La tarjeta al cierre del día, la página propia de cada video y qué resúmenes están pendientes  |
 | [07 · Panel de revisión](07-panel-de-revision.md)               | Seis perfiles expertos auditan el curso: 27 recomendaciones verificadas y 12 descartadas       |
+| [08 · La voz del coach](08-la-voz-del-coach.md)                 | Por qué el curso sonaba a manual y las cinco reglas con las que ahora habla alguien             |
 
 ## La regla que resume todo
 
