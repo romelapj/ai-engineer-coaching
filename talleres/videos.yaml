@@ -50,7 +50,7 @@ videos:
     titulo: "What are Word Embeddings?"
     autor: "IBM Technology"
     idioma: "Inglés"
-    duracion: "corto"
+    duracion: "duración sin verificar"
 
   # ---------------------------------------------------------------- sesión 02
   _ZvnD73m40o:
@@ -81,26 +81,26 @@ videos:
     titulo: "IBM AI Experts Reveal Prompt Engineering Secrets"
     autor: "IBM Technology"
     idioma: "Inglés"
-    duracion: "corto"
+    duracion: "duración sin verificar"
 
   # ---------------------------------------------------------------- sesión 03
   cjCYcTPryw8:
     titulo: "Build AI Function Calling with LangChain & Advanced AI Models"
     autor: "IBM Technology"
     idioma: "Inglés"
-    duracion: "corto"
+    duracion: "duración sin verificar"
 
   liV0bfZ5Wu0:
     titulo: "How to Connect an LLM to Python Functions (Tool Calling Tutorial)"
     autor: "Dataquest"
     idioma: "Inglés"
-    duracion: "medio"
+    duracion: "duración sin verificar"
 
   "-3-wq_kvc3A":
     titulo: "Tutorial Assistants API de OpenAI · Parte 2: Function Calling"
     autor: "LLM Master"
     idioma: "Español"
-    duracion: "medio"
+    duracion: "duración sin verificar"
 
   yj-wSRJwrrc:
     titulo: "Pydantic is all you need · Jason Liu"
@@ -772,22 +772,22 @@ videos:
     titulo: "Top 3 RAG Retrieval Strategies: Sparse, Dense & Hybrid Explained"
     autor: "IBM Technology"
     idioma: "Inglés"
-    duracion: "corto"
+    duracion: "duración sin verificar"
 
   9QJXvNiJIG8:
     titulo: "Mastering Retrieval for LLMs: BM25, Fine-tuned Embeddings and Re-Rankers"
     autor: "Trelis Research"
     idioma: "Inglés"
-    duracion: "largo"
+    duracion: "duración sin verificar"
 
   ZFbaA9eM0uo:
     titulo: "Advanced RAG 04: Reranking with Cross Encoders and Cohere API"
     autor: "Sam Witteveen"
     idioma: "Inglés"
-    duracion: "medio"
+    duracion: "duración sin verificar"
 
   tmiBae2goJM:
     titulo: "The Best RAG Technique Yet? Anthropic's Contextual Retrieval Explained"
     autor: "Prompt Engineering"
     idioma: "Inglés"
-    duracion: "medio"
+    duracion: "duración sin verificar"

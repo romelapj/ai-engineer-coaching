@@ -9,7 +9,7 @@ titulo: "Taller 04: RAG desde cero, con citas verificables"
 kicker: "AI Engineer Coaching · Fase 2 · Patrones · Sesión 04"
 subtitulo: >-
   Tu chatbot inventa respuestas sobre tus propios documentos y no puedes
-  auditar de dónde salieron. En 6 sesiones de 30 minutos construyes el
+  auditar de dónde salieron. En 5 días de 30 minutos, más el día 0 de preparación, construyes el
   pipeline RAG que las obliga a citar su fuente, o a admitir que no la tiene.
 
 codigo: codigo
@@ -84,7 +84,7 @@ cierre:
     decir si tu v0.4 es mejor que tu v0.3, en vez de suponerlo.
   siguiente:
     id: sesion-05
-    titulo: "Taller 05: RAG II, retrieval híbrido, reranking y evaluación"
+    titulo: "Taller 05 · Retrieval avanzado: medir, diagnosticar y mejorar"
     resumen: >-
       Deja de adivinar por qué tu RAG responde mal: mide el retrieval,
       mejóralo con híbrido + reranking y demuestra la ganancia con números.

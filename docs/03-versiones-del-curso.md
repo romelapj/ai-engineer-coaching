@@ -226,6 +226,61 @@ perfecto, y es justo lo que un alumno no puede detectar.
 
 ---
 
+## v4.4 · Lo que encontró el panel de revisión
+
+**18 de agosto de 2026**
+
+Seis perfiles expertos auditaron el curso (ver
+[07 · Panel de revisión](07-panel-de-revision.md)). El hallazgo que lo justifica
+todo: **el taller 05 no arrancaba en ninguna máquina que no fuera la del coach**,
+y ni `build.py --estricto` ni `verificar.py` lo detectaban.
+
+Dos bloqueadores independientes. El corpus de `sesion-05/codigo/docs/` no lo
+entregaba ningún paso, y como `glob` sobre una carpeta inexistente devuelve una
+lista vacía sin lanzar error, el alumno acababa con cero chunks y un RAG
+contestando "no tengo evidencia" a todo: el fallo silencioso que esa sesión
+existe para enseñar, servido en el día 0. Y el día 5 importaba un módulo que se
+escribe el día 6.
+
+**El arreglo de raíz.** `revisar_cobertura` solo miraba archivos que algún paso
+nombraba, así que un archivo que nadie nombra era invisible por construcción.
+Ahora compara contra el disco, y `archivo_completo` cuenta como entrega. El
+`README.md` del taller 04 pasó a `omitir[]`, que era el mecanismo previsto para
+esto y que hasta ahora no usaba nadie.
+
+**Tres guardarraíles más, porque la maquinaria vigilaba el código y nada más:**
+
+- `validar_esquema()` cierra el vocabulario del guion. Antes, renombrar `porque:`
+  a `porqué:` (un error de tilde plausible en español) borraba la clase de un
+  taller entero y el build seguía diciendo "sin huecos". Ahora falla y sugiere la
+  clave correcta por proximidad.
+- `talleres/enlaces.py` comprueba los 222 enlaces relativos del sitio. Nace de un
+  fallo real: las 24 páginas de video tuvieron el enlace de marca roto desde que
+  se generaron, porque un `lstrip("./")` se comía los dos puntos.
+- **CI en `.github/workflows/verificar.yml`**, que `docs/02` prometió en su
+  compromiso 3 y nunca se creó. Corre las cuatro comprobaciones y añade una que
+  faltaba: que el HTML commiteado sea el que produce el build.
+
+**Y lo que el curso se desmentía a sí mismo:**
+
+- Los cinco subtítulos contaban los días con tres criterios distintos. Ahora
+  todos dicen los días de trabajo y nombran el día 0 aparte.
+- El taller 04 anunciaba el 05 con un título que ya no existe.
+- El portal seguía vendiendo "una sesión de 90 minutos por semana", el formato
+  que la v3 reemplazó.
+- Una ruta con el directorio personal del coach estaba commiteada en una salida,
+  en un repositorio público.
+- Las definiciones de dominio salían **después** del código que explican, al
+  revés de lo que decían el comentario del generador y `docs/04`.
+- Los cinco decks no enlazaban a su taller, pese a que `docs/02` se comprometió a
+  que "deck y taller se enlazan mutuamente". El taller es el 100% del tiempo
+  diario del alumno y tenía cero puertas de entrada.
+- Nueve duraciones de video eran adjetivos ("corto", "medio") sin fuente, en un
+  catálogo cuya primera regla es "no se rellenan a ojo". Ahora dicen "sin
+  verificar", que es lo que son.
+
+---
+
 ## Ideas evaluadas y descartadas
 
 Se registran para no volver a discutirlas desde cero:

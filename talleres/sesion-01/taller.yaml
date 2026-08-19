@@ -8,8 +8,7 @@ id: sesion-01
 titulo: "Taller 01 · Tokens, dinero y vectores: lo que hay debajo del modelo"
 kicker: "AI Engineer Coaching · Fase 1: Fundamentos · Sesión 01"
 subtitulo: >-
-  El modelo no lee letras, lee tokens. Y esos tokens son tu factura. En 6
-  sesiones de 30 minutos construyes el Token-ó-metro, ves los parámetros de
+  El modelo no lee letras, lee tokens. Y esos tokens son tu factura. En 5 días de 30 minutos, más el día 0 de preparación, construyes el Token-ó-metro, ves los parámetros de
   muestreo trabajando, y tocas los vectores que sostienen todo lo que viene.
 
 codigo: codigo

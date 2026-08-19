@@ -421,6 +421,33 @@
         border-color: var(--green);
         opacity: 1;
       }
+      /* El deck es la teoría en vivo; el taller es donde el alumno pasa sus
+         30 minutos diarios. Hasta ahora no había ni un enlace entre los dos,
+         pese a que docs/02 se comprometió a que "deck y taller se enlazan
+         mutuamente". */
+      .al-taller {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 2rem;
+        padding: 0.7rem 1.3rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text);
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+      }
+      .al-taller:hover {
+        border-color: var(--accent2);
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+      .al-taller .al-taller-sub {
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 0.86rem;
+      }
     </style>
   </head>
   <body>
@@ -438,6 +465,11 @@
           Del happy path a producción: el modelo ejecuta herramientas, devuelve
           JSON validado y tu cliente sobrevive 429s, timeouts y basura.
         </p>
+        <a class="al-taller" href="../talleres/sesion-03.html">
+          🛠️ Hacer el taller
+          <span class="al-taller-sub">6 días de 30 min · 30 pasos con código que corre</span>
+        </a>
+      
       </section>
 
       <!-- SLIDE 2: agenda -->

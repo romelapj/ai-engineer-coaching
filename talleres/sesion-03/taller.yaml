@@ -9,7 +9,7 @@ titulo: "Taller 03 · Tool use: haz que funcione, luego que sobreviva"
 kicker: "AI Engineer Coaching · Fase 1: Fundamentos · Sesión 03"
 subtitulo: >-
   Sin herramientas, el modelo solo puede rendirse o inventarse la respuesta.
-  En 7 sesiones de 30 minutos le das manos, y después las blindas para que
+  En 6 días de 30 minutos, más el día 0 de preparación, le das manos, y después las blindas para que
   no se te caigan a las 3 de la mañana.
 
 codigo: codigo
@@ -86,7 +86,7 @@ cierre:
     que sirven a las 3 de la mañana.
   siguiente:
     id: sesion-04
-    titulo: "Taller 04 · RAG desde cero, con citas verificables"
+    titulo: "Taller 04: RAG desde cero, con citas verificables"
     resumen: >-
       Tu chatbot inventa respuestas sobre tus propios documentos y no puedes
       auditar de dónde salieron. Construye el pipeline que las obliga a citar

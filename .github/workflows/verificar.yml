@@ -1,0 +1,46 @@
+# El curso se publica desde main con GitHub Pages, así que lo que está en el
+# repositorio es lo que ve el alumno. Esto comprueba, en cada push, que el HTML
+# publicado se corresponde con el guion y el código que hay al lado.
+#
+# Lo que cubre, y por qué cada uno:
+#   1. build --estricto  · ninguna línea de código sin explicar, ningún archivo
+#      de codigo/ sin entregar, ninguna clave de guion mal escrita.
+#   2. git diff          · el HTML commiteado ES el que sale del build. Sin esto
+#      se puede publicar una página que no viene del YAML actual.
+#   3. verificar.py      · pegando los bloques en orden sale el archivo original
+#      byte a byte.
+#   4. enlaces           · ningún href relativo apunta a un archivo inexistente.
+name: Verificar el curso
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+
+      - name: Generar los talleres en modo estricto
+        run: python talleres/build.py --estricto
+
+      - name: El HTML publicado viene del guion actual
+        run: |
+          if ! git diff --exit-code --stat talleres/ index.html; then
+            echo ""
+            echo "El HTML del repositorio no coincide con el que produce build.py."
+            echo "Corre 'python talleres/build.py' y commitea el resultado."
+            exit 1
+          fi
+
+      - name: Lo que se ve es lo que corre
+        run: python talleres/verificar.py
+
+      - name: Ningún enlace relativo roto
+        run: python talleres/enlaces.py

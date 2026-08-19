@@ -397,6 +397,22 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
     ctx = f"día {num_dia} · paso {num_paso} ({paso.get('titulo', 'sin título')})"
     piezas = []
 
+    # Definiciones de dominio: la PRIMERA pieza del paso, antes del objetivo y
+    # del código. Un término que aparece en el código sin haberse definido
+    # obliga a deducirlo, y quien no puede deducirlo se cae del resto del
+    # taller. Estuvo ocho pasos saliendo detrás del código, al revés de lo que
+    # decía este mismo comentario y docs/04.
+    define = paso.get("define") or []
+    if define:
+        filas = "".join(
+            f'<li><b>{marcado(x["termino"])}</b><span>{marcado(x["es"])}</span></li>'
+            for x in define
+        )
+        piezas.append(
+            '<div class="nota define"><div class="nota-cab">Antes de seguir</div>'
+            f'<ul class="define-lista">{filas}</ul></div>'
+        )
+
     piezas.append(parrafos(paso.get("objetivo")))
 
     if "codigo" in paso:
@@ -431,20 +447,6 @@ def render_paso(paso, num_dia, num_paso, base, salidas, uso):
         piezas.append(bloque_salida(recorte))
     elif paso.get("salida_texto"):
         piezas.append(bloque_salida(paso["salida_texto"]))
-
-    # Definiciones de dominio. Van ANTES del código: un término que aparece en
-    # el código sin haberse definido obliga a deducirlo del contexto, y el que
-    # no puede deducirlo se queda fuera del resto del taller.
-    define = paso.get("define") or []
-    if define:
-        filas = "".join(
-            f'<li><b>{marcado(x["termino"])}</b><span>{marcado(x["es"])}</span></li>'
-            for x in define
-        )
-        piezas.append(
-            '<div class="nota define"><div class="nota-cab">Antes de seguir</div>'
-            f'<ul class="define-lista">{filas}</ul></div>'
-        )
 
     # Sintaxis de Python. Va ANTES del "por qué" a propósito: primero entiendes
     # qué dice el código, después por qué está escrito así. Plegado, porque a
@@ -753,12 +755,65 @@ def comprimir(numeros):
 
 
 # ---------------------------------------------------------------------------
+# Validación del guion
+# ---------------------------------------------------------------------------
+
+# build.py lee el YAML entero con .get(), así que una clave mal escrita no falla:
+# desaparece. Renombrar `porque:` a `porqué:` (un error de tilde frecuente en
+# español, y el bloque se rotula "Por qué") borra la clase de un taller entero y
+# el build sigue diciendo "sin huecos". Estos conjuntos cierran esa puerta.
+
+CLAVES_TALLER = {
+    "id", "titulo", "kicker", "subtitulo", "codigo", "salidas", "enlaces",
+    "como_funciona", "historia", "cierre", "dias", "inicio", "omitir",
+}
+CLAVES_DIA = {
+    "etiqueta", "titulo", "minutos", "meta", "vienes_de", "te_deja",
+    "archivo_completo", "checkpoint", "video", "pasos",
+}
+CLAVES_PASO = {
+    "titulo", "minutos", "objetivo", "define", "codigo", "bloques", "python",
+    "corre", "salida", "salida_texto", "porque", "si_falla", "nota_coach",
+}
+
+
+def validar_esquema(taller, nombre):
+    """Cada clave del guion tiene que existir en el vocabulario del generador.
+
+    Sin esto, un typo es indistinguible de una omisión deliberada."""
+    import difflib
+
+    errores = []
+
+    def revisar(d, permitidas, donde):
+        for clave in d:
+            if clave in permitidas:
+                continue
+            cerca = difflib.get_close_matches(str(clave), permitidas, n=1, cutoff=0.6)
+            pista = f" ¿querías decir `{cerca[0]}`?" if cerca else ""
+            errores.append(f"{donde}: clave desconocida `{clave}`.{pista}")
+
+    revisar(taller, CLAVES_TALLER, "raíz")
+    for i, dia in enumerate(taller.get("dias", []), start=1):
+        revisar(dia, CLAVES_DIA, f"día {i}")
+        for j, paso in enumerate(dia.get("pasos", []), start=1):
+            revisar(paso, CLAVES_PASO, f"día {i} · paso {j}")
+
+    if errores:
+        raise ErrorTaller(
+            f"{nombre}: el guion usa claves que el generador no conoce.\n    "
+            + "\n    ".join(errores)
+        )
+
+
+# ---------------------------------------------------------------------------
 # Construcción
 # ---------------------------------------------------------------------------
 
 
 def construir(dir_taller, estricto=False):
     taller = yaml.safe_load((dir_taller / "taller.yaml").read_text(encoding="utf-8"))
+    validar_esquema(taller, dir_taller.name)
     base = dir_taller / taller.get("codigo", "codigo")
     salidas = dir_taller / taller.get("salidas", "salidas")
 
