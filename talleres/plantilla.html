@@ -1047,6 +1047,60 @@
         margin-top: 0.6rem;
       }
 
+      /* ---------- volver donde lo dejaste ---------- */
+      a.reanudar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.2rem;
+        padding: 0.95rem 1.35rem;
+        border: 1px solid var(--acento-borde);
+        background: var(--acento-suave);
+        border-radius: var(--radio);
+        color: var(--texto);
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      a.reanudar:hover {
+        background: rgba(34, 211, 238, 0.16);
+        text-decoration: none;
+      }
+      a.reanudar svg {
+        color: var(--acento);
+        flex-shrink: 0;
+      }
+      .reanudar-txt {
+        display: block;
+        flex-grow: 1;
+        min-width: 0;
+      }
+      .reanudar-cab {
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--acento);
+        margin-bottom: 0.2rem;
+      }
+      .reanudar-paso {
+        display: block;
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--texto);
+      }
+      .reanudar-cifra {
+        font-size: 0.8rem;
+        color: var(--tenue);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      @media (max-width: 620px) {
+        .reanudar-cifra {
+          display: none;
+        }
+      }
+
       /* ---------- la historia del taller ----------
          Va antes del primer día, en la portada. Tres actos con su número
          grande: el mismo recurso editorial que la cifra del día, para que se
@@ -1544,6 +1598,18 @@
 
       <main>
         <header class="portada">
+          <!-- Solo aparece si hay progreso guardado y quedan pasos. El curso son
+               30 minutos diarios, así que volver es la acción más frecuente, y
+               hasta ahora el alumno aterrizaba arriba del todo sobre miles de
+               píxeles de portada. -->
+          <a class="reanudar" id="reanudar" href="#" hidden>
+            <span class="reanudar-txt">
+              <span class="reanudar-cab">Lo dejaste aquí</span>
+              <span class="reanudar-paso" id="reanudar-paso"></span>
+            </span>
+            <span class="reanudar-cifra" id="reanudar-cifra"></span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"></path></svg>
+          </a>
           <a class="marca" href="{{INICIO}}">{{KICKER}}</a>
           <h1>{{TITULO}}</h1>
           <p class="lead">{{SUBTITULO}}</p>
@@ -1611,8 +1677,36 @@
           hechos.clear();
           localStorage.removeItem(clave);
           pintar();
+          reanudacion();
         });
         pintar();
+
+        // ---------- volver donde lo dejaste ----------
+        // El primer paso NO hecho, que casi nunca es el siguiente al último
+        // marcado: la gente salta pasos y vuelve. Si no hay progreso, o ya está
+        // todo hecho, la barra no aparece: no hay nada que reanudar.
+        function reanudacion() {
+          const barra = document.getElementById("reanudar");
+          if (!barra) return;
+          const pendiente = pasos.find((p) => !hechos.has(p.id));
+          if (!hechos.size || !pendiente) {
+            barra.hidden = true;
+            return;
+          }
+          const dia = pendiente.closest(".dia");
+          const etiqueta = dia
+            ? dia.querySelector(".dia-etiqueta")?.childNodes[0]?.textContent.trim()
+            : "";
+          const titulo =
+            pendiente.querySelector(".paso-cab h3")?.textContent.trim() ?? "";
+          document.getElementById("reanudar-paso").textContent =
+            (etiqueta ? etiqueta + " · " : "") + titulo;
+          document.getElementById("reanudar-cifra").textContent =
+            hechos.size + " de " + pasos.length + " hechos";
+          barra.href = "#" + pendiente.id;
+          barra.hidden = false;
+        }
+        reanudacion();
 
         // ---------- paso activo en la navegación ----------
         const io = new IntersectionObserver(

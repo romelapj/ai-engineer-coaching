@@ -1047,6 +1047,60 @@
         margin-top: 0.6rem;
       }
 
+      /* ---------- volver donde lo dejaste ---------- */
+      a.reanudar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.2rem;
+        padding: 0.95rem 1.35rem;
+        border: 1px solid var(--acento-borde);
+        background: var(--acento-suave);
+        border-radius: var(--radio);
+        color: var(--texto);
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      a.reanudar:hover {
+        background: rgba(34, 211, 238, 0.16);
+        text-decoration: none;
+      }
+      a.reanudar svg {
+        color: var(--acento);
+        flex-shrink: 0;
+      }
+      .reanudar-txt {
+        display: block;
+        flex-grow: 1;
+        min-width: 0;
+      }
+      .reanudar-cab {
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--acento);
+        margin-bottom: 0.2rem;
+      }
+      .reanudar-paso {
+        display: block;
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--texto);
+      }
+      .reanudar-cifra {
+        font-size: 0.8rem;
+        color: var(--tenue);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      @media (max-width: 620px) {
+        .reanudar-cifra {
+          display: none;
+        }
+      }
+
       /* ---------- la historia del taller ----------
          Va antes del primer día, en la portada. Tres actos con su número
          grande: el mismo recurso editorial que la cifra del día, para que se
@@ -1544,6 +1598,18 @@
 
       <main>
         <header class="portada">
+          <!-- Solo aparece si hay progreso guardado y quedan pasos. El curso son
+               30 minutos diarios, así que volver es la acción más frecuente, y
+               hasta ahora el alumno aterrizaba arriba del todo sobre miles de
+               píxeles de portada. -->
+          <a class="reanudar" id="reanudar" href="#" hidden>
+            <span class="reanudar-txt">
+              <span class="reanudar-cab">Lo dejaste aquí</span>
+              <span class="reanudar-paso" id="reanudar-paso"></span>
+            </span>
+            <span class="reanudar-cifra" id="reanudar-cifra"></span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"></path></svg>
+          </a>
           <a class="marca" href="../index.html">AI Engineer Coaching · Fase 1: Fundamentos · Sesión 01</a>
           <h1>Taller 01 · Tokens, dinero y vectores: lo que hay debajo del modelo</h1>
           <p class="lead">El modelo no lee letras, lee tokens. Y esos tokens son tu factura. Quiero que  esta semana dejes de tratarlo como una caja negra: en 5 días de 30 minutos,  más el día 0 de preparación, construyes tu propio Token-ó-metro, ves los  parámetros de muestreo trabajando, y tocas con las manos los vectores que  sostienen todo lo que viene después.</p>
@@ -1670,7 +1736,7 @@ import anthropic
 client = anthropic.Anthropic()
 
 MODELO = &quot;claude-sonnet-4-6&quot;
-"><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 1–25</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1 · El modelo no ve letras: ve tokens</span></span><span class="l"></span><span class="l"><span class="s">Del deck: antes de llegar al modelo, tu texto se parte en TOKENS con un</span></span><span class="l"><span class="s">algoritmo llamado BPE (Byte Pair Encoding). El modelo nunca ve caracteres:</span></span><span class="l"><span class="s">ve una lista de números. Eso explica cosas que parecen bugs (por ejemplo</span></span><span class="l"><span class="s">que se equivoque contando cuántas erres tiene &quot;strawberry&quot;) y explica tu</span></span><span class="l"><span class="s">factura, porque los tokens son la unidad que se cobra.</span></span><span class="l"></span><span class="l"><span class="s">No hay que adivinar cuántos tokens tiene un texto: la API tiene un endpoint</span></span><span class="l"><span class="s">que los cuenta exacto, es GRATIS, y es específico de cada modelo.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo compara tres tipos de texto y mide cuántos caracteres cabe en</span></span><span class="l"><span class="s">un token en cada uno. La diferencia sorprende.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 00_tokens.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>count_tokens</code> es un endpoint aparte: <strong>no genera respuesta y no cuesta nada</strong>. Puedes llamarlo antes de cada petición para saber qué vas a gastar. Es la herramienta más subestimada de la API.</p></div>
+"><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 1–25</span></div><pre><code><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"><span class="s">Explicación 1 · El modelo no ve letras: ve tokens</span></span><span class="l"></span><span class="l"><span class="s">Del deck: antes de llegar al modelo, tu texto se parte en TOKENS con un</span></span><span class="l"><span class="s">algoritmo llamado BPE (Byte Pair Encoding). El modelo nunca ve caracteres:</span></span><span class="l"><span class="s">ve una lista de números. Eso explica cosas que parecen bugs (por ejemplo</span></span><span class="l"><span class="s">que se equivoque contando cuántas erres tiene &quot;strawberry&quot;) y explica tu</span></span><span class="l"><span class="s">factura, porque los tokens son la unidad que se cobra.</span></span><span class="l"></span><span class="l"><span class="s">No hay que adivinar cuántos tokens tiene un texto: la API tiene un endpoint</span></span><span class="l"><span class="s">que los cuenta exacto, es GRATIS, y es específico de cada modelo.</span></span><span class="l"></span><span class="l"><span class="s">Este archivo compara tres tipos de texto y mide cuántos caracteres cabe en</span></span><span class="l"><span class="s">un token en cada uno. La diferencia sorprende.</span></span><span class="l"></span><span class="l"><span class="s">Cómo correrlo:</span></span><span class="l"><span class="s">    python 00_tokens.py</span></span><span class="l"><span class="s">&quot;&quot;&quot;</span></span><span class="l"></span><span class="l"><span class="k">import</span> anthropic</span><span class="l"></span><span class="l">client = anthropic.<span class="f">Anthropic</span>()</span><span class="l"></span><span class="l">MODELO = <span class="s">&quot;claude-sonnet-4-6&quot;</span></span><span class="l"></span></code></pre></div><details class="nota sintaxis"><summary>Sintaxis de Python <span class="cuenta">4</span></summary><ul class="sintaxis-lista"><li><code>&quot;&quot;&quot;...&quot;&quot;&quot;</code><span>Las triple comillas al principio de un archivo son un <strong>docstring</strong>: la documentación del módulo. No es un comentario que el intérprete tire a la basura, es texto que queda dentro del programa. En este curso todos los archivos abren con uno que dice qué explican y cómo se corren.</span></li><li><code>import anthropic</code><span>Trae la librería entera. A partir de aquí se usa poniendo su nombre delante: <code>anthropic.Anthropic()</code>. Si esta línea falla, es que no activaste el entorno virtual del día 0.</span></li><li><code>client = anthropic.Anthropic()</code><span>Crea el objeto con el que hablarás con la API. Los paréntesis vacíos no significan &quot;sin configuración&quot;: la librería busca sola tu clave en la variable de entorno <code>ANTHROPIC_API_KEY</code>. Por eso nunca escribes la clave en el código.</span></li><li><code>MODELO = &quot;...&quot;</code><span>Un nombre en MAYÚSCULAS señala, por convención, una <strong>constante</strong>: algo que se define una vez arriba y no se vuelve a tocar. Python no lo impide, es un acuerdo entre programadores para que se lea de un vistazo.</span></li></ul></details><div class="nota porque"><div class="nota-cab">Por qué</div><p><code>count_tokens</code> es un endpoint aparte: <strong>no genera respuesta y no cuesta nada</strong>. Puedes llamarlo antes de cada petición para saber qué vas a gastar. Es la herramienta más subestimada de la API.</p></div>
         <button class="tick-fin" type="button" data-tick="d2p1">
           <span class="tick-fin-marca" aria-hidden="true"></span>
           <span class="tick-fin-texto">Marcar como hecho</span>
@@ -1707,7 +1773,7 @@ TEXTOS = {
     ),
 }
 
-"><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 26–44</span><span class="pill nuevo">+19 líneas nuevas</span></div><pre><code><span class="l"><span class="c"># Tres textos parecidos en longitud pero de naturaleza muy distinta.</span></span><span class="l">TEXTOS = {</span><span class="l">    <span class="s">&quot;español&quot;</span>: (</span><span class="l">        <span class="s">&quot;El cliente reporta que le cobraron dos veces el mismo producto &quot;</span></span><span class="l">        <span class="s">&quot;y solicita la devolución del importe duplicado lo antes posible.&quot;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;JSON&quot;</span>: (</span><span class="l">        <span class="s">&#x27;{&quot;order_id&quot;: &quot;ORD-8841&quot;, &quot;status&quot;: &quot;shipped&quot;, &quot;amount&quot;: 45000, &#x27;</span></span><span class="l">        <span class="s">&#x27;&quot;currency&quot;: &quot;COP&quot;, &quot;items&quot;: [{&quot;sku&quot;: &quot;A-12&quot;, &quot;qty&quot;: 2}]}&#x27;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;código&quot;</span>: (</span><span class="l">        <span class="s">&quot;def cobrar(order_id: str, monto: float) -&gt; dict:\n&quot;</span></span><span class="l">        <span class="s">&quot;    if order_id in procesados:\n&quot;</span></span><span class="l">        <span class="s">&quot;        return {&#x27;status&#x27;: &#x27;duplicado&#x27;}\n&quot;</span></span><span class="l">        <span class="s">&quot;    return {&#x27;status&#x27;: &#x27;ok&#x27;, &#x27;monto&#x27;: monto}&quot;</span></span><span class="l">    ),</span><span class="l">}</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>Están elegidos para que tengan un número de caracteres similar. Si la tokenización fuera proporcional al texto, deberían costar casi lo mismo. Apuesta ahora cuál crees que gana, antes de correrlo.</p></div>
+"><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 26–44</span><span class="pill nuevo">+19 líneas nuevas</span></div><pre><code><span class="l"><span class="c"># Tres textos parecidos en longitud pero de naturaleza muy distinta.</span></span><span class="l">TEXTOS = {</span><span class="l">    <span class="s">&quot;español&quot;</span>: (</span><span class="l">        <span class="s">&quot;El cliente reporta que le cobraron dos veces el mismo producto &quot;</span></span><span class="l">        <span class="s">&quot;y solicita la devolución del importe duplicado lo antes posible.&quot;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;JSON&quot;</span>: (</span><span class="l">        <span class="s">&#x27;{&quot;order_id&quot;: &quot;ORD-8841&quot;, &quot;status&quot;: &quot;shipped&quot;, &quot;amount&quot;: 45000, &#x27;</span></span><span class="l">        <span class="s">&#x27;&quot;currency&quot;: &quot;COP&quot;, &quot;items&quot;: [{&quot;sku&quot;: &quot;A-12&quot;, &quot;qty&quot;: 2}]}&#x27;</span></span><span class="l">    ),</span><span class="l">    <span class="s">&quot;código&quot;</span>: (</span><span class="l">        <span class="s">&quot;def cobrar(order_id: str, monto: float) -&gt; dict:\n&quot;</span></span><span class="l">        <span class="s">&quot;    if order_id in procesados:\n&quot;</span></span><span class="l">        <span class="s">&quot;        return {&#x27;status&#x27;: &#x27;duplicado&#x27;}\n&quot;</span></span><span class="l">        <span class="s">&quot;    return {&#x27;status&#x27;: &#x27;ok&#x27;, &#x27;monto&#x27;: monto}&quot;</span></span><span class="l">    ),</span><span class="l">}</span><span class="l"></span><span class="l"></span></code></pre></div><details class="nota sintaxis"><summary>Sintaxis de Python <span class="cuenta">2</span></summary><ul class="sintaxis-lista"><li><code>TEXTOS = { ... }</code><span>Un <strong>diccionario</strong>: pares de clave y valor entre llaves. Aquí la clave es el nombre del tipo de texto y el valor es el texto. Se lee con corchetes: <code>TEXTOS[&quot;español&quot;]</code>.</span></li><li><code>&quot;&quot;&quot;texto de varias líneas&quot;&quot;&quot;</code><span>Las triple comillas también sirven para escribir un texto largo tal cual, con sus saltos de línea incluidos. Sin ellas tendrías que pegar cada línea con <code>\n</code>.</span></li></ul></details><div class="nota porque"><div class="nota-cab">Por qué</div><p>Están elegidos para que tengan un número de caracteres similar. Si la tokenización fuera proporcional al texto, deberían costar casi lo mismo. Apuesta ahora cuál crees que gana, antes de correrlo.</p></div>
         <button class="tick-fin" type="button" data-tick="d2p2">
           <span class="tick-fin-marca" aria-hidden="true"></span>
           <span class="tick-fin-texto">Marcar como hecho</span>
@@ -1736,7 +1802,7 @@ TEXTOS = {
     )
     return resp.input_tokens
 
-"><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 45–55</span><span class="pill nuevo">+11 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">contar</span>(texto):</span><span class="l">    <span class="c"># count_tokens NO genera respuesta ni consume tokens de salida: solo</span></span><span class="l">    <span class="c"># cuenta. Es gratis y no tiene rate limit agresivo, así que puedes</span></span><span class="l">    <span class="c"># llamarlo antes de cada petición para estimar costo.</span></span><span class="l">    resp = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=MODELO,  <span class="c"># El conteo depende del modelo: cada familia tokeniza distinto.</span></span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: texto}],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.input_tokens</span><span class="l"></span><span class="l"></span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El conteo es <strong>específico del modelo</strong>: cada familia tokeniza distinto, así que el mismo texto puede dar números diferentes. Por eso <code>model</code> es obligatorio aquí y no un detalle.</p></div>
+"><div class="bloque-cab"><span class="ruta">00_tokens.py · líneas 45–55</span><span class="pill nuevo">+11 líneas nuevas</span></div><pre><code><span class="l"><span class="k">def</span> <span class="f">contar</span>(texto):</span><span class="l">    <span class="c"># count_tokens NO genera respuesta ni consume tokens de salida: solo</span></span><span class="l">    <span class="c"># cuenta. Es gratis y no tiene rate limit agresivo, así que puedes</span></span><span class="l">    <span class="c"># llamarlo antes de cada petición para estimar costo.</span></span><span class="l">    resp = client.messages.<span class="f">count_tokens</span>(</span><span class="l">        model=MODELO,  <span class="c"># El conteo depende del modelo: cada familia tokeniza distinto.</span></span><span class="l">        messages=[{<span class="s">&quot;role&quot;</span>: <span class="s">&quot;user&quot;</span>, <span class="s">&quot;content&quot;</span>: texto}],</span><span class="l">    )</span><span class="l">    <span class="k">return</span> resp.input_tokens</span><span class="l"></span><span class="l"></span></code></pre></div><details class="nota sintaxis"><summary>Sintaxis de Python <span class="cuenta">3</span></summary><ul class="sintaxis-lista"><li><code>def contar(texto):</code><span>Define una función. <code>texto</code> es el parámetro, el dato que recibe cuando la llamas. Todo lo que va debajo con <strong>cuatro espacios de sangría</strong> es su cuerpo: en Python la sangría no es estética, es sintaxis.</span></li><li><code>messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: texto}]</code><span>Una <strong>lista</strong> (los corchetes) que contiene un <strong>diccionario</strong> (las llaves). Este es el formato universal de la API: una conversación es una lista de mensajes, y cada mensaje dice quién habla y qué dice. Lo vas a ver en todas las sesiones a partir de aquí.</span></li><li><code>return resp.input_tokens</code><span><code>return</code> devuelve un valor a quien llamó a la función y termina su ejecución. El punto navega dentro del objeto que devolvió la API: <code>resp</code> tiene un campo <code>input_tokens</code> dentro.</span></li></ul></details><div class="nota porque"><div class="nota-cab">Por qué</div><p>El conteo es <strong>específico del modelo</strong>: cada familia tokeniza distinto, así que el mismo texto puede dar números diferentes. Por eso <code>model</code> es obligatorio aquí y no un detalle.</p></div>
         <button class="tick-fin" type="button" data-tick="d2p3">
           <span class="tick-fin-marca" aria-hidden="true"></span>
           <span class="tick-fin-texto">Marcar como hecho</span>
@@ -1800,7 +1866,7 @@ cuesta más de lo que parece, y por eso importa el formato que eliges.
 --- por qué se equivoca contando letras ---
 &#x27;strawberry&#x27; son 9 token(s) para el modelo,
 pero 10 caracteres para ti. Él no ve las 3 erres:
-ve un puñado de números que representan pedazos de la palabra."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Contando tokens con claude-sonnet-4-6</span><span class="l"></span><span class="l">tipo        caracteres   tokens  car/token</span><span class="l">------------------------------------------</span><span class="l">español            127       39       3.26</span><span class="l">JSON               119       60       1.98</span><span class="l">código             162       64       2.53</span><span class="l"></span><span class="l">El español corriente es el más eficiente. El JSON y el código gastan</span><span class="l">más tokens por carácter: las llaves, comillas y sangrías son tokens</span><span class="l">que pagas igual que las palabras. Por eso pedirle JSON al modelo</span><span class="l">cuesta más de lo que parece, y por eso importa el formato que eliges.</span><span class="l"></span><span class="l">--- por qué se equivoca contando letras ---</span><span class="l">&#x27;strawberry&#x27; son 9 token(s) para el modelo,</span><span class="l">pero 10 caracteres para ti. Él no ve las 3 erres:</span><span class="l">ve un puñado de números que representan pedazos de la palabra.</span></code></pre></div><div class="nota porque"><div class="nota-cab">Por qué</div><p>El español rinde <strong>3.26 caracteres por token</strong>; el JSON, <strong>1.98</strong>. Las llaves, las comillas y las sangrías son tokens que pagas igual que las palabras. Ese dato debería cambiar cómo diseñas tus prompts: pedir JSON tiene un costo, y a veces no compensa. Y abajo, <code>strawberry</code>: 9 tokens para 10 caracteres. El modelo no ve las tres erres porque <strong>no ve letras</strong>: ve un puñado de números que representan pedazos de palabra. Todos los fallos de &quot;cuenta las letras de esta palabra&quot; salen de ahí, y ninguno se arregla con un prompt mejor.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Buen momento para preguntar: &quot;¿entonces cómo le pedirías que cuente letras?&quot;. La respuesta es una tool que lo cuente en Python, y eso es justo la sesión 03.</p></div>
+ve un puñado de números que representan pedazos de la palabra."><div class="bloque-cab"><span class="ruta">▸ lo que deberías ver</span></div><pre><code><span class="l">Contando tokens con claude-sonnet-4-6</span><span class="l"></span><span class="l">tipo        caracteres   tokens  car/token</span><span class="l">------------------------------------------</span><span class="l">español            127       39       3.26</span><span class="l">JSON               119       60       1.98</span><span class="l">código             162       64       2.53</span><span class="l"></span><span class="l">El español corriente es el más eficiente. El JSON y el código gastan</span><span class="l">más tokens por carácter: las llaves, comillas y sangrías son tokens</span><span class="l">que pagas igual que las palabras. Por eso pedirle JSON al modelo</span><span class="l">cuesta más de lo que parece, y por eso importa el formato que eliges.</span><span class="l"></span><span class="l">--- por qué se equivoca contando letras ---</span><span class="l">&#x27;strawberry&#x27; son 9 token(s) para el modelo,</span><span class="l">pero 10 caracteres para ti. Él no ve las 3 erres:</span><span class="l">ve un puñado de números que representan pedazos de la palabra.</span></code></pre></div><details class="nota sintaxis"><summary>Sintaxis de Python <span class="cuenta">5</span></summary><ul class="sintaxis-lista"><li><code>f&quot;{nombre:10} {caracteres:&gt;11}&quot;</code><span>Una <strong>f-string</strong> con formato. La <code>f</code> antes de las comillas permite meter variables entre llaves, y lo que va tras los dos puntos alinea: <code>10</code> reserva 10 caracteres a la izquierda, <code>&gt;11</code> alinea a la derecha en 11. Es lo que hace que la tabla salga cuadrada en la terminal.</span></li><li><code>{ratio:&gt;10.2f}</code><span>Se pueden combinar alineación y decimales: derecha en 10 caracteres, con 2 decimales. Sin el <code>.2f</code> verías <code>3.2608695652173911</code>.</span></li><li><code>for nombre, texto in TEXTOS.items():</code><span><code>.items()</code> recorre un diccionario dando <strong>la clave y el valor a la vez</strong>, y las dos variables los recogen por posición. Recorrer el diccionario a secas (<code>for x in TEXTOS</code>) daría solo las claves.</span></li><li><code>&quot;-&quot; * 42</code><span>Multiplicar un texto por un número lo <strong>repite</strong>. Es la forma corta de dibujar una línea separadora sin escribir 42 guiones.</span></li><li><code>if __name__ == &quot;__main__&quot;:</code><span>La línea más críptica de Python, y la vas a ver en casi todos los archivos del curso. <code>__name__</code> es una variable que Python rellena solo: vale <code>&quot;__main__&quot;</code> cuando ejecutas ese archivo directamente, y el nombre del módulo cuando otro archivo lo importa. Traducido: <strong>&quot;ejecuta esto solo si me estás corriendo a mí, no si me están importando&quot;</strong>. Sin ella, importar este archivo desde otro dispararía toda la tabla sin que nadie se lo pidiera.</span></li></ul></details><div class="nota porque"><div class="nota-cab">Por qué</div><p>El español rinde <strong>3.26 caracteres por token</strong>; el JSON, <strong>1.98</strong>. Las llaves, las comillas y las sangrías son tokens que pagas igual que las palabras. Ese dato debería cambiar cómo diseñas tus prompts: pedir JSON tiene un costo, y a veces no compensa. Y abajo, <code>strawberry</code>: 9 tokens para 10 caracteres. El modelo no ve las tres erres porque <strong>no ve letras</strong>: ve un puñado de números que representan pedazos de palabra. Todos los fallos de &quot;cuenta las letras de esta palabra&quot; salen de ahí, y ninguno se arregla con un prompt mejor.</p></div><div class="nota coach"><div class="nota-cab">Nota del coach</div><p>Buen momento para preguntar: &quot;¿entonces cómo le pedirías que cuente letras?&quot;. La respuesta es una tool que lo cuente en Python, y eso es justo la sesión 03.</p></div>
         <button class="tick-fin" type="button" data-tick="d2p4">
           <span class="tick-fin-marca" aria-hidden="true"></span>
           <span class="tick-fin-texto">Marcar como hecho</span>
@@ -3186,8 +3252,36 @@ if __name__ == &quot;__main__&quot;:
           hechos.clear();
           localStorage.removeItem(clave);
           pintar();
+          reanudacion();
         });
         pintar();
+
+        // ---------- volver donde lo dejaste ----------
+        // El primer paso NO hecho, que casi nunca es el siguiente al último
+        // marcado: la gente salta pasos y vuelve. Si no hay progreso, o ya está
+        // todo hecho, la barra no aparece: no hay nada que reanudar.
+        function reanudacion() {
+          const barra = document.getElementById("reanudar");
+          if (!barra) return;
+          const pendiente = pasos.find((p) => !hechos.has(p.id));
+          if (!hechos.size || !pendiente) {
+            barra.hidden = true;
+            return;
+          }
+          const dia = pendiente.closest(".dia");
+          const etiqueta = dia
+            ? dia.querySelector(".dia-etiqueta")?.childNodes[0]?.textContent.trim()
+            : "";
+          const titulo =
+            pendiente.querySelector(".paso-cab h3")?.textContent.trim() ?? "";
+          document.getElementById("reanudar-paso").textContent =
+            (etiqueta ? etiqueta + " · " : "") + titulo;
+          document.getElementById("reanudar-cifra").textContent =
+            hechos.size + " de " + pasos.length + " hechos";
+          barra.href = "#" + pendiente.id;
+          barra.hidden = false;
+        }
+        reanudacion();
 
         // ---------- paso activo en la navegación ----------
         const io = new IntersectionObserver(

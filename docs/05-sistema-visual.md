@@ -84,6 +84,17 @@ Los días llevan una cifra grande en contorno, en el mismo margen.
 - **Movimiento reducido**: `prefers-reduced-motion` anula transiciones y el
   scroll suave.
 
+### Volver donde lo dejaste
+
+El curso son 30 minutos diarios, así que **retomar es la acción más frecuente**
+y era la peor resuelta: con 26 de 41 pasos hechos, el alumno aterrizaba en
+`scrollY = 0` sobre miles de píxeles de portada que ya había leído.
+
+Arriba del todo, antes de la marca, aparece ahora una barra con el primer paso
+**sin hacer**. No el siguiente al último marcado: el primero pendiente, porque
+la gente salta pasos y vuelve. La barra no existe para quien empieza (no hay
+nada que reanudar) ni para quien terminó.
+
 ### El control de "hecho" vive donde termina la lectura
 
 Cada paso tiene **dos** controles para marcarlo, y no es redundancia: el círculo

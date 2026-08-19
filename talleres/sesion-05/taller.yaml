@@ -1263,13 +1263,13 @@ dias:
           Medir, comparar y volver a diagnosticar.
         codigo:
           archivo: 02_hibrido_bm25_rrf.py
-          lineas: "33-117"
+          lineas: "33-70"
           nuevo: true
         corre: |
           python 02_hibrido_bm25_rrf.py
         salida:
           archivo: 02_hibrido_bm25_rrf.txt
-          lineas: "1-27"
+          lineas: "1-14"
         porque: >-
           Ganamos: recall@1 sube de **0.60 a 0.73** y el MRR de 0.71 a 0.82. El
           diagnóstico acertó y la palanca funcionó.
@@ -1290,6 +1290,30 @@ dias:
           queries fuera del top-4, una más que BM25 solo. El `k=60` de RRF
           amortigua mucho un primer puesto fuerte de un solo ranker. Esa perilla
           se puede mover, y entonces se vuelve a medir.
+
+      - titulo: "Las dos lecturas que el script no se calla"
+        minutos: 8
+        objetivo: >-
+          El detalle query por query y el diagnóstico después del híbrido.
+        codigo:
+          archivo: 02_hibrido_bm25_rrf.py
+          lineas: "71-117"
+          nuevo: true
+        corre: |
+          python 02_hibrido_bm25_rrf.py
+        salida:
+          archivo: 02_hibrido_bm25_rrf.txt
+          lineas: "15-27"
+        porque: >-
+          Aquí está la honestidad que quiero que copies en tus propios informes.
+          El script no se limita a cantar la mejora: dice también que el híbrido
+          dejó **2 queries fuera del top-4**, una más que BM25 solo.
+
+          La causa es el `k=60` de RRF, que amortigua mucho un primer puesto
+          fuerte de un solo ranker. Es una perilla y se puede mover, y entonces
+          se vuelve a medir. Un informe que solo cuenta lo que salió bien no es
+          un informe, es una demo.
+
 
   # =========================================================================
   - etiqueta: "Día 4"
@@ -1435,7 +1459,7 @@ dias:
           escriba el filtro.
         codigo:
           archivo: 04_mapa_de_palancas.py
-          lineas: "95-178"
+          lineas: "95-129"
           nuevo: true
         porque: >-
           Aquí entra la metadata que declaraste el día 1 y no habías usado. El
@@ -1446,6 +1470,26 @@ dias:
           Y el `self_query` es la puerta de entrada a la sesión 06: el modelo lee
           la pregunta en texto libre y **escribe el filtro**. Ya no es tu código
           decidiendo qué filtrar, es el modelo.
+
+      - titulo: "El modelo escribe el filtro"
+        minutos: 6
+        objetivo: >-
+          Self-query: en vez de decidir tú qué filtrar, se lo pides al modelo.
+        codigo:
+          archivo: 04_mapa_de_palancas.py
+          lineas: "130-178"
+          nuevo: true
+        porque: >-
+          Esto es la puerta de entrada a la sesión 06 y por eso lo separo del
+          paso anterior. Hasta aquí, el filtro lo decidías tú en el código: si
+          la query dice "actual", filtra por año 2026. Ahora el modelo lee la
+          pregunta en lenguaje natural y **escribe el filtro él**.
+
+          Es un cambio de quién manda. En el filtrado del paso anterior tu
+          código conoce las reglas; aquí tu código solo sabe qué campos existen,
+          y delega la decisión. Guarda esa sensación, porque toda la sesión 06
+          va de eso.
+
 
       - titulo: "C · Contextual retrieval"
         minutos: 9
@@ -1573,19 +1617,44 @@ dias:
           a esa variable. Con el retrieval de la sesión 04: *"No tengo evidencia
           para responder"*. Con el de la 05: la respuesta correcta, con su cita.
 
-      - titulo: "El RAG como herramienta"
-        minutos: 10
+      - titulo: "La ficha de la herramienta"
+        minutos: 5
         objetivo: >-
-          Envolver el mismo RAG en un tool schema y dejar que el modelo lo
-          invoque.
+          Describirle al modelo qué sabe hacer tu RAG, en el mismo formato del
+          taller 03.
         codigo:
           archivo: 05_puente_a_agentes.py
-          lineas: "104-185"
+          lineas: "104-131"
           nuevo: true
         porque: >-
-          El tool schema es el del taller 03: `name`, `description`,
-          `input_schema`. Lo que hay detrás ahora es un RAG medido, no una
-          función de juguete.
+          El tool schema es exactamente el del taller 03: `name`, `description`
+          e `input_schema`. No hay nada nuevo que aprender aquí, y ese es el
+          punto: lo que cambia no es la ficha, es lo que hay detrás. Antes era
+          una función de juguete que devolvía el tiempo; ahora es un RAG cuyo
+          recall@1 conoces.
+
+          Fíjate en la `description`, porque es la parte que decide si el modelo
+          usa bien la herramienta. Le estás diciendo cuándo llamarla, no solo
+          qué hace.
+
+      - titulo: "Dejar que el modelo decida"
+        minutos: 6
+        objetivo: >-
+          El loop que ejecuta la herramienta cuando el modelo la pide, y le
+          devuelve el resultado.
+        codigo:
+          archivo: 05_puente_a_agentes.py
+          lineas: "132-185"
+          nuevo: true
+        porque: >-
+          Este loop es el del taller 03, y por eso lo reconoces: `tool_use`
+          llega, tú ejecutas, devuelves `tool_result`, el modelo sigue. Lo único
+          que ha cambiado en cinco sesiones es la calidad de lo que hay al otro
+          lado de esa llamada.
+
+          Y aquí está el traspaso a la sesión 06 en una línea de código: el
+          modelo puede llamar a la herramienta **las veces que quiera**, con las
+          queries que él escriba. Ya no ejecutas tú un pipeline fijo.
 
       - titulo: "Ver al modelo decidir"
         minutos: 4

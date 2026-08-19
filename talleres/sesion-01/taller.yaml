@@ -208,6 +208,31 @@ dias:
         codigo:
           archivo: 00_tokens.py
           lineas: "1-25"
+        python:
+          - de: '"""..."""'
+            es: >-
+              Las triple comillas al principio de un archivo son un
+              **docstring**: la documentación del módulo. No es un comentario
+              que el intérprete tire a la basura, es texto que queda dentro del
+              programa. En este curso todos los archivos abren con uno que dice
+              qué explican y cómo se corren.
+          - de: 'import anthropic'
+            es: >-
+              Trae la librería entera. A partir de aquí se usa poniendo su
+              nombre delante: `anthropic.Anthropic()`. Si esta línea falla, es
+              que no activaste el entorno virtual del día 0.
+          - de: 'client = anthropic.Anthropic()'
+            es: >-
+              Crea el objeto con el que hablarás con la API. Los paréntesis
+              vacíos no significan "sin configuración": la librería busca sola
+              tu clave en la variable de entorno `ANTHROPIC_API_KEY`. Por eso
+              nunca escribes la clave en el código.
+          - de: 'MODELO = "..."'
+            es: >-
+              Un nombre en MAYÚSCULAS señala, por convención, una **constante**:
+              algo que se define una vez arriba y no se vuelve a tocar. Python
+              no lo impide, es un acuerdo entre programadores para que se lea de
+              un vistazo.
         porque: >-
           `count_tokens` es un endpoint aparte: **no genera respuesta y no
           cuesta nada**. Puedes llamarlo antes de cada petición para saber qué
@@ -222,6 +247,17 @@ dias:
           archivo: 00_tokens.py
           lineas: "26-44"
           nuevo: true
+        python:
+          - de: 'TEXTOS = { ... }'
+            es: >-
+              Un **diccionario**: pares de clave y valor entre llaves. Aquí la
+              clave es el nombre del tipo de texto y el valor es el texto. Se
+              lee con corchetes: `TEXTOS["español"]`.
+          - de: '"""texto de varias líneas"""'
+            es: >-
+              Las triple comillas también sirven para escribir un texto largo
+              tal cual, con sus saltos de línea incluidos. Sin ellas tendrías
+              que pegar cada línea con `\n`.
         porque: >-
           Están elegidos para que tengan un número de caracteres similar. Si la
           tokenización fuera proporcional al texto, deberían costar casi lo
@@ -235,6 +271,24 @@ dias:
           archivo: 00_tokens.py
           lineas: "45-55"
           nuevo: true
+        python:
+          - de: 'def contar(texto):'
+            es: >-
+              Define una función. `texto` es el parámetro, el dato que recibe
+              cuando la llamas. Todo lo que va debajo con **cuatro espacios de
+              sangría** es su cuerpo: en Python la sangría no es estética, es
+              sintaxis.
+          - de: 'messages=[{"role": "user", "content": texto}]'
+            es: >-
+              Una **lista** (los corchetes) que contiene un **diccionario** (las
+              llaves). Este es el formato universal de la API: una conversación
+              es una lista de mensajes, y cada mensaje dice quién habla y qué
+              dice. Lo vas a ver en todas las sesiones a partir de aquí.
+          - de: 'return resp.input_tokens'
+            es: >-
+              `return` devuelve un valor a quien llamó a la función y termina su
+              ejecución. El punto navega dentro del objeto que devolvió la API:
+              `resp` tiene un campo `input_tokens` dentro.
         porque: >-
           El conteo es **específico del modelo**: cada familia tokeniza
           distinto, así que el mismo texto puede dar números diferentes. Por eso
@@ -253,6 +307,37 @@ dias:
           python 00_tokens.py
         salida:
           archivo: 00_tokens.txt
+        python:
+          - de: 'f"{nombre:10} {caracteres:>11}"'
+            es: >-
+              Una **f-string** con formato. La `f` antes de las comillas permite
+              meter variables entre llaves, y lo que va tras los dos puntos
+              alinea: `10` reserva 10 caracteres a la izquierda, `>11` alinea a
+              la derecha en 11. Es lo que hace que la tabla salga cuadrada en la
+              terminal.
+          - de: '{ratio:>10.2f}'
+            es: >-
+              Se pueden combinar alineación y decimales: derecha en 10
+              caracteres, con 2 decimales. Sin el `.2f` verías
+              `3.2608695652173911`.
+          - de: 'for nombre, texto in TEXTOS.items():'
+            es: >-
+              `.items()` recorre un diccionario dando **la clave y el valor a la
+              vez**, y las dos variables los recogen por posición. Recorrer el
+              diccionario a secas (`for x in TEXTOS`) daría solo las claves.
+          - de: '"-" * 42'
+            es: >-
+              Multiplicar un texto por un número lo **repite**. Es la forma
+              corta de dibujar una línea separadora sin escribir 42 guiones.
+          - de: 'if __name__ == "__main__":'
+            es: >-
+              La línea más críptica de Python, y la vas a ver en casi todos los
+              archivos del curso. `__name__` es una variable que Python rellena
+              solo: vale `"__main__"` cuando ejecutas ese archivo directamente,
+              y el nombre del módulo cuando otro archivo lo importa. Traducido:
+              **"ejecuta esto solo si me estás corriendo a mí, no si me están
+              importando"**. Sin ella, importar este archivo desde otro
+              dispararía toda la tabla sin que nadie se lo pidiera.
         porque: >-
           El español rinde **3.26 caracteres por token**; el JSON, **1.98**. Las
           llaves, las comillas y las sangrías son tokens que pagas igual que las
