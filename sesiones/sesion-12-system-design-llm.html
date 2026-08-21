@@ -190,17 +190,16 @@
         font-size: 0.78rem;
         font-weight: 700;
         border: 1px solid var(--border);
-        color: var(--accent2);
-        background: rgba(34, 211, 238, 0.08);
+        color: var(--muted);
         margin-right: 0.5em;
       }
       .tag.violet {
-        color: #c4b5fd;
-        background: rgba(34, 211, 238, 0.12);
+        color: var(--muted);
       }
       .tag.green {
         color: var(--green);
-        background: rgba(52, 211, 153, 0.1);
+        border-color: rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.07);
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
@@ -219,7 +218,7 @@
       }
       /* ---------- código ---------- */
       pre {
-        background: #090d16;
+        background: #08080a;
         border: 1px solid var(--border);
         border-radius: 12px;
         padding: 1.2rem 1.4rem;
@@ -230,10 +229,10 @@
       }
       code {
         font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
-        color: #c9d4e3;
+        color: #d4d4d8;
       }
       pre .c {
-        color: #64748b;
+        color: #6b6b76;
       } /* comentario */
       pre .k {
         color: #c4b5fd;
@@ -246,12 +245,12 @@
       } /* función */
       p code,
       li code {
-        background: rgba(34, 211, 238, 0.12);
+        background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
         font-size: 0.9em;
-        color: #c4b5fd;
+        color: var(--text);
       }
       /* ---------- videos ---------- */
       .video-grid {

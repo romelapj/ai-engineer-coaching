@@ -202,3 +202,35 @@ mal el taller que enlazan. El de la sesión 05 prometía diez días y 41 pasos
 cuando el taller tiene siete y 44, y los otros cuatro se dejaban un día. Nadie
 lo habría notado leyendo el deck, porque el dato solo se contradice al abrir la
 otra página. Los cinco están sincronizados con lo que declara cada taller.
+
+### Lo que la primera pasada no vio
+
+Una auditoría de 46 agentes contra el commit anterior encontró tres cosas que la
+verificación había dado por buenas, y las tres eran ciertas.
+
+La peor la había introducido la propia migración. El portal declara sus tokens en
+español (`--fondo-2`, `--linea`) y conservaba dos atributos `style=` en línea que
+pedían `var(--bg2)` y `var(--border)`, nombres de la paleta anterior que ese
+archivo ya no declara. Las declaraciones caían inválidas y, como el atributo en
+línea gana por especificidad, las dos bandas alternas de la portada se
+renderizaban sin fondo y sin ninguno de sus dos filos.
+
+La segunda fue una isla entera: `coach/index.html` y `_template.html` seguían con
+la paleta azul y el violeta como acento primario. Nadie los enlaza, pero Pages los
+sirve, y mientras `_template.html` existiera, cualquier deck nuevo nacería con el
+sistema viejo.
+
+La tercera fue tinte azul dentro de páginas ya migradas. Los tokens tenían el
+valor correcto y el bloque de código seguía pintándose sobre `#090d16` navy con
+texto `#c9d4e3` y comentarios `#64748b` slate, más 73 usos de un violeta claro
+`#c4b5fd` repartidos entre las píldoras, el código en línea y el resaltado de
+sintaxis. Solo el último es legítimo: los talleres colorean las palabras clave con
+ese mismo violeta, así que los 27 de `pre .k` se quedaron y los demás se fueron.
+
+**Por qué se escaparon.** La comprobación que dijo "no hay hex sueltos" filtraba
+el bloque `:root` con un `awk` que usaba `\s`, una secuencia que awk no entiende,
+de modo que el filtro se comió cada archivo entero y devolvió vacío. Y la
+comprobación de "no queda violeta" buscaba `#8b5cf6`, sin saber que había un
+segundo violeta en juego. Las dos dieron verde sobre nada. Una verificación que no
+puede fallar nunca no está verificando: conviene probarla contra un caso que sí
+debería encontrar antes de confiar en su silencio.
