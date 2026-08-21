@@ -216,9 +216,12 @@ línea gana por especificidad, las dos bandas alternas de la portada se
 renderizaban sin fondo y sin ninguno de sus dos filos.
 
 La segunda fue una isla entera: `coach/index.html` y `_template.html` seguían con
-la paleta azul y el violeta como acento primario. Nadie los enlaza, pero Pages los
-sirve, y mientras `_template.html` existiera, cualquier deck nuevo nacería con el
-sistema viejo.
+la paleta azul y el violeta como acento primario. La auditoría los daba por
+servidos por Pages y no lo están: los dos figuran en `.gitignore` y sus URLs
+devuelven 404, así que ningún alumno los ha visto nunca. Migrarlos vale igual,
+porque `_template.html` es el molde del que sale cada deck nuevo y mientras
+siguiera en el sistema viejo iba a seguir pariendo páginas azules. Quedan
+migrados en local, fuera del control de versiones, como el resto de su carpeta.
 
 La tercera fue tinte azul dentro de páginas ya migradas. Los tokens tenían el
 valor correcto y el bloque de código seguía pintándose sobre `#090d16` navy con
