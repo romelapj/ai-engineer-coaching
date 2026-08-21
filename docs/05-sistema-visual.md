@@ -1,7 +1,8 @@
 # 05 · Sistema visual de los talleres
 
-**Fecha:** 15 de agosto de 2026
-**Alcance:** `talleres/plantilla.html`. Los 20 decks conservan su diseño.
+**Fecha:** 15 de agosto de 2026, ampliado el 21 de agosto
+**Alcance:** todo el sitio. Empezó en `talleres/plantilla.html` y el 21 de agosto
+llegó al portal, las 24 páginas de video, los 20 decks, el AI Gym y el visor.
 
 Las decisiones de abajo están en un solo archivo. Cambiarlas ahí cambia los
 cinco talleres a la vez, porque el HTML se genera.
@@ -145,3 +146,59 @@ de 320 a 1920px:
 
 Y por separado, `verificar.py` comprueba que lo que se ve, lo que copia el botón
 y el archivo fuente son el mismo texto.
+
+## Cuando el sistema llegó al resto del sitio
+
+**21 de agosto de 2026.** Durante un tiempo convivieron dos paletas. Los talleres
+usaban el zinc de arriba y las otras 22 páginas seguían en el azul `#0b0f1a` con
+el violeta como acento. Medido en el navegador, las seis familias de página
+daban dos combinaciones distintas de fondo, texto y acento. Hoy dan una.
+
+### Qué se cambió
+
+Los colores ya estaban tokenizados en un único bloque `:root` que 21 de los 22
+archivos compartían byte a byte, así que la paleta se movió entera con una
+sustitución de diez valores. No había un solo hex suelto repartido por el markup,
+y eso es lo que hizo el cambio barato.
+
+El violeta `#8b5cf6` desapareció como color de interfaz y se fusionó con el cian.
+Antes de fusionarlos se comprobó que ninguna regla usara los dos acentos a la vez:
+cero coincidencias, así que la fusión no borró ninguna distinción que alguien
+hubiera diseñado.
+
+El degradado de marca se usaba en 84 sitios: el kicker, las cifras grandes, la
+regla bajo cada `h2` y la barra de progreso. Sobrevive en dos, que son los que el
+sistema permite. El kicker es la marca del curso, el mismo elemento que
+`.marca` en la plantilla de talleres, y por eso conserva el degradado; la barra
+de progreso también. Las cifras grandes pasaron a `--texto`, que es lo que hacen
+las del portal y las de la portada de cada taller.
+
+Los halos de fondo de las diapositivas eran uno violeta y otro cian. Al fusionar
+los acentos quedaron los dos del mismo color y juntos teñían la esquina hasta
+`rgb(12, 30, 35)`, veinte puntos de verde por encima del negro de los talleres.
+Bajados a la mitad, la esquina queda en `rgb(11, 20, 23)` y la diapositiva
+conserva la profundidad que la distingue de una página de lectura.
+
+Se quitaron 228 emoji decorativos: 125 en un `<span class="icon">` que no tenía
+ni una regla de CSS asociada, 42 en el botón de copiar, que en los talleres dice
+"Copiar" a secas, y 61 que abrían un titular. Los emoji que quedan están en los
+enlaces de acción, donde los talleres también los usan, y en tres frases de prosa.
+
+### Dos cosas que salieron mal por el camino
+
+La primera fue mía y la corrigió la medición: pasé el kicker de los decks a color
+plano por parecerme decoración, y resultó ser la marca. La plantilla de talleres
+lo pinta con el degradado desde el principio. Volvió a su sitio.
+
+La segunda fue una regex que trató `👨‍💻` como un carácter cuando son tres.
+Quitó el primero y dejó el resto pegado al título en cuatro decks. Se ve raro y
+se arregla, pero el aviso vale para cualquier limpieza de texto: los emoji
+compuestos no se cortan por el primer codepoint.
+
+### Un hallazgo que no era de estilo
+
+Al revisar el enlace de la portada de cada deck salió que los cinco anunciaban
+mal el taller que enlazan. El de la sesión 05 prometía diez días y 41 pasos
+cuando el taller tiene siete y 44, y los otros cuatro se dejaban un día. Nadie
+lo habría notado leyendo el deck, porque el dato solo se contradice al abrir la
+otra página. Los cinco están sincronizados con lo que declara cada taller.

@@ -9,13 +9,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -69,12 +69,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -95,9 +95,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -107,7 +107,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -120,10 +120,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -197,7 +197,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -205,16 +205,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -250,7 +247,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -400,7 +397,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -680,7 +677,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
         <h2>Cuándo función, cuándo clase, cuándo dataclass</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">⚙️</span>
             <h3>Función</h3>
             <p class="muted">
               Una transformación sin estado persistente. Es el
@@ -688,7 +684,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
             </p>
           </div>
           <div class="card">
-            <span class="icon">📦</span>
             <h3>dataclass</h3>
             <p class="muted">
               Un registro de datos (con quizá un par de métodos derivados).
@@ -696,7 +691,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
             </p>
           </div>
           <div class="card">
-            <span class="icon">🔁</span>
             <h3>Clase normal</h3>
             <p class="muted">
               Estado mutable + comportamiento que evolucionan juntos: una
@@ -717,7 +711,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
         <div class="columns">
           <div>
             <div class="card">
-              <span class="icon">📦</span>
               <h3>1 · Modela (10 min)</h3>
               <p class="muted">
                 Define una <code>@dataclass</code> de tu dominio (pedido,
@@ -726,7 +719,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
               </p>
             </div>
             <div class="card">
-              <span class="icon">🔁</span>
               <h3>2 · Genera (10 min)</h3>
               <p class="muted">
                 Escribe un generador que lea registros uno a uno y los convierta
@@ -737,7 +729,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
           </div>
           <div>
             <div class="card">
-              <span class="icon">✅</span>
               <h3>3 · Testea (10 min)</h3>
               <p class="muted">
                 Dos tests con pytest: el camino feliz y un borde (registro
@@ -745,7 +736,6 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
               </p>
             </div>
             <div class="card">
-              <span class="icon">🚪</span>
               <h3>4 · Remata (5 min)</h3>
               <p class="muted">
                 Guard <code>if __name__ == "__main__"</code>: tu módulo queda
@@ -949,7 +939,7 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -957,7 +947,7 @@ p = <span class="f">Producto</span>(<span class="s">"Taza"</span>, 10.0, [<span 
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

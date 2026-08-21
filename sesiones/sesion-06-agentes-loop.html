@@ -9,13 +9,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -69,12 +69,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -95,9 +95,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -107,7 +107,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -120,10 +120,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -197,7 +197,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -205,16 +205,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -250,7 +247,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -400,7 +397,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -474,7 +471,6 @@
         <h2>Objetivos de la sesión</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">🧭</span>
             <h3>Workflow vs agente</h3>
             <p class="muted">
               Entender la diferencia y saber elegir cuál usar: la pregunta que
@@ -482,7 +478,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">🔁</span>
             <h3>El loop desde cero</h3>
             <p class="muted">
               Implementar el agent loop completo sin frameworks: decide →
@@ -490,7 +485,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">🛠️</span>
             <h3>Tools bien diseñadas</h3>
             <p class="muted">
               Escribir herramientas que el modelo usa bien: descripciones
@@ -572,7 +566,6 @@
         <h2>Anatomía del loop</h2>
         <div class="columns">
           <div class="card">
-            <span class="icon">1️⃣</span>
             <h3>Decide</h3>
             <p class="muted">
               El modelo ve el historial y elige: ¿respondo o llamo una tool? Lo
@@ -581,7 +574,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">2️⃣</span>
             <h3>Ejecuta</h3>
             <p class="muted">
               <strong>Tu código</strong> corre la tool. El modelo nunca ejecuta
@@ -589,7 +581,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">3️⃣</span>
             <h3>Observa</h3>
             <p class="muted">
               El resultado vuelve como <code>tool_result</code> dentro de un
@@ -598,7 +589,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">4️⃣</span>
             <h3>Repite</h3>
             <p class="muted">
               Hasta que el modelo decida terminar (<code>end_turn</code>) o tú
@@ -644,7 +634,6 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
         <h2>Diseño de tools: 3 reglas que separan junior de senior</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">📝</span>
             <h3>Descripciones = onboarding</h3>
             <p class="muted">
               Escribe la <code>description</code> como si entrenaras a un nuevo
@@ -653,7 +642,6 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
             </p>
           </div>
           <div class="card">
-            <span class="icon">🚨</span>
             <h3>Errores accionables</h3>
             <p class="muted">
               Nunca lances excepciones al loop ni devuelvas
@@ -662,7 +650,6 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
             </p>
           </div>
           <div class="card">
-            <span class="icon">🧩</span>
             <h3>Granularidad correcta</h3>
             <p class="muted">
               Pocas tools, sin solapamiento, a prueba de errores. Ejemplo de
@@ -855,7 +842,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>🧪 Manos al código · agente "wiki-researcher" (30 min)</h2>
+        <h2>Manos al código · agente "wiki-researcher" (30 min)</h2>
         <p>
           Construimos juntos, en un solo <code>agent.py</code>, un agente que
           responde preguntas factuales con fuentes usando la API de Wikipedia.
@@ -891,7 +878,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
 
       <!-- SLIDE 14: videos -->
       <section class="slide">
-        <h2>📺 Videos para reforzar</h2>
+        <h2>Videos para reforzar</h2>
         <div class="video-grid">
           <a
             class="video-card"
@@ -1001,7 +988,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana · AI Gym</h2>
+        <h2>Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 05</span
           ><span class="tag green">Entregable</span>
@@ -1133,7 +1120,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -1141,7 +1128,7 @@ TOOLS_MAP = {<span class="s">"fetch_page"</span>: fetch_page}
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

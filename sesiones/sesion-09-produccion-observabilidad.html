@@ -9,13 +9,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -69,12 +69,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -95,9 +95,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -107,7 +107,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -120,10 +120,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -197,7 +197,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -205,16 +205,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -250,7 +247,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -400,7 +397,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -476,7 +473,6 @@
         <h2>Objetivos de la sesión</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">🔍</span>
             <h3>Instrumentar</h3>
             <p class="muted">
               Trazas, tokens, costos y latencia en cada llamada al LLM,
@@ -484,7 +480,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">💸</span>
             <h3>Recortar costo</h3>
             <p class="muted">
               Aplicar prompt caching y elegir el modelo correcto por tarea:
@@ -492,7 +487,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">⚡</span>
             <h3>Bajar latencia percibida</h3>
             <p class="muted">
               Streaming para que el primer token llegue en menos de un segundo,
@@ -638,7 +632,6 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
         </blockquote>
         <div class="columns">
           <div class="card">
-            <span class="icon">💸</span>
             <h3>Eje costo</h3>
             <p class="muted">
               Prompt caching, model routing y batch: pagas menos por el mismo
@@ -646,7 +639,6 @@ log.<span class="f">info</span>(<span class="s">"llm_request"</span>, model=resp
             </p>
           </div>
           <div class="card">
-            <span class="icon">⚡</span>
             <h3>Eje latencia percibida</h3>
             <p class="muted">
               Streaming: no cambia el costo ni la latencia total, cambia lo que
@@ -863,7 +855,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
 
       <!-- SLIDE 14: videos -->
       <section class="slide">
-        <h2>📺 Videos para reforzar</h2>
+        <h2>Videos para reforzar</h2>
         <div class="video-grid">
           <a
             class="video-card"
@@ -973,7 +965,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana · AI Gym</h2>
+        <h2>Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 08 · Parte 1</span
           ><span class="tag green">Entregable</span>
@@ -1102,7 +1094,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -1110,7 +1102,7 @@ log.<span class="f">info</span>(<span class="s">"llm_stream"</span>, tokens_out=
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

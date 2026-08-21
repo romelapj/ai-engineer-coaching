@@ -8,13 +8,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -68,12 +68,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -94,9 +94,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -106,7 +106,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -119,10 +119,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -196,7 +196,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -204,16 +204,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -249,7 +246,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -399,7 +396,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -715,7 +712,6 @@ por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class=
         </h2>
         <div class="columns">
           <div class="card">
-            <span class="icon">🧩</span>
             <h3>1 · Refactor (15 min)</h3>
             <p class="muted">
               Te doy un script de ~60 líneas en un solo bloque; pártelo en
@@ -724,7 +720,6 @@ por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class=
             </p>
           </div>
           <div class="card">
-            <span class="icon">🔁</span>
             <h3>2 · for-else (5 min)</h3>
             <p class="muted">
               Reescribe una búsqueda con
@@ -734,7 +729,6 @@ por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class=
         </div>
         <div class="columns">
           <div class="card">
-            <span class="icon">🎯</span>
             <h3>3 · Callback (10 min)</h3>
             <p class="muted">
               Escribe <code>filtrar(datos, predicado)</code> que reciba una
@@ -742,7 +736,6 @@ por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class=
             </p>
           </div>
           <div class="card">
-            <span class="icon">🐛</span>
             <h3>4 · Cazar el default mutable (5 min)</h3>
             <p class="muted">
               Te doy una función con el bug;
@@ -931,7 +924,7 @@ por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class=
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -939,7 +932,7 @@ por_precio2 = <span class="f">sorted</span>(productos, key=operator.<span class=
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

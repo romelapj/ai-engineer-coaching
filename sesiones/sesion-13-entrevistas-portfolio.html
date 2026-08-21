@@ -8,13 +8,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -68,12 +68,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -94,9 +94,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -106,7 +106,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -119,10 +119,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -196,7 +196,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -204,16 +204,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -249,7 +246,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -399,7 +396,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -472,7 +469,6 @@
         <h2>Objetivos de la sesión</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">🎤</span>
             <h3>Mock interview completa</h3>
             <p class="muted">
               Coding + system design + behavioral, con rúbrica. Saber dónde
@@ -480,7 +476,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">📁</span>
             <h3>Portfolio orientado a evidencia</h3>
             <p class="muted">
               CV, LinkedIn y GitHub que muestran métricas de evals, no listas de
@@ -488,7 +483,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">🗺️</span>
             <h3>Estrategia de aplicación</h3>
             <p class="muted">
               15 empresas objetivo, ruta de referidos y narrativa personal de 30
@@ -612,14 +606,14 @@
         </ul>
         <div class="columns" style="margin-top: 1.2rem">
           <div class="card">
-            <h3>❌ Error típico</h3>
+            <h3>Error típico</h3>
             <p class="muted">
               Tour de arquitectura de 10 minutos: "y luego este servicio llama a
               este otro…". El entrevistador desconecta al minuto 2.
             </p>
           </div>
           <div class="card">
-            <h3>✅ Lo que funciona</h3>
+            <h3>Lo que funciona</h3>
             <p class="muted">
               Problema → decisiones → números. Si quieren detalle de
               arquitectura, lo van a pedir. Deja anzuelos, no des el tour.
@@ -633,7 +627,7 @@
         <h2>CV: bullets de evidencia, no tecnologías sueltas</h2>
         <div class="columns">
           <div class="card">
-            <h3>❌ Antes</h3>
+            <h3>Antes</h3>
             <ul class="clean">
               <li>"Trabajé con LangChain, Pinecone y la API de Anthropic"</li>
               <li>"Desarrollé un chatbot con RAG"</li>
@@ -641,7 +635,7 @@
             </ul>
           </div>
           <div class="card">
-            <h3>✅ Después</h3>
+            <h3>Después</h3>
             <ul class="clean">
               <li>
                 "Subí recall@5 de 0.61 a 0.83 en un RAG de soporte (eval set de
@@ -711,14 +705,13 @@ client = anthropic.<span class="f">Anthropic</span>()
 
       <!-- SLIDE 9: ejercicio en vivo -->
       <section class="slide">
-        <h2>🛠️ En vivo: construimos un STAR Grader (30 min)</h2>
+        <h2>En vivo: construimos un STAR Grader (30 min)</h2>
         <p>
           Un CLI en Python que te entrevista y te puntúa. Lo usarás toda la
           semana para entrenar antes de la mock grabada.
         </p>
         <div class="columns-3" style="margin-top: 1rem">
           <div class="card">
-            <span class="icon">1️⃣</span>
             <h3>Entrevistador (10 min)</h3>
             <p class="muted">
               Claude (<code>claude-sonnet-4-6</code>) lanza 3 preguntas
@@ -726,7 +719,6 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
           <div class="card">
-            <span class="icon">2️⃣</span>
             <h3>Juez con rúbrica (15 min)</h3>
             <p class="muted">
               Segunda llamada que puntúa tu respuesta 1-5 en estructura STAR,
@@ -734,7 +726,6 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
           <div class="card">
-            <span class="icon">3️⃣</span>
             <h3>Reporte (5 min)</h3>
             <p class="muted">
               Promedio por dimensión + el feedback más accionable. Meta de la
@@ -752,7 +743,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         <h2>Estrategia: ¿startup o corporate?</h2>
         <div class="columns">
           <div class="card">
-            <h3>🚀 Startup (seed - serie B)</h3>
+            <h3>Startup (seed - serie B)</h3>
             <ul class="clean">
               <li>Proceso: 2-3 semanas, a veces una sola semana</li>
               <li>Scope amplio: tú eres "el de AI", del prompt al deploy</li>
@@ -766,7 +757,7 @@ client = anthropic.<span class="f">Anthropic</span>()
             </ul>
           </div>
           <div class="card">
-            <h3>🏢 Corporate / scale-up</h3>
+            <h3>Corporate / scale-up</h3>
             <ul class="clean">
               <li>Proceso: 4-8 semanas, 4-6 rondas estandarizadas</li>
               <li>Scope más angosto, sistemas con tráfico real y on-call</li>
@@ -790,7 +781,6 @@ client = anthropic.<span class="f">Anthropic</span>()
         <h2>Volumen y referidos: el funnel real</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">📨</span>
             <h3>Cold apply</h3>
             <p class="muted">
               ~2-5% pasa a screen. Es un juego de volumen y de keywords que el
@@ -798,7 +788,6 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
           <div class="card">
-            <span class="icon">🤝</span>
             <h3>Con referido</h3>
             <p class="muted">
               ~5-10x más probabilidad de screen. Un mensaje directo a un
@@ -806,7 +795,6 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
           <div class="card">
-            <span class="icon">📉</span>
             <h3>Funnel típico</h3>
             <p class="muted">
               100 aplicaciones → 10-15 screens → 3-5 finales → 1-2 ofertas. El
@@ -856,7 +844,7 @@ client = anthropic.<span class="f">Anthropic</span>()
 
       <!-- SLIDE 13: videos -->
       <section class="slide">
-        <h2>📺 Videos para reforzar</h2>
+        <h2>Videos para reforzar</h2>
         <div class="video-grid">
           <a
             class="video-card"
@@ -969,7 +957,7 @@ client = anthropic.<span class="f">Anthropic</span>()
 
       <!-- SLIDE 14: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana: AI Gym</h2>
+        <h2>Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 13</span
           ><span class="tag green">Entregable final</span>
@@ -997,7 +985,6 @@ client = anthropic.<span class="f">Anthropic</span>()
         <h2>16 semanas: de dev a AI engineer</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">🧱</span>
             <h3>Qué construiste</h3>
             <p class="muted">
               De los fundamentos y tu primer RAG a un proyecto production-ready
@@ -1006,7 +993,6 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
           <div class="card">
-            <span class="icon">📏</span>
             <h3>Qué mides ahora</h3>
             <p class="muted">
               Faithfulness, recall@k, latencia p95 y costo por request. Pasaste
@@ -1015,7 +1001,6 @@ client = anthropic.<span class="f">Anthropic</span>()
             </p>
           </div>
           <div class="card">
-            <span class="icon">🗣️</span>
             <h3>Qué sabes defender</h3>
             <p class="muted">
               El marco de system design de 6 pasos, cada trade-off con su número
@@ -1127,7 +1112,7 @@ client = anthropic.<span class="f">Anthropic</span>()
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -1135,7 +1120,7 @@ client = anthropic.<span class="f">Anthropic</span>()
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

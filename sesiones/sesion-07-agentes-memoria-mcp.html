@@ -9,13 +9,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -69,12 +69,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -95,9 +95,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -107,7 +107,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -120,10 +120,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -197,7 +197,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -205,16 +205,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -250,7 +247,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -400,7 +397,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -477,7 +474,6 @@
         </p>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">🧠</span>
             <h3>Gestionar contexto</h3>
             <span class="tag green">columna vertebral</span>
             <p class="muted" style="margin-top: 0.5rem">
@@ -486,7 +482,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">🤖</span>
             <h3>Decidir multi-agente</h3>
             <span class="tag violet">extensión</span>
             <p class="muted" style="margin-top: 0.5rem">
@@ -495,7 +490,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">🔌</span>
             <h3>Entender MCP</h3>
             <span class="tag violet">extensión</span>
             <p class="muted" style="margin-top: 0.5rem">
@@ -587,7 +581,7 @@ client = anthropic.<span class="f">Anthropic</span>()
         <h2>Memoria de corto vs largo plazo</h2>
         <div class="columns">
           <div class="card">
-            <h3>⚡ Corto plazo = context window</h3>
+            <h3>Corto plazo = context window</h3>
             <ul class="clean">
               <li>Vive solo durante la sesión: muere con el proceso</li>
               <li>Acceso inmediato, sin retrieval</li>
@@ -599,7 +593,7 @@ client = anthropic.<span class="f">Anthropic</span>()
             </ul>
           </div>
           <div class="card">
-            <h3>💾 Largo plazo = archivos / DB</h3>
+            <h3>Largo plazo = archivos / DB</h3>
             <ul class="clean">
               <li>Sobrevive reinicios y sesiones</li>
               <li>Barata de almacenar, pero exige decidir qué leer y cuándo</li>
@@ -736,7 +730,7 @@ hallazgos = <span class="f">subagente</span>(
         <h2>¿Cuándo vale la pena el multi-agente?</h2>
         <div class="columns">
           <div class="card">
-            <h3>✅ Sí</h3>
+            <h3>Sí</h3>
             <ul class="clean">
               <li>
                 Subtareas paralelizables e independientes (investigar 10
@@ -747,7 +741,7 @@ hallazgos = <span class="f">subagente</span>(
             </ul>
           </div>
           <div class="card">
-            <h3>❌ No</h3>
+            <h3>No</h3>
             <ul class="clean">
               <li>
                 Pasos secuenciales con estado compartido: los agentes no
@@ -850,7 +844,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
 
       <!-- SLIDE 13: ejercicio en vivo -->
       <section class="slide">
-        <h2>👩‍💻 Manos al código · 30 min en pareja</h2>
+        <h2>Manos al código · 30 min en pareja</h2>
         <p>
           Construimos juntos un
           <strong>agente CLI con memoria persistente</strong>: un asistente que
@@ -885,7 +879,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
 
       <!-- SLIDE 14: videos -->
       <section class="slide">
-        <h2>📺 Videos para reforzar</h2>
+        <h2>Videos para reforzar</h2>
         <div class="video-grid">
           <a
             class="video-card"
@@ -994,7 +988,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
 
       <!-- SLIDE 15: reto de la semana -->
       <section class="slide">
-        <h2>🏋️ Reto de la semana · AI Gym</h2>
+        <h2>Reto de la semana · AI Gym</h2>
         <div class="card">
           <span class="tag violet">Reto 06</span
           ><span class="tag green">Entregable</span>
@@ -1012,7 +1006,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
             conéctalo a Claude Code o a tu cliente MCP favorito.
           </p>
           <p style="margin-top: 0.8rem">
-            📄 Enunciado completo y rúbrica:
+            Enunciado completo y rúbrica:
             <a
               href="../gym/reto-06-agente-con-memoria/README.md"
               style="color: var(--accent2)"
@@ -1035,7 +1029,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
         </p>
         <div class="columns">
           <div class="card">
-            <h3>☠️ La trifecta letal</h3>
+            <h3>La trifecta letal</h3>
             <p>
               Un agente es explotable vía prompt injection cuando combina las
               tres a la vez:
@@ -1052,7 +1046,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
             </p>
           </div>
           <div class="card">
-            <h3>🛡️ Reglas mínimas</h3>
+            <h3>Reglas mínimas</h3>
             <ul class="clean">
               <li>
                 <strong>Mínimo privilegio</strong>: cada subagente solo las
@@ -1179,7 +1173,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -1187,7 +1181,7 @@ NOTAS = [<span class="s">"usa retries con backoff"</span>, <span class="s">"el d
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

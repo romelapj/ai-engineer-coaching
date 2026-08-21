@@ -6,12 +6,12 @@
     <title>AI Engineer Coaching · Documento</title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
@@ -36,7 +36,7 @@
         align-items: center;
         gap: 1rem;
         padding: 0.9rem 1.4rem;
-        background: rgba(11, 15, 26, 0.9);
+        background: rgba(10, 10, 12, 0.9);
         backdrop-filter: blur(8px);
         border-bottom: 1px solid var(--border);
       }
@@ -59,7 +59,7 @@
       .topbar .md-link {
         color: #c4b5fd;
         border: 1px solid var(--border);
-        background: rgba(139, 92, 246, 0.1);
+        background: rgba(34, 211, 238, 0.1);
         padding: 0.35em 0.9em;
         border-radius: 999px;
         flex-shrink: 0;
@@ -85,7 +85,7 @@
         height: 4px;
         margin-top: 0.7rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       main h2 {
         font-size: 1.5rem;
@@ -110,7 +110,7 @@
       main code {
         font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
         font-size: 0.9em;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -133,7 +133,7 @@
         margin: 1.2rem 0;
         padding: 0.7rem 1.3rem;
         border-left: 4px solid var(--accent);
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 10px 10px 0;
         color: var(--text);
       }
@@ -195,7 +195,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -223,7 +223,7 @@
     <header class="topbar">
       <a class="back" href="index.html">← Portal</a>
       <a class="md-link" id="mdLink" target="_blank" rel="noopener"
-        >📝 Ver markdown en GitHub</a
+        >Ver markdown en GitHub</a
       >
       <span class="doc-title" id="docTitle"></span>
     </header>
@@ -305,7 +305,7 @@
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -313,7 +313,7 @@
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };

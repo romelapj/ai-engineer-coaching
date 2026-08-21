@@ -8,13 +8,13 @@
     </title>
     <style>
       :root {
-        --bg: #0b0f1a;
-        --bg2: #0e1424;
-        --surface: #151d31;
-        --border: #243047;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #8b5cf6;
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
         --accent2: #22d3ee;
         --green: #34d399;
         --amber: #fbbf24;
@@ -68,12 +68,12 @@
         background:
           radial-gradient(
             1200px 700px at 80% -10%,
-            rgba(139, 92, 246, 0.1),
+            rgba(34, 211, 238, 0.05),
             transparent 60%
           ),
           radial-gradient(
             900px 600px at -10% 110%,
-            rgba(34, 211, 238, 0.07),
+            rgba(34, 211, 238, 0.035),
             transparent 60%
           ),
           var(--bg);
@@ -94,9 +94,9 @@
       }
       .kicker {
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         background: var(--grad);
         -webkit-background-clip: text;
         background-clip: text;
@@ -106,7 +106,7 @@
       h1 {
         font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: -0.02em;
       }
       h2 {
@@ -119,10 +119,10 @@
         content: "";
         display: block;
         width: 64px;
-        height: 4px;
+        height: 2px;
         margin-top: 0.6rem;
         border-radius: 2px;
-        background: var(--grad);
+        background: var(--accent);
       }
       h3 {
         font-size: 1.15rem;
@@ -196,7 +196,7 @@
       }
       .tag.violet {
         color: #c4b5fd;
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
       }
       .tag.green {
         color: var(--green);
@@ -204,16 +204,13 @@
       }
       .big {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        background: var(--grad);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-weight: 900;
+        color: var(--text);
       }
       blockquote {
         border-left: 4px solid var(--accent);
         padding: 0.8rem 1.4rem;
-        background: rgba(139, 92, 246, 0.07);
+        background: rgba(34, 211, 238, 0.07);
         border-radius: 0 12px 12px 0;
         font-size: 1.15rem;
         font-style: italic;
@@ -249,7 +246,7 @@
       } /* función */
       p code,
       li code {
-        background: rgba(139, 92, 246, 0.12);
+        background: rgba(34, 211, 238, 0.12);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 0.1em 0.4em;
@@ -399,7 +396,7 @@
         top: 0.6rem;
         right: 0.6rem;
         border: 1px solid var(--border);
-        background: rgba(9, 13, 22, 0.85);
+        background: rgba(7, 7, 9, 0.85);
         color: var(--muted);
         border-radius: 999px;
         padding: 0.3em 0.85em;
@@ -467,7 +464,7 @@
         </p>
         <a class="al-taller" href="../talleres/sesion-03.html">
           🛠️ Hacer el taller
-          <span class="al-taller-sub">6 días de 30 min · 30 pasos con código que corre</span>
+          <span class="al-taller-sub">7 días de 30 min · 30 pasos con código que corre</span>
         </a>
       
       </section>
@@ -512,7 +509,6 @@
         <h2>Objetivos de la sesión</h2>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">🔁</span>
             <h3>Function calling end-to-end</h3>
             <p class="muted">
               Implementar el loop completo <code>tool_use</code> →
@@ -520,7 +516,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">📐</span>
             <h3>Salidas estructuradas</h3>
             <p class="muted">
               Garantizar JSON válido con JSON Schema + Pydantic, y reintentar
@@ -528,7 +523,6 @@
             </p>
           </div>
           <div class="card">
-            <span class="icon">🛡️</span>
             <h3>Clientes robustos</h3>
             <p class="muted">
               Retries con backoff exponencial y jitter, manejo de rate limits,
@@ -592,7 +586,6 @@ Modelo:
         <h2>Anatomía del round-trip</h2>
         <div class="columns">
           <div class="card">
-            <span class="icon">1️⃣</span>
             <h3>Pide</h3>
             <p class="muted">
               El modelo responde con un bloque <code>tool_use</code>: el nombre
@@ -601,7 +594,6 @@ Modelo:
             </p>
           </div>
           <div class="card">
-            <span class="icon">2️⃣</span>
             <h3>Ejecutas</h3>
             <p class="muted">
               Tu código corre la función.
@@ -610,7 +602,6 @@ Modelo:
             </p>
           </div>
           <div class="card">
-            <span class="icon">3️⃣</span>
             <h3>Devuelves</h3>
             <p class="muted">
               El resultado vuelve como <code>tool_result</code> dentro de un
@@ -619,7 +610,6 @@ Modelo:
             </p>
           </div>
           <div class="card">
-            <span class="icon">4️⃣</span>
             <h3>Responde</h3>
             <p class="muted">
               Con el resultado en contexto, el modelo responde al usuario, o
@@ -848,7 +838,6 @@ summary_tool = {<span class="s">"name"</span>: <span class="s">"save_case_summar
         </blockquote>
         <div class="columns">
           <div class="card">
-            <span class="icon">1️⃣</span>
             <h3>Retries</h3>
             <p class="muted">
               Los errores transitorios se reintentan solos: backoff exponencial
@@ -856,19 +845,16 @@ summary_tool = {<span class="s">"name"</span>: <span class="s">"save_case_summar
             </p>
           </div>
           <div class="card">
-            <span class="icon">2️⃣</span>
             <h3>Rate limits</h3>
             <p class="muted">
               Respeta la señal del servidor: 429 no es lo mismo que 529.
             </p>
           </div>
           <div class="card">
-            <span class="icon">3️⃣</span>
             <h3>Timeouts e idempotencia</h3>
             <p class="muted">Poder reintentar sin duplicar daño.</p>
           </div>
           <div class="card">
-            <span class="icon">4️⃣</span>
             <h3>Logging</h3>
             <p class="muted">Poder explicar qué pasó, a las 3 a.m.</p>
           </div>
@@ -1018,7 +1004,7 @@ client = anthropic.<span class="f">Anthropic</span>(timeout=30.0, max_retries=4)
             </ul>
           </div>
           <div class="card">
-            <h3>🔂 Idempotencia</h3>
+            <h3>Idempotencia</h3>
             <ul class="clean">
               <li>
                 Un timeout <strong>no garantiza</strong> que el request falló:
@@ -1089,7 +1075,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
 
       <!-- SLIDE 15: ejercicio en vivo -->
       <section class="slide">
-        <h2>👩‍💻 Manos al código: 30 min</h2>
+        <h2>Manos al código: 30 min</h2>
         <p class="muted" style="margin-bottom: 1.2rem">
           Las piezas ya las escribimos en la sesión. Ahora las ensamblas tú:
           <code>tool_loop.py</code> corriendo de punta a punta, en menos de 80
@@ -1097,7 +1083,6 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
         </p>
         <div class="columns-3">
           <div class="card">
-            <span class="icon">1️⃣</span>
             <h3>El loop (10 min)</h3>
             <p class="muted">
               Definimos <code>get_order_status</code> con descripción de 3
@@ -1106,7 +1091,6 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
             </p>
           </div>
           <div class="card">
-            <span class="icon">2️⃣</span>
             <h3>Robustez (10 min)</h3>
             <p class="muted">
               Envolvemos la llamada con <code>with_backoff</code> y simulamos un
@@ -1115,7 +1099,6 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
             </p>
           </div>
           <div class="card">
-            <span class="icon">3️⃣</span>
             <h3>Validación (10 min)</h3>
             <p class="muted">
               Modelo Pydantic para el input de la tool, reinyección del
@@ -1132,7 +1115,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
 
       <!-- SLIDE 17: videos -->
       <section class="slide">
-        <h2>📺 Videos para reforzar</h2>
+        <h2>Videos para reforzar</h2>
         <div class="video-grid">
           <a
             class="video-card"
@@ -1243,7 +1226,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
       </section>
 
       <section class="slide">
-        <h2>🏋️ Reto de la semana: AI Gym</h2>
+        <h2>Reto de la semana: AI Gym</h2>
         <div class="card">
           <span class="tag violet">Challenge 02</span
           ><span class="tag green">Entregable: viernes</span>
@@ -1397,7 +1380,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "copy-btn";
-          btn.textContent = "📋 Copiar";
+          btn.textContent = "Copiar";
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const code = pre.innerText;
@@ -1405,7 +1388,7 @@ log.<span class="f">info</span>(<span class="s">"llm_call"</span>, extra={
               btn.textContent = "✓ Copiado";
               btn.classList.add("ok");
               setTimeout(() => {
-                btn.textContent = "📋 Copiar";
+                btn.textContent = "Copiar";
                 btn.classList.remove("ok");
               }, 1600);
             };
