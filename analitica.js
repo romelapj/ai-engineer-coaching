@@ -1,7 +1,7 @@
 // Pon aquí el código de tu sitio de GoatCounter (el subdominio que elegiste al
 // crear la cuenta en https://www.goatcounter.com). Mientras esté vacío, este
 // archivo no carga nada ni envía una sola petición.
-const CODIGO_GOATCOUNTER = "";
+const CODIGO_GOATCOUNTER = "romel";
 
 (function () {
   const local = ["localhost", "127.0.0.1", "::1", ""].includes(location.hostname);
