@@ -3775,9 +3775,26 @@ if __name__ == &quot;__main__&quot;:
             hechos.size + "/" + pasos.length;
         }
 
+        const claveAvance = clave + ":avisados";
+        let avisados = new Set();
+        try {
+          avisados = new Set(
+            JSON.parse(localStorage.getItem(claveAvance) || "[]"),
+          );
+        } catch (e) {}
+
         function alternar(id) {
-          hechos.has(id) ? hechos.delete(id) : hechos.add(id);
+          const marcando = !hechos.has(id);
+          marcando ? hechos.add(id) : hechos.delete(id);
           localStorage.setItem(clave, JSON.stringify(Array.from(hechos)));
+          if (marcando && !avisados.has(id) && window.avance) {
+            avisados.add(id);
+            localStorage.setItem(
+              claveAvance,
+              JSON.stringify(Array.from(avisados)),
+            );
+            window.avance(document.body.dataset.taller, id);
+          }
           pintar();
         }
 
@@ -3951,5 +3968,6 @@ if __name__ == &quot;__main__&quot;:
         });
       })();
     </script>
+    <script src="../analitica.js"></script>
   </body>
 </html>

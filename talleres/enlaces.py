@@ -25,8 +25,9 @@ def main():
         if any(p in {".git", "node_modules", ".diseno"} for p in pagina.parts):
             continue
         # Las plantillas no son páginas: sus enlaces son placeholders {{...}}
-        # que build.py rellena al generar.
-        if pagina.name.startswith("plantilla"):
+        # que build.py rellena al generar, y _template.html los escribe
+        # relativos a sesiones/, que es donde acaba el deck que sale de ella.
+        if pagina.name.startswith("plantilla") or pagina.name == "_template.html":
             continue
         texto = pagina.read_text(encoding="utf-8", errors="replace")
         for destino in ENLACE.findall(texto):
