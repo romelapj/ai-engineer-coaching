@@ -234,7 +234,11 @@
         display: block;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        /* `contain` y no `cover`: media biblioteca son diagramas y capturas con
+           texto dentro, y recortar corta las palabras de los bordes. La franja
+           que deja el encaje es más barata que un título mutilado. */
+        object-fit: contain;
+        background: var(--superficie);
       }
       /* Portada tipográfica: se compone cuando la pieza no trae imagen. Ni
          hueco roto ni foto de archivo. */

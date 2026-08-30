@@ -234,7 +234,11 @@
         display: block;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        /* `contain` y no `cover`: media biblioteca son diagramas y capturas con
+           texto dentro, y recortar corta las palabras de los bordes. La franja
+           que deja el encaje es más barata que un título mutilado. */
+        object-fit: contain;
+        background: var(--superficie);
       }
       /* Portada tipográfica: se compone cuando la pieza no trae imagen. Ni
          hueco roto ni foto de archivo. */
@@ -418,7 +422,7 @@
       <h1>Biblioteca</h1>
       <p class="lead">Artículos, noticias, videos y podcasts que valen la pena, cada uno con lo que dice, lo que me llevo y —sobre todo— dónde se queda corto. Si una pieza no tiene ningún reparo, probablemente no se leyó con cuidado.</p>
 
-      <div class="filtros"><button class="filtro" data-filtro="todo" aria-pressed="true">Todo<span class="n">25</span></button><button class="filtro" data-filtro="articulo" aria-pressed="false">Artículos<span class="n">1</span></button><button class="filtro" data-filtro="video" aria-pressed="false">Videos<span class="n">24</span></button></div> <div class="rejilla">
+      <div class="filtros"><button class="filtro" data-filtro="todo" aria-pressed="true">Todo<span class="n">26</span></button><button class="filtro" data-filtro="articulo" aria-pressed="false">Artículos<span class="n">2</span></button><button class="filtro" data-filtro="video" aria-pressed="false">Videos<span class="n">24</span></button></div> <div class="rejilla">
       <a class="pieza articulo" data-tipo="articulo" href="anthropic-building-effective-agents.html">
         <div class="arte"><div class="arte-tipo"><div class="t">Building effective agents</div><div class="f">Anthropic</div></div></div>
         <div class="txt">
@@ -426,6 +430,16 @@
           
           <div class="autor">Erik Schluntz y Barry Zhang</div>
           <div class="engancho">Separa &quot;workflow&quot; de &quot;agente&quot; y sostiene que la mayoría de los casos no necesitan un agente. Es la discusión de la sesión 06 antes de tenerla.</div>
+          <div class="pie">Ver la ficha →</div>
+        </div>
+      </a>
+      <a class="pieza articulo" data-tipo="articulo" href="ng-fundamentos-de-software-con-agentes.html">
+        <div class="arte"><img src="portadas/ng-fundamentos-de-software-con-agentes.webp" alt="Portada de The AI Engineering Skills Map in detail: Software engineering fundamentals" loading="lazy" /></div>
+        <div class="txt">
+          <div class="meta">Artículo · The Batch · DeepLearning.AI</div>
+          <h3>The AI Engineering Skills Map in detail: Software engineering fundamentals</h3>
+          <div class="autor">Andrew Ng</div>
+          <div class="engancho">Ng sostiene que los agentes de código no eliminan los fundamentos de software: los convierten en la única forma de dirigir al agente.</div>
           <div class="pie">Ver la ficha →</div>
         </div>
       </a>

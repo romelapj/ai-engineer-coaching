@@ -375,10 +375,20 @@ def render_ficha(slug, p):
         # es la portada, y una placa de degradado repitiendo el título sería
         # decoración ocupando media pantalla.
         imagen = imagen_de(p)
-        if imagen:
+        if imagen and es_libro:
+            # La portada de un libro es vertical y se lee bien en una columna
+            # estrecha, al lado de la entradilla.
             medio = f"""<div class="medio con-portada">
         <div class="portada">{imagen}</div>
         <div>{engancho}{caja_acciones}{etiquetas}</div>
+      </div>"""
+        elif imagen:
+            # La de un artículo suele ser apaisada y muchas veces es un diagrama
+            # con texto dentro. Metida en 240px no se lee, así que va a lo ancho
+            # y la entradilla debajo.
+            medio = f"""<div class="medio ancha">
+        <div class="portada">{imagen}</div>
+        {engancho}{caja_acciones}{etiquetas}
       </div>"""
         else:
             medio = f'<div class="medio simple">{engancho}{caja_acciones}{etiquetas}</div>'
