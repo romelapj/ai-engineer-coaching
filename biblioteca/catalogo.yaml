@@ -124,3 +124,77 @@ piezas:
     engancho: >-
       Separa "workflow" de "agente" y sostiene que la mayoría de los casos no
       necesitan un agente. Es la discusión de la sesión 06 antes de tenerla.
+
+  ng-fundamentos-de-software-con-agentes:
+    tipo: articulo
+    titulo: "The AI Engineering Skills Map in detail: Software engineering fundamentals"
+    autor: "Andrew Ng"
+    fuente: "The Batch · DeepLearning.AI"
+    fecha: 2026-08-28
+    idioma: "Inglés"
+    extension: "~10 min de lectura"
+    url: "https://www.deeplearning.ai/the-batch/the-ai-engineering-skills-map-in-detail-software-engineering-fundamentals"
+    portada: portadas/ng-fundamentos-de-software-con-agentes.webp
+    etiquetas: [fundamentos, agentes-de-codigo, arquitectura, produccion]
+    sesiones: [sesion-09, sesion-10, sesion-12, reto-08]
+    engancho: >-
+      Ng sostiene que los agentes de código no eliminan los fundamentos de
+      software: los convierten en la única forma de dirigir al agente.
+    resumen: |
+      Segunda entrega del mapa de habilidades de AI Engineering que Ng construyó
+      analizando ofertas de empleo, entrevistas a expertos y encuestas. Esta
+      toca los fundamentos de ingeniería de software, y arranca con la pregunta
+      de si siguen importando cuando el agente escribe todo el código.
+
+      Su respuesta es que sí, y el argumento no es nostálgico. Quien hace vibe
+      coding sin entender el terreno consigue aplicaciones simples, pero el
+      agente va tomando decisiones sobre latencia, disponibilidad, consistencia,
+      fiabilidad, mantenibilidad, simplicidad y coste. El problema no es que las
+      tome mal: es que el desarrollador no sabía que esos compromisos existían,
+      así que nunca dirigió al agente hacia el que le convenía a su caso.
+
+      Desglosa cinco áreas. **Construir full-stack**, porque el agente empuja a
+      todo el mundo fuera de su especialidad y hay que entender lo que ahora se
+      toca. **Gestionar datos**, que es la que más desarrolla: los datos son
+      caros de cambiar, y si la arquitectura de datos está mal elegida el sistema
+      de IA no sabe lo que no sabe. **Diseñar arquitecturas**, insistiendo en que
+      la correcta es un blanco móvil según la fase del proyecto. **Seguridad y
+      fiabilidad**, con el "shift left" que convierte a todo desarrollador en
+      medio ingeniero de seguridad. Y **escalar y operar en producción**:
+      despliegue, observabilidad, incidentes, deuda técnica.
+
+      Cierra con la frase que resume la serie: memorizar sintaxis se está
+      quedando obsoleto, pero quien entiende de verdad cómo funciona el software
+      rinde muchísimo más que quien vibe codea sin entenderlo.
+    valioso:
+      - >-
+        Si la arquitectura de datos está mal elegida, el sistema de IA **no sabe
+        lo que no sabe**: su contexto sale de esos mismos datos, así que el fallo
+        no se manifiesta como un error sino como una respuesta pobre que nadie
+        puede atribuir a su causa. Es el tipo de fallo silencioso que más caro
+        sale.
+      - >-
+        El *shift left* convierte a todo desarrollador en medio ingeniero de
+        seguridad. Ya no es un rol aparte que revisa al final: con las
+        herramientas de IA escaneando código, dependencias y configuración de
+        nube, la seguridad se mueve al principio del ciclo y toca a todos.
+      - >-
+        El que era especialista se ensancha. Un desarrollador que antes hacía
+        solo móvil o solo web hoy acaba tocando más de una tecnología, y lo hace
+        apoyado en los conceptos y fundamentos que ya tenía. Esa es la parte
+        optimista del artículo: los fundamentos no se devalúan con el agente,
+        se vuelven transferibles.
+    conecta: >-
+      Sus cinco áreas son, casi punto por punto, las sesiones 09 a 12 del
+      programa: producción y observabilidad, seguridad, y system design. Lo
+      cuelgo aquí como confirmación externa de que las fases 2 y 3 apuntan donde
+      deben, y no es poca cosa que venga de alguien a quien nadie puede acusar de
+      estar en contra de la IA.
+    reparos:
+      - >-
+        Dice qué hay que entender y no dice **cómo** se llega a entenderlo. Ng
+        adquirió estos fundamentos construyendo a mano, durante años y sin
+        agente; el artículo describe el destino y da el camino por resuelto. Y el
+        camino es justo el problema de quien empieza hoy: si el agente escribe el
+        código, ¿de dónde sale el criterio para dirigirlo? Es la escalera que se
+        retira después de haber subido por ella.

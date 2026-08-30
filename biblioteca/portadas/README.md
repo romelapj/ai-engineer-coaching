@@ -44,5 +44,18 @@ dice nada de la pieza. La tipográfica sí: se lee el título.
 
 ## Formato
 
-- JPG o PNG, el lado largo ~800px basta (las tarjetas se ven a 260px).
+- JPG, PNG o WebP. El lado largo ~1200px basta y sobra.
 - El nombre del archivo, el mismo slug que la pieza en `catalogo.yaml`.
+
+## Vertical u horizontal, según el tipo
+
+No hace falta recortar nada: la ficha decide el encaje por el tipo de la pieza.
+
+- **Libro** → la portada va en una columna estrecha al lado de la entradilla,
+  que es donde una cubierta vertical se lee bien.
+- **Todo lo demás** → la portada va a lo ancho, encima del texto. Las imágenes
+  de artículo suelen ser apaisadas y muchas veces son diagramas con texto
+  dentro: metidas en 240px no se leen.
+
+En las rejillas la imagen se encaja con `contain`, nunca recortada. Una portada
+recortada corta las palabras de los bordes, y en un diagrama eso se nota.

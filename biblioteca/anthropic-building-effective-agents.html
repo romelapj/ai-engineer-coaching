@@ -182,11 +182,16 @@
       /* Sin portada no hay dos columnas que separar, y el `gap` de la retícula
          se convertía en tres huecos enormes entre la entradilla, el botón y las
          etiquetas. Aquí manda el flujo normal y sus propios márgenes. */
-      .medio.simple {
+      .medio.simple,
+      .medio.ancha {
         display: block;
       }
-      .medio.simple .engancho {
+      .medio.simple .engancho,
+      .medio.ancha .engancho {
         max-width: 62ch;
+      }
+      .medio.ancha .portada {
+        margin-bottom: 1.8rem;
       }
       .portada {
         border: 1px solid var(--linea);
