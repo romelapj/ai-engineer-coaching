@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyectos · Referencia | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(34, 211, 238, 0.05),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 30%,
+            rgba(34, 211, 238, 0.035),
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 3.5rem 1.5rem 5rem;
+      }
+      a.back {
+        display: inline-block;
+        color: var(--accent2);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 2.2rem;
+      }
+      a.back:hover {
+        text-decoration: underline;
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.8rem;
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.8rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+      .lead {
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin-top: 1rem;
+        max-width: 60ch;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin: 3rem 0 1.5rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 2px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--accent);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.05rem;
+        color: var(--text);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      /* ---------- criterios ---------- */
+      .rules {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+        margin-top: 0.5rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+      }
+      .card p {
+        font-size: 0.98rem;
+        color: var(--muted);
+      }
+      /* ---------- tags ---------- */
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        margin-right: 0.5em;
+      }
+      .tag.green {
+        color: var(--green);
+        border-color: rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.07);
+      }
+      /* ---------- lista de proyectos ---------- */
+      .proyecto-list {
+        display: grid;
+        gap: 1.2rem;
+      }
+      .proyecto {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1.3rem;
+        align-items: start;
+      }
+      /* La columna izquierda lleva la fecha, no un número de orden: los
+         proyectos no son una secuencia, y la fecha es lo que de verdad se
+         escanea en un índice que crece. */
+      .proyecto .fecha {
+        text-align: right;
+        min-width: 4.5ch;
+        padding-top: 0.35rem;
+        line-height: 1.25;
+        font-variant-numeric: tabular-nums;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .proyecto .fecha b {
+        display: block;
+        color: var(--text);
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+        text-transform: none;
+      }
+      .proyecto .meta {
+        margin-bottom: 0.7rem;
+      }
+      .proyecto p.desc {
+        font-size: 0.98rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      .proyecto a.readme {
+        display: inline-block;
+        margin-top: 0.9rem;
+        color: var(--accent2);
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+      }
+      .proyecto a.readme:hover {
+        text-decoration: underline;
+      }
+      /* Lo que el proyecto mide: una fila de datos, no una tarjeta. */
+      .mide {
+        margin-top: 1rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.9rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .mide div {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .mide b {
+        display: block;
+        color: var(--text);
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      a:focus-visible,
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      footer {
+        margin-top: 4rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+      @media (max-width: 720px) {
+        .rules {
+          grid-template-columns: 1fr;
+        }
+        .proyecto {
+          grid-template-columns: 1fr;
+          gap: 0.6rem;
+        }
+        .proyecto .fecha {
+          text-align: left;
+        }
+        .proyecto .fecha b {
+          display: inline;
+        }
+        .proyecto .fecha b::after {
+          content: " ·";
+        }
+        .mide {
+          grid-template-columns: 1fr;
+          gap: 0.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="../index.html">← Volver al portal</a>
+
+      <div class="kicker">Proyectos de referencia</div>
+      <h1>Proyectos</h1>
+      <p class="lead">
+        Proyectos llevados hasta el final: corren, están verificados y explican
+        por qué se construyeron así. No son demos ni capturas de pantalla — es
+        el estándar al que apunta el AI Gym.
+      </p>
+
+      <h2>Qué cuenta como proyecto aquí</h2>
+      <div class="rules">
+        <div class="card">
+          <h3>Terminado, no demo</h3>
+          <p>
+            Corre de punta a punta y alguien lo verificó de verdad. Si una parte
+            no está hecha, se dice cuál y por qué, en vez de esconderla.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Decisiones explicadas</h3>
+          <p>
+            Importa el porqué, no solo el qué. Cada decisión de arquitectura
+            viene con su razón y con la alternativa que se descartó.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Alcance honesto</h3>
+          <p>
+            Lo que el proyecto &laquo;no&raquo; hace está escrito. Un alcance
+            sin límites es un alcance sin decisiones tomadas.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Los fallos cuentan</h3>
+          <p>
+            Lo que se rompió, lo que se midió mal y lo que hubo que rehacer. Ahí
+            está la mitad del aprendizaje del proyecto.
+          </p>
+        </div>
+      </div>
+
+      <h2>Los proyectos</h2>
+      <div class="proyecto-list">
+        <div class="proyecto">
+          <div class="fecha"><b>2026</b>Ago</div>
+          <div>
+            <div class="meta">
+              <span class="tag green">Vertical slice funcional</span>
+              <span class="tag">Next.js · FastAPI · Praat</span>
+            </div>
+            <h3>Voice Coach</h3>
+            <p class="desc">
+              Entrena la voz al hablar con medición en lugar de opinión. Muestra
+              una frase fija, te grabas diciéndola y devuelve métricas
+              acústicas; grabas un segundo intento y los compara lado a lado.
+              Deliberadamente no puntúa: da números y tú decides, porque todavía
+              no hemos definido qué es &laquo;una buena voz&raquo;.
+            </p>
+            <div class="mide">
+              <div><b>Tono</b>mediana, rango y variación en semitonos</div>
+              <div><b>Energía</b>media y variación en dBFS</div>
+              <div><b>Pausas</b>cuántas, cuánto y qué proporción</div>
+            </div>
+            <a
+              class="readme"
+              href="voice-coach.html"
+              >Ver el detalle →</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        AI Engineer Coaching · Proyectos de referencia: terminados, verificados
+        y con las decisiones a la vista.
+      </footer>
+    </div>
+  </body>
+</html>

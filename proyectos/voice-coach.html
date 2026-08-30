@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice Coach · Proyecto | AI Engineer Coaching</title>
+    <style>
+      :root {
+        --bg: #0a0a0c;
+        --bg2: #0f0f12;
+        --surface: #151518;
+        --border: #26262c;
+        --text: #ededf0;
+        --muted: #a1a1aa;
+        --accent: #22d3ee;
+        --accent2: #22d3ee;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --grad: linear-gradient(120deg, #8b5cf6, #22d3ee);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background:
+          radial-gradient(
+            1200px 700px at 80% -10%,
+            rgba(34, 211, 238, 0.05),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at -10% 30%,
+            rgba(34, 211, 238, 0.035),
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 3.5rem 1.5rem 5rem;
+      }
+      a.back {
+        display: inline-block;
+        color: var(--accent2);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 2.2rem;
+      }
+      a.back:hover {
+        text-decoration: underline;
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.8rem;
+        font-weight: 800;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.8rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+      .lead {
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin-top: 1rem;
+        max-width: 62ch;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin: 3rem 0 1.5rem;
+      }
+      h2::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 2px;
+        margin-top: 0.6rem;
+        border-radius: 2px;
+        background: var(--accent);
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1.05rem;
+        color: var(--text);
+      }
+      p + p {
+        margin-top: 0.9rem;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .meta {
+        margin-top: 1.4rem;
+      }
+      .tag {
+        display: inline-block;
+        padding: 0.25em 0.8em;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        margin-right: 0.5em;
+      }
+      .tag.green {
+        color: var(--green);
+        border-color: rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.07);
+      }
+
+      /* ---------- panel de métricas ---------- */
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.3rem 1.4rem 1.1rem;
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-variant-numeric: tabular-nums;
+        min-width: 420px;
+      }
+      caption {
+        caption-side: bottom;
+        text-align: left;
+        color: var(--muted);
+        font-size: 0.86rem;
+        padding-top: 0.9rem;
+        line-height: 1.5;
+      }
+      th,
+      td {
+        text-align: right;
+        padding: 0.5rem 0.4rem;
+        font-size: 0.95rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      thead th {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        font-weight: 800;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      td.delta {
+        color: var(--muted);
+      }
+      tr.grupo td {
+        padding-top: 1rem;
+        font-weight: 800;
+        color: var(--text);
+        border-bottom: none;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      /* ---------- dos columnas ---------- */
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.4rem;
+      }
+      .lista {
+        list-style: none;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .lista li {
+        font-size: 0.98rem;
+        color: var(--muted);
+        padding-left: 0.9rem;
+        border-left: 2px solid var(--border);
+        line-height: 1.55;
+      }
+      .lista.si li {
+        border-left-color: rgba(52, 211, 153, 0.5);
+      }
+
+      /* ---------- figura ---------- */
+      figure {
+        margin: 0.5rem 0 0;
+        overflow-x: auto;
+      }
+      figure svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        min-width: 640px;
+      }
+      figcaption {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 0.9rem;
+        line-height: 1.55;
+      }
+
+      /* ---------- pasos numerados ---------- */
+      .pasos {
+        list-style: none;
+        counter-reset: paso;
+        display: grid;
+        gap: 1rem;
+      }
+      .pasos li {
+        counter-increment: paso;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        align-items: start;
+        font-size: 0.99rem;
+        color: var(--muted);
+      }
+      .pasos li::before {
+        content: counter(paso, decimal-leading-zero);
+        color: var(--accent);
+        font-weight: 800;
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
+        padding-top: 0.1rem;
+      }
+      .pasos b {
+        color: var(--text);
+      }
+
+      /* ---------- decisiones y fallos ---------- */
+      .bloques {
+        display: grid;
+        gap: 1.1rem;
+      }
+      .bloque {
+        border-left: 2px solid var(--border);
+        padding-left: 1.1rem;
+      }
+      .bloque.fallo {
+        border-left-color: rgba(251, 191, 36, 0.55);
+      }
+      .bloque h3 {
+        font-size: 1.02rem;
+        margin-bottom: 0.25rem;
+      }
+      .bloque p {
+        font-size: 0.97rem;
+        color: var(--muted);
+      }
+
+      /* ---------- código ---------- */
+      pre {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+        overflow-x: auto;
+        margin-top: 0.8rem;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.88rem;
+        color: var(--text);
+      }
+      p code,
+      li code {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 0.1em 0.4em;
+        font-size: 0.86em;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      footer {
+        margin-top: 4rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+      @media (max-width: 720px) {
+        .cols {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="back" href="index.html">← Volver a proyectos</a>
+
+      <div class="kicker">Proyecto de referencia</div>
+      <h1>Voice Coach</h1>
+      <p class="lead">
+        Entrena la voz al hablar con medición en lugar de opinión. Muestra una
+        frase fija, te grabas diciéndola y devuelve métricas acústicas; grabas
+        un segundo intento y los compara lado a lado.
+      </p>
+      <div class="meta">
+        <span class="tag green">Vertical slice funcional</span>
+        <span class="tag">Agosto 2026</span>
+        <span class="tag">Next.js · FastAPI · Praat · librosa</span>
+      </div>
+
+      <h2>Qué devuelve</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Métrica</th>
+              <th>Intento 1</th>
+              <th>Intento 2</th>
+              <th>Delta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="grupo">
+              <td colspan="4">Tono</td>
+            </tr>
+            <tr>
+              <td>Mediana</td>
+              <td>165.0 Hz</td>
+              <td>220.0 Hz</td>
+              <td class="delta">+55.0</td>
+            </tr>
+            <tr>
+              <td>Rango</td>
+              <td>0.0 st</td>
+              <td>0.0 st</td>
+              <td class="delta">0.0</td>
+            </tr>
+            <tr>
+              <td>Variación</td>
+              <td>0.0 st</td>
+              <td>0.0 st</td>
+              <td class="delta">0.0</td>
+            </tr>
+            <tr class="grupo">
+              <td colspan="4">Energía</td>
+            </tr>
+            <tr>
+              <td>Media</td>
+              <td>−16.8 dB</td>
+              <td>−16.8 dB</td>
+              <td class="delta">0.0</td>
+            </tr>
+            <tr>
+              <td>Variación</td>
+              <td>0.8 dB</td>
+              <td>0.6 dB</td>
+              <td class="delta">−0.2</td>
+            </tr>
+            <tr class="grupo">
+              <td colspan="4">Pausas</td>
+            </tr>
+            <tr>
+              <td>Cuántas</td>
+              <td>1</td>
+              <td>0</td>
+              <td class="delta">−1</td>
+            </tr>
+            <tr>
+              <td>Tiempo</td>
+              <td>0.58 s</td>
+              <td>0.00 s</td>
+              <td class="delta">−0.58</td>
+            </tr>
+            <tr>
+              <td>Proporción</td>
+              <td>24.8 %</td>
+              <td>0.0 %</td>
+              <td class="delta">−24.8</td>
+            </tr>
+          </tbody>
+          <caption>
+            Salida real del sistema, no una maqueta. Son dos tonos sintéticos de
+            prueba —165 Hz con un silencio de 0.6 s, y 220 Hz continuo—
+            inyectados como micrófono en el navegador: por eso el rango y la
+            variación de tono salen en cero y las pausas caen a ninguna. Una voz
+            humana llena esas filas; un tono constante, no.
+          </caption>
+        </table>
+      </div>
+      <p class="muted" style="margin-top: 1rem; font-size: 0.95rem">
+        No hay puntaje. El sistema no dice si lo hiciste bien, porque todavía no
+        hemos definido qué es &laquo;una buena voz&raquo;: da números y tú
+        decides qué querías cambiar.
+      </p>
+
+      <h2>El problema</h2>
+      <p>
+        Quien quiere sonar distinto al hablar solo tiene dos espejos, y los dos
+        mienten. El propio oído está sesgado por la conducción ósea y por saber
+        lo que uno quiso decir; y el feedback de otra persona llega como
+        adjetivo —&laquo;sonaste inseguro&raquo;— que no dice qué mover ni
+        cuánto.
+      </p>
+      <p>
+        Medir rompe el empate: si la mediana de tono bajó 8 Hz y las pausas
+        pasaron de seis a dos entre el intento uno y el dos, eso es verificable
+        y repetible. La práctica deliberada necesita una señal objetiva, y esa
+        señal es lo único que construye este proyecto.
+      </p>
+
+      <h2>Alcance</h2>
+      <div class="cols">
+        <div>
+          <h3>Qué hace hoy</h3>
+          <ul class="lista si">
+            <li>Graba desde el navegador manteniendo un botón presionado</li>
+            <li>Reproduce lo grabado antes de analizarlo</li>
+            <li>Mide tono, energía y pausas sobre la señal real</li>
+            <li>Permite un segundo intento y compara los dos</li>
+            <li>Rechaza con mensaje claro lo que no puede medir</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Qué deliberadamente no hace</h3>
+          <ul class="lista">
+            <li>No hay cuentas, login ni pagos</li>
+            <li>No persiste nada: los dos intentos viven en memoria</li>
+            <li>No llama a ningún LLM</li>
+            <li>No transcribe ni cuenta palabras por minuto</li>
+            <li>No inventa un puntaje de confianza</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted" style="margin-top: 1.2rem; font-size: 0.97rem">
+        La columna derecha es la que más cuesta escribir y la que más enseña.
+        Un alcance sin límites es un alcance sin decisiones tomadas.
+      </p>
+
+      <h2>Arquitectura</h2>
+      <figure>
+        <svg
+          viewBox="0 0 940 350"
+          role="img"
+          aria-label="El navegador captura con MediaRecorder en WebM u Opus, la Web Audio API lo decodifica y lo reencoda a WAV PCM de 16 bits, y ese WAV viaja por HTTP al backend FastAPI, donde libsndfile lo decodifica a float32 mono y tres analizadores independientes producen tono, energía y pausas. ffmpeg solo actúa como respaldo cuando lo subido no es WAV."
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <marker
+              id="fl"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+            </marker>
+            <marker
+              id="fl-a"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee" />
+            </marker>
+          </defs>
+
+          <!-- carril navegador -->
+          <text
+            x="30"
+            y="26"
+            fill="currentColor"
+            opacity="0.55"
+            font-size="11"
+            font-weight="700"
+            letter-spacing="1.6"
+          >
+            NAVEGADOR
+          </text>
+          <rect
+            x="30"
+            y="40"
+            width="180"
+            height="56"
+            rx="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.35"
+          />
+          <text
+            x="120"
+            y="64"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="13"
+            font-weight="700"
+          >
+            MediaRecorder
+          </text>
+          <text
+            x="120"
+            y="82"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.6"
+            font-size="11"
+          >
+            captura del micrófono
+          </text>
+
+          <line
+            x1="210"
+            y1="68"
+            x2="292"
+            y2="68"
+            stroke="currentColor"
+            stroke-opacity="0.5"
+            marker-end="url(#fl)"
+          />
+          <text
+            x="251"
+            y="58"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.65"
+            font-size="11"
+          >
+            WebM/Opus
+          </text>
+
+          <rect
+            x="300"
+            y="40"
+            width="210"
+            height="56"
+            rx="10"
+            fill="rgba(34,211,238,0.07)"
+            stroke="#22d3ee"
+            stroke-opacity="0.85"
+          />
+          <text
+            x="405"
+            y="64"
+            text-anchor="middle"
+            fill="#22d3ee"
+            font-size="13"
+            font-weight="700"
+          >
+            Web Audio API
+          </text>
+          <text
+            x="405"
+            y="82"
+            text-anchor="middle"
+            fill="#22d3ee"
+            opacity="0.75"
+            font-size="11"
+          >
+            decodifica y reencoda
+          </text>
+
+          <!-- cruce HTTP -->
+          <path
+            d="M 405 96 L 405 132 L 120 132 L 120 176"
+            fill="none"
+            stroke="#22d3ee"
+            stroke-opacity="0.85"
+            marker-end="url(#fl-a)"
+          />
+          <text x="417" y="127" fill="#22d3ee" font-size="11" font-weight="700">
+            WAV PCM 16 bits · POST multipart
+          </text>
+
+          <!-- carril servidor -->
+          <text
+            x="30"
+            y="166"
+            fill="currentColor"
+            opacity="0.55"
+            font-size="11"
+            font-weight="700"
+            letter-spacing="1.6"
+          >
+            SERVIDOR · FASTAPI
+          </text>
+          <rect
+            x="30"
+            y="180"
+            width="180"
+            height="56"
+            rx="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.35"
+          />
+          <text
+            x="120"
+            y="204"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="13"
+            font-weight="700"
+          >
+            /api/analyze
+          </text>
+          <text
+            x="120"
+            y="222"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.6"
+            font-size="11"
+          >
+            solo capa HTTP
+          </text>
+
+          <line
+            x1="210"
+            y1="208"
+            x2="292"
+            y2="208"
+            stroke="currentColor"
+            stroke-opacity="0.5"
+            marker-end="url(#fl)"
+          />
+          <text
+            x="251"
+            y="198"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.65"
+            font-size="11"
+          >
+            bytes
+          </text>
+
+          <rect
+            x="300"
+            y="180"
+            width="180"
+            height="56"
+            rx="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.35"
+          />
+          <text
+            x="390"
+            y="204"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="13"
+            font-weight="700"
+          >
+            libsndfile
+          </text>
+          <text
+            x="390"
+            y="222"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.6"
+            font-size="11"
+          >
+            → float32 mono
+          </text>
+
+          <!-- respaldo ffmpeg -->
+          <path
+            d="M 390 236 L 390 276"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.4"
+            stroke-dasharray="4 4"
+            marker-end="url(#fl)"
+          />
+          <text
+            x="402"
+            y="262"
+            fill="currentColor"
+            opacity="0.6"
+            font-size="11"
+          >
+            solo si no es WAV
+          </text>
+          <rect
+            x="300"
+            y="280"
+            width="180"
+            height="44"
+            rx="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.3"
+            stroke-dasharray="4 4"
+          />
+          <text
+            x="390"
+            y="307"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.75"
+            font-size="12"
+            font-weight="700"
+          >
+            ffmpeg (respaldo)
+          </text>
+
+          <line
+            x1="480"
+            y1="208"
+            x2="562"
+            y2="208"
+            stroke="currentColor"
+            stroke-opacity="0.5"
+            marker-end="url(#fl)"
+          />
+
+          <rect
+            x="570"
+            y="164"
+            width="200"
+            height="88"
+            rx="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.35"
+          />
+          <text
+            x="670"
+            y="188"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="12"
+            font-weight="700"
+          >
+            Tono · Praat
+          </text>
+          <text
+            x="670"
+            y="210"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="12"
+            font-weight="700"
+          >
+            Energía · RMS
+          </text>
+          <text
+            x="670"
+            y="232"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="12"
+            font-weight="700"
+          >
+            Pausas · umbral
+          </text>
+
+          <line
+            x1="770"
+            y1="208"
+            x2="842"
+            y2="208"
+            stroke="currentColor"
+            stroke-opacity="0.5"
+            marker-end="url(#fl)"
+          />
+          <text
+            x="806"
+            y="198"
+            text-anchor="middle"
+            fill="currentColor"
+            opacity="0.65"
+            font-size="11"
+          >
+            JSON
+          </text>
+          <rect
+            x="850"
+            y="180"
+            width="70"
+            height="56"
+            rx="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.35"
+          />
+          <text
+            x="885"
+            y="212"
+            text-anchor="middle"
+            fill="currentColor"
+            font-size="12"
+            font-weight="700"
+          >
+            UI
+          </text>
+        </svg>
+        <figcaption>
+          El formato se normaliza en el navegador, no en el servidor.
+          MediaRecorder entrega WebM/Opus —que libsndfile no lee— así que la Web
+          Audio API lo decodifica y lo reencoda a WAV antes de subirlo. El
+          servidor recibe siempre un formato trivial de leer, y ffmpeg queda
+          como respaldo para quien suba otra cosa por API, no como pieza del
+          camino normal.
+        </figcaption>
+      </figure>
+
+      <h2>Cómo funciona</h2>
+      <ol class="pasos">
+        <li>
+          <span
+            ><b>Mantienes el botón presionado</b> y hablas. La captura usa
+            <code>setPointerCapture</code>, de modo que soltar fuera del botón
+            igual detiene la grabación.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>Al soltar, el navegador reencoda</b> el blob a WAV PCM de 16
+            bits mono con la Web Audio API. Es la decisión central de la
+            arquitectura.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>Puedes reproducir lo grabado</b> antes de gastar un análisis,
+            para oír lo que el sistema va a oír.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>El WAV viaja</b> como <code>multipart/form-data</code> a
+            <code>POST /api/analyze</code>.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>El backend decodifica y mide.</b> Tres funciones independientes
+            —tono, energía, pausas— trabajan sobre el mismo arreglo de muestras
+            y no se conocen entre sí.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>Vuelve un JSON validado</b> con un modelo Pydantic, y el panel
+            se llena. Donde no se pudo medir aparece <code>---</code>, nunca un
+            cero.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>Repites el intento</b> y la tabla de comparación aparece con los
+            deltas firmados.</span
+          >
+        </li>
+      </ol>
+
+      <h2>Cinco decisiones de medición</h2>
+      <div class="bloques">
+        <div class="bloque">
+          <h3>Los dB son dBFS, no volumen acústico</h3>
+          <p>
+            Sin un micrófono calibrado no existe un decibelio absoluto. Los
+            valores son negativos y solo comparables entre intentos grabados en
+            el mismo equipo a la misma distancia. Está dicho en la interfaz, no
+            escondido en la documentación.
+          </p>
+        </div>
+        <div class="bloque">
+          <h3>Los extremos de tono son percentiles, no mínimo y máximo</h3>
+          <p>
+            Todo detector de F0 se equivoca de octava de vez en cuando. Un solo
+            frame malo arruinaría el rango, así que se usan los percentiles 5 y
+            95 en lugar de los extremos crudos.
+          </p>
+        </div>
+        <div class="bloque">
+          <h3>El tono se reporta en semitonos</h3>
+          <p>
+            La percepción del tono es logarítmica: 30 Hz de diferencia
+            significan cosas muy distintas en una voz de 90 Hz y en una de 220
+            Hz. Los semitonos hacen comparables a dos personas y a dos intentos.
+          </p>
+        </div>
+        <div class="bloque">
+          <h3>El silencio inicial y final no es una pausa</h3>
+          <p>
+            El hueco entre pulsar grabar y empezar a hablar es latencia de la
+            mano, no retórica. Solo cuentan los silencios internos que superan
+            un mínimo, porque el cierre de una consonante como la /p/ ya es un
+            silencio real de decenas de milisegundos.
+          </p>
+        </div>
+        <div class="bloque">
+          <h3>No hay puntaje</h3>
+          <p>
+            Un &laquo;índice de confianza&raquo; habría quedado más vistoso en
+            la demo y habría sido inventado. Primero medir bien; opinar es un
+            problema posterior.
+          </p>
+        </div>
+      </div>
+
+      <h2>Qué falló</h2>
+      <p class="muted" style="margin-bottom: 1.4rem">
+        Una revisión adversarial levantó 21 hallazgos y 13 resultaron reales.
+        Estos cuatro son los que más enseñan.
+      </p>
+      <div class="bloques">
+        <div class="bloque fallo">
+          <h3>Una grabación rechazada dejaba al usuario sin salida</h3>
+          <p>
+            El umbral del cliente eran 300 ms y el del servidor 400 ms.
+            Cualquier pulsación entre ambos pasaba el cliente, el backend la
+            rechazaba, y el botón de reintentar nunca aparecía: solo se podía
+            reenviar los mismos bytes rechazados. Dos límites que debían
+            coincidir y nadie los había comparado.
+          </p>
+        </div>
+        <div class="bloque fallo">
+          <h3>Una carrera dejaba el micrófono abierto</h3>
+          <p>
+            <code>getUserMedia</code> tarda de 100 a 300 ms, y hasta dos
+            segundos con auriculares Bluetooth. Pulsar, soltar y volver a pulsar
+            más rápido que eso lanzaba dos aperturas: la segunda pisaba las
+            referencias y dejaba huérfano el stream de la primera, con el
+            indicador de grabación encendido.
+          </p>
+        </div>
+        <div class="bloque fallo">
+          <h3>Un archivo de 6 MB podía tumbar el servidor</h3>
+          <p>
+            Un WebM/Opus de 5.9 MB con 90 minutos de audio a 6 kbps pasaba el
+            límite de subida de 25 MB y se expandía a 494 MB de PCM sin tope. El
+            límite de tamaño del archivo comprimido no dice nada sobre el tamaño
+            del audio decodificado.
+          </p>
+        </div>
+        <div class="bloque fallo">
+          <h3>Cinco tests pasaban con el código roto</h3>
+          <p>
+            Cambiar los percentiles por mínimo y máximo, los semitonos por
+            hercios, la desviación estándar por la varianza o intercambiar dos
+            campos de la respuesta: nada de eso hacía fallar la suite. Se
+            descubrió mutando el código a propósito, no leyéndolo.
+          </p>
+        </div>
+      </div>
+
+      <h2>Cómo correrlo</h2>
+      <p class="muted">
+        Requiere Python 3.12 —por la matriz de ruedas de parselmouth y librosa—
+        y Node 20 o superior. Dos terminales.
+      </p>
+      <pre><code># Backend
+cd backend
+python3.12 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements-dev.txt
+.venv/bin/uvicorn app.main:app --reload --port 8000
+
+# Frontend
+cd frontend
+npm install
+npm run dev</code></pre>
+      <p class="muted" style="margin-top: 0.9rem; font-size: 0.97rem">
+        Abre <code>http://localhost:3000</code>. El micrófono exige contexto
+        seguro y <code>localhost</code> cuenta como tal, así que no hace falta
+        configurar HTTPS. La suite se corre con
+        <code>.venv/bin/python -m pytest -q</code> desde <code>backend/</code>:
+        93 tests, poco menos de cinco segundos.
+      </p>
+
+      <h2>Próximos pasos</h2>
+      <ol class="pasos">
+        <li>
+          <span
+            ><b>Transcripción</b>, que es lo que desbloquea todo lo demás:
+            palabras por minuto, muletillas y ritmo por frase.</span
+          >
+        </li>
+        <li>
+          <span><b>Frases configurables</b> en lugar de una sola fija.</span>
+        </li>
+        <li>
+          <span
+            ><b>Persistencia</b>, para ver progreso a lo largo de semanas en vez
+            de entre dos intentos.</span
+          >
+        </li>
+        <li>
+          <span
+            ><b>Y solo al final, interpretación con un LLM.</b> El orden es la
+            lección del proyecto: primero medir bien, después opinar.</span
+          >
+        </li>
+      </ol>
+
+      <footer>
+        AI Engineer Coaching · Voice Coach · Vertical slice verificado de punta
+        a punta, agosto de 2026.
+      </footer>
+    </div>
+  </body>
+</html>
