@@ -5,11 +5,14 @@
 # Lo que cubre, y por qué cada uno:
 #   1. build --estricto  · ninguna línea de código sin explicar, ningún archivo
 #      de codigo/ sin entregar, ninguna clave de guion mal escrita.
-#   2. git diff          · el HTML commiteado ES el que sale del build. Sin esto
-#      se puede publicar una página que no viene del YAML actual.
-#   3. verificar.py      · pegando los bloques en orden sale el archivo original
+#   2. biblioteca/build  · el catálogo valida (tipos, campos, ids del programa,
+#      portadas descargadas) antes de que nada llegue a producción.
+#   3. git diff          · el HTML commiteado ES el que sale del build, tanto en
+#      talleres como en biblioteca. Sin esto se puede publicar una página que no
+#      viene del YAML actual.
+#   4. verificar.py      · pegando los bloques en orden sale el archivo original
 #      byte a byte.
-#   4. enlaces           · ningún href relativo apunta a un archivo inexistente.
+#   5. enlaces           · ningún href relativo apunta a un archivo inexistente.
 name: Verificar el curso
 
 on:
@@ -30,12 +33,16 @@ jobs:
       - name: Generar los talleres en modo estricto
         run: python talleres/build.py --estricto
 
+      - name: Generar la biblioteca
+        run: python biblioteca/build.py
+
       - name: El HTML publicado viene del guion actual
         run: |
-          if ! git diff --exit-code --stat talleres/ index.html; then
+          if ! git diff --exit-code --stat talleres/ biblioteca/ index.html; then
             echo ""
-            echo "El HTML del repositorio no coincide con el que produce build.py."
-            echo "Corre 'python talleres/build.py' y commitea el resultado."
+            echo "El HTML del repositorio no coincide con el que producen los build.py."
+            echo "Corre 'python talleres/build.py' y 'python biblioteca/build.py'"
+            echo "y commitea el resultado."
             exit 1
           fi
 

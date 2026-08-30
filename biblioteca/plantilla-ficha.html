@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <title>{{TITULO}} | AI Engineer Coaching</title>
+    <style>
+      /* =====================================================================
+         La misma paleta y las mismas reglas que plantilla-video.html: un solo
+         acento (cian), verde y ámbar como estado, degradado solo en la marca.
+
+         La ficha es la página de video con una pieza cambiada: donde el video
+         tenía el reproductor, aquí va la portada y el enlace al original. Todo
+         lo de abajo (resumen, lo que vale, cómo conecta, reparos) es idéntico,
+         porque el trabajo del curso es el mismo lo leas o lo veas.
+         ===================================================================== */
+      :root {
+        --fondo: #0a0a0c;
+        --fondo-2: #0f0f12;
+        --superficie: #151518;
+        --superficie-2: #1b1b1f;
+        --linea: #26262c;
+        --linea-suave: #1d1d22;
+        --texto: #ededf0;
+        --texto-2: #a1a1aa;
+        --tenue: #71717a;
+        --acento: #22d3ee;
+        --acento-suave: rgba(34, 211, 238, 0.1);
+        --acento-borde: rgba(34, 211, 238, 0.42);
+        --ok: #34d399;
+        --ok-suave: rgba(52, 211, 153, 0.08);
+        --atencion: #fbbf24;
+        --atencion-suave: rgba(251, 191, 36, 0.07);
+        --marca: linear-gradient(120deg, #8b5cf6, #22d3ee);
+        --radio: 14px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--fondo);
+        color: var(--texto);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.68;
+        font-size: 1rem;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--acento);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      :focus-visible {
+        outline: 2px solid var(--acento);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+        }
+      }
+
+      /* ---------------------------------------------------- barra superior */
+      .barra {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(10, 10, 12, 0.88);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--linea-suave);
+      }
+      .barra-in {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0.9rem clamp(1.2rem, 4vw, 2.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .marca {
+        font-weight: 800;
+        font-size: 0.94rem;
+        letter-spacing: -0.01em;
+        color: var(--texto);
+      }
+      .marca span {
+        background: var(--marca);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .volver {
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--texto-2);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.42rem 0.95rem;
+        transition: all 0.2s ease;
+      }
+      .volver:hover {
+        color: var(--texto);
+        border-color: var(--acento-borde);
+        text-decoration: none;
+      }
+
+      /* ------------------------------------------------------------ layout */
+      .envoltorio {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) clamp(1.2rem, 4vw, 2.5rem)
+          clamp(3rem, 7vw, 5rem);
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.73rem;
+        font-weight: 800;
+        color: var(--acento);
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(1.9rem, 4.2vw, 3.1rem);
+        line-height: 1.08;
+        font-weight: 900;
+        letter-spacing: -0.035em;
+        max-width: 22ch;
+      }
+      .ficha {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.4rem;
+        margin-top: 1.3rem;
+        padding-bottom: 1.6rem;
+        border-bottom: 1px solid var(--linea-suave);
+        font-size: 0.9rem;
+        color: var(--texto-2);
+      }
+      .ficha b {
+        color: var(--texto);
+        font-weight: 600;
+      }
+      .ficha .sep {
+        color: var(--linea);
+      }
+
+      /* --------------------------------------------------- portada y medio */
+      /* Con portada, dos columnas. Sin portada no se compone ninguna: el h1 de
+         arriba ya hace ese trabajo, y una placa de degradado repitiendo el
+         título ocuparía media pantalla sin decir nada. La portada compuesta
+         vive en las rejillas, que es donde de verdad hace falta distinguir una
+         pieza de otra. */
+      .medio {
+        margin: 2.2rem 0 0;
+        display: grid;
+        gap: 1.6rem;
+        align-items: start;
+      }
+      @media (min-width: 760px) {
+        .medio.con-portada {
+          grid-template-columns: 240px minmax(0, 1fr);
+          gap: 2.2rem;
+        }
+      }
+      /* Sin portada no hay dos columnas que separar, y el `gap` de la retícula
+         se convertía en tres huecos enormes entre la entradilla, el botón y las
+         etiquetas. Aquí manda el flujo normal y sus propios márgenes. */
+      .medio.simple {
+        display: block;
+      }
+      .medio.simple .engancho {
+        max-width: 62ch;
+      }
+      .portada {
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        overflow: hidden;
+        background: var(--superficie);
+        display: block;
+      }
+      .portada img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .engancho {
+        font-size: 1.14rem;
+        line-height: 1.55;
+        color: var(--texto);
+      }
+      .acciones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin-top: 1.5rem;
+      }
+      .accion {
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.5rem 1.1rem;
+        color: var(--texto-2);
+        font-weight: 600;
+        font-size: 0.87rem;
+        transition: all 0.2s ease;
+      }
+      .accion:hover {
+        border-color: var(--acento-borde);
+        color: var(--texto);
+        text-decoration: none;
+      }
+      .accion.principal {
+        border-color: var(--acento-borde);
+        background: var(--acento-suave);
+        color: var(--texto);
+      }
+      /* Los videos sueltos se embeben igual que los de los talleres. */
+      .marco {
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        overflow: hidden;
+        background: #000;
+        aspect-ratio: 16 / 9;
+      }
+      .marco iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      /* --------------------------------------------------------- etiquetas */
+      .etiquetas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 1.4rem;
+      }
+      .etiqueta {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.22rem 0.7rem;
+        color: var(--tenue);
+      }
+      .estado {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 0.24rem 0.75rem;
+        border: 1px solid var(--linea);
+        color: var(--tenue);
+      }
+      .estado.leyendo {
+        color: var(--acento);
+        border-color: var(--acento-borde);
+        background: var(--acento-suave);
+      }
+      .estado.terminado {
+        color: var(--ok);
+        border-color: rgba(52, 211, 153, 0.42);
+        background: var(--ok-suave);
+      }
+      .estado.abandonado {
+        color: var(--atencion);
+        border-color: rgba(251, 191, 36, 0.42);
+        background: var(--atencion-suave);
+      }
+
+      /* ------------------------------------------------------------ cuerpo */
+      .cuerpo {
+        margin-top: clamp(2.4rem, 5vw, 3.4rem);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.6rem;
+      }
+      @media (min-width: 1000px) {
+        .cuerpo {
+          grid-template-columns: minmax(0, 1fr) 300px;
+          gap: 3rem;
+        }
+      }
+      section.bloque {
+        scroll-margin-top: 5rem;
+      }
+      section.bloque + section.bloque {
+        margin-top: 2.6rem;
+        padding-top: 2.6rem;
+        border-top: 1px solid var(--linea-suave);
+      }
+      h2 {
+        font-size: 1.42rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 1rem;
+      }
+      h2 .num {
+        color: var(--tenue);
+        font-weight: 700;
+        font-size: 0.86rem;
+        letter-spacing: 0.14em;
+        display: block;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+      }
+      p {
+        color: var(--texto-2);
+        margin-bottom: 1.05rem;
+      }
+      p:last-child {
+        margin-bottom: 0;
+      }
+      strong {
+        color: var(--texto);
+        font-weight: 700;
+      }
+      code {
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 5px;
+        padding: 0.1em 0.4em;
+        font-size: 0.86em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--texto);
+        overflow-wrap: anywhere;
+      }
+      ul.valioso {
+        list-style: none;
+        display: grid;
+        gap: 0.9rem;
+      }
+      ul.valioso li {
+        position: relative;
+        padding-left: 1.7rem;
+        color: var(--texto-2);
+      }
+      ul.valioso li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.62em;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        background: var(--acento);
+      }
+      ul.reparos {
+        list-style: none;
+        display: grid;
+        gap: 0.9rem;
+      }
+      ul.reparos li {
+        position: relative;
+        padding-left: 1.7rem;
+        color: var(--texto-2);
+      }
+      ul.reparos li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.62em;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        background: var(--atencion);
+      }
+
+      /* -------------------------------------------------------- subrayados */
+      /* La cita es del autor y el comentario es tuyo. Son dos cosas distintas
+         y se ven distintas: si se mezclaran, dentro de un año no sabrías cuál
+         de las dos frases estabas citando. */
+      .subrayado {
+        border-left: 2px solid var(--acento-borde);
+        padding: 0.2rem 0 0.2rem 1.4rem;
+      }
+      .subrayado + .subrayado {
+        margin-top: 1.8rem;
+      }
+      .subrayado blockquote {
+        font-size: 1.06rem;
+        line-height: 1.6;
+        color: var(--texto);
+      }
+      .subrayado .pagina {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--tenue);
+      }
+      .subrayado .comento {
+        margin-top: 0.9rem;
+        color: var(--texto-2);
+      }
+
+      /* -------------------------------------------------------------- plan */
+      .tramo {
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        padding: 1.3rem 1.5rem;
+        background: var(--fondo-2);
+      }
+      .tramo + .tramo {
+        margin-top: 0.9rem;
+      }
+      .tramo .cab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1rem;
+        align-items: baseline;
+        margin-bottom: 0.8rem;
+      }
+      .tramo .cab b {
+        font-size: 1.02rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .tramo .cab .semana {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--tenue);
+      }
+      .tramo ul {
+        list-style: none;
+        display: grid;
+        gap: 0.6rem;
+      }
+      .tramo li {
+        position: relative;
+        padding-left: 1.4rem;
+        color: var(--texto-2);
+        font-size: 0.95rem;
+      }
+      .tramo li::before {
+        content: "?";
+        position: absolute;
+        left: 0;
+        color: var(--acento);
+        font-weight: 800;
+      }
+
+      /* --------------------------------------------- estado: sin contenido */
+      .pendiente {
+        border: 1px dashed rgba(251, 191, 36, 0.42);
+        background: var(--atencion-suave);
+        border-radius: var(--radio);
+        padding: 2rem;
+      }
+      .pendiente .cab {
+        color: var(--atencion);
+        font-weight: 800;
+        font-size: 0.76rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 0.8rem;
+      }
+      .pendiente p {
+        color: var(--texto-2);
+      }
+      .pendiente .esqueleto {
+        display: grid;
+        gap: 0.6rem;
+        margin-top: 1.4rem;
+      }
+      .pendiente .linea {
+        height: 0.72rem;
+        border-radius: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--superficie) 0%,
+          var(--superficie-2) 50%,
+          var(--superficie) 100%
+        );
+      }
+      .pendiente .linea:nth-child(2) {
+        width: 92%;
+      }
+      .pendiente .linea:nth-child(3) {
+        width: 78%;
+      }
+      .pendiente .linea:nth-child(4) {
+        width: 86%;
+      }
+
+      /* ------------------------------------------------------------ aparte */
+      aside .caja {
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        padding: 1.5rem;
+        background: var(--fondo-2);
+      }
+      aside .caja + .caja {
+        margin-top: 1.2rem;
+      }
+      aside .cab {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--tenue);
+        margin-bottom: 0.9rem;
+      }
+      aside p {
+        font-size: 0.92rem;
+        margin-bottom: 0.7rem;
+      }
+      .vuelta {
+        display: block;
+        border: 1px solid var(--linea);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        color: var(--texto);
+        font-weight: 600;
+        font-size: 0.92rem;
+        transition: all 0.2s ease;
+      }
+      .vuelta + .vuelta {
+        margin-top: 0.6rem;
+      }
+      .vuelta:hover {
+        border-color: var(--acento-borde);
+        background: var(--acento-suave);
+        text-decoration: none;
+      }
+      .vuelta small {
+        display: block;
+        color: var(--tenue);
+        font-weight: 500;
+        font-size: 0.79rem;
+        margin-top: 0.15rem;
+      }
+      footer {
+        margin-top: clamp(3rem, 7vw, 5rem);
+        padding-top: 1.6rem;
+        border-top: 1px solid var(--linea-suave);
+        color: var(--tenue);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="barra">
+      <div class="barra-in">
+        <a class="marca" href="../index.html"
+          >AI Engineer <span>Coaching</span></a
+        >
+        <a class="volver" href="{{VOLVER_URL}}">← {{VOLVER_TEXTO}}</a>
+      </div>
+    </div>
+
+    <div class="envoltorio">
+      <div class="kicker">{{KICKER}}</div>
+      <h1>{{TITULO}}</h1>
+      <div class="ficha">{{FICHA}}</div>
+
+      {{MEDIO}}
+
+      <div class="cuerpo">
+        <main>{{CONTENIDO}}</main>
+        <aside>{{APARTE}}</aside>
+      </div>
+
+      <footer>{{PIE}}</footer>
+    </div>
+    <script src="../analitica.js"></script>
+  </body>
+</html>

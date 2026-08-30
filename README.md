@@ -6,7 +6,7 @@ Programa de coaching 1:1 de **16 semanas** para transicionar de developer a **AI
 
 **Las presentaciones se ven aquí:** https://romelapj.github.io/ai-engineer-coaching/
 
-El portal enlaza las 14 sesiones, el AI Gym y el tracker de progreso.
+El portal enlaza las 14 sesiones, el AI Gym, la biblioteca y el tracker de progreso.
 
 ## Estructura
 
@@ -14,6 +14,10 @@ El portal enlaza las 14 sesiones, el AI Gym y el tracker de progreso.
 - **`sesiones/`**: 14 presentaciones HTML (una por sesión) + 6 de la Pre-Fase 0.5 (`prefase-0X`), navegables con las flechas ← →. Cuentan el **porqué**: comparaciones, trade-offs, idea fuerza.
 - **`talleres/`**: los **builds**, en pasos de 30 minutos diarios, con el código completo copiable y su salida esperada. Se generan desde el código ejecutable que vive en `talleres/<sesion>/codigo/`, así que lo que se muestra siempre es lo que corre.
 - **`gym/`**: el AI Gym, con 8 retos prácticos + 8 katas de nivelación (`kata-0X`), criterios de aceptación medibles, pistas escalonadas y harness de evaluación.
+- **`biblioteca/`**: el **club de lectura** (libros, con su plan por tramos y sus
+  subrayados) y la **biblioteca** de artículos, noticias, videos y podcasts. Cada
+  pieza lleva de qué va, qué se rescata y dónde se queda corta. Se generan desde
+  `biblioteca/catalogo.yaml`.
 - **`docs/`**: la bitácora, con el análisis, las decisiones de formato y el historial de versiones del curso.
 - **`progress.md`**: tracker semanal del alumno y el coach.
 
@@ -22,6 +26,8 @@ El portal enlaza las 14 sesiones, el AI Gym y el tracker de progreso.
 ```bash
 python talleres/build.py             # genera talleres/<sesion>.html desde el código real
 python talleres/verificar.py         # comprueba que no queden huecos en ningún taller
+python biblioteca/build.py           # genera la biblioteca y el club de lectura
+python talleres/enlaces.py           # comprueba que ningún enlace relativo quedó roto
 ```
 
 Cómo escribir uno: [`docs/04-como-crear-un-taller.md`](docs/04-como-crear-un-taller.md).

@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <title>{{TITULO}} | AI Engineer Coaching</title>
+    <style>
+      /* =====================================================================
+         Portada de la biblioteca. Mismas reglas del sistema visual: un acento
+         (cian), verde y ámbar como estado, degradado solo en la marca.
+
+         Aquí sí hay tarjetas, al revés que en los talleres, y por una razón:
+         estas piezas no se leen en orden ni forman una secuencia. Son un
+         mostrador donde se busca, y la portada es la forma más rápida de
+         reconocer algo que ya viste.
+         ===================================================================== */
+      :root {
+        --fondo: #0a0a0c;
+        --fondo-2: #0f0f12;
+        --superficie: #151518;
+        --superficie-2: #1b1b1f;
+        --linea: #26262c;
+        --linea-suave: #1d1d22;
+        --texto: #ededf0;
+        --texto-2: #a1a1aa;
+        --tenue: #71717a;
+        --acento: #22d3ee;
+        --acento-suave: rgba(34, 211, 238, 0.1);
+        --acento-borde: rgba(34, 211, 238, 0.42);
+        --ok: #34d399;
+        --ok-suave: rgba(52, 211, 153, 0.08);
+        --atencion: #fbbf24;
+        --atencion-suave: rgba(251, 191, 36, 0.07);
+        --marca: linear-gradient(120deg, #8b5cf6, #22d3ee);
+        --radio: 14px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--fondo);
+        color: var(--texto);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.68;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--acento);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      :focus-visible {
+        outline: 2px solid var(--acento);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+        }
+      }
+
+      .barra {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(10, 10, 12, 0.88);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--linea-suave);
+      }
+      .barra-in {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0.9rem clamp(1.2rem, 4vw, 2.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .marca {
+        font-weight: 800;
+        font-size: 0.94rem;
+        letter-spacing: -0.01em;
+        color: var(--texto);
+      }
+      .marca span {
+        background: var(--marca);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .volver {
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--texto-2);
+        border: 1px solid var(--linea);
+        border-radius: 999px;
+        padding: 0.42rem 0.95rem;
+        transition: all 0.2s ease;
+      }
+      .volver:hover {
+        color: var(--texto);
+        border-color: var(--acento-borde);
+        text-decoration: none;
+      }
+
+      .envoltorio {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) clamp(1.2rem, 4vw, 2.5rem)
+          clamp(3rem, 7vw, 5rem);
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.73rem;
+        font-weight: 800;
+        color: var(--acento);
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5.2vw, 3.8rem);
+        line-height: 1.06;
+        font-weight: 900;
+        letter-spacing: -0.042em;
+        max-width: 20ch;
+      }
+      .lead {
+        margin-top: 1.2rem;
+        font-size: 1.02rem;
+        color: var(--texto-2);
+        max-width: 62ch;
+      }
+      h2 {
+        font-size: 1.42rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.4rem;
+      }
+      .seccion {
+        margin-top: clamp(2.6rem, 6vw, 4rem);
+        padding-top: clamp(2.2rem, 5vw, 3rem);
+        border-top: 1px solid var(--linea-suave);
+      }
+      .seccion > p.sub {
+        color: var(--tenue);
+        font-size: 0.94rem;
+        margin-bottom: 1.8rem;
+        max-width: 62ch;
+      }
+
+      /* ----------------------------------------------------------- filtros */
+      .filtros {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1.9rem 0 0;
+      }
+      .filtro {
+        border: 1px solid var(--linea);
+        background: transparent;
+        color: var(--texto-2);
+        border-radius: 999px;
+        padding: 0.42rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .filtro:hover {
+        color: var(--texto);
+        border-color: var(--acento-borde);
+      }
+      .filtro[aria-pressed="true"] {
+        color: var(--texto);
+        border-color: var(--acento-borde);
+        background: var(--acento-suave);
+      }
+      .filtro .n {
+        color: var(--tenue);
+        font-weight: 600;
+        margin-left: 0.35rem;
+      }
+
+      /* ---------------------------------------------------------- rejilla */
+      .rejilla {
+        margin-top: 2.4rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.4rem;
+      }
+      .pieza {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--linea);
+        border-radius: var(--radio);
+        background: var(--fondo-2);
+        overflow: hidden;
+        color: inherit;
+        transition: all 0.2s ease;
+      }
+      .pieza:hover {
+        border-color: var(--acento-borde);
+        text-decoration: none;
+        transform: translateY(-2px);
+      }
+      .pieza .arte {
+        aspect-ratio: 3 / 2;
+        overflow: hidden;
+        background: var(--superficie);
+        border-bottom: 1px solid var(--linea-suave);
+        position: relative;
+      }
+      .pieza.libro .arte {
+        aspect-ratio: 3 / 4;
+      }
+      .pieza .arte img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* Portada tipográfica: se compone cuando la pieza no trae imagen. Ni
+         hueco roto ni foto de archivo. */
+      .arte-tipo {
+        width: 100%;
+        height: 100%;
+        padding: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        background:
+          radial-gradient(
+            120% 120% at 12% 8%,
+            rgba(139, 92, 246, 0.3),
+            transparent 62%
+          ),
+          radial-gradient(
+            110% 110% at 92% 96%,
+            rgba(34, 211, 238, 0.24),
+            transparent 58%
+          ),
+          var(--superficie);
+      }
+      .arte-tipo .t {
+        font-weight: 900;
+        font-size: 1.02rem;
+        line-height: 1.18;
+        letter-spacing: -0.025em;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .arte-tipo .f {
+        margin-top: 0.5rem;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--texto-2);
+      }
+      .pieza .txt {
+        padding: 1.15rem 1.25rem 1.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        flex: 1;
+      }
+      .pieza .meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.71rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--tenue);
+      }
+      .pieza h3 {
+        font-size: 1.03rem;
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+      }
+      .pieza .autor {
+        font-size: 0.86rem;
+        color: var(--tenue);
+      }
+      .pieza .engancho {
+        font-size: 0.92rem;
+        color: var(--texto-2);
+        margin-top: 0.15rem;
+      }
+      .pieza .pie {
+        margin-top: auto;
+        padding-top: 0.9rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--acento);
+      }
+      .sello {
+        border-radius: 999px;
+        padding: 0.18rem 0.6rem;
+        border: 1px solid var(--linea);
+      }
+      .sello.pendiente {
+        color: var(--atencion);
+        border-color: rgba(251, 191, 36, 0.4);
+        background: var(--atencion-suave);
+      }
+      .sello.leyendo {
+        color: var(--acento);
+        border-color: var(--acento-borde);
+        background: var(--acento-suave);
+      }
+      .sello.terminado {
+        color: var(--ok);
+        border-color: rgba(52, 211, 153, 0.4);
+        background: var(--ok-suave);
+      }
+      .sello.abandonado {
+        color: var(--atencion);
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+
+      /* ------------------------------------------------------------- vacío */
+      .vacio {
+        border: 1px dashed var(--linea);
+        border-radius: var(--radio);
+        padding: 2.4rem;
+        color: var(--texto-2);
+        background: var(--fondo-2);
+      }
+      .vacio b {
+        display: block;
+        color: var(--texto);
+        font-size: 1.05rem;
+        margin-bottom: 0.6rem;
+      }
+      .vacio code {
+        background: var(--superficie);
+        border: 1px solid var(--linea-suave);
+        border-radius: 5px;
+        padding: 0.1em 0.4em;
+        font-size: 0.86em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--texto);
+      }
+
+      /* ------------------------------------------------------------- inbox */
+      .cola {
+        display: grid;
+        gap: 0.7rem;
+      }
+      .cola li {
+        list-style: none;
+        border: 1px solid var(--linea-suave);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        background: var(--fondo-2);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem 0.9rem;
+        align-items: baseline;
+      }
+      .cola .fecha {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: var(--tenue);
+      }
+      .cola .q {
+        color: var(--texto-2);
+        font-size: 0.94rem;
+        flex: 1;
+        min-width: 14rem;
+      }
+
+      footer {
+        margin-top: clamp(3rem, 7vw, 5rem);
+        padding-top: 1.6rem;
+        border-top: 1px solid var(--linea-suave);
+        color: var(--tenue);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="barra">
+      <div class="barra-in">
+        <a class="marca" href="../index.html"
+          >AI Engineer <span>Coaching</span></a
+        >
+        <a class="volver" href="{{OTRA_URL}}">{{OTRA_TEXTO}} →</a>
+      </div>
+    </div>
+
+    <div class="envoltorio">
+      <div class="kicker">{{KICKER}}</div>
+      <h1>{{TITULAR}}</h1>
+      <p class="lead">{{ENTRADA}}</p>
+
+      {{FILTROS}} {{REJILLA}} {{EXTRA}} {{INBOX}}
+
+      <footer>{{PIE}}</footer>
+    </div>
+
+    <script>
+      // Filtro por tipo. Sin red y sin estado que guardar: la lista completa ya
+      // está en el HTML, así que filtrar es esconder. Si el navegador no
+      // ejecuta JS se ven todas las piezas, que es el estado correcto.
+      (function () {
+        var botones = document.querySelectorAll("[data-filtro]");
+        var piezas = document.querySelectorAll(".pieza[data-tipo]");
+        botones.forEach(function (b) {
+          b.addEventListener("click", function () {
+            var quiero = b.dataset.filtro;
+            botones.forEach(function (o) {
+              o.setAttribute("aria-pressed", String(o === b));
+            });
+            piezas.forEach(function (p) {
+              p.hidden = quiero !== "todo" && p.dataset.tipo !== quiero;
+            });
+          });
+        });
+      })();
+    </script>
+    <script src="../analitica.js"></script>
+  </body>
+</html>

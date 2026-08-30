@@ -1,0 +1,126 @@
+# Catálogo de la biblioteca: libros, artículos, noticias, videos y podcasts.
+#
+# Este archivo es la ÚNICA fuente. `python biblioteca/build.py` genera desde
+# aquí las dos portadas (biblioteca/index.html y biblioteca/libros.html) y una
+# ficha por pieza. Nada de eso se edita a mano: se pierde en el siguiente build.
+#
+#
+# LAS DOS PUERTAS
+#
+#   inbox   captura barata. Entra todo lo que te llame la atención, en 10
+#           segundos, sin compromiso. NO genera página: solo aparece listado al
+#           final del índice como "por leer".
+#
+#   piezas  la ficha con tu criterio. Cuesta media hora escribirla, así que
+#           solo sube aquí lo que después de unos días te siga pareciendo
+#           importante. Cada pieza genera su página en biblioteca/<slug>.html.
+#
+# La separación es a propósito: si la única forma de guardar algo fuera escribir
+# la ficha completa, no guardarías nada.
+#
+#
+# EL CONTENIDO SE ESCRIBE DESPUÉS DE LEER (misma regla que los videos)
+#
+# `resumen`, `valioso`, `conecta` y `reparos` son opcionales. Sin `resumen` la
+# ficha se genera igual —con su portada, su ficha técnica y el enlace— pero
+# muestra el estado "pendiente" en vez de inventarse una opinión. Un resumen
+# inventado se lee perfecto y es justo lo que nadie puede detectar.
+#
+# `build.py --pendientes` lista lo que falta.
+#
+#
+# LOS CAMPOS
+#
+#   tipo       libro | articulo | noticia | video | podcast
+#   titulo     el título tal cual
+#   autor      persona(s)
+#   fuente     medio, editorial o canal ("O'Reilly", "Anthropic", "Latent Space")
+#   fecha      publicación, AAAA-MM-DD o AAAA
+#   idioma     "Español" | "Inglés"
+#   extension  "~12 min de lectura", "384 páginas", "1 h 20 min"
+#   url        el enlace original
+#   archivo    copia en web.archive.org (los artículos se caen; los libros no
+#              llevan esto)
+#   video_id   solo tipo video: el id de YouTube, para embeberlo en la ficha
+#   portada    portadas/<archivo>.jpg — opcional. Sin portada se genera una
+#              tipográfica con el degradado de la marca (ver portadas/README.md)
+#   etiquetas  [rag, evals, agentes] — para filtrar en el índice
+#   sesiones   [sesion-08, reto-07, kata-03] — con qué parte del programa engancha
+#   engancho   UNA línea: por qué está aquí. Es lo único que se ve en el índice,
+#              así que es lo que decide si alguien abre la ficha o no.
+#
+#   --- el contenido (opcional, se escribe después de leer)
+#   resumen    qué dice, en orden. 2 a 4 párrafos.
+#   valioso    lista de lo que de verdad vale, en frases con contenido
+#              (no "explica bien X": qué dice exactamente sobre X).
+#   conecta    cómo se enlaza con el programa. Aquí va el criterio propio.
+#   reparos    dónde se queda corto, qué está desactualizado, en qué discrepas.
+#              Una pieza sin reparos suele ser una pieza que no se leyó con
+#              cuidado. Si no tienes ninguno, probablemente no merece ficha.
+#
+#   --- solo libros
+#   isbn       para bajar la portada de Open Library
+#   estado     por-leer | leyendo | terminado | abandonado
+#   avance     "cap. 4 de 11" — se ve en la portada del club
+#   abandonado_porque   abandonar un libro y decir por qué es contenido, no un
+#                       fracaso. Es de lo más útil que puedes dejar escrito.
+#   subrayados lista de {cita, pagina, comento}. La cita es literal; el comento
+#              es tuyo. Son dos cosas distintas y por eso son dos campos.
+#   plan       lista de {tramo, semana, preguntas}. Esto es lo que convierte el
+#              libro en un club de lectura y no en una estantería.
+#
+#
+# LOS VIDEOS DE LOS TALLERES NO SE COPIAN AQUÍ
+#
+# Los 24 videos de talleres/videos.yaml ya tienen su ficha y su página. El
+# índice de la biblioteca los lee de allí y los muestra junto a lo demás. Si
+# quieres corregir uno, se corrige en talleres/videos.yaml. Aquí solo van los
+# videos sueltos, los que no cuelgan de un día de taller.
+
+
+# ---------------------------------------------------------------- por leer
+# Captura rápida. Solo url, fecha y por qué te llamó. Sin compromiso.
+inbox: []
+# - url: https://...
+#   tipo: articulo
+#   fecha: 2026-08-30
+#   engancho: "Dice que los evals de LLM-judge se rompen con más de 5 criterios"
+
+
+# ------------------------------------------------------------------ fichas
+piezas:
+  # Dos piezas reales para arrancar, las dos en estado pendiente: están aquí
+  # porque de verdad pertenecen al programa, y el contenido lo escribimos
+  # después de leerlas. No se rellenan a ojo.
+
+  ai-engineering-chip-huyen:
+    tipo: libro
+    titulo: "AI Engineering: Building Applications with Foundation Models"
+    autor: "Chip Huyen"
+    fuente: "O'Reilly"
+    fecha: 2025
+    idioma: "Inglés"
+    extension: "533 páginas"
+    isbn: "9781098166304"
+    url: "https://www.oreilly.com/library/view/ai-engineering/9781098166298/"
+    estado: por-leer
+    etiquetas: [evals, rag, produccion]
+    sesiones: [sesion-08, sesion-09, sesion-12]
+    engancho: >-
+      Es el libro que más se parece a lo que enseña el programa: parte de que el
+      modelo ya existe y el trabajo está en todo lo que lo rodea.
+
+  anthropic-building-effective-agents:
+    tipo: articulo
+    titulo: "Building effective agents"
+    autor: "Erik Schluntz y Barry Zhang"
+    fuente: "Anthropic"
+    fecha: 2024-12-19
+    idioma: "Inglés"
+    extension: "~15 min de lectura"
+    url: "https://www.anthropic.com/engineering/building-effective-agents"
+    etiquetas: [agentes, patrones]
+    sesiones: [sesion-06, reto-05]
+    engancho: >-
+      Separa "workflow" de "agente" y sostiene que la mayoría de los casos no
+      necesitan un agente. Es la discusión de la sesión 06 antes de tenerla.
