@@ -194,7 +194,9 @@ def primera_frase(texto, tope=180):
     texto = " ".join(str(texto or "").split())
     if not texto:
         return ""
-    corte = re.split(r"(?<=[.:])\s", texto, maxsplit=1)[0]
+    # Solo el punto cierra la frase. Cortar también en los dos puntos partía
+    # justo donde la frase iba a decir lo interesante ("desarma la sigla:").
+    corte = re.split(r"(?<=\.)\s", texto, maxsplit=1)[0]
     return corte if len(corte) <= tope else corte[:tope].rsplit(" ", 1)[0] + "…"
 
 
@@ -524,7 +526,13 @@ def videos_del_taller():
                     "fuente": "YouTube",
                     "idioma": v.get("idioma", ""),
                     "extension": v.get("duracion", ""),
-                    "engancho": primera_frase(v.get("conecta") or ""),
+                    # Del resumen y NO del `conecta`: el `conecta` está escrito
+                    # para la página del video dentro del taller y habla desde
+                    # ahí ("ya sabes que arranca donde termina el día de hoy").
+                    # En la biblioteca no hay un "hoy", así que esa frase llega
+                    # sin referente. El resumen describe el video y se sostiene
+                    # solo en cualquier sitio.
+                    "engancho": primera_frase(v.get("resumen") or ""),
                     "resumen": v.get("resumen"),
                     "_cta": "Ver el video",
                 },
