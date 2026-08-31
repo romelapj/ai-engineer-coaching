@@ -194,17 +194,25 @@ def primera_frase(texto, tope=180):
     texto = " ".join(str(texto or "").split())
     if not texto:
         return ""
-    corte = re.split(r"(?<=[.:])\s", texto, maxsplit=1)[0]
+    # Solo el punto cierra la frase. Cortar también en los dos puntos partía
+    # justo donde la frase iba a decir lo interesante ("desarma la sigla:").
+    corte = re.split(r"(?<=\.)\s", texto, maxsplit=1)[0]
     return corte if len(corte) <= tope else corte[:tope].rsplit(" ", 1)[0] + "…"
 
 
 def imagen_de(p):
-    """La portada descargada, o None si la pieza no tiene.
+    """La portada de la pieza, o None si no tiene.
 
-    Nunca se enlaza la imagen desde el servidor de otro: se descarga una vez a
-    portadas/ y se versiona. Es la misma regla del código de los talleres —lo
-    que se muestra es lo que hay— aplicada a que la página no dependa de que a
-    nadie se le caiga un dominio."""
+    Las portadas propias se descargan una vez a portadas/ y se versionan: la
+    página no depende de que a nadie se le caiga un dominio. La excepción son
+    las miniaturas de YouTube, que se enlazan en caliente igual que ya hace la
+    tarjeta del taller, para que un video se vea igual en los dos sitios sin
+    duplicar el archivo. El coste está escrito en portadas/README.md."""
+    if p.get("_miniatura"):
+        return (
+            f'<img src="{e(p["_miniatura"])}" alt="" loading="lazy" '
+            f'width="320" height="180" />'
+        )
     ruta = p.get("portada")
     if not ruta:
         return None
@@ -524,9 +532,18 @@ def videos_del_taller():
                     "fuente": "YouTube",
                     "idioma": v.get("idioma", ""),
                     "extension": v.get("duracion", ""),
-                    "engancho": primera_frase(v.get("conecta") or ""),
+                    # Del resumen y NO del `conecta`: el `conecta` está escrito
+                    # para la página del video dentro del taller y habla desde
+                    # ahí ("ya sabes que arranca donde termina el día de hoy").
+                    # En la biblioteca no hay un "hoy", así que esa frase llega
+                    # sin referente. El resumen describe el video y se sostiene
+                    # solo en cualquier sitio.
+                    "engancho": primera_frase(v.get("resumen") or ""),
                     "resumen": v.get("resumen"),
                     "_cta": "Ver el video",
+                    # La misma que muestra la tarjeta del día en el taller, para
+                    # que el video se reconozca igual en los dos sitios.
+                    "_miniatura": f"https://img.youtube.com/vi/{vid}/mqdefault.jpg",
                 },
                 f"../talleres/videos/{vid}.html",
             )
