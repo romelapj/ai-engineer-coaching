@@ -201,12 +201,18 @@ def primera_frase(texto, tope=180):
 
 
 def imagen_de(p):
-    """La portada descargada, o None si la pieza no tiene.
+    """La portada de la pieza, o None si no tiene.
 
-    Nunca se enlaza la imagen desde el servidor de otro: se descarga una vez a
-    portadas/ y se versiona. Es la misma regla del código de los talleres —lo
-    que se muestra es lo que hay— aplicada a que la página no dependa de que a
-    nadie se le caiga un dominio."""
+    Las portadas propias se descargan una vez a portadas/ y se versionan: la
+    página no depende de que a nadie se le caiga un dominio. La excepción son
+    las miniaturas de YouTube, que se enlazan en caliente igual que ya hace la
+    tarjeta del taller, para que un video se vea igual en los dos sitios sin
+    duplicar el archivo. El coste está escrito en portadas/README.md."""
+    if p.get("_miniatura"):
+        return (
+            f'<img src="{e(p["_miniatura"])}" alt="" loading="lazy" '
+            f'width="320" height="180" />'
+        )
     ruta = p.get("portada")
     if not ruta:
         return None
@@ -535,6 +541,9 @@ def videos_del_taller():
                     "engancho": primera_frase(v.get("resumen") or ""),
                     "resumen": v.get("resumen"),
                     "_cta": "Ver el video",
+                    # La misma que muestra la tarjeta del día en el taller, para
+                    # que el video se reconozca igual en los dos sitios.
+                    "_miniatura": f"https://img.youtube.com/vi/{vid}/mqdefault.jpg",
                 },
                 f"../talleres/videos/{vid}.html",
             )

@@ -12,6 +12,24 @@ en algo que se rompe solo, sin que nadie toque nada, el día que ese dominio
 cambie de estructura. Y de paso el sitio deja de contarle a terceros quién lo
 está leyendo.
 
+### La excepción: las miniaturas de YouTube
+
+Los videos que vienen del catálogo de los talleres **sí** enlazan su miniatura
+en caliente, desde `img.youtube.com/vi/<id>/mqdefault.jpg`. Es la misma URL que
+ya usa la tarjeta del día en el taller, así que el video se reconoce igual en
+los dos sitios sin duplicar el archivo ni mantener dos copias que se pueden
+desincronizar.
+
+Tiene un coste y conviene tenerlo escrito en vez de dejar la regla como letra
+muerta: la portada de la biblioteca hace una petición a Google por cada tarjeta
+de video —24 hoy—, y cada una dice quién está mirando el sitio. Se aceptó a
+cambio de no versionar 24 imágenes que no son nuestras y de no dejar el taller y
+la biblioteca enseñando cosas distintas del mismo video.
+
+Si algún día se revierte, se revierte en los dos sitios a la vez: la miniatura
+se baja a `portadas/` y `talleres/build.py` deja de enlazarla también. En
+`mqdefault` (320×180) las 24 pesan unos 310 KB.
+
 ## Cómo bajarlas
 
 **Libros**, por ISBN, desde Open Library:
