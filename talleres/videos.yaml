@@ -119,6 +119,76 @@ videos:
     autor: "Dot CSV"
     idioma: "Español"
     duracion: "~15 min"
+    resumen: |
+      Cuenta veinte años del campo resolviendo **el mismo problema cuatro
+      veces**: dado el texto de un tuit, decir si el sentimiento es positivo o
+      negativo. Ese hilo es todo el video, y funciona porque cada vez que
+      cambia la técnica se ve exactamente qué deja de hacer falta.
+
+      Primero, principios de los 2000: diccionarios de polaridad. Se puntúan
+      palabras buenas y malas y se suma. Lo enseña en código y lo rompe en el
+      mismo minuto con una frase irónica —"me encantaría ir a este restaurante
+      si quiero tirar el dinero"— que la librería clasifica como positiva.
+      Luego 2012 y las redes recurrentes: funcionan mejor, pero son aprendizaje
+      **supervisado**, así que exigen un dataset donde alguien se sentó a
+      etiquetar a mano. Y ahí está el detalle que importa: si cambias la tarea
+      de positivo/negativo a una nota de 1 a 5 estrellas, no ajustas nada,
+      vuelves a etiquetar el dataset entero y vuelves a entrenar desde cero.
+
+      El giro llega en 2017, con dos cosas a la vez. Una es una idea prestada de
+      la visión por ordenador, donde ya se partía de un modelo **preentrenado**
+      y se reajustaba con muchos menos datos; la otra son los transformers. Se
+      empieza a entrenar modelos para que aprendan el lenguaje en sí, con
+      ejercicios tontos repetidos millones de veces: tapar una palabra y
+      adivinarla, o continuar una frase. Y aquí está el cambio de fondo, que él
+      subraya: la etiqueta ya no la pone un humano, sale del propio texto. Se
+      pasa de aprendizaje supervisado a **autosupervisado**, el etiquetado deja
+      de ser el cuello de botella, y los datos de entrenamiento crecen en
+      órdenes de magnitud. De paso enseña Hugging Face y monta un análisis de
+      sentimientos con un `pipeline` de la librería `transformers`, sin entrenar
+      nada.
+
+      Cierra con 2020 y GPT-3: 175 mil millones de parámetros, 117 veces más
+      grande que GPT-2. Lo entrenaron solo para autocompletar, y resultó que al
+      escalarlo aprendió cosas que nadie le pidió: traduce al inglés o al chino,
+      escribe Python, funciona como chatbot si le das el formato de diálogo. La
+      demo final es la que redondea el video: vuelve al problema del principio y
+      lo resuelve con GPT-3 escribiendo un ejemplo en el prompt. Luego lo cambia
+      a estrellas de 1 a 5 sin reentrenar nada, y después a un clasificador de
+      *Harry Potter* contra *El Señor de los Anillos*, con el mismo truco. Avisa
+      de que para producción lo correcto seguiría siendo reentrenar con datos
+      etiquetados, y termina anunciando PaLM, cuatro veces mayor que GPT-3.
+    valioso:
+      - >-
+        El desbloqueo no fue el transformer: fue que la etiqueta empezó a salir
+        del propio texto. Tapar una palabra y adivinarla no necesita a nadie
+        sentado etiquetando, y ahí desaparece el cuello de botella que limitaba
+        todo lo anterior. Si alguna vez te preguntan por qué los modelos
+        pudieron crecer tanto, la respuesta está en ese minuto y no en la
+        arquitectura.
+      - >-
+        Nadie le enseñó a traducir. A GPT-3 lo entrenaron solo para
+        autocompletar texto, y salió traduciendo al inglés y al chino,
+        escribiendo Python y haciendo de chatbot si le dabas el formato de
+        diálogo. Cuenta las capacidades emergentes con ejemplos que puedes
+        reproducir y sin una gota de misticismo, que es más raro de lo que
+        parece en este tema.
+    conecta: >-
+      La demo del final —escribe un ejemplo dentro del prompt y el modelo hace
+      la tarea— es la sesión 02 sin nombrarla. Hoy lo vas a ver como un truco de
+      magia, y está bien que sea así: míralo como el tráiler. La semana que
+      viene lo hacemos despacio y con las manos, y entonces vas a entender por
+      qué ese ejemplo que él escribe casi de pasada es la mitad del trabajo.
+    reparos: >-
+      Se pasa cuatro minutos enseñándote a resolver el problema con un prompt, y
+      diez segundos al final avisando de que para producción lo correcto sería
+      reentrenar el modelo con datos etiquetados. El aviso es acertado, pero
+      llega tarde y en voz baja, y lo que queda en la cabeza es la demo. Que
+      quede claro por si acaso: si sales del video pensando que un prompt
+      ingenioso sustituye a un dataset, te llevaste justo lo contrario de lo que
+      él dice. Esa confusión sale cara, y es la razón de que la sesión 08 sea
+      entera de evals: "funciona en los tres ejemplos que probé" no es una
+      medida de nada.
 
   eMlx5fFNoYc:
     titulo: "Attention in transformers, step-by-step"
